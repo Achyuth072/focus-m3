@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { Box, Button, Card, CardContent, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/components/AuthProvider';
@@ -7,7 +8,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { slideUp } from '@/theme/motion';
 
-export default function LoginPage() {
+function LoginContent() {
   const { user, loading, signInWithGoogle } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -45,13 +46,7 @@ export default function LoginPage() {
       }}
     >
       <motion.div {...slideUp}>
-        <Card
-          sx={{
-            maxWidth: 400,
-            width: '100%',
-            p: 2,
-          }}
-        >
+        <Card sx={{ maxWidth: 400, width: '100%', p: 2 }}>
           <CardContent
             sx={{
               display: 'flex',
@@ -79,11 +74,7 @@ export default function LoginPage() {
               variant="contained"
               size="large"
               onClick={signInWithGoogle}
-              sx={{
-                width: '100%',
-                py: 1.5,
-                mt: 2,
-              }}
+              sx={{ width: '100%', py: 1.5, mt: 2 }}
             >
               Sign in with Google
             </Button>
@@ -91,5 +82,26 @@ export default function LoginPage() {
         </Card>
       </motion.div>
     </Box>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <Box
+          sx={{
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Typography color="text.secondary">Loading...</Typography>
+        </Box>
+      }
+    >
+      <LoginContent />
+    </Suspense>
   );
 }
