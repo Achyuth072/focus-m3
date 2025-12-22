@@ -101,17 +101,12 @@ export default function TaskList() {
         >
           <AnimatePresence mode="popLayout">
             {orderedTasks.map((task) => (
-              <Reorder.Item
-                key={task.id}
-                value={task}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+              <TaskItem 
+                key={task.id} 
+                task={task} 
+                onEdit={setEditingTask} 
                 onDragEnd={handleDragEnd}
-                style={{ listStyle: 'none' }}
-              >
-                <TaskItem task={task} onEdit={setEditingTask} />
-              </Reorder.Item>
+              />
             ))}
           </AnimatePresence>
         </Reorder.Group>

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Box, Card, Checkbox, Typography, IconButton, Chip, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, FormControlLabel } from '@mui/material';
-import { motion, useMotionValue, useTransform, PanInfo } from 'framer-motion';
+import { motion, useMotionValue, useTransform, PanInfo, Reorder, useDragControls } from 'framer-motion';
 import { useToggleTask, useDeleteTask } from '@/lib/hooks/useTaskMutations';
 import type { Task } from '@/lib/types/task';
 import { format, isToday, isTomorrow, isPast } from 'date-fns';
@@ -29,9 +29,11 @@ const PRIORITY_COLORS = {
 interface TaskItemProps {
   task: Task;
   onEdit?: (task: Task) => void;
+  onDragEnd?: () => void;
 }
 
-export default function TaskItem({ task, onEdit }: TaskItemProps) {
+export default function TaskItem({ task, onEdit, onDragEnd }: TaskItemProps) {
+  const dragControls = useDragControls();
   const toggleMutation = useToggleTask();
   const deleteMutation = useDeleteTask();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -90,154 +92,170 @@ export default function TaskItem({ task, onEdit }: TaskItemProps) {
   const isOverdue = task.due_date && isPast(new Date(task.due_date)) && !task.is_completed;
 
   return (
-    <Box sx={{ position: 'relative', mb: 1.5 }}>
-      {/* Delete background */}
-      <motion.div
-        style={{
-          position: 'absolute',
-          right: 16,
-          top: '50%',
-          transform: 'translateY(-50%)',
-          opacity: deleteOpacity,
-          color: '#F2B8B5',
-        }}
-      >
-        <DeleteIcon />
-      </motion.div>
-
-      <motion.div
-        style={{ x, background }}
-        drag="x"
-        dragConstraints={{ left: 0, right: 0 }}
-        dragElastic={0.1}
-        onDragEnd={handleDragEnd}
-      >
-        <Card
-          component={motion.div}
-          onClick={() => onEdit?.(task)}
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            p: 1.5,
-            gap: 1,
-            cursor: 'grab',
-            borderLeft: '4px solid',
-            borderLeftColor: PRIORITY_COLORS[task.priority],
-            '&:active': { cursor: 'grabbing' },
-            transition: 'background-color 0.2s',
-            '&:hover': { bgcolor: 'action.hover' }
+    <Reorder.Item
+      value={task}
+      dragListener={false}
+      dragControls={dragControls}
+      onDragEnd={onDragEnd}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+      style={{ listStyle: 'none' }}
+    >
+      <Box sx={{ position: 'relative', mb: 1.5 }}>
+        {/* Delete background */}
+        <motion.div
+          style={{
+            position: 'absolute',
+            right: 16,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            opacity: deleteOpacity,
+            color: '#F2B8B5',
           }}
         >
-          {/* Drag handle */}
-          <Box
+          <DeleteIcon />
+        </motion.div>
+
+        <motion.div
+          style={{ x, background }}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.1}
+          onDragEnd={handleDragEnd}
+        >
+          <Card
+            component={motion.div}
+            onClick={() => onEdit?.(task)}
             sx={{
               display: 'flex',
               alignItems: 'center',
-              touchAction: 'none',
-              color: 'text.secondary',
+              p: 1.5,
+              gap: 1,
+              cursor: 'default',
+              borderLeft: '4px solid',
+              borderLeftColor: PRIORITY_COLORS[task.priority],
+              transition: 'background-color 0.2s',
+              '&:hover': { bgcolor: 'action.hover' }
             }}
           >
-            <DragIcon />
-          </Box>
-
-          {/* Checkbox */}
-          <Checkbox
-            checked={task.is_completed}
-            onClick={(e) => {
-               e.stopPropagation();
-               handleToggle();
-            }}
-            onChange={() => {}}
-            sx={{
-              color: 'text.secondary',
-              '&.Mui-checked': {
-                color: 'primary.main',
-              },
-            }}
-          />
-
-          {/* Content */}
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography
+            {/* Drag handle */}
+            <Box
+              onPointerDown={(e) => dragControls.start(e)}
               sx={{
-                textDecoration: task.is_completed ? 'line-through' : 'none',
-                opacity: task.is_completed ? 0.6 : 1,
-                transition: 'all 0.2s ease',
+                display: 'flex',
+                alignItems: 'center',
+                touchAction: 'none',
+                color: 'text.secondary',
+                cursor: 'grab',
+                p: 0.5,
+                borderRadius: 1,
+                '&:active': { cursor: 'grabbing' },
+                '&:hover': { bgcolor: 'action.selected' }
               }}
             >
-              {task.content}
-            </Typography>
+              <DragIcon />
+            </Box>
 
-            {/* Due date chip */}
-            {task.due_date && (
-              <Chip
-                label={formatDueDate(task.due_date)}
-                size="small"
+            {/* Checkbox */}
+            <Checkbox
+              checked={task.is_completed}
+              onClick={(e) => {
+                 e.stopPropagation();
+                 handleToggle();
+              }}
+              onChange={() => {}}
+              sx={{
+                color: 'text.secondary',
+                '&.Mui-checked': {
+                  color: 'primary.main',
+                },
+              }}
+            />
+
+            {/* Content */}
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography
                 sx={{
-                  mt: 0.5,
-                  px: 1,
-                  height: 24,
-                  fontSize: '11px',
-                  bgcolor: isOverdue ? 'rgba(242, 184, 181, 0.2)' : 'rgba(208, 188, 255, 0.12)',
-                  color: isOverdue ? 'error.main' : 'primary.main',
+                  textDecoration: task.is_completed ? 'line-through' : 'none',
+                  opacity: task.is_completed ? 0.6 : 1,
+                  transition: 'all 0.2s ease',
                 }}
-              />
-            )}
-          </Box>
+              >
+                {task.content}
+              </Typography>
 
-          {/* Delete button (for non-touch) */}
-          <IconButton
-            size="small"
-            onClick={handleDeleteClick}
-            sx={{
-              opacity: 0.4,
-              '&:hover': { opacity: 1, color: 'error.main' },
-            }}
-          >
-            <DeleteIcon />
-          </IconButton>
-        </Card>
-      </motion.div>
+              {/* Due date chip */}
+              {task.due_date && (
+                <Chip
+                  label={formatDueDate(task.due_date)}
+                  size="small"
+                  sx={{
+                    mt: 0.5,
+                    px: 1,
+                    height: 24,
+                    fontSize: '11px',
+                    bgcolor: isOverdue ? 'rgba(242, 184, 181, 0.2)' : 'rgba(208, 188, 255, 0.12)',
+                    color: isOverdue ? 'error.main' : 'primary.main',
+                  }}
+                />
+              )}
+            </Box>
 
-      {/* Delete Confirmation Dialog */}
-      <Dialog
-        open={showDeleteConfirm}
-        onClose={() => setShowDeleteConfirm(false)}
-        PaperProps={{
-          sx: { borderRadius: '28px', p: 1 }
-        }}
-      >
-        <DialogTitle>Delete task?</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            This will permanently delete "{task.content.substring(0, 30)}{task.content.length > 30 ? '...' : ''}".
-          </DialogContentText>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={neverAskAgain}
-                onChange={(e) => setNeverAskAgain(e.target.checked)}
-                size="small"
-              />
-            }
-            label="Don't ask again"
-            sx={{ mt: 1 }}
-          />
-        </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={() => setShowDeleteConfirm(false)} sx={{ borderRadius: '20px' }}>
-            Cancel
-          </Button>
-          <Button
-            onClick={handleConfirmDelete}
-            color="error"
-            variant="contained"
-            sx={{ borderRadius: '20px' }}
-          >
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+            {/* Delete button (for non-touch) */}
+            <IconButton
+              size="small"
+              onClick={handleDeleteClick}
+              sx={{
+                opacity: 0.4,
+                '&:hover': { opacity: 1, color: 'error.main' },
+              }}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Card>
+        </motion.div>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog
+          open={showDeleteConfirm}
+          onClose={() => setShowDeleteConfirm(false)}
+          PaperProps={{
+            sx: { borderRadius: '28px', p: 1 }
+          }}
+        >
+          <DialogTitle>Delete task?</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              This will permanently delete "{task.content.substring(0, 30)}{task.content.length > 30 ? '...' : ''}".
+            </DialogContentText>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={neverAskAgain}
+                  onChange={(e) => setNeverAskAgain(e.target.checked)}
+                  size="small"
+                />
+              }
+              label="Don't ask again"
+              sx={{ mt: 1 }}
+            />
+          </DialogContent>
+          <DialogActions sx={{ px: 3, pb: 2 }}>
+            <Button onClick={() => setShowDeleteConfirm(false)} sx={{ borderRadius: '20px' }}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirmDelete}
+              color="error"
+              variant="contained"
+              sx={{ borderRadius: '20px' }}
+            >
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Box>
+    </Reorder.Item>
   );
 }
