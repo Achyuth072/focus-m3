@@ -1,15 +1,21 @@
 'use client';
 
-import { Box, Typography, Button, AppBar, Toolbar } from '@mui/material';
+import { useState } from 'react';
+import { Box, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/components/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { fadeIn } from '@/theme/motion';
+import TaskList from '@/components/tasks/TaskList';
+import AddTaskFab from '@/components/tasks/AddTaskFab';
+import TaskSheet from '@/components/tasks/TaskSheet';
+import { format } from 'date-fns';
 
 export default function Home() {
-  const { user, loading, signOut } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
+  const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -33,42 +39,50 @@ export default function Home() {
   }
 
   if (!user) {
-    return null; // Will redirect
+    return null;
   }
 
-  return (
-    <Box sx={{ minHeight: '100vh' }}>
-      <AppBar position="static" color="transparent" elevation={0}>
-        <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 500 }}>
-            FocusM3
-          </Typography>
-          <Button color="inherit" onClick={signOut}>
-            Sign out
-          </Button>
-        </Toolbar>
-      </AppBar>
+  const today = new Date();
+  const greeting = getGreeting();
 
+  return (
+    <>
       <motion.div {...fadeIn}>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: 'calc(100vh - 64px)',
-            p: 3,
-            gap: 2,
-          }}
-        >
-          <Typography variant="h4" sx={{ fontWeight: 400 }}>
-            Hello, {user.email}
+        {/* Header */}
+        <Box sx={{ px: 3, pt: 4, pb: 2 }}>
+          <Typography variant="body2" color="text.secondary">
+            {format(today, 'EEEE, MMMM d')}
           </Typography>
-          <Typography color="text.secondary">
-            Welcome to FocusM3. Your foundation is ready!
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: 400,
+              mt: 0.5,
+            }}
+          >
+            {greeting}
           </Typography>
         </Box>
+
+        {/* Task List */}
+        <TaskList />
       </motion.div>
-    </Box>
+
+      {/* FAB */}
+      <AddTaskFab onClick={() => setIsAddTaskOpen(true)} />
+
+      {/* Task Sheet (Create Mode) */}
+      <TaskSheet
+        open={isAddTaskOpen}
+        onClose={() => setIsAddTaskOpen(false)}
+      />
+    </>
   );
+}
+
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
 }

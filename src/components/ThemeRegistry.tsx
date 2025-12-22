@@ -6,6 +6,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { CacheProvider } from '@emotion/react';
 import createCache from '@emotion/cache';
 import { useServerInsertedHTML } from 'next/navigation';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import theme from '@/theme/theme';
 
 function createEmotionCache() {
@@ -42,7 +44,9 @@ export default function ThemeRegistry({ children }: { children: React.ReactNode 
     <CacheProvider value={cache}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        {children}
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          {children}
+        </LocalizationProvider>
       </ThemeProvider>
     </CacheProvider>
   );

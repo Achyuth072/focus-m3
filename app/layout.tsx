@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from 'next';
 import '@fontsource-variable/roboto-flex';
 import ThemeRegistry from '@/components/ThemeRegistry';
 import { AuthProvider } from '@/components/AuthProvider';
+import QueryProvider from '@/components/QueryProvider';
+import AppShell from '@/components/layout/AppShell';
 
 export const metadata: Metadata = {
   title: 'FocusM3',
@@ -31,10 +33,15 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ThemeRegistry>
-          <AuthProvider>{children}</AuthProvider>
+          <QueryProvider>
+            <AuthProvider>
+              <AppShell>{children}</AppShell>
+            </AuthProvider>
+          </QueryProvider>
         </ThemeRegistry>
       </body>
     </html>
   );
 }
+
 
