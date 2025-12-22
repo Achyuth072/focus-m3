@@ -10,8 +10,12 @@ import { useReorderTasks } from '@/lib/hooks/useTaskMutations';
 import { useRealtimeSync } from '@/lib/hooks/useRealtimeSync';
 import type { Task } from '@/lib/types/task';
 
-export default function TaskList() {
-  const { data: tasks, isLoading, error } = useTasks();
+interface TaskListProps {
+  showCompleted?: boolean;
+}
+
+export default function TaskList({ showCompleted = false }: TaskListProps) {
+  const { data: tasks, isLoading, error } = useTasks({ showCompleted });
   const reorderMutation = useReorderTasks();
   const [orderedTasks, setOrderedTasks] = useState<Task[]>([]);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
