@@ -75,8 +75,14 @@ export function useCreateTask() {
         );
       }
     },
-    onSettled: () => {
+    onSettled: (_data, _error, variables) => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      // If this was a subtask, also invalidate the parent's subtask list
+      if (variables.parent_id) {
+        queryClient.invalidateQueries({
+          queryKey: ["subtasks", variables.parent_id],
+        });
+      }
     },
   });
 }

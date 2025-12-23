@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Box,
   Dialog,
@@ -15,39 +15,28 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
+  Tabs,
+  Tab,
+  Divider,
+  Checkbox,
 } from '@mui/material';
 import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
 import { DesktopDateTimePicker } from '@mui/x-date-pickers/DesktopDateTimePicker';
 import { AnimatePresence, motion } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { parseTaskInput, formatDueDate } from '@/lib/utils/nlpParser';
 import { useCreateTask, useUpdateTask } from '@/lib/hooks/useTaskMutations';
 import { useInboxProject } from '@/lib/hooks/useTasks';
+import SubtaskList from '@/components/tasks/SubtaskList';
 import type { Task, ParsedTask } from '@/lib/types/task';
 import { format, addDays, startOfDay } from 'date-fns';
 
-const CloseIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-  </svg>
-);
-
-const CalendarIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z" />
-  </svg>
-);
-
-const FlagIcon = ({ size = 18 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z" />
-  </svg>
-);
-
-const ScheduleIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
-  </svg>
-);
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
+import FlagRoundedIcon from '@mui/icons-material/FlagRounded';
+import ScheduleRoundedIcon from '@mui/icons-material/ScheduleRounded';
+import AddRoundedIcon from '@mui/icons-material/AddRounded';
 
 type Priority = 1 | 2 | 3 | 4;
 
@@ -69,10 +58,15 @@ export default function TaskSheet({ open, onClose, initialTask }: TaskSheetProps
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
   const [input, setInput] = useState('');
+  const [description, setDescription] = useState('');
+  const [descriptionMode, setDescriptionMode] = useState<'edit' | 'preview'>('edit');
   const [priority, setPriority] = useState<Priority>(4);
   const [dueDate, setDueDate] = useState<Date | null>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isPickerOpen, setIsPickerOpen] = useState(false);
+  const pickerAnchorRef = useRef<HTMLDivElement | null>(null);
+  const [draftSubtasks, setDraftSubtasks] = useState<string[]>([]);
+  const [newSubtaskInput, setNewSubtaskInput] = useState('');
 
   const createMutation = useCreateTask();
   const updateMutation = useUpdateTask();
@@ -82,13 +76,18 @@ export default function TaskSheet({ open, onClose, initialTask }: TaskSheetProps
   useEffect(() => {
     if (open && initialTask) {
       setInput(initialTask.content);
+      setDescription(initialTask.description || '');
       setPriority(initialTask.priority as Priority);
       setDueDate(initialTask.due_date ? new Date(initialTask.due_date) : null);
     } else if (open && !initialTask) {
       // Reset for Create Mode
       setInput('');
+      setDescription('');
       setPriority(4);
       setDueDate(null);
+      setDescriptionMode('edit');
+      setDraftSubtasks([]);
+      setNewSubtaskInput('');
     }
   }, [open, initialTask]);
 
@@ -115,16 +114,32 @@ export default function TaskSheet({ open, onClose, initialTask }: TaskSheetProps
       updateMutation.mutate({
         id: initialTask.id,
         content,
+        description: description || undefined,
         priority,
         due_date: formatDueDate(dueDate) || undefined,
       });
     } else {
-      // Create
+      // Create main task, then subtasks
       createMutation.mutate({
         content,
+        description: description || undefined,
         priority,
         due_date: formatDueDate(dueDate) || undefined,
         project_id: inboxProject?.id,
+      }, {
+        onSuccess: (newTask) => {
+          // Create draft subtasks after main task is created
+          if (draftSubtasks.length > 0 && newTask?.id) {
+            draftSubtasks.forEach((subtaskContent) => {
+              createMutation.mutate({
+                content: subtaskContent,
+                parent_id: newTask.id,
+                project_id: inboxProject?.id,
+                priority: 4,
+              });
+            });
+          }
+        }
       });
     }
   };
@@ -167,7 +182,7 @@ export default function TaskSheet({ open, onClose, initialTask }: TaskSheetProps
       PaperProps={{
         sx: {
           bgcolor: 'background.paper',
-          borderRadius: '28px',
+          borderRadius: { xs: '28px', md: '16px' },
           width: isMobile ? 'calc(100% - 32px)' : '560px',
           maxWidth: isMobile ? '400px' : '560px',
           minHeight: '280px',
@@ -183,24 +198,31 @@ export default function TaskSheet({ open, onClose, initialTask }: TaskSheetProps
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            px: 2,
-            py: 1.5,
+            px: 3,
+            py: 2,
             borderBottom: '1px solid',
             borderColor: 'divider',
-            minHeight: 56,
+            minHeight: 64,
           }}
         >
           <IconButton onClick={handleClose} edge="start" sx={{ p: 1.5 }}>
-            <CloseIcon />
+            <CloseRoundedIcon />
           </IconButton>
-          <Typography variant="h6" sx={{ fontWeight: 500, fontSize: '18px' }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '1.1rem' }}>
             {initialTask ? 'Edit Task' : 'New Task'}
           </Typography>
           <Button
             variant="contained"
             onClick={handleSubmit}
             disabled={!hasContent || isPending}
-            sx={{ borderRadius: '20px', px: 3, textTransform: 'none' }}
+            sx={{ 
+              borderRadius: '28px', 
+              px: 3, 
+              py: 1, 
+              textTransform: 'none',
+              fontWeight: 600,
+              boxShadow: 'none'
+            }}
           >
             {isPending ? 'Saving...' : initialTask ? 'Save' : 'Add'}
           </Button>
@@ -221,9 +243,14 @@ export default function TaskSheet({ open, onClose, initialTask }: TaskSheetProps
             onKeyDown={handleKeyDown}
             InputProps={{
               disableUnderline: true,
-              sx: { fontSize: '18px', lineHeight: 1.6 },
+              sx: { 
+                fontSize: '1.5rem', 
+                fontWeight: 600,
+                lineHeight: 1.2,
+                '&::placeholder': { opacity: 0.5 }
+              },
             }}
-            sx={{ mb: 3 }}
+            sx={{ mb: 2 }}
           />
 
           {/* Active Attributes (Deletable) */}
@@ -238,31 +265,35 @@ export default function TaskSheet({ open, onClose, initialTask }: TaskSheetProps
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, pt: 1 }}>
                   {dueDate && (
                     <Chip
-                      icon={<CalendarIcon />}
+                      icon={<CalendarMonthRoundedIcon />}
                       label={format(dueDate, 'MMM d, h:mm a')}
                       onDelete={() => setDueDate(null)}
                       sx={{
-                        pl: 1.5,
+                        pl: 1,
                         bgcolor: 'rgba(208, 188, 255, 0.12)',
                         color: 'primary.main',
-                        '& .MuiChip-icon': { color: 'inherit', ml: 0 },
-                        '& .MuiChip-deleteIcon': { mr: 1 },
+                        fontWeight: 500,
+                        '& .MuiChip-icon': { color: 'inherit', ml: 0.5, fontSize: '1rem' },
+                        '& .MuiChip-deleteIcon': { mr: 0.5 },
                         height: 32,
+                        borderRadius: '28px',
                       }}
                     />
                   )}
                   {priority !== 4 && (
                     <Chip
-                      icon={<FlagIcon />}
+                      icon={<FlagRoundedIcon />}
                       label={PRIORITY_CONFIG[priority].label}
                       onDelete={() => setPriority(4)}
                       sx={{
-                        pl: 1.5,
+                        pl: 1,
                         bgcolor: `${PRIORITY_CONFIG[priority].color}20`,
                         color: PRIORITY_CONFIG[priority].color,
-                        '& .MuiChip-icon': { color: 'inherit', ml: 0 },
-                        '& .MuiChip-deleteIcon': { mr: 1 },
+                        fontWeight: 500,
+                        '& .MuiChip-icon': { color: 'inherit', ml: 0.5, fontSize: '1rem' },
+                        '& .MuiChip-deleteIcon': { mr: 0.5 },
                         height: 32,
+                        borderRadius: '28px',
                       }}
                     />
                   )}
@@ -270,6 +301,134 @@ export default function TaskSheet({ open, onClose, initialTask }: TaskSheetProps
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Description (Notes) Section */}
+          <Divider sx={{ my: 2 }} />
+          <Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+              <Typography variant="subtitle2" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+                Notes
+              </Typography>
+              <Tabs
+                value={descriptionMode}
+                onChange={(_, v) => setDescriptionMode(v)}
+                sx={{ minHeight: 32, '& .MuiTab-root': { minHeight: 32, py: 0.5, px: 1.5, fontSize: '0.75rem' } }}
+              >
+                <Tab label="Edit" value="edit" />
+                <Tab label="Preview" value="preview" />
+              </Tabs>
+            </Box>
+            {descriptionMode === 'edit' ? (
+              <TextField
+                fullWidth
+                multiline
+                minRows={3}
+                maxRows={8}
+                variant="outlined"
+                placeholder="Add notes (Markdown supported)..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                sx={{
+                  '& .MuiOutlinedInput-root': { borderRadius: '16px', fontSize: '0.875rem' },
+                }}
+              />
+            ) : (
+              <Box
+                sx={{
+                  p: 2,
+                  bgcolor: 'background.paper',
+                  borderRadius: '16px',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  minHeight: 80,
+                  fontSize: '0.875rem',
+                  '& h1, & h2, & h3': { mt: 0 },
+                  '& p': { my: 0.5 },
+                  '& ul, & ol': { my: 0.5, pl: 2 },
+                }}
+              >
+                {description ? (
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{description}</ReactMarkdown>
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    No notes yet.
+                  </Typography>
+                )}
+              </Box>
+            )}
+          </Box>
+
+          {/* Subtasks Section */}
+          <Divider sx={{ my: 2 }} />
+          {initialTask ? (
+            <SubtaskList parentTask={initialTask} />
+          ) : (
+            <Box>
+              <Typography variant="subtitle2" sx={{ mb: 1, color: 'text.secondary', fontWeight: 600 }}>
+                Subtasks
+              </Typography>
+              {/* Draft subtasks list */}
+              {draftSubtasks.map((subtask, index) => (
+                <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                  <Checkbox size="small" disabled sx={{ p: 0.5 }} />
+                  <Typography variant="body2" sx={{ flex: 1 }}>{subtask}</Typography>
+                  <IconButton 
+                    size="small" 
+                    onClick={() => setDraftSubtasks(prev => prev.filter((_, i) => i !== index))}
+                    sx={{ opacity: 0.5, '&:hover': { opacity: 1 } }}
+                  >
+                    <CloseRoundedIcon sx={{ fontSize: '16px' }} />
+                  </IconButton>
+                </Box>
+              ))}
+              {/* Add subtask input */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+                <TextField
+                  size="small"
+                  fullWidth
+                  variant="outlined"
+                  placeholder="Add subtask..."
+                  value={newSubtaskInput}
+                  onChange={(e) => setNewSubtaskInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && newSubtaskInput.trim()) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setDraftSubtasks(prev => [...prev, newSubtaskInput.trim()]);
+                      setNewSubtaskInput('');
+                    }
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '16px',
+                      fontSize: '0.875rem',
+                    },
+                  }}
+                />
+                <IconButton
+                  onClick={() => {
+                    if (newSubtaskInput.trim()) {
+                      setDraftSubtasks(prev => [...prev, newSubtaskInput.trim()]);
+                      setNewSubtaskInput('');
+                    }
+                  }}
+                  disabled={!newSubtaskInput.trim()}
+                  size="small"
+                  sx={{ 
+                    bgcolor: 'primary.main', 
+                    color: 'primary.contrastText',
+                    borderRadius: '12px',
+                    width: 40,
+                    height: 40,
+                    '&:hover': { bgcolor: 'primary.dark' },
+                    '&:disabled': { bgcolor: 'action.disabledBackground' }
+                  }}
+                >
+                  <AddRoundedIcon />
+                </IconButton>
+              </Box>
+            </Box>
+          )}
         </Box>
 
         {/* Quick Actions */}
@@ -300,13 +459,16 @@ export default function TaskSheet({ open, onClose, initialTask }: TaskSheetProps
 
           {/* Date Picker Trigger */}
           <Chip
-            icon={<ScheduleIcon />}
+            ref={pickerAnchorRef}
+            icon={<ScheduleRoundedIcon />}
             label="Pick Date"
             variant="outlined"
             onClick={() => setIsPickerOpen(true)}
             sx={{ 
-              pl: 1.5,
-              '& .MuiChip-icon': { ml: 0 },
+              pl: 1,
+              borderRadius: '28px',
+              fontWeight: 500,
+              '& .MuiChip-icon': { ml: 0.5, fontSize: '1rem' },
             }}
           />
            
@@ -336,7 +498,15 @@ export default function TaskSheet({ open, onClose, initialTask }: TaskSheetProps
                   disablePast
                   slotProps={{
                     popper: {
-                      sx: { '& .MuiPaper-root': { borderRadius: '28px' } }
+                      anchorEl: pickerAnchorRef.current,
+                      placement: 'bottom-start',
+                      sx: { 
+                        '& .MuiPaper-root': { 
+                          borderRadius: '28px',
+                          mt: 1,
+                          boxShadow: '0 8px 24px rgba(0,0,0,0.35)',
+                        } 
+                      }
                     }
                   }}
                 />
@@ -345,18 +515,21 @@ export default function TaskSheet({ open, onClose, initialTask }: TaskSheetProps
 
           {/* Priority Menu Trigger */}
           <Chip
-            icon={<FlagIcon />}
+            icon={<FlagRoundedIcon />}
             label={priority !== 4 ? PRIORITY_CONFIG[priority].label : 'Priority'}
             variant={priority !== 4 ? 'filled' : 'outlined'}
             onClick={handlePriorityClick}
             sx={{
-              pl: 1.5,
+              pl: 1,
+              borderRadius: '28px',
+              fontWeight: 500,
               borderColor: priority !== 4 ? 'transparent' : 'divider',
               bgcolor: priority !== 4 ? `${PRIORITY_CONFIG[priority].color}20` : 'transparent',
               color: priority !== 4 ? PRIORITY_CONFIG[priority].color : 'text.primary',
               '& .MuiChip-icon': {
                 color: priority !== 4 ? 'inherit' : 'text.secondary',
-                ml: 0,
+                ml: 0.5,
+                fontSize: '1rem',
               },
             }}
           />
@@ -382,23 +555,23 @@ export default function TaskSheet({ open, onClose, initialTask }: TaskSheetProps
                if (pVal === 4) return null;
                return (
                 <MenuItem key={p} onClick={() => handlePrioritySelect(pVal)}>
-                  <ListItemIcon sx={{ minWidth: 36 }}>
-                    <FlagIcon size={20} />
+                  <ListItemIcon sx={{ minWidth: 40 }}>
+                    <FlagRoundedIcon sx={{ color: PRIORITY_CONFIG[pVal].color }} />
                   </ListItemIcon>
                   <ListItemText 
                     primary={PRIORITY_CONFIG[pVal].label} 
                     primaryTypographyProps={{ 
-                      sx: { color: PRIORITY_CONFIG[pVal].color, fontWeight: 500 } 
+                      sx: { fontWeight: 600 } 
                     }} 
                   />
                 </MenuItem>
                );
             })}
-             <MenuItem onClick={() => handlePrioritySelect(4)}>
-                  <ListItemIcon sx={{ minWidth: 36 }}>
-                    <Box sx={{ width: 18, height: 18, border: '1px solid', borderColor: 'text.secondary', borderRadius: '50%' }} />
+             <MenuItem onClick={() => handlePrioritySelect(4)} sx={{ borderRadius: '28px', mx: 0.5, py: 1.2 }}>
+                  <ListItemIcon sx={{ minWidth: 40 }}>
+                    <Box sx={{ width: 22, height: 22, border: '2px solid', borderColor: 'text.secondary', borderRadius: '50%', opacity: 0.3 }} />
                   </ListItemIcon>
-                  <ListItemText primary="None" />
+                  <ListItemText primary="None" primaryTypographyProps={{ fontWeight: 600 }} />
             </MenuItem>
           </Menu>
         </Box>

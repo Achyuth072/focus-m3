@@ -19,6 +19,7 @@ export function useTasks(options: UseTasksOptions = {}) {
       let query = supabase
         .from("tasks")
         .select("*")
+        .is("parent_id", null) // Exclude subtasks from main list
         .order("day_order", { ascending: true })
         .order("created_at", { ascending: false });
 

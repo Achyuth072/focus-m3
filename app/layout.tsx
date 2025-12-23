@@ -3,6 +3,7 @@ import '@fontsource-variable/roboto-flex';
 import ThemeRegistry from '@/components/ThemeRegistry';
 import { AuthProvider } from '@/components/AuthProvider';
 import QueryProvider from '@/components/QueryProvider';
+import { TimerProvider } from '@/components/TimerProvider';
 import AppShell from '@/components/layout/AppShell';
 
 export const metadata: Metadata = {
@@ -40,7 +41,9 @@ export default function RootLayout({
         <ThemeRegistry>
           <QueryProvider>
             <AuthProvider>
-              <AppShell>{children}</AppShell>
+              <TimerProvider>
+                <AppShell>{children}</AppShell>
+              </TimerProvider>
             </AuthProvider>
           </QueryProvider>
         </ThemeRegistry>

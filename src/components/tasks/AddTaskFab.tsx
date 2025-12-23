@@ -3,11 +3,7 @@
 import { Fab } from '@mui/material';
 import { motion } from 'framer-motion';
 
-const AddIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-  </svg>
-);
+import AddRoundedIcon from '@mui/icons-material/AddRounded';
 
 interface AddTaskFabProps {
   onClick: () => void;
@@ -37,7 +33,7 @@ export default function AddTaskFab({ onClick, layoutId = 'add-task-fab' }: AddTa
           height: 64,
         }}
       >
-        <AddIcon />
+        <AddRoundedIcon sx={{ fontSize: '32px' }} />
       </Fab>
     </motion.div>
   );

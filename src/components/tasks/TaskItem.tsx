@@ -1,23 +1,20 @@
 'use client';
 
 import { useState } from 'react';
-import { Box, Card, Checkbox, Typography, IconButton, Chip, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, FormControlLabel } from '@mui/material';
+import { Box, Card, Checkbox, Typography, IconButton, Chip, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, FormControlLabel, Collapse } from '@mui/material';
 import { motion, useMotionValue, useTransform, PanInfo, Reorder, useDragControls } from 'framer-motion';
 import { useToggleTask, useDeleteTask } from '@/lib/hooks/useTaskMutations';
+import { useTimer } from '@/components/TimerProvider';
 import type { Task } from '@/lib/types/task';
 import { format, isToday, isTomorrow, isPast } from 'date-fns';
 
-const DeleteIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
-  </svg>
-);
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import DragIndicatorRoundedIcon from '@mui/icons-material/DragIndicatorRounded';
+import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
+import PauseRoundedIcon from '@mui/icons-material/PauseRounded';
+import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 
-const DragIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" opacity="0.5">
-    <path d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
-  </svg>
-);
+import SubtaskList from './SubtaskList';
 
 const PRIORITY_COLORS = {
   1: '#F2B8B5', // High - Error color
@@ -36,8 +33,12 @@ export default function TaskItem({ task, onEdit, onDragEnd }: TaskItemProps) {
   const dragControls = useDragControls();
   const toggleMutation = useToggleTask();
   const deleteMutation = useDeleteTask();
+  const { start: startTimer, state: timerState } = useTimer();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [neverAskAgain, setNeverAskAgain] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  const isTimerActiveForTask = timerState.activeTaskId === task.id && timerState.isRunning;
   
   const x = useMotionValue(0);
   const background = useTransform(
@@ -114,7 +115,7 @@ export default function TaskItem({ task, onEdit, onDragEnd }: TaskItemProps) {
             color: '#F2B8B5',
           }}
         >
-          <DeleteIcon />
+          <DeleteRoundedIcon />
         </motion.div>
 
         <motion.div
@@ -130,13 +131,18 @@ export default function TaskItem({ task, onEdit, onDragEnd }: TaskItemProps) {
             sx={{
               display: 'flex',
               alignItems: 'center',
-              p: 1.5,
-              gap: 1,
+              p: { xs: 2, md: 1.5 },
+              gap: { xs: 1.5, md: 1 },
               cursor: 'default',
               borderLeft: '4px solid',
               borderLeftColor: PRIORITY_COLORS[task.priority],
-              transition: 'background-color 0.2s',
-              '&:hover': { bgcolor: 'action.hover' }
+              transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+              // Responsive radius handled by theme, but explicit for clarity
+              borderRadius: { xs: '28px', md: '16px' },
+              '&:hover': { 
+                bgcolor: 'action.hover',
+                transform: 'scale(1.01)',
+              }
             }}
           >
             {/* Drag handle */}
@@ -149,12 +155,12 @@ export default function TaskItem({ task, onEdit, onDragEnd }: TaskItemProps) {
                 color: 'text.secondary',
                 cursor: 'grab',
                 p: 0.5,
-                borderRadius: 1,
+                borderRadius: '8px',
                 '&:active': { cursor: 'grabbing' },
                 '&:hover': { bgcolor: 'action.selected' }
               }}
             >
-              <DragIcon />
+              <DragIndicatorRoundedIcon sx={{ fontSize: '20px', opacity: 0.5 }} />
             </Box>
 
             {/* Checkbox */}
@@ -180,6 +186,8 @@ export default function TaskItem({ task, onEdit, onDragEnd }: TaskItemProps) {
                   textDecoration: task.is_completed ? 'line-through' : 'none',
                   opacity: task.is_completed ? 0.6 : 1,
                   transition: 'all 0.2s ease',
+                  fontWeight: 500,
+                  fontSize: '1rem',
                 }}
               >
                 {task.content}
@@ -195,12 +203,30 @@ export default function TaskItem({ task, onEdit, onDragEnd }: TaskItemProps) {
                     px: 1,
                     height: 24,
                     fontSize: '11px',
+                    fontWeight: 600,
+                    borderRadius: '12px',
                     bgcolor: isOverdue ? 'rgba(242, 184, 181, 0.2)' : 'rgba(208, 188, 255, 0.12)',
                     color: isOverdue ? 'error.main' : 'primary.main',
                   }}
                 />
               )}
             </Box>
+
+            {/* Play timer button */}
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation();
+                startTimer(task.id);
+              }}
+              sx={{
+                opacity: isTimerActiveForTask ? 1 : 0.4,
+                color: isTimerActiveForTask ? 'primary.main' : 'inherit',
+                '&:hover': { opacity: 1, color: 'primary.main' },
+              }}
+            >
+              {isTimerActiveForTask ? <PauseRoundedIcon /> : <PlayArrowRoundedIcon />}
+            </IconButton>
 
             {/* Delete button (for non-touch) */}
             <IconButton
@@ -211,9 +237,42 @@ export default function TaskItem({ task, onEdit, onDragEnd }: TaskItemProps) {
                 '&:hover': { opacity: 1, color: 'error.main' },
               }}
             >
-              <DeleteIcon />
+              <DeleteRoundedIcon sx={{ fontSize: '20px' }} />
+            </IconButton>
+
+            {/* Expand Subtasks Toggle */}
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsExpanded(!isExpanded);
+              }}
+              sx={{
+                transition: 'transform 0.2s ease',
+                transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                opacity: 0.4,
+                '&:hover': { opacity: 1 },
+              }}
+            >
+              <ExpandMoreRoundedIcon sx={{ fontSize: '20px' }} />
             </IconButton>
           </Card>
+
+          {/* Inline Subtasks */}
+          <Collapse in={isExpanded} unmountOnExit>
+            <Box
+              sx={{
+                pl: { xs: 4, md: 6 },
+                pr: 2,
+                py: 1.5,
+                borderLeft: '2px solid',
+                borderColor: 'divider',
+                ml: 3,
+              }}
+            >
+              <SubtaskList parentTask={task} />
+            </Box>
+          </Collapse>
         </motion.div>
 
         {/* Delete Confirmation Dialog */}
@@ -221,12 +280,16 @@ export default function TaskItem({ task, onEdit, onDragEnd }: TaskItemProps) {
           open={showDeleteConfirm}
           onClose={() => setShowDeleteConfirm(false)}
           PaperProps={{
-            sx: { borderRadius: '28px', p: 1 }
+            sx: { 
+              borderRadius: { xs: '28px', md: '16px' }, 
+              p: 1,
+              minWidth: 300,
+            }
           }}
         >
-          <DialogTitle>Delete task?</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
+          <DialogTitle sx={{ fontWeight: 600, fontSize: '1.25rem' }}>Delete task?</DialogTitle>
+          <DialogContent sx={{ px: 3, pb: 1 }}>
+            <DialogContentText sx={{ fontSize: '0.9rem' }}>
               This will permanently delete "{task.content.substring(0, 30)}{task.content.length > 30 ? '...' : ''}".
             </DialogContentText>
             <FormControlLabel
@@ -238,18 +301,21 @@ export default function TaskItem({ task, onEdit, onDragEnd }: TaskItemProps) {
                 />
               }
               label="Don't ask again"
-              sx={{ mt: 1 }}
+              sx={{ mt: 1.5 }}
             />
           </DialogContent>
-          <DialogActions sx={{ px: 3, pb: 2 }}>
-            <Button onClick={() => setShowDeleteConfirm(false)} sx={{ borderRadius: '20px' }}>
+          <DialogActions sx={{ px: 3, pb: 3, pt: 1, gap: 1.5 }}>
+            <Button 
+              onClick={() => setShowDeleteConfirm(false)} 
+              sx={{ borderRadius: '28px', px: 3, py: 1, fontWeight: 600 }}
+            >
               Cancel
             </Button>
             <Button
               onClick={handleConfirmDelete}
               color="error"
               variant="contained"
-              sx={{ borderRadius: '20px' }}
+              sx={{ borderRadius: '28px', px: 3, py: 1, fontWeight: 600, boxShadow: 'none' }}
             >
               Delete
             </Button>

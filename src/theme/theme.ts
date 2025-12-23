@@ -29,6 +29,9 @@ declare module "@mui/material/Typography" {
   }
 }
 
+// Base theme for breakpoint access
+const baseTheme = createTheme();
+
 const theme = createTheme({
   palette: {
     mode: "dark",
@@ -49,7 +52,7 @@ const theme = createTheme({
       secondary: palette.onSurfaceVariant,
     },
   },
-  shape: { borderRadius: 24 },
+  shape: { borderRadius: 28 }, // Mobile-first default (Expressive)
   typography: {
     fontFamily:
       '"Roboto Flex Variable", "Roboto", "Helvetica", "Arial", sans-serif',
@@ -57,9 +60,9 @@ const theme = createTheme({
     h1: { fontSize: "57px", fontWeight: 400 },
     h2: { fontSize: "45px", fontWeight: 400 },
     h3: { fontSize: "36px", fontWeight: 400 },
-    h4: { fontSize: "28px", fontWeight: 400 },
-    h5: { fontSize: "24px", fontWeight: 400 },
-    h6: { fontSize: "20px", fontWeight: 500 },
+    h4: { fontSize: "28px", fontWeight: 600 },
+    h5: { fontSize: "24px", fontWeight: 600 },
+    h6: { fontSize: "20px", fontWeight: 600 },
     body1: { fontSize: "16px", fontWeight: 400 },
     body2: { fontSize: "14px", fontWeight: 400 },
     caption: { fontSize: "12px", fontWeight: 500 },
@@ -69,21 +72,59 @@ const theme = createTheme({
       styleOverrides: { body: { backgroundColor: palette.background } },
     },
     MuiButton: {
-      styleOverrides: { root: { borderRadius: 24, textTransform: "none" } },
+      styleOverrides: {
+        root: {
+          borderRadius: 28, // Pill shape stays consistent
+          textTransform: "none",
+          fontWeight: 600,
+          padding: "10px 24px",
+        },
+      },
     },
     MuiFab: {
-      styleOverrides: { root: { borderRadius: 24 } },
+      styleOverrides: { root: { borderRadius: 28 } },
     },
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 24,
+          borderRadius: 28, // Mobile default
           backgroundColor: palette.surfaceContainerLow,
+          backgroundImage: "none",
+          // Desktop: Tighten radius
+          [baseTheme.breakpoints.up("md")]: {
+            borderRadius: 16,
+          },
         },
       },
     },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8, // Standard M3 Chip
+          fontWeight: 500,
+        },
+        filled: { border: "none" },
+        outlined: { borderColor: "rgba(255, 255, 255, 0.12)" },
+      },
+    },
     MuiDialog: {
-      styleOverrides: { paper: { borderRadius: 28 } },
+      styleOverrides: {
+        paper: {
+          borderRadius: 28, // Mobile default
+          backgroundImage: "none",
+          // Desktop: Tighten radius
+          [baseTheme.breakpoints.up("md")]: {
+            borderRadius: 16,
+          },
+        },
+      },
+    },
+    MuiDrawer: {
+      styleOverrides: {
+        paper: {
+          backgroundImage: "none",
+        },
+      },
     },
     MuiPaper: {
       styleOverrides: { root: { backgroundImage: "none" } },

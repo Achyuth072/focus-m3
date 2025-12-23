@@ -1,50 +1,223 @@
 'use client';
 
-import { Box, Typography } from '@mui/material';
+import { useState } from 'react';
+import { Box, useMediaQuery, useTheme, ToggleButton, ToggleButtonGroup, IconButton, Button, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import { fadeIn } from '@/theme/motion';
+import { useCalendarStore } from '@/lib/store/calendarStore';
+import { useTasks } from '@/lib/hooks/useTasks';
+import CalendarGrid from '@/components/calendar/CalendarGrid';
+import CalendarTodayIcon from '@/components/calendar/CalendarTodayIcon';
+import MiniCalendar from '@/components/calendar/MiniCalendar';
+import TaskSheet from '@/components/tasks/TaskSheet';
+import type { Task } from '@/lib/types/task';
+import { format } from 'date-fns';
+
+import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
+import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
+import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 
 export default function CalendarPage() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const { data: tasks = [] } = useTasks();
+  const calendarStore = useCalendarStore();
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [calendarAnchor, setCalendarAnchor] = useState<null | HTMLElement>(null);
+
+  const handleTaskClick = (task: Task) => {
+    setEditingTask(task);
+  };
+
+  const handleTitleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setCalendarAnchor(event.currentTarget);
+  };
+
+  const handleMiniCalendarClose = () => {
+    setCalendarAnchor(null);
+  };
+
+  const handleDateSelect = (date: Date) => {
+    calendarStore.setCurrentDate(date);
+  };
+
+  // View Toggle Component (shared)
+  const ViewToggle = (
+    <ToggleButtonGroup
+      value={calendarStore.view}
+      exclusive
+      onChange={(_, newView) => newView && calendarStore.setView(newView)}
+      size="small"
+      sx={{
+        bgcolor: 'background.paper',
+        borderRadius: '28px',
+        p: 0.5,
+        '& .MuiToggleButton-root': {
+          borderRadius: '24px',
+          border: 'none',
+          px: { xs: 1.5, md: 2 },
+          py: 0.5,
+          fontWeight: 600,
+          fontSize: '0.75rem',
+          textTransform: 'none',
+          whiteSpace: 'nowrap',
+          '&.Mui-selected': {
+            bgcolor: 'primary.main',
+            color: 'primary.contrastText',
+            '&:hover': {
+              bgcolor: 'primary.dark',
+            },
+          },
+        },
+      }}
+    >
+      <ToggleButton value="3day">3 Day</ToggleButton>
+      <ToggleButton value="week">Week</ToggleButton>
+      <ToggleButton value="month">Month</ToggleButton>
+    </ToggleButtonGroup>
+  );
+
+  // Arrow Controls Component (shared)
+  const ArrowControls = (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
+      <IconButton
+        onClick={calendarStore.prev}
+        size="small"
+        sx={{ borderRadius: '28px' }}
+      >
+        <ChevronLeftRoundedIcon />
+      </IconButton>
+      <IconButton
+        onClick={calendarStore.next}
+        size="small"
+        sx={{ borderRadius: '28px' }}
+      >
+        <ChevronRightRoundedIcon />
+      </IconButton>
+    </Box>
+  );
+
   return (
-    <motion.div {...fadeIn}>
+    <motion.div {...fadeIn} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Box
         sx={{
-          minHeight: 'calc(100vh - 96px)',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          p: 3,
-          gap: 2,
+          height: isMobile ? 'calc(100vh - 160px)' : 'calc(100vh - 32px)',
+          bgcolor: 'background.default',
+          overflow: 'hidden',
+          overscrollBehavior: 'none',
         }}
       >
+        {/* Desktop Header */}
+        {!isMobile && (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              px: 3,
+              py: 2,
+            }}
+          >
+            {/* Left: Title */}
+            <Button
+              onClick={handleTitleClick}
+              endIcon={<ExpandMoreRoundedIcon />}
+              sx={{
+                textTransform: 'none',
+                fontWeight: 600,
+                fontSize: '1.25rem',
+                color: 'text.primary',
+                px: 1.5,
+                borderRadius: '28px',
+                '&:hover': { bgcolor: 'action.hover' },
+              }}
+            >
+              {format(calendarStore.currentDate, 'MMMM yyyy')}
+            </Button>
+
+            {/* Right: Today, Arrows, View Toggle */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Button
+                onClick={calendarStore.today}
+                sx={{
+                  borderRadius: '28px',
+                  bgcolor: 'primary.main',
+                  color: 'primary.contrastText',
+                  fontWeight: 600,
+                  px: 2,
+                  py: 0.75,
+                  textTransform: 'none',
+                  '&:hover': { bgcolor: 'primary.dark' },
+                }}
+              >
+                Today
+              </Button>
+              {ArrowControls}
+              {ViewToggle}
+            </Box>
+          </Box>
+        )}
+
+        {/* Mobile Controls */}
+        {isMobile && (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              px: 2,
+              py: 1,
+            }}
+          >
+            {/* Left: Arrows */}
+            {ArrowControls}
+
+            {/* Right: View Toggle + Today Icon */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              {ViewToggle}
+              <CalendarTodayIcon />
+            </Box>
+          </Box>
+        )}
+
+        {/* Calendar Grid */}
         <Box
           sx={{
-            width: 100,
-            height: 100,
-            borderRadius: '50%',
-            bgcolor: 'background.paper',
+            flex: 1,
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            mb: 2,
+            flexDirection: 'column',
+            overflow: 'hidden',
+            minHeight: 0,
           }}
         >
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor" opacity="0.5">
-            <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z" />
-          </svg>
+          <CalendarGrid
+            days={calendarStore.days}
+            tasks={tasks}
+            view={calendarStore.view}
+            isToday={calendarStore.isToday}
+            isCurrentMonth={calendarStore.isCurrentMonth}
+            onTaskClick={handleTaskClick}
+          />
         </Box>
-
-        <Typography variant="h4" sx={{ fontWeight: 400 }}>
-          Calendar
-        </Typography>
-        <Typography color="text.secondary" textAlign="center">
-          Coming in Phase 3
-        </Typography>
-        <Typography variant="body2" color="text.secondary" textAlign="center" sx={{ maxWidth: 300 }}>
-          Visualize your tasks on a calendar, drag-and-drop to reschedule, and plan your week.
-        </Typography>
       </Box>
+
+      {/* Task Edit Sheet */}
+      <TaskSheet
+        open={!!editingTask}
+        onClose={() => setEditingTask(null)}
+        initialTask={editingTask}
+      />
+
+      {/* Desktop Mini Calendar Popover */}
+      <MiniCalendar
+        anchorEl={calendarAnchor}
+        open={Boolean(calendarAnchor)}
+        onClose={handleMiniCalendarClose}
+        currentDate={calendarStore.currentDate}
+        onDateSelect={handleDateSelect}
+      />
     </motion.div>
   );
 }
