@@ -36,6 +36,10 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname === "/access-denied" ||
     request.nextUrl.pathname.startsWith("/auth/");
 
+  if (!user && !isPublicRoute) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
   if (user && !isPublicRoute && !ALLOWED_EMAILS.includes(user.email ?? "")) {
     await supabase.auth.signOut();
     return NextResponse.redirect(new URL("/access-denied", request.url));

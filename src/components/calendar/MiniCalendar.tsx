@@ -46,6 +46,12 @@ export default function MiniCalendar({
   const [viewDate, setViewDate] = useState(currentDate);
   const [isYearView, setIsYearView] = useState(false);
 
+  // Reset after close animation completes
+  const handleExited = () => {
+    setViewDate(new Date());
+    setIsYearView(false);
+  };
+
   const days = useMemo(() => {
     const start = startOfWeek(startOfMonth(viewDate));
     const end = endOfWeek(endOfMonth(viewDate));
@@ -96,6 +102,7 @@ export default function MiniCalendar({
       onClose={onClose}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+      TransitionProps={{ onExited: handleExited }}
       slotProps={{
         paper: {
           sx: {
@@ -107,7 +114,6 @@ export default function MiniCalendar({
         },
       }}
     >
-      {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
         <IconButton onClick={handlePrev} size="small" sx={{ borderRadius: '28px' }}>
           <ChevronLeftRoundedIcon />
@@ -129,7 +135,6 @@ export default function MiniCalendar({
         </IconButton>
       </Box>
 
-      {/* Year View (Month Grid) */}
       {isYearView ? (
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1 }}>
           {MONTHS.map((month, index) => {
@@ -155,7 +160,6 @@ export default function MiniCalendar({
         </Box>
       ) : (
         <>
-          {/* Day Names */}
           <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 0.5, mb: 1 }}>
             {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
               <Typography
@@ -172,7 +176,6 @@ export default function MiniCalendar({
             ))}
           </Box>
 
-          {/* Day Grid */}
           <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 0.5 }}>
             {days.map((date) => {
               const isSelected = isSameDay(date, currentDate);

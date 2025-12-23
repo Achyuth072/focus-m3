@@ -104,7 +104,6 @@ export default function TaskItem({ task, onEdit, onDragEnd }: TaskItemProps) {
       style={{ listStyle: 'none' }}
     >
       <Box sx={{ position: 'relative', mb: 1.5 }}>
-        {/* Delete background */}
         <motion.div
           style={{
             position: 'absolute',
@@ -131,13 +130,12 @@ export default function TaskItem({ task, onEdit, onDragEnd }: TaskItemProps) {
             sx={{
               display: 'flex',
               alignItems: 'center',
-              p: { xs: 2, md: 1.5 },
-              gap: { xs: 1.5, md: 1 },
+              p: { xs: 1.5, md: 1.5 },
+              gap: { xs: 1, md: 1 },
               cursor: 'default',
               borderLeft: '4px solid',
               borderLeftColor: PRIORITY_COLORS[task.priority],
               transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-              // Responsive radius handled by theme, but explicit for clarity
               borderRadius: { xs: '28px', md: '16px' },
               '&:hover': { 
                 bgcolor: 'action.hover',
@@ -145,7 +143,6 @@ export default function TaskItem({ task, onEdit, onDragEnd }: TaskItemProps) {
               }
             }}
           >
-            {/* Drag handle */}
             <Box
               onPointerDown={(e) => dragControls.start(e)}
               sx={{
@@ -163,7 +160,6 @@ export default function TaskItem({ task, onEdit, onDragEnd }: TaskItemProps) {
               <DragIndicatorRoundedIcon sx={{ fontSize: '20px', opacity: 0.5 }} />
             </Box>
 
-            {/* Checkbox */}
             <Checkbox
               checked={task.is_completed}
               onClick={(e) => {

@@ -127,7 +127,6 @@ export function useFocusTimer() {
 
   const handleTimerComplete = useCallback(
     (prev: TimerState): TimerState => {
-      // If it was a focus session, increment completed sessions
       if (prev.mode === "focus") {
         const newCompletedSessions = prev.completedSessions + 1;
         const isLongBreakTime =
@@ -136,12 +135,11 @@ export function useFocusTimer() {
           ? "longBreak"
           : "shortBreak";
 
-        // Log focus session to DB (fire and forget)
+        // Log focus session
         if (prev.activeTaskId) {
           logFocusSession(prev.activeTaskId, settings.focusDuration * 60);
         }
 
-        // Log to local history for Stats
         useFocusHistoryStore.getState().addSession({
           taskId: prev.activeTaskId,
           duration: settings.focusDuration * 60,

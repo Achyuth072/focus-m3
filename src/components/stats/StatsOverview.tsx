@@ -71,7 +71,7 @@ function StatCard({ icon, label, value, color }: StatCardProps) {
 export default function StatsOverview() {
   const theme = useTheme();
   const sessions = useFocusHistoryStore((state) => state.sessions);
-  const { data: tasks = [] } = useTasks();
+  const { data: tasks = [] } = useTasks({ showCompleted: true });
 
   // Calculate today's stats
   const todaySessions = sessions.filter((s) =>

@@ -15,7 +15,7 @@ import { format, subDays, parseISO, startOfDay, isSameDay } from 'date-fns';
 
 export default function TaskVelocityChart() {
   const theme = useTheme();
-  const { data: tasks = [] } = useTasks();
+  const { data: tasks = [] } = useTasks({ showCompleted: true });
 
   // Get all completed tasks
   const completedTasks = tasks.filter((t) => t.is_completed && t.completed_at);
