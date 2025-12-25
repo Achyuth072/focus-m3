@@ -91,7 +91,7 @@ const MaterialSwitch = styled(Switch)(({ theme }) => ({
 
 export default function SettingsPage() {
   const router = useRouter();
-  const { settings, updateSettings } = useTimer();
+  const { settings, updateSettings, isLoaded } = useTimer();
   const [localSettings, setLocalSettings] = useState<TimerSettings>(settings);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -129,6 +129,11 @@ export default function SettingsPage() {
   };
 
   const hasChanges = JSON.stringify(localSettings) !== JSON.stringify(settings);
+
+  // Prevent flash of default values
+  if (!isLoaded) {
+    return null;
+  }
 
   return (
     <Box sx={{ p: { xs: 2, md: 3 }, maxWidth: 800, mx: 'auto' }}>

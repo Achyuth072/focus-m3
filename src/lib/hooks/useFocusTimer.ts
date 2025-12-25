@@ -75,6 +75,7 @@ export function useFocusTimer() {
     completedSessions: 0,
     activeTaskId: null,
   });
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const supabase = createClient();
@@ -93,6 +94,7 @@ export function useFocusTimer() {
         remainingSeconds: storedSettings.focusDuration * 60,
       }));
     }
+    setIsLoaded(true);
   }, []);
 
   // Persist state changes
@@ -102,28 +104,29 @@ export function useFocusTimer() {
     }
   }, [state]);
 
-  // Timer tick
-  useEffect(() => {
-    if (state.isRunning && state.remainingSeconds > 0) {
-      intervalRef.current = setInterval(() => {
-        setState((prev) => {
-          const newRemaining = prev.remainingSeconds - 1;
-          if (newRemaining <= 0) {
-            // Timer finished, handle transition
-            return handleTimerComplete(prev);
-          }
-          return { ...prev, remainingSeconds: newRemaining };
-        });
-      }, 1000);
-    }
+  const logFocusSession = useCallback(
+    async (taskId: string, durationSeconds: number) => {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (!user) return;
 
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
+        await supabase.from("focus_logs").insert({
+          task_id: taskId,
+          user_id: user.id,
+          start_time: new Date(
+            Date.now() - durationSeconds * 1000
+          ).toISOString(),
+          end_time: new Date().toISOString(),
+          duration_seconds: durationSeconds,
+        });
+      } catch (err) {
+        console.error("Failed to log focus session:", err);
       }
-    };
-  }, [state.isRunning, state.remainingSeconds]);
+    },
+    [supabase]
+  );
 
   const handleTimerComplete = useCallback(
     (prev: TimerState): TimerState => {
@@ -163,27 +166,30 @@ export function useFocusTimer() {
         remainingSeconds: getDurationForMode("focus", settings),
       };
     },
-    [settings]
+    [settings, logFocusSession]
   );
 
-  const logFocusSession = async (taskId: string, durationSeconds: number) => {
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
-
-      await supabase.from("focus_logs").insert({
-        task_id: taskId,
-        user_id: user.id,
-        start_time: new Date(Date.now() - durationSeconds * 1000).toISOString(),
-        end_time: new Date().toISOString(),
-        duration_seconds: durationSeconds,
-      });
-    } catch (err) {
-      console.error("Failed to log focus session:", err);
+  // Timer tick
+  useEffect(() => {
+    if (state.isRunning) {
+      intervalRef.current = setInterval(() => {
+        setState((prev) => {
+          if (prev.remainingSeconds <= 0) {
+            // Timer finished, handle transition
+            return handleTimerComplete(prev);
+          }
+          return { ...prev, remainingSeconds: prev.remainingSeconds - 1 };
+        });
+      }, 1000);
     }
-  };
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [state.isRunning, handleTimerComplete]);
 
   // Controls
   const start = useCallback((taskId?: string) => {
@@ -224,6 +230,7 @@ export function useFocusTimer() {
   return {
     state,
     settings,
+    isLoaded,
     start,
     pause,
     stop,

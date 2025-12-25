@@ -51,9 +51,10 @@ interface TaskSheetProps {
   open: boolean;
   onClose: () => void;
   initialTask?: Task | null;
+  initialDate?: Date | null;
 }
 
-export default function TaskSheet({ open, onClose, initialTask }: TaskSheetProps) {
+export default function TaskSheet({ open, onClose, initialTask, initialDate }: TaskSheetProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
@@ -72,7 +73,7 @@ export default function TaskSheet({ open, onClose, initialTask }: TaskSheetProps
   const updateMutation = useUpdateTask();
   const { data: inboxProject } = useInboxProject();
 
-  // Initialize from initialTask (Edit Mode)
+  // Initialize from initialTask (Edit Mode) or initialDate (Create from calendar)
   useEffect(() => {
     if (open && initialTask) {
       setInput(initialTask.content);
@@ -84,12 +85,12 @@ export default function TaskSheet({ open, onClose, initialTask }: TaskSheetProps
       setInput('');
       setDescription('');
       setPriority(4);
-      setDueDate(null);
+      setDueDate(initialDate || null);
       setDescriptionMode('edit');
       setDraftSubtasks([]);
       setNewSubtaskInput('');
     }
-  }, [open, initialTask]);
+  }, [open, initialTask, initialDate]);
 
   useEffect(() => {
     if (!open || !input.trim()) return;
@@ -241,6 +242,10 @@ export default function TaskSheet({ open, onClose, initialTask }: TaskSheetProps
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
+            autoComplete="off"
+            inputProps={{
+              enterKeyHint: 'done',
+            }}
             InputProps={{
               disableUnderline: true,
               sx: { 
@@ -328,6 +333,10 @@ export default function TaskSheet({ open, onClose, initialTask }: TaskSheetProps
                 placeholder="Add notes (Markdown supported)..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                autoComplete="off"
+                inputProps={{
+                  enterKeyHint: 'enter',
+                }}
                 sx={{
                   '& .MuiOutlinedInput-root': { borderRadius: '16px', fontSize: '0.875rem' },
                 }}
@@ -397,6 +406,10 @@ export default function TaskSheet({ open, onClose, initialTask }: TaskSheetProps
                       setDraftSubtasks(prev => [...prev, newSubtaskInput.trim()]);
                       setNewSubtaskInput('');
                     }
+                  }}
+                  autoComplete="off"
+                  inputProps={{
+                    enterKeyHint: 'done',
                   }}
                   sx={{
                     '& .MuiOutlinedInput-root': {

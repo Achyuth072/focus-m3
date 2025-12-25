@@ -7,6 +7,7 @@ import type { TimerState, TimerSettings } from '@/lib/types/timer';
 interface TimerContextValue {
   state: TimerState;
   settings: TimerSettings;
+  isLoaded: boolean;
   start: (taskId?: string) => void;
   pause: () => void;
   stop: () => void;

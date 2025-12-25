@@ -16,6 +16,7 @@ interface CalendarGridProps {
   isToday: (date: Date) => boolean;
   isCurrentMonth: (date: Date) => boolean;
   onTaskClick?: (task: Task) => void;
+  onDayClick?: (date: Date) => void;
   onSwipeLeft?: () => void;
   onSwipeRight?: () => void;
 }
@@ -27,6 +28,7 @@ export default function CalendarGrid({
   isToday,
   isCurrentMonth,
   onTaskClick,
+  onDayClick,
   onSwipeLeft,
   onSwipeRight,
 }: CalendarGridProps) {
@@ -132,6 +134,7 @@ export default function CalendarGrid({
                 isToday={isToday(date)}
                 isCurrentMonth={isCurrentMonth(date)}
                 onTaskClick={onTaskClick}
+                onDayClick={onDayClick}
               />
             ))}
           </Box>

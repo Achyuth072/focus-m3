@@ -98,8 +98,8 @@ export default function TaskItem({ task, onEdit, onDragEnd }: TaskItemProps) {
       dragListener={false}
       dragControls={dragControls}
       onDragEnd={onDragEnd}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: -20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 500, damping: 30 } }}
       exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
       style={{ listStyle: 'none' }}
     >

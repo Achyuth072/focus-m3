@@ -9,6 +9,7 @@ import NavDrawer from './NavDrawer';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
 import { CompletedTasksProvider } from '@/components/CompletedTasksProvider';
+import { useRealtimeSync } from '@/lib/hooks/useRealtimeSync';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -21,6 +22,9 @@ export default function AppShell({ children }: AppShellProps) {
   const isImmersive = pathname === '/focus' || pathname === '/settings';
   const { user, loading } = useAuth();
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // Global realtime sync - stays alive during navigation
+  useRealtimeSync();
 
   // Don't render shell for unauthenticated users
   if (loading || !user) {

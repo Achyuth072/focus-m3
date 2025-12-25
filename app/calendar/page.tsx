@@ -23,6 +23,7 @@ export default function CalendarPage() {
   const { data: tasks = [] } = useTasks();
   const calendarStore = useCalendarStore();
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [createTaskDate, setCreateTaskDate] = useState<Date | null>(null);
   const [calendarAnchor, setCalendarAnchor] = useState<null | HTMLElement>(null);
 
   const handleTaskClick = (task: Task) => {
@@ -39,6 +40,10 @@ export default function CalendarPage() {
 
   const handleDateSelect = (date: Date) => {
     calendarStore.setCurrentDate(date);
+  };
+
+  const handleDayClick = (date: Date) => {
+    setCreateTaskDate(date);
   };
 
   // View Toggle Component (shared)
@@ -199,6 +204,7 @@ export default function CalendarPage() {
             isToday={calendarStore.isToday}
             isCurrentMonth={calendarStore.isCurrentMonth}
             onTaskClick={handleTaskClick}
+            onDayClick={handleDayClick}
           />
         </Box>
       </Box>
@@ -208,6 +214,13 @@ export default function CalendarPage() {
         open={!!editingTask}
         onClose={() => setEditingTask(null)}
         initialTask={editingTask}
+      />
+
+      {/* Task Create Sheet (from calendar day click) */}
+      <TaskSheet
+        open={!!createTaskDate}
+        onClose={() => setCreateTaskDate(null)}
+        initialDate={createTaskDate}
       />
 
       {/* Desktop Mini Calendar Popover */}

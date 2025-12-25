@@ -9,15 +9,21 @@ export function useCreateTask() {
   const supabase = createClient();
 
   return useMutation({
-    mutationFn: async (input: CreateTaskInput): Promise<Task> => {
+    mutationFn: async (
+      input: CreateTaskInput & { _clientId?: string }
+    ): Promise<Task> => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
+      // Use client-provided ID or generate one
+      const taskId = input._clientId || crypto.randomUUID();
+
       const { data, error } = await supabase
         .from("tasks")
         .insert({
+          id: taskId,
           user_id: user.id,
           content: input.content,
           description: input.description || null,
@@ -40,9 +46,14 @@ export function useCreateTask() {
         { projectId: undefined, showCompleted: false },
       ]);
 
-      // Optimistically add the new task
+      // Generate stable ID for optimistic update
+      const clientId = crypto.randomUUID();
+      // Attach to input so mutationFn can use the same ID
+      (newTask as CreateTaskInput & { _clientId?: string })._clientId =
+        clientId;
+
       const optimisticTask: Task = {
-        id: `temp-${Date.now()}`,
+        id: clientId,
         user_id: "",
         project_id: newTask.project_id || null,
         parent_id: newTask.parent_id || null,

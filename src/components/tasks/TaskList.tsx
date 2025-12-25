@@ -7,7 +7,6 @@ import TaskItem from './TaskItem';
 import TaskSheet from '@/components/tasks/TaskSheet';
 import { useTasks } from '@/lib/hooks/useTasks';
 import { useReorderTasks } from '@/lib/hooks/useTaskMutations';
-import { useRealtimeSync } from '@/lib/hooks/useRealtimeSync';
 import { useCompletedTasks } from '@/components/CompletedTasksProvider';
 import type { Task } from '@/lib/types/task';
 
@@ -23,9 +22,6 @@ export default function TaskList() {
   const [orderedTasks, setOrderedTasks] = useState<Task[]>([]);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const { showCompleted, toggleShowCompleted } = useCompletedTasks();
-  
-  // Enable realtime sync
-  useRealtimeSync();
 
   // Filter out completed from active list, get completed separately
   const completedOnly = completedTasks?.filter((t) => t.is_completed) || [];
@@ -113,7 +109,7 @@ export default function TaskList() {
             onReorder={handleReorder}
             style={{ listStyle: 'none', padding: 0, margin: 0 }}
           >
-            <AnimatePresence mode="popLayout">
+            <AnimatePresence>
               {orderedTasks.map((task) => (
                 <TaskItem 
                   key={task.id} 

@@ -19,6 +19,7 @@ interface CalendarDayProps {
   isToday: boolean;
   isCurrentMonth: boolean;
   onTaskClick?: (task: Task) => void;
+  onDayClick?: (date: Date) => void;
 }
 
 export default function CalendarDay({
@@ -28,6 +29,7 @@ export default function CalendarDay({
   isToday,
   isCurrentMonth,
   onTaskClick,
+  onDayClick,
 }: CalendarDayProps) {
   const dayTasks = tasks.filter(
     (task) => task.due_date && isSameDay(new Date(task.due_date), date)
@@ -37,6 +39,13 @@ export default function CalendarDay({
 
   return (
     <Box
+      onClick={(e) => {
+        // Only trigger if clicking the background, not a task
+        if (e.target === e.currentTarget || (e.target as HTMLElement).closest('[data-day-bg]')) {
+          onDayClick?.(date);
+        }
+      }}
+      data-day-bg
       sx={{
         minHeight: isMonthView ? { xs: 60, md: 100 } : { xs: 120, md: 140 },
         flex: isMonthView ? 'none' : 1,
@@ -52,6 +61,12 @@ export default function CalendarDay({
         flexDirection: 'column',
         gap: 0.75,
         overflow: 'hidden',
+        cursor: 'pointer',
+        '&:hover': {
+          bgcolor: isMonthView 
+            ? (isToday ? 'rgba(208, 188, 255, 0.12)' : 'action.hover')
+            : 'action.hover',
+        },
       }}
     >
       {/* Date Header (Month View Only) */}
