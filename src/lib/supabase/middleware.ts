@@ -1,7 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const ALLOWED_EMAILS = [process.env.ALLOWED_USER_EMAILS || ""];
+const ALLOWED_EMAILS = (process.env.ALLOWED_USER_EMAILS || "")
+  .split(",")
+  .map((email) => email.trim().toLowerCase())
+  .filter((email) => email.length > 0);
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -40,7 +43,11 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (user && !isPublicRoute && !ALLOWED_EMAILS.includes(user.email ?? "")) {
+  if (
+    user &&
+    !isPublicRoute &&
+    !ALLOWED_EMAILS.includes((user.email ?? "").toLowerCase())
+  ) {
     await supabase.auth.signOut();
     return NextResponse.redirect(new URL("/access-denied", request.url));
   }
