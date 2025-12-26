@@ -20,6 +20,11 @@ export default function BottomNav() {
   const router = useRouter();
   const [value, setValue] = useState(0);
 
+  // Prefetch all routes on mount for instant navigation
+  useEffect(() => {
+    navItems.forEach((item) => router.prefetch(item.path));
+  }, [router]);
+
   useEffect(() => {
     const index = navItems.findIndex((item) => item.path === pathname);
     if (index !== -1) setValue(index);

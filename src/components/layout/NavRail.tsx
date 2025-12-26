@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Box, Typography, Divider } from '@mui/material';
 
@@ -28,6 +28,12 @@ export default function NavRail() {
   const pathname = usePathname();
   const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(false);
+
+  // Prefetch all routes on mount for instant navigation
+  useEffect(() => {
+    const allRoutes = [...mainNavItems, ...secondaryNavItems].map((item) => item.path);
+    allRoutes.forEach((path) => router.prefetch(path));
+  }, [router]);
 
   return (
     <Box

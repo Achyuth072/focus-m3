@@ -78,6 +78,11 @@ const theme = createTheme({
           textTransform: "none",
           fontWeight: 600,
           padding: "10px 24px",
+          // Desktop: Tighter padding for density
+          [baseTheme.breakpoints.up("md")]: {
+            padding: "8px 20px",
+            fontSize: "0.875rem",
+          },
         },
       },
     },
@@ -128,6 +133,40 @@ const theme = createTheme({
     },
     MuiPaper: {
       styleOverrides: { root: { backgroundImage: "none" } },
+    },
+    // Desktop density: Tighter list items
+    MuiListItem: {
+      styleOverrides: {
+        root: {
+          [baseTheme.breakpoints.up("md")]: {
+            paddingTop: 6,
+            paddingBottom: 6,
+          },
+        },
+      },
+    },
+    MuiListItemButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 28,
+          // Desktop: Tighter padding
+          [baseTheme.breakpoints.up("md")]: {
+            borderRadius: 12,
+            paddingTop: 8,
+            paddingBottom: 8,
+          },
+        },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          // Desktop: Denser table cells
+          [baseTheme.breakpoints.up("md")]: {
+            padding: "8px 16px",
+          },
+        },
+      },
     },
   },
 });

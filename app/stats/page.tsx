@@ -1,14 +1,33 @@
 'use client';
 
-import { Box, Typography, useTheme } from '@mui/material';
+import dynamic from 'next/dynamic';
+import { Box, Typography, Skeleton, Card } from '@mui/material';
 import { motion } from 'framer-motion';
 import { fadeIn } from '@/theme/motion';
 import StatsOverview from '@/components/stats/StatsOverview';
-import FocusChart from '@/components/stats/FocusChart';
-import TaskVelocityChart from '@/components/stats/TaskVelocityChart';
+
+// Lazy load heavy chart components
+const FocusChart = dynamic(() => import('@/components/stats/FocusChart'), {
+  loading: () => (
+    <Card sx={{ p: 3, height: 300, borderRadius: { xs: '28px', md: '16px' } }}>
+      <Skeleton variant="text" width="40%" height={32} />
+      <Skeleton variant="rectangular" height={220} sx={{ mt: 2, borderRadius: 2 }} />
+    </Card>
+  ),
+  ssr: false,
+});
+
+const TaskVelocityChart = dynamic(() => import('@/components/stats/TaskVelocityChart'), {
+  loading: () => (
+    <Card sx={{ p: 3, height: 300, borderRadius: { xs: '28px', md: '16px' } }}>
+      <Skeleton variant="text" width="40%" height={32} />
+      <Skeleton variant="rectangular" height={220} sx={{ mt: 2, borderRadius: 2 }} />
+    </Card>
+  ),
+  ssr: false,
+});
 
 export default function StatsPage() {
-  const theme = useTheme();
 
   return (
     <motion.div {...fadeIn} style={{ height: '100%' }}>
