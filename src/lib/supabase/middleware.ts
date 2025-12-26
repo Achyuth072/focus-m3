@@ -35,17 +35,17 @@ export async function updateSession(request: NextRequest) {
     error,
   } = await supabase.auth.getUser();
 
-  // Handle "Refresh Token Not Found" by forcing sign-out/redirect
-  if (error) {
-    // console.log("Middleware Auth Error:", error.message);
-    await supabase.auth.signOut();
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
-
   const isPublicRoute =
     request.nextUrl.pathname === "/login" ||
     request.nextUrl.pathname === "/access-denied" ||
     request.nextUrl.pathname.startsWith("/auth/");
+
+  // Handle auth errors (e.g., "Refresh Token Not Found")
+  // Only redirect to login if NOT already on a public route
+  if (error && !isPublicRoute) {
+    await supabase.auth.signOut();
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
 
   if (!user && !isPublicRoute) {
     return NextResponse.redirect(new URL("/login", request.url));
