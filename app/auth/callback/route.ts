@@ -56,15 +56,27 @@ export async function GET(request: Request) {
 
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
+    console.log("[Auth Callback] Exchange result:", {
+      success: !error,
+      error: error?.message,
+      cookiesCollected: cookiesToSet.length,
+      cookieNames: cookiesToSet.map((c) => c.name),
+    });
+
     if (error) {
+      console.error("[Auth Callback] Exchange failed:", error);
       return NextResponse.redirect(
         `${origin}/login?error=${encodeURIComponent(error.message)}`
       );
     }
 
     // Create redirect response and manually attach all session cookies
-    const response = NextResponse.redirect(`${origin}${next}`);
+    const redirectUrl = `${origin}${next}`;
+    console.log("[Auth Callback] Redirecting to:", redirectUrl);
+
+    const response = NextResponse.redirect(redirectUrl);
     cookiesToSet.forEach(({ name, value, options }) => {
+      console.log("[Auth Callback] Setting cookie:", name);
       response.cookies.set(name, value, options);
     });
 
