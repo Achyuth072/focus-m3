@@ -38,8 +38,8 @@ export async function updateSession(request: NextRequest) {
   // Handle "Refresh Token Not Found" by forcing sign-out/redirect
   if (error) {
     // console.log("Middleware Auth Error:", error.message);
-    // If token is invalid, treated as signed out.
-    // Proceed to redirect logic below.
+    await supabase.auth.signOut();
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   const isPublicRoute =
