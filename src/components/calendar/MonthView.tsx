@@ -8,9 +8,9 @@ import {
   eachDayOfInterval,
   format,
   isSameMonth,
-  isSameDay,
   isToday
 } from 'date-fns';
+import { useMemo, memo } from 'react';
 import { cn } from '@/lib/utils';
 import type { CalendarEvent } from '@/lib/calendar/types';
 
@@ -33,15 +33,18 @@ export function MonthView({ currentDate, events, onDateClick, className }: Month
   // Calculate number of weeks (rows) needed
   const numWeeks = Math.ceil(days.length / 7);
 
-  // Group events by day
-  const eventsByDay = new Map<string, CalendarEvent[]>();
-  events.forEach((event) => {
-    const dayKey = format(event.start, 'yyyy-MM-dd');
-    if (!eventsByDay.has(dayKey)) {
-      eventsByDay.set(dayKey, []);
-    }
-    eventsByDay.get(dayKey)!.push(event);
-  });
+  // Memoize event grouping to avoid recalculating on every render
+  const eventsByDay = useMemo(() => {
+    const map = new Map<string, CalendarEvent[]>();
+    events.forEach((event) => {
+      const dayKey = format(event.start, 'yyyy-MM-dd');
+      if (!map.has(dayKey)) {
+        map.set(dayKey, []);
+      }
+      map.get(dayKey)!.push(event);
+    });
+    return map;
+  }, [events]);
 
   return (
     <div className={cn('h-full flex flex-col bg-background', className)}>
@@ -122,3 +125,5 @@ export function MonthView({ currentDate, events, onDateClick, className }: Month
     </div>
   );
 }
+
+export default memo(MonthView);

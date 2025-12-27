@@ -1,6 +1,7 @@
 'use client';
 
-import { format, startOfWeek, isSameDay } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
+import { useMemo, memo } from 'react';
 import { cn } from '@/lib/utils';
 import { getDayRange, layoutDayRange } from '@/lib/calendar/engine';
 import type { CalendarEvent } from '@/lib/calendar/types';
@@ -17,7 +18,9 @@ interface TimeGridProps {
 
 export function TimeGrid({ startDate, daysToShow, events, className }: TimeGridProps) {
   const dates = getDayRange(startDate, daysToShow);
-  const columns = layoutDayRange(events, dates);
+  
+  // Memoize expensive layout calculations
+  const columns = useMemo(() => layoutDayRange(events, dates), [events, dates]);
   const hours = Array.from({ length: 24 }).map((_, i) => i);
 
   return (
@@ -109,3 +112,5 @@ export function TimeGrid({ startDate, daysToShow, events, className }: TimeGridP
     </div>
   );
 }
+
+export default memo(TimeGrid);
