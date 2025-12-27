@@ -37,7 +37,7 @@ export default function AppShell({ children }: AppShellProps) {
         
         {/* Main Content with proper inset */}
         <SidebarInset>
-          <div className="flex-1 pt-16 pb-20 md:pt-0 md:pb-0">
+          <div className="flex-1 pt-16 pb-20 md:pt-0 md:pb-0 overflow-y-auto scrollbar-hide">
             {children}
           </div>
         </SidebarInset>
