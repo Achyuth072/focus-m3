@@ -95,7 +95,7 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[560px] gap-0">
+      <DialogContent className="w-[calc(100%-32px)] sm:max-w-[560px] gap-0 rounded-lg">
         <DialogHeader className="pb-4">
           <DialogTitle>{initialTask ? 'Edit Task' : 'New Task'}</DialogTitle>
         </DialogHeader>
@@ -107,7 +107,7 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
           value={content}
           onChange={(e) => setContent(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="min-h-[100px] text-base font-medium resize-none border-none shadow-none focus-visible:ring-0 p-0"
+          className="min-h-[150px] md:min-h-[100px] text-base font-medium resize-none border-none shadow-none focus-visible:ring-0 p-0"
         />
 
         {/* Actions Row */}
