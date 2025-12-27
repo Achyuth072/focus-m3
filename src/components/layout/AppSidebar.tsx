@@ -44,7 +44,7 @@ export function AppSidebar() {
   }, [router]);
 
   return (
-    <Sidebar variant="sidebar" collapsible="none" className="hidden md:flex h-screen">
+    <Sidebar variant="sidebar" collapsible="none" className="hidden md:flex h-screen border-r">
       <SidebarHeader className="border-b border-border">
         <div className="flex items-center gap-2 px-2 py-4">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground font-semibold">

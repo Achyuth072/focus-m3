@@ -137,6 +137,10 @@ body {
   overscroll-behavior-y: contain;
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 * {
   -webkit-tap-highlight-color: transparent;
 }

@@ -60,7 +60,7 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
   };
 
   return (
-    <div className={cn('flex items-center justify-between gap-4 p-4 border-b bg-background', className)}>
+    <div className={cn('flex items-center justify-between gap-4 p-4 border-b border-l bg-sidebar', className)}>
       {/* Left: Date Navigation */}
       <div className="flex items-center gap-2">
         <Button variant="outline" size="sm" onClick={goToToday}>
