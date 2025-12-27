@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
+import { TimePicker } from '@/components/ui/time-picker';
 import { useCreateTask, useUpdateTask, useDeleteTask } from '@/lib/hooks/useTaskMutations';
 import { useInboxProject } from '@/lib/hooks/useTasks';
 import { Calendar as CalendarIcon, Flag, Trash2, X } from 'lucide-react';
@@ -113,7 +114,7 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
         {/* Actions Row */}
         <div className="flex items-center justify-between gap-2 pt-4 border-t mt-4">
           <div className="flex items-center gap-2">
-            {/* Date Picker */}
+            {/* Date & Time Picker */}
             <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
               <PopoverTrigger asChild>
                 <Button
@@ -125,27 +126,82 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
                   )}
                 >
                   <CalendarIcon className="h-4 w-4" />
-                  {dueDate ? format(dueDate, 'MMM d') : 'Due Date'}
+                  {dueDate ? format(dueDate, 'MMM d, h:mm a') : 'Due Date'}
                   {dueDate && (
-                    <X
-                      className="h-3 w-3 ml-1 hover:text-destructive"
+                    <span
+                      role="button"
+                      className="ml-1 p-0.5 rounded hover:bg-destructive/20"
                       onClick={(e) => {
+                        e.preventDefault();
                         e.stopPropagation();
                         setDueDate(undefined);
                       }}
-                    />
+                    >
+                      <X className="h-3 w-3 hover:text-destructive" />
+                    </span>
                   )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
+              <PopoverContent 
+                className="w-auto p-0" 
+                align="start"
+              >
                 <Calendar
                   mode="single"
                   selected={dueDate}
                   onSelect={(date) => {
-                    setDueDate(date);
-                    setDatePickerOpen(false);
+                    if (!date) {
+                      setDueDate(undefined);
+                      return;
+                    }
+                    const newDate = new Date(date);
+                    if (dueDate) {
+                      newDate.setHours(dueDate.getHours());
+                      newDate.setMinutes(dueDate.getMinutes());
+                    } else {
+                      newDate.setHours(12, 0, 0, 0);
+                    }
+                    setDueDate(newDate);
                   }}
+                  captionLayout="dropdown"
+                  fromYear={new Date().getFullYear() - 1}
+                  toYear={new Date().getFullYear() + 5}
                   initialFocus
+                  className="p-3"
+                  classNames={{
+                    months: 'flex flex-col',
+                    month: 'space-y-4',
+                    caption: 'flex justify-center pt-1 relative items-center',
+                    caption_label: 'hidden',
+                    caption_dropdowns: 'flex justify-center gap-1.5',
+                    dropdown: 'h-7 rounded-md bg-transparent px-2 py-1 text-sm font-medium text-foreground hover:bg-accent/50 focus:outline-none focus:bg-accent cursor-pointer border-0',
+                    dropdown_month: 'w-[100px]',
+                    dropdown_year: 'w-[70px]',
+                    nav: 'space-x-1 flex items-center',
+                    nav_button: 'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100',
+                    nav_button_previous: 'absolute left-1',
+                    nav_button_next: 'absolute right-1',
+                    table: 'w-full border-collapse space-y-1',
+                    head_row: 'flex',
+                    head_cell: 'text-muted-foreground rounded-md w-9 font-normal text-[0.8rem] text-center',
+                    row: 'flex w-full mt-2',
+                    cell: 'relative p-0 text-center text-sm focus-within:relative focus-within:z-20',
+                    day: cn(
+                      'h-9 w-9 p-0 font-normal aria-selected:opacity-100 rounded-md',
+                      'hover:bg-accent hover:text-accent-foreground'
+                    ),
+                    day_selected: 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground',
+                    day_today: 'bg-accent text-accent-foreground',
+                    day_outside: 'text-muted-foreground opacity-50',
+                    day_disabled: 'text-muted-foreground opacity-50',
+                    day_range_middle: 'aria-selected:bg-accent aria-selected:text-accent-foreground',
+                    day_hidden: 'invisible',
+                  }}
+                />
+                <TimePicker
+                  value={dueDate || new Date(new Date().setHours(12, 0, 0, 0))}
+                  onChange={setDueDate}
+                  showSelection={!!dueDate}
                 />
               </PopoverContent>
             </Popover>
