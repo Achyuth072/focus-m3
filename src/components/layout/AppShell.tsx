@@ -7,6 +7,7 @@ import { useRealtimeSync } from '@/lib/hooks/useRealtimeSync';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/layout/AppSidebar';
 import { MobileNav } from '@/components/layout/MobileNav';
+import { MobileHeader } from '@/components/layout/MobileHeader';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -28,12 +29,15 @@ export default function AppShell({ children }: AppShellProps) {
   return (
     <CompletedTasksProvider>
       <SidebarProvider defaultOpen={true}>
+        {/* Mobile Top Bar - hidden only on Focus page */}
+        {!isImmersive && <MobileHeader />}
+
         {/* Desktop Sidebar - hidden only on Focus page */}
         {!isImmersive && <AppSidebar />}
         
         {/* Main Content with proper inset */}
         <SidebarInset>
-          <div className="flex-1 pb-20 md:pb-0">
+          <div className="flex-1 pt-16 pb-20 md:pt-0 md:pb-0">
             {children}
           </div>
         </SidebarInset>

@@ -5,7 +5,7 @@ import { useTheme } from 'next-themes';
 import { useAuth } from '@/components/AuthProvider';
 import { Button } from '@/components/ui/button';
 import { LoaderOverlay } from '@/components/ui/loader-overlay';
-import { Moon, Sun, Monitor, LogOut, User, Loader2 } from 'lucide-react';
+import { Moon, Sun, Monitor, LogOut, User, Loader2, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
@@ -39,7 +39,18 @@ export default function SettingsPage() {
       <div className="max-w-2xl mx-auto p-6 space-y-8">
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
+          <div className="flex items-center gap-3 mb-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => router.back()}
+              className="h-10 w-10 md:hidden"
+            >
+              <ArrowLeft className="h-5 w-5" />
+              <span className="sr-only">Back</span>
+            </Button>
+            <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
+          </div>
           <p className="text-sm text-muted-foreground mt-1">
             Manage your account and preferences
           </p>

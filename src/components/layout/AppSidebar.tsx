@@ -13,6 +13,7 @@ import {
   SidebarHeader,
   SidebarFooter,
   SidebarSeparator,
+  useSidebar,
 } from '@/components/ui/sidebar';
 import {
   CheckSquare,
@@ -36,6 +37,7 @@ const secondaryNavItems = [
 export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { isMobile, setOpenMobile } = useSidebar();
 
   // Prefetch all routes on mount for instant navigation
   useEffect(() => {
@@ -44,7 +46,7 @@ export function AppSidebar() {
   }, [router]);
 
   return (
-    <Sidebar variant="sidebar" collapsible="none" className="hidden md:flex h-screen border-r">
+    <Sidebar variant="sidebar" collapsible="none" className="h-screen border-r">
       <SidebarHeader className="border-b border-border">
         <div className="flex items-center gap-2 px-2 py-4">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground font-semibold">
@@ -57,50 +59,62 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
+        {!isMobile && (
+          <>
+            <SidebarGroup>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {mainNavItems.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = pathname === item.path;
+                    return (
+                      <SidebarMenuItem key={item.label}>
+                        <SidebarMenuButton
+                          onClick={() => {
+                            router.push(item.path);
+                            if (isMobile) setOpenMobile(false);
+                          }}
+                          isActive={isActive}
+                          tooltip={item.label}
+                        >
+                          <Icon className="h-5 w-5" />
+                          <span>{item.label}</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+
+            <SidebarSeparator />
+          </>
+        )}
+
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mainNavItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = pathname === item.path;
-                return (
-                  <SidebarMenuItem key={item.label}>
-                    <SidebarMenuButton
-                      onClick={() => router.push(item.path)}
-                      isActive={isActive}
-                      tooltip={item.label}
-                    >
-                      <Icon className="h-5 w-5" />
-                      <span>{item.label}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarSeparator />
-
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {secondaryNavItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = pathname === item.path;
-                return (
-                  <SidebarMenuItem key={item.label}>
-                    <SidebarMenuButton
-                      onClick={() => router.push(item.path)}
-                      isActive={isActive}
-                      tooltip={item.label}
-                    >
-                      <Icon className="h-5 w-5" />
-                      <span>{item.label}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
+              {secondaryNavItems
+                .filter((item) => isMobile ? item.label === 'Settings' : true)
+                .map((item) => {
+                  const Icon = item.icon;
+                  const isActive = pathname === item.path;
+                  return (
+                    <SidebarMenuItem key={item.label}>
+                      <SidebarMenuButton
+                        onClick={() => {
+                          router.push(item.path);
+                          if (isMobile) setOpenMobile(false);
+                        }}
+                        isActive={isActive}
+                        tooltip={item.label}
+                      >
+                        <Icon className="h-5 w-5" />
+                        <span>{item.label}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
