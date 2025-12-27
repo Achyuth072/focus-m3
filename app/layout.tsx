@@ -1,9 +1,9 @@
 import type { Metadata, Viewport } from 'next';
-import '@fontsource-variable/roboto-flex';
-import ThemeRegistry from '@/components/ThemeRegistry';
+import './globals.css';
 import { AuthProvider } from '@/components/AuthProvider';
 import QueryProvider from '@/components/QueryProvider';
 import { TimerProvider } from '@/components/TimerProvider';
+import { ThemeProvider } from '@/components/ThemeProvider';
 import AppShell from '@/components/layout/AppShell';
 
 export const metadata: Metadata = {
@@ -19,10 +19,9 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#141218' },
-    { media: '(prefers-color-scheme: dark)', color: '#141218' },
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#09090b' },
   ],
-  colorScheme: 'dark',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -36,9 +35,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
-        <ThemeRegistry>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
           <QueryProvider>
             <AuthProvider>
               <TimerProvider>
@@ -46,7 +50,7 @@ export default function RootLayout({
               </TimerProvider>
             </AuthProvider>
           </QueryProvider>
-        </ThemeRegistry>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -1,45 +1,39 @@
 'use client';
 
-import { Box, Typography, Button } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { slideUp } from '@/theme/motion';
+import { Button } from '@/components/ui/button';
+import { ShieldAlert } from 'lucide-react';
+
+const slideUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.4 },
+};
 
 export default function AccessDeniedPage() {
   const router = useRouter();
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        p: 3,
-        gap: 3,
-      }}
-    >
-      <motion.div {...slideUp}>
-        <Typography variant="h4" sx={{ fontWeight: 500, textAlign: 'center' }}>
-          Private Access Only
-        </Typography>
-        <Typography 
-          color="text.secondary" 
-          sx={{ mt: 2, textAlign: 'center', maxWidth: 400 }}
-        >
-          This app is for personal use only. If you believe you should have access, 
+    <div className="min-h-screen flex flex-col items-center justify-center p-6">
+      <motion.div {...slideUp} className="text-center space-y-6">
+        <div className="flex justify-center">
+          <div className="h-20 w-20 rounded-full bg-destructive/10 flex items-center justify-center">
+            <ShieldAlert className="h-10 w-10 text-destructive" />
+          </div>
+        </div>
+        
+        <h1 className="text-3xl font-semibold">Private Access Only</h1>
+        
+        <p className="text-muted-foreground max-w-md">
+          This app is for personal use only. If you believe you should have access,
           contact the owner.
-        </Typography>
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <Button 
-            variant="outlined" 
-            onClick={() => router.push('/login')}
-          >
-            Back to Login
-          </Button>
-        </Box>
+        </p>
+        
+        <Button variant="outline" onClick={() => router.push('/login')}>
+          Back to Login
+        </Button>
       </motion.div>
-    </Box>
+    </div>
   );
 }

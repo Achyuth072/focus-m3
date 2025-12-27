@@ -1,16 +1,20 @@
 'use client';
 
 import { useState } from 'react';
-import { Box, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/components/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { fadeIn } from '@/theme/motion';
 import TaskList from '@/components/tasks/TaskList';
 import AddTaskFab from '@/components/tasks/AddTaskFab';
 import TaskSheet from '@/components/tasks/TaskSheet';
 import { format } from 'date-fns';
+
+const fadeIn = {
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.3 },
+};
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -25,16 +29,9 @@ export default function Home() {
 
   if (loading) {
     return (
-      <Box
-        sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Typography color="text.secondary">Loading...</Typography>
-      </Box>
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
     );
   }
 
@@ -49,26 +46,14 @@ export default function Home() {
     <>
       <motion.div {...fadeIn}>
         {/* Header */}
-        <Box 
-          sx={{ 
-            px: 3, 
-            pt: 2, 
-            pb: 2,
-          }}
-        >
-          <Typography variant="body2" color="text.secondary">
+        <div className="px-6 pt-4 pb-4">
+          <p className="text-sm text-muted-foreground">
             {format(today, 'EEEE, MMMM d')}
-          </Typography>
-          <Typography
-            variant="h4"
-            sx={{
-              fontWeight: 400,
-              mt: 0.5,
-            }}
-          >
+          </p>
+          <h1 className="text-3xl font-normal mt-1">
             {greeting}
-          </Typography>
-        </Box>
+          </h1>
+        </div>
 
         {/* Task List */}
         <TaskList />

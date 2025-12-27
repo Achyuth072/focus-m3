@@ -1,40 +1,20 @@
 'use client';
 
-import { Fab } from '@mui/material';
-import { motion } from 'framer-motion';
-
-import AddRoundedIcon from '@mui/icons-material/AddRounded';
+import { Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface AddTaskFabProps {
   onClick: () => void;
-  layoutId?: string;
 }
 
-export default function AddTaskFab({ onClick, layoutId = 'add-task-fab' }: AddTaskFabProps) {
+export default function AddTaskFab({ onClick }: AddTaskFabProps) {
   return (
-    <motion.div
-      layoutId={layoutId}
-      style={{
-        position: 'fixed',
-        bottom: 100,
-        right: 24,
-        zIndex: 1000,
-      }}
+    <Button
+      onClick={onClick}
+      size="lg"
+      className="fixed bottom-24 right-6 h-14 w-14 rounded-full shadow-lg md:bottom-8 md:right-8"
     >
-      <Fab
-        component={motion.button}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        color="primary"
-        aria-label="Add task"
-        onClick={onClick}
-        sx={{
-          width: 64,
-          height: 64,
-        }}
-      >
-        <AddRoundedIcon sx={{ fontSize: '32px' }} />
-      </Fab>
-    </motion.div>
+      <Plus className="h-6 w-6" />
+    </Button>
   );
 }

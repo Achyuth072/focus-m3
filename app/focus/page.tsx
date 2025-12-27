@@ -1,22 +1,19 @@
 'use client';
 
-import { Box, Typography, IconButton, LinearProgress, Chip, Button } from '@mui/material';
 import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
 import { useTimer } from '@/components/TimerProvider';
-import { fadeIn } from '@/theme/motion';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Play, Pause, Square, SkipForward, X } from 'lucide-react';
+import { FocusSettingsDialog } from '@/components/FocusSettingsDialog';
 import type { TimerMode } from '@/lib/types/timer';
+import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 
-import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
-import PauseRoundedIcon from '@mui/icons-material/PauseRounded';
-import StopRoundedIcon from '@mui/icons-material/StopRounded';
-import SkipNextRoundedIcon from '@mui/icons-material/SkipNextRounded';
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-
-const MODE_CONFIG: Record<TimerMode, { label: string; color: string; bgColor: string }> = {
-  focus: { label: 'Focus', color: '#D0BCFF', bgColor: 'rgba(208, 188, 255, 0.12)' },
-  shortBreak: { label: 'Short Break', color: '#81C784', bgColor: 'rgba(129, 199, 132, 0.12)' },
-  longBreak: { label: 'Long Break', color: '#64B5F6', bgColor: 'rgba(100, 181, 246, 0.12)' },
+const MODE_LABELS: Record<TimerMode, string> = {
+  focus: 'Focus',
+  shortBreak: 'Short Break',
+  longBreak: 'Long Break',
 };
 
 function formatTime(seconds: number): string {
@@ -28,14 +25,13 @@ function formatTime(seconds: number): string {
 export default function FocusPage() {
   const router = useRouter();
   const { state, settings, start, pause, stop, skip } = useTimer();
-  const modeConfig = MODE_CONFIG[state.mode];
 
   const totalSeconds =
     state.mode === 'focus'
       ? settings.focusDuration * 60
       : state.mode === 'shortBreak'
-      ? settings.shortBreakDuration * 60
-      : settings.longBreakDuration * 60;
+        ? settings.shortBreakDuration * 60
+        : settings.longBreakDuration * 60;
 
   const progress = ((totalSeconds - state.remainingSeconds) / totalSeconds) * 100;
 
@@ -48,125 +44,84 @@ export default function FocusPage() {
   };
 
   return (
-    <motion.div {...fadeIn}>
-      <Box
-         sx={{
-           minHeight: '100vh',
-           display: 'flex',
-           flexDirection: 'column',
-           alignItems: 'center',
-           justifyContent: 'center',
-           p: 3,
-           bgcolor: modeConfig.bgColor,
-           position: 'relative',
-         }}
-       >
-        {/* Close Button */}
-         <Box sx={{ position: 'absolute', top: 16, left: 16 }}>
-           <IconButton onClick={() => router.back()}>
-             <CloseRoundedIcon />
-           </IconButton>
-         </Box>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-screen flex flex-col items-center justify-center p-6 bg-background relative select-none cursor-default"
+    >
+      {/* Close Button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => router.back()}
+        className="absolute top-4 left-4"
+      >
+        <X className="h-5 w-5" />
+      </Button>
 
-        {/* Mode Chip */}
-        <Chip
-          label={modeConfig.label}
-          sx={{
-            mb: 4,
-            px: 2,
-            height: 36,
-            fontSize: '0.875rem',
-            fontWeight: 600,
-            bgcolor: modeConfig.color,
-            color: '#000',
-          }}
-        />
+      {/* Mode Badge */}
+      <div className="px-4 py-1.5 rounded-full mb-8 text-sm font-medium bg-secondary text-secondary-foreground">
+        {MODE_LABELS[state.mode]}
+      </div>
 
-        {/* Timer Display */}
-        <Typography
-          variant="h1"
-          sx={{
-            fontWeight: 200,
-            fontFamily: 'monospace',
-            fontSize: { xs: '5rem', md: '8rem' },
-            color: modeConfig.color,
-            letterSpacing: '-0.02em',
-          }}
-        >
-          {formatTime(state.remainingSeconds)}
-        </Typography>
+      {/* Timer Display */}
+      <div className="text-7xl sm:text-8xl md:text-9xl font-extralight font-mono tracking-tight text-foreground">
+        {formatTime(state.remainingSeconds)}
+      </div>
 
-        {/* Progress Bar */}
-        <Box sx={{ width: '100%', maxWidth: 300, mt: 4, mb: 2 }}>
-          <LinearProgress
-            variant="determinate"
-            value={progress}
-            sx={{
-              height: 8,
-              borderRadius: 4,
-              bgcolor: 'rgba(255,255,255,0.1)',
-              '& .MuiLinearProgress-bar': {
-                bgcolor: modeConfig.color,
-                borderRadius: 4,
-              },
-            }}
-          />
-        </Box>
+      {/* Progress Bar */}
+      <div className="w-full max-w-xs mt-8 mb-4">
+        <Progress value={progress} className="h-1.5" />
+      </div>
 
-        {/* Session Counter */}
-        <Typography variant="body2" sx={{ color: 'text.secondary', mb: 4 }}>
-          Session {state.completedSessions + 1} of {settings.sessionsBeforeLongBreak}
-        </Typography>
+      {/* Session Counter */}
+      <p className="text-sm text-muted-foreground mb-8">
+        Session {state.completedSessions + 1} of {settings.sessionsBeforeLongBreak}
+      </p>
 
-        {/* Controls */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <IconButton
-            onClick={stop}
-            sx={{
-              bgcolor: 'background.paper',
-              width: 56,
-              height: 56,
-              '&:hover': { bgcolor: 'action.hover' },
-            }}
-          >
-            <StopRoundedIcon />
-          </IconButton>
-
-          <IconButton
-            onClick={handlePlayPause}
-            sx={{
-              bgcolor: modeConfig.color,
-              color: '#000',
-              width: 80,
-              height: 80,
-              '&:hover': { bgcolor: modeConfig.color, opacity: 0.9 },
-            }}
-          >
-            {state.isRunning ? <PauseRoundedIcon sx={{ fontSize: '3rem' }} /> : <PlayArrowRoundedIcon sx={{ fontSize: '3rem' }} />}
-          </IconButton>
-
-          <IconButton
-            onClick={skip}
-            sx={{
-              bgcolor: 'background.paper',
-              width: 56,
-              height: 56,
-              '&:hover': { bgcolor: 'action.hover' },
-            }}
-          >
-            <SkipNextRoundedIcon />
-          </IconButton>
-        </Box>
-
-        {/* Go to Settings */}
+      {/* Controls */}
+      <div className="flex items-center gap-4">
+        {/* Stop */}
         <Button
-          variant="text"
-          onClick={() => router.push('/settings')}
-          sx={{ mt: 4, color: 'text.secondary', textTransform: 'none' }}
+          variant="outline"
+          size="icon"
+          className="h-14 w-14 rounded-full"
+          onClick={stop}
         >
-          Adjust Timer Settings
+          <Square className="h-5 w-5" />
         </Button>
-      </Box>
+
+        {/* Play/Pause - Main action button */}
+        <Button
+          size="icon"
+          className={cn(
+            "h-20 w-20 rounded-full transition-transform",
+            "hover:scale-105 active:scale-95"
+          )}
+          onClick={handlePlayPause}
+        >
+          {state.isRunning ? (
+            <Pause className="h-8 w-8" />
+          ) : (
+            <Play className="h-8 w-8 ml-1" />
+          )}
+        </Button>
+
+        {/* Skip */}
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-14 w-14 rounded-full"
+          onClick={skip}
+        >
+          <SkipForward className="h-5 w-5" />
+        </Button>
+      </div>
+
+      {/* Settings Dialog */}
+      <div className="mt-16">
+        <FocusSettingsDialog />
+      </div>
     </motion.div>
   );
 }

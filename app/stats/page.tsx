@@ -1,73 +1,104 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-import { Box, Typography, Skeleton, Card } from '@mui/material';
-import { motion } from 'framer-motion';
-import { fadeIn } from '@/theme/motion';
-import StatsOverview from '@/components/stats/StatsOverview';
-
-// Lazy load heavy chart components
-const FocusChart = dynamic(() => import('@/components/stats/FocusChart'), {
-  loading: () => (
-    <Card sx={{ p: 3, height: 300, borderRadius: { xs: '28px', md: '16px' } }}>
-      <Skeleton variant="text" width="40%" height={32} />
-      <Skeleton variant="rectangular" height={220} sx={{ mt: 2, borderRadius: 2 }} />
-    </Card>
-  ),
-  ssr: false,
-});
-
-const TaskVelocityChart = dynamic(() => import('@/components/stats/TaskVelocityChart'), {
-  loading: () => (
-    <Card sx={{ p: 3, height: 300, borderRadius: { xs: '28px', md: '16px' } }}>
-      <Skeleton variant="text" width="40%" height={32} />
-      <Skeleton variant="rectangular" height={220} sx={{ mt: 2, borderRadius: 2 }} />
-    </Card>
-  ),
-  ssr: false,
-});
+import { Target, CheckCircle2, Flame, Clock } from 'lucide-react';
+import { MetricCard } from '@/components/stats/MetricCard';
+import { FocusTrendChart } from '@/components/stats/FocusTrendChart';
 
 export default function StatsPage() {
+  // Sample data - replace with real data from your store/API
+  const focusTrendData = [
+    { date: 'Mon', minutes: 45 },
+    { date: 'Tue', minutes: 60 },
+    { date: 'Wed', minutes: 30 },
+    { date: 'Thu', minutes: 75 },
+    { date: 'Fri', minutes: 90 },
+    { date: 'Sat', minutes: 50 },
+    { date: 'Sun', minutes: 40 },
+  ];
 
   return (
-    <motion.div {...fadeIn} style={{ height: '100%' }}>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 3,
-          p: { xs: 2, md: 3 },
-          pb: { xs: 10, md: 3 },
-          overflow: 'auto',
-          height: '100%',
-        }}
-      >
+    <div className="h-full overflow-auto p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <Typography
-          variant="h4"
-          sx={{
-            fontWeight: 700,
-            fontSize: { xs: '1.5rem', md: '2rem' },
-          }}
-        >
-          Your Insights
-        </Typography>
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Statistics</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Track your productivity and progress
+          </p>
+        </div>
 
-        {/* Overview Cards */}
-        <StatsOverview />
+        {/* Bento Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Top Row - Key Metrics */}
+          <MetricCard
+            title="Total Focus"
+            value="12.5h"
+            icon={Clock}
+            trend={{ value: 15, isPositive: true }}
+          />
+          <MetricCard
+            title="Tasks Completed"
+            value="24"
+            icon={CheckCircle2}
+            trend={{ value: 8, isPositive: true }}
+          />
+          <MetricCard
+            title="Current Streak"
+            value="7 days"
+            icon={Flame}
+          />
+          <MetricCard
+            title="Completion Rate"
+            value="85%"
+            icon={Target}
+            trend={{ value: 3, isPositive: false }}
+          />
+        </div>
 
-        {/* Charts */}
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
-            gap: 2,
-          }}
-        >
-          <FocusChart />
-          <TaskVelocityChart />
-        </Box>
-      </Box>
-    </motion.div>
+        {/* Middle Row - Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <FocusTrendChart 
+            data={focusTrendData} 
+            className="lg:col-span-2"
+          />
+          
+          {/* Recent Achievements */}
+          <div className="p-6 border border-border/50 rounded-lg bg-card">
+            <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-4">
+              Recent Achievements
+            </h3>
+            <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="p-1.5 rounded-full bg-primary/10 mt-0.5">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">7-Day Streak</p>
+                  <p className="text-xs text-muted-foreground">Completed tasks every day this week</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="p-1.5 rounded-full bg-primary/10 mt-0.5">
+                  <Target className="h-3.5 w-3.5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Focus Master</p>
+                  <p className="text-xs text-muted-foreground">Completed 10 focus sessions</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="p-1.5 rounded-full bg-primary/10 mt-0.5">
+                  <Flame className="h-3.5 w-3.5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Early Bird</p>
+                  <p className="text-xs text-muted-foreground">Started work before 9 AM</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

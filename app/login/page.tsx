@@ -1,12 +1,17 @@
 'use client';
 
 import { Suspense } from 'react';
-import { Box, Button, Card, CardContent, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/components/AuthProvider';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
-import { slideUp } from '@/theme/motion';
+import { Button } from '@/components/ui/button';
+
+const slideUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.4 },
+};
 
 function LoginContent() {
   const { user, loading, signInWithGoogle } = useAuth();
@@ -22,66 +27,47 @@ function LoginContent() {
 
   if (loading) {
     return (
-      <Box
-        sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Typography color="text.secondary">Loading...</Typography>
-      </Box>
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
     );
   }
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        p: 2,
-      }}
-    >
+    <div className="min-h-screen flex items-center justify-center p-4">
       <motion.div {...slideUp}>
-        <Card sx={{ maxWidth: 400, width: '100%', p: 2 }}>
-          <CardContent
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 3,
-            }}
-          >
-            <Typography variant="h4" component="h1" sx={{ fontWeight: 500 }}>
-              FocusM3
-            </Typography>
-            <Typography color="text.secondary" textAlign="center">
-              Your personal productivity super-app
-            </Typography>
+        <div className="max-w-md w-full p-8 rounded-xl border border-border bg-card">
+          <div className="flex flex-col items-center gap-6">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+              <span className="text-3xl font-semibold">F</span>
+            </div>
+            
+            <div className="text-center space-y-2">
+              <h1 className="text-3xl font-semibold">FocusM3</h1>
+              <p className="text-muted-foreground">
+                Your personal productivity super-app
+              </p>
+            </div>
 
             {error && (
-              <Typography color="error" variant="body2" textAlign="center">
+              <p className="text-sm text-destructive text-center">
                 {error.includes('Signups not allowed') || error.includes('signup_disabled')
                   ? 'This app is private. Only authorized users can sign in.'
                   : 'Authentication failed. Please try again.'}
-              </Typography>
+              </p>
             )}
 
             <Button
-              variant="contained"
-              size="large"
+              size="lg"
               onClick={signInWithGoogle}
-              sx={{ width: '100%', py: 1.5, mt: 2 }}
+              className="w-full mt-4"
             >
               Sign in with Google
             </Button>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </motion.div>
-    </Box>
+    </div>
   );
 }
 
@@ -89,16 +75,9 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <Box
-          sx={{
-            minHeight: '100vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Typography color="text.secondary">Loading...</Typography>
-        </Box>
+        <div className="min-h-screen flex items-center justify-center">
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
       }
     >
       <LoginContent />

@@ -1,195 +1,80 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Box, Typography, Button, Dialog, DialogContent, IconButton, useTheme, useMediaQuery } from '@mui/material';
-import { Reorder, AnimatePresence } from 'framer-motion';
-import TaskItem from './TaskItem';
-import TaskSheet from '@/components/tasks/TaskSheet';
+import { useState } from 'react';
 import { useTasks } from '@/lib/hooks/useTasks';
-import { useReorderTasks } from '@/lib/hooks/useTaskMutations';
-import { useCompletedTasks } from '@/components/CompletedTasksProvider';
+import TaskItem from './TaskItem';
+import TaskSheet from './TaskSheet';
 import type { Task } from '@/lib/types/task';
 
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import TaskAltRoundedIcon from '@mui/icons-material/TaskAltRounded';
-
 export default function TaskList() {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const { data: activeTasks, isLoading, error } = useTasks({ showCompleted: false });
-  const { data: completedTasks } = useTasks({ showCompleted: true });
-  const reorderMutation = useReorderTasks();
-  const [orderedTasks, setOrderedTasks] = useState<Task[]>([]);
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const { showCompleted, toggleShowCompleted } = useCompletedTasks();
-
-  // Filter out completed from active list, get completed separately
-  const completedOnly = completedTasks?.filter((t) => t.is_completed) || [];
-
-  // Sync local state with fetched data
-  useEffect(() => {
-    if (activeTasks) {
-      setOrderedTasks(activeTasks);
-    }
-  }, [activeTasks]);
-
-  const handleReorder = (newOrder: Task[]) => {
-    setOrderedTasks(newOrder);
-  };
-
-  const handleDragEnd = () => {
-    const orderedIds = orderedTasks.map((t) => t.id);
-    reorderMutation.mutate(orderedIds);
-  };
+  const { data: tasks, isLoading } = useTasks();
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   if (isLoading) {
     return (
-      <Box sx={{ p: 3, textAlign: 'center' }}>
-        <Typography color="text.secondary">Loading tasks...</Typography>
-      </Box>
+      <div className="px-6 py-4">
+        <div className="space-y-2">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="h-16 rounded-xl bg-muted/50 animate-pulse"
+            />
+          ))}
+        </div>
+      </div>
     );
   }
 
-  if (error) {
-    return (
-      <Box sx={{ p: 3, textAlign: 'center' }}>
-        <Typography color="error">Error loading tasks</Typography>
-      </Box>
-    );
-  }
+  // Separate active and completed tasks
+  const activeTasks = tasks?.filter((t) => !t.is_completed) ?? [];
+  const completedTasks = tasks?.filter((t) => t.is_completed) ?? [];
 
-  const hasActiveTasks = orderedTasks && orderedTasks.length > 0;
-  const hasCompletedTasks = completedOnly.length > 0;
-
-  if (!hasActiveTasks && !hasCompletedTasks) {
+  if (activeTasks.length === 0 && completedTasks.length === 0) {
     return (
-      <Box
-        sx={{
-          p: 4,
-          textAlign: 'center',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: 2,
-          opacity: 0.7,
-        }}
-      >
-        <Box
-          sx={{
-            width: 96,
-            height: 96,
-            borderRadius: '50%',
-            bgcolor: 'background.paper',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            mb: 2,
-          }}
-        >
-          <TaskAltRoundedIcon sx={{ fontSize: '48px', color: 'text.secondary', opacity: 0.5 }} />
-        </Box>
-        <Typography variant="h6" color="text.secondary">
-          No tasks yet
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Tap the + button to add your first task
-        </Typography>
-      </Box>
+      <div className="px-6 py-12 text-center">
+        <p className="text-muted-foreground">
+          No tasks yet. Create one to get started!
+        </p>
+      </div>
     );
   }
 
   return (
     <>
-      <Box sx={{ px: 2, py: 1 }}>
+      <div className="px-4 md:px-6 space-y-2">
         {/* Active Tasks */}
-        {hasActiveTasks && (
-          <Reorder.Group
-            axis="y"
-            values={orderedTasks}
-            onReorder={handleReorder}
-            style={{ listStyle: 'none', padding: 0, margin: 0 }}
-          >
-            <AnimatePresence>
-              {orderedTasks.map((task) => (
-                <TaskItem 
-                  key={task.id} 
-                  task={task} 
-                  onEdit={setEditingTask} 
-                  onDragEnd={handleDragEnd}
+        {activeTasks.map((task) => (
+          <TaskItem
+            key={task.id}
+            task={task}
+            onClick={() => setSelectedTask(task)}
+          />
+        ))}
+
+        {/* Completed Section */}
+        {completedTasks.length > 0 && (
+          <div className="pt-4">
+            <p className="text-xs font-medium text-muted-foreground px-1 mb-2">
+              Completed ({completedTasks.length})
+            </p>
+            <div className="space-y-2 opacity-60">
+              {completedTasks.map((task) => (
+                <TaskItem
+                  key={task.id}
+                  task={task}
+                  onClick={() => setSelectedTask(task)}
                 />
               ))}
-            </AnimatePresence>
-          </Reorder.Group>
+            </div>
+          </div>
         )}
+      </div>
 
-        {/* Completed Tasks Trigger */}
-        {hasCompletedTasks && (
-          <Box sx={{ mt: 2, textAlign: 'center' }}>
-            <Button
-              variant="text"
-              onClick={toggleShowCompleted}
-              sx={{
-                color: 'text.secondary',
-                textTransform: 'none',
-                borderRadius: '28px',
-                py: 1,
-                fontWeight: 600,
-              }}
-            >
-              Show Completed Tasks ({completedOnly.length})
-            </Button>
-          </Box>
-        )}
-
-        {/* Completed Tasks Dialog */}
-        <Dialog
-          fullScreen={isMobile}
-          maxWidth="sm"
-          fullWidth
-          open={showCompleted}
-          onClose={toggleShowCompleted}
-          PaperProps={{
-            sx: {
-              bgcolor: 'background.default',
-              backgroundImage: 'none',
-              borderRadius: isMobile ? 0 : '16px',
-            }
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', px: 3, py: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
-            <IconButton onClick={toggleShowCompleted} edge="start" sx={{ mr: 2 }}>
-              <CloseRoundedIcon />
-            </IconButton>
-            <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 600 }}>
-              Completed Tasks
-            </Typography>
-          </Box>
-          <DialogContent sx={{ p: 2 }}>
-            <Box sx={{ opacity: 0.8 }}>
-              <Reorder.Group
-                axis="y"
-                values={completedOnly}
-                onReorder={() => {}}
-                style={{ listStyle: 'none', padding: 0, margin: 0 }}
-              >
-                {completedOnly.map((task) => (
-                  <TaskItem
-                    key={task.id}
-                    task={task}
-                    onEdit={setEditingTask}
-                    onDragEnd={() => {}}
-                  />
-                ))}
-              </Reorder.Group>
-            </Box>
-          </DialogContent>
-        </Dialog>
-      </Box>
-
+      {/* Edit Sheet */}
       <TaskSheet
-        open={!!editingTask}
-        onClose={() => setEditingTask(null)}
-        initialTask={editingTask}
+        open={!!selectedTask}
+        onClose={() => setSelectedTask(null)}
+        initialTask={selectedTask}
       />
     </>
   );

@@ -1,27 +1,21 @@
 'use client';
 
-import { useState } from 'react';
-import { Box, useMediaQuery, useTheme } from '@mui/material';
-import BottomNav from './BottomNav';
-import NavRail from './NavRail';
-import TopAppBar from './TopAppBar';
-import NavDrawer from './NavDrawer';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
 import { CompletedTasksProvider } from '@/components/CompletedTasksProvider';
 import { useRealtimeSync } from '@/lib/hooks/useRealtimeSync';
+import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
+import { AppSidebar } from '@/components/layout/AppSidebar';
+import { MobileNav } from '@/components/layout/MobileNav';
 
 interface AppShellProps {
   children: React.ReactNode;
 }
 
 export default function AppShell({ children }: AppShellProps) {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const pathname = usePathname();
-  const isImmersive = pathname === '/focus' || pathname === '/settings';
+  const isImmersive = pathname === '/focus';
   const { user, loading } = useAuth();
-  const [drawerOpen, setDrawerOpen] = useState(false);
 
   // Global realtime sync - stays alive during navigation
   useRealtimeSync();
@@ -33,39 +27,20 @@ export default function AppShell({ children }: AppShellProps) {
 
   return (
     <CompletedTasksProvider>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '100vh',
-          bgcolor: 'background.default',
-        }}
-      >
-        {/* Desktop: NavRail on the left */}
-        {!isMobile && !isImmersive && <NavRail />}
+      <SidebarProvider defaultOpen={true}>
+        {/* Desktop Sidebar - hidden only on Focus page */}
+        {!isImmersive && <AppSidebar />}
+        
+        {/* Main Content with proper inset */}
+        <SidebarInset>
+          <div className="flex-1 pb-20 md:pb-0">
+            {children}
+          </div>
+        </SidebarInset>
 
-        {/* Mobile: TopAppBar + Drawer */}
-        {isMobile && !isImmersive && (
-          <>
-            <TopAppBar onMenuClick={() => setDrawerOpen(true)} />
-            <NavDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-          </>
-        )}
-
-        <Box
-          component="main"
-          sx={{
-            flexGrow: 1,
-            pb: isMobile && !isImmersive ? '96px' : 0,
-            pl: isMobile || isImmersive ? 0 : '80px',
-            minHeight: isMobile ? 'auto' : '100vh',
-          }}
-        >
-          {children}
-        </Box>
-
-        {isMobile && !isImmersive && <BottomNav />}
-      </Box>
+        {/* Mobile Bottom Nav - hidden only on Focus page */}
+        {!isImmersive && <MobileNav />}
+      </SidebarProvider>
     </CompletedTasksProvider>
   );
 }
