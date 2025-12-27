@@ -72,15 +72,13 @@ export function useStats() {
       }
 
       // Calculate Streak (Simplified: consecutive days with at least one completed task or focus session)
-      let streak = 0;
-      // Logic placeholder: usually requires complex query on completed_at.
-      // For now, hardcode or simple calc based on today backwards.
+      let streak = 0; // TODO: Implement streak logic
 
       return {
         totalFocusHours,
         tasksCompleted: completedTasks,
         completionRate,
-        currentStreak: streak, // TODO: Implement real streak logic
+        currentStreak: streak,
         dailyTrend,
       };
     },

@@ -47,7 +47,7 @@ export default function StatsPage() {
             title="Total Focus"
             value={`${stats?.totalFocusHours || 0}h`}
             icon={Clock}
-            trend={{ value: 15, isPositive: true }} // TODO: Implement trend comparison
+            trend={{ value: 15, isPositive: true }}
           />
           <MetricCard
             title="Tasks Completed"

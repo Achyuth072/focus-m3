@@ -85,7 +85,7 @@ export function TimeGrid({ startDate, daysToShow, events, className }: TimeGridP
                   className={cn(
                     'absolute rounded-md border p-2 text-xs cursor-pointer',
                     'hover:z-20 hover:shadow-sm transition-all',
-                    'bg-[var(--event-color)]/15 border-[var(--event-color)]/30 text-foreground font-medium'
+                    'bg-(--event-color)/15 border-(--event-color)/30 text-foreground font-medium'
                   )}
                   style={{
                     '--event-color': event.color || 'hsl(var(--primary))',

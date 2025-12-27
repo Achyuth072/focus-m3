@@ -50,7 +50,6 @@ export default function FocusPage() {
       className="min-h-screen flex flex-col items-center justify-center p-6 bg-background relative select-none cursor-default"
     >
       {/* Close Button */}
-      {/* Close Button - Larger touch target for mobile */}
       <Button
         variant="ghost"
         size="icon"

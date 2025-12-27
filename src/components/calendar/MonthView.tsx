@@ -101,7 +101,7 @@ export function MonthView({ currentDate, events, onDateClick, className }: Month
                 {visibleEvents.map((event) => (
                   <div
                     key={event.id}
-                    className="text-[10px] md:text-xs px-1 md:px-2 py-0.5 rounded border truncate bg-[var(--event-color)]/15 border-[var(--event-color)]/30 text-foreground font-medium"
+                    className="text-[10px] md:text-xs px-1 md:px-2 py-0.5 rounded border truncate bg-(--event-color)/15 border-(--event-color)/30 text-foreground font-medium"
                     style={{ '--event-color': event.color || 'hsl(var(--primary))' } as React.CSSProperties}
                     title={event.title}
                   >

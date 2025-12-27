@@ -130,6 +130,7 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
                   {dueDate && (
                     <span
                       role="button"
+                      title="Clear due date"
                       className="ml-1 p-0.5 rounded hover:bg-destructive/20"
                       onClick={(e) => {
                         e.preventDefault();

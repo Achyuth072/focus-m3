@@ -77,7 +77,7 @@ export function ScheduleView({ events, startDate, daysToShow = 30, className }: 
                       key={event.id}
                       className={cn(
                         'flex gap-3 p-3 rounded-lg hover:bg-accent/50 cursor-pointer transition-colors border',
-                        'bg-[var(--event-color)]/15 border-[var(--event-color)]/30 font-medium'
+                        'bg-(--event-color)/15 border-(--event-color)/30 font-medium'
                       )}
                       style={{ '--event-color': event.color || 'hsl(var(--primary))' } as React.CSSProperties}
                     >
