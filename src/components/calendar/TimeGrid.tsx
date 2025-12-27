@@ -28,7 +28,7 @@ export function TimeGrid({ startDate, daysToShow, events, className }: TimeGridP
         {hours.map((hour) => (
           <div
             key={hour}
-            className="text-xs text-muted-foreground text-right pr-2 pt-2 border-b border-border/50"
+            className="text-xs text-muted-foreground text-right pr-2 pt-2 border-b border-muted-foreground/40"
             style={{ height: `${HOUR_HEIGHT}px` }}
           >
             {format(new Date().setHours(hour, 0), 'h a')}
@@ -38,7 +38,7 @@ export function TimeGrid({ startDate, daysToShow, events, className }: TimeGridP
 
       {/* Days Columns */}
       <div
-        className="flex-1 grid divide-x divide-border"
+        className="flex-1 grid divide-x divide-muted-foreground/40"
         style={{ gridTemplateColumns: `repeat(${daysToShow}, 1fr)` }}
       >
         {columns.map((column) => {
@@ -50,7 +50,7 @@ export function TimeGrid({ startDate, daysToShow, events, className }: TimeGridP
             isToday && "bg-accent/20"
           )}>
             {/* Header for the Day */}
-            <div className="sticky top-0 z-10 bg-background border-b p-3 text-center">
+            <div className="sticky top-0 z-10 bg-background border-b border-muted-foreground/40 p-3 text-center">
               <div className={cn(
                 "text-xs",
                 isToday ? "text-primary font-semibold" : "text-muted-foreground"
@@ -69,7 +69,7 @@ export function TimeGrid({ startDate, daysToShow, events, className }: TimeGridP
             {hours.map((hour) => (
               <div
                 key={hour}
-                className="border-b border-border/50"
+                className="border-b border-muted-foreground/40"
                 style={{ height: `${HOUR_HEIGHT}px` }}
               />
             ))}
