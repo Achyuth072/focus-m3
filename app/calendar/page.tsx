@@ -9,9 +9,14 @@ import { YearView } from '@/components/calendar/YearView';
 import { MonthView } from '@/components/calendar/MonthView';
 import { ScheduleView } from '@/components/calendar/ScheduleView';
 
+import { useCalendarEvents } from '@/hooks/useCalendarEvents';
+
 export default function CalendarPage() {
   const { currentDate, view, events, setView, setDate } = useCalendarStore();
   const [isMobile, setIsMobile] = useState(false);
+  
+  // Fetch real events from Supabase
+  useCalendarEvents();
 
   // Detect mobile/desktop for view switching
   useEffect(() => {

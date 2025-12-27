@@ -4,17 +4,30 @@ import { Target, CheckCircle2, Flame, Clock } from 'lucide-react';
 import { MetricCard } from '@/components/stats/MetricCard';
 import { FocusTrendChart } from '@/components/stats/FocusTrendChart';
 
+import { useStats } from '@/hooks/useStats';
+import { Skeleton } from '@/components/ui/skeleton';
+
 export default function StatsPage() {
-  // Sample data - replace with real data from your store/API
-  const focusTrendData = [
-    { date: 'Mon', minutes: 45 },
-    { date: 'Tue', minutes: 60 },
-    { date: 'Wed', minutes: 30 },
-    { date: 'Thu', minutes: 75 },
-    { date: 'Fri', minutes: 90 },
-    { date: 'Sat', minutes: 50 },
-    { date: 'Sun', minutes: 40 },
-  ];
+  const { data: stats, isLoading } = useStats();
+
+  if (isLoading) {
+    return (
+      <div className="h-full overflow-auto p-6">
+        <div className="max-w-7xl mx-auto space-y-6">
+          <Skeleton className="h-8 w-48" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map((i) => (
+              <Skeleton key={i} className="h-32 rounded-xl" />
+            ))}
+          </div>
+          <Skeleton className="h-64 w-full rounded-xl" />
+        </div>
+      </div>
+    );
+  }
+
+  // Use real data or fallbacks
+  const focusTrendData = stats?.dailyTrend || [];
 
   return (
     <div className="h-full overflow-auto p-6">
@@ -32,24 +45,24 @@ export default function StatsPage() {
           {/* Top Row - Key Metrics */}
           <MetricCard
             title="Total Focus"
-            value="12.5h"
+            value={`${stats?.totalFocusHours || 0}h`}
             icon={Clock}
-            trend={{ value: 15, isPositive: true }}
+            trend={{ value: 15, isPositive: true }} // TODO: Implement trend comparison
           />
           <MetricCard
             title="Tasks Completed"
-            value="24"
+            value={stats?.tasksCompleted.toString() || "0"}
             icon={CheckCircle2}
             trend={{ value: 8, isPositive: true }}
           />
           <MetricCard
             title="Current Streak"
-            value="7 days"
+            value={`${stats?.currentStreak || 0} days`}
             icon={Flame}
           />
           <MetricCard
             title="Completion Rate"
-            value="85%"
+            value={`${stats?.completionRate || 0}%`}
             icon={Target}
             trend={{ value: 3, isPositive: false }}
           />

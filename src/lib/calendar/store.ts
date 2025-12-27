@@ -27,35 +27,14 @@ interface CalendarStore {
   addEvent: (event: CalendarEvent) => void;
   updateEvent: (id: string, updates: Partial<CalendarEvent>) => void;
   deleteEvent: (id: string) => void;
+  setEvents: (events: CalendarEvent[]) => void;
 }
 
 export const useCalendarStore = create<CalendarStore>((set, get) => ({
   // Initial state
   currentDate: new Date(),
   view: "week",
-  events: [
-    {
-      id: "1",
-      title: "Team Meeting",
-      start: new Date(new Date().setHours(10, 0, 0, 0)),
-      end: new Date(new Date().setHours(11, 0, 0, 0)),
-      color: "hsl(var(--primary))",
-    },
-    {
-      id: "2",
-      title: "Lunch Break",
-      start: new Date(new Date().setHours(12, 30, 0, 0)),
-      end: new Date(new Date().setHours(13, 30, 0, 0)),
-      color: "hsl(142, 76%, 36%)",
-    },
-    {
-      id: "3",
-      title: "Code Review",
-      start: new Date(new Date().setHours(14, 0, 0, 0)),
-      end: new Date(new Date().setHours(15, 30, 0, 0)),
-      color: "hsl(221, 83%, 53%)",
-    },
-  ],
+  events: [],
 
   // Actions
   setView: (view) => set({ view }),
@@ -137,4 +116,6 @@ export const useCalendarStore = create<CalendarStore>((set, get) => ({
     set((state) => ({
       events: state.events.filter((event) => event.id !== id),
     })),
+
+  setEvents: (events) => set({ events }),
 }));
