@@ -80,7 +80,7 @@ export function MonthView({ currentDate, events, onDateClick, className }: Month
               className={cn(
                 'min-h-[100px] p-2 border-r border-b border-muted-foreground/40',
                 'hover:bg-accent/50 cursor-pointer transition-colors',
-                !isCurrentMonth && 'bg-muted/20'
+                !isCurrentMonth && 'bg-muted/5'
               )}
             >
               {/* Date number */}
@@ -88,8 +88,8 @@ export function MonthView({ currentDate, events, onDateClick, className }: Month
                 <span
                   className={cn(
                     'text-sm font-medium',
-                    isCurrentDay && 'flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground',
-                    !isCurrentMonth && 'text-muted-foreground'
+                    isCurrentDay && 'flex items-center justify-center w-6 h-6 rounded-md bg-primary text-primary-foreground',
+                    !isCurrentMonth && 'text-muted-foreground/30'
                   )}
                 >
                   {format(day, 'd')}
@@ -101,7 +101,7 @@ export function MonthView({ currentDate, events, onDateClick, className }: Month
                 {visibleEvents.map((event) => (
                   <div
                     key={event.id}
-                    className="text-xs px-2 py-0.5 rounded truncate bg-[var(--event-color)]/10 text-foreground border-l-2 border-l-[var(--event-color)]"
+                    className="text-xs px-2 py-0.5 rounded border truncate bg-[var(--event-color)]/15 border-[var(--event-color)]/30 text-foreground font-medium"
                     style={{ '--event-color': event.color || 'hsl(var(--primary))' } as React.CSSProperties}
                     title={event.title}
                   >

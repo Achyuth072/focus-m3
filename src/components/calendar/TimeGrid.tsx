@@ -24,11 +24,11 @@ export function TimeGrid({ startDate, daysToShow, events, className }: TimeGridP
     <div className={cn('flex h-full overflow-auto bg-background', className)}>
       {/* Time Labels Column */}
       <div className="w-16 flex-shrink-0 border-r border-border">
-        <div className="h-14" /> {/* Spacer for header */}
+        <div className="h-24 border-b border-muted-foreground/40" /> {/* Spacer for header */}
         {hours.map((hour) => (
           <div
             key={hour}
-            className="text-xs text-muted-foreground text-right pr-2 pt-2 border-b border-muted-foreground/40"
+            className="text-xs text-muted-foreground text-right pr-2 pt-2 border-t border-muted-foreground/40"
             style={{ height: `${HOUR_HEIGHT}px` }}
           >
             {format(new Date().setHours(hour, 0), 'h a')}
@@ -47,10 +47,10 @@ export function TimeGrid({ startDate, daysToShow, events, className }: TimeGridP
           return (
           <div key={column.date.toString()} className={cn(
             "relative min-w-[100px]",
-            isToday && "bg-accent/20"
+            isToday && "bg-primary/5"
           )}>
             {/* Header for the Day */}
-            <div className="sticky top-0 z-10 bg-background border-b border-muted-foreground/40 p-3 text-center">
+            <div className="sticky top-0 z-10 bg-background border-b border-muted-foreground/40 h-24 flex flex-col items-center justify-center">
               <div className={cn(
                 "text-xs",
                 isToday ? "text-primary font-semibold" : "text-muted-foreground"
@@ -59,7 +59,7 @@ export function TimeGrid({ startDate, daysToShow, events, className }: TimeGridP
               </div>
               <div className={cn(
                 "text-lg font-semibold inline-flex items-center justify-center",
-                isToday && "w-10 h-10 rounded-full bg-primary text-primary-foreground"
+                isToday && "w-10 h-10 rounded-md bg-primary text-primary-foreground"
               )}>
                 {format(column.date, 'd')}
               </div>
@@ -69,7 +69,7 @@ export function TimeGrid({ startDate, daysToShow, events, className }: TimeGridP
             {hours.map((hour) => (
               <div
                 key={hour}
-                className="border-b border-muted-foreground/40"
+                className="border-t border-muted-foreground/40"
                 style={{ height: `${HOUR_HEIGHT}px` }}
               />
             ))}
@@ -83,13 +83,13 @@ export function TimeGrid({ startDate, daysToShow, events, className }: TimeGridP
                 <div
                   key={event.id}
                   className={cn(
-                    'absolute rounded-md border-l-4 p-2 text-xs cursor-pointer',
-                    'hover:z-20 hover:shadow-lg transition-shadow',
-                    'bg-[var(--event-color)]/10 border-l-[var(--event-color)] text-foreground'
+                    'absolute rounded-md border p-2 text-xs cursor-pointer',
+                    'hover:z-20 hover:shadow-sm transition-all',
+                    'bg-[var(--event-color)]/15 border-[var(--event-color)]/30 text-foreground font-medium'
                   )}
                   style={{
                     '--event-color': event.color || 'hsl(var(--primary))',
-                    top: `${topPx + 56}px`, // +56 for header height
+                    top: `${topPx + 96}px`, // +96px for h-24 header height
                     height: `${Math.max(heightPx, 30)}px`, // Minimum 30px height
                     left: `${event.left}%`,
                     width: `${event.width - 2}%`, // -2% for spacing
