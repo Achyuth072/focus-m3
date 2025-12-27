@@ -50,13 +50,14 @@ export default function FocusPage() {
       className="min-h-screen flex flex-col items-center justify-center p-6 bg-background relative select-none cursor-default"
     >
       {/* Close Button */}
+      {/* Close Button - Larger touch target for mobile */}
       <Button
         variant="ghost"
         size="icon"
         onClick={() => router.back()}
-        className="absolute top-4 left-4"
+        className="absolute top-4 left-4 h-12 w-12 rounded-full"
       >
-        <X className="h-5 w-5" />
+        <X className="h-6 w-6" />
       </Button>
 
       {/* Mode Badge */}
