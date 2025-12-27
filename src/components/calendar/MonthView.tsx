@@ -78,17 +78,17 @@ export function MonthView({ currentDate, events, onDateClick, className }: Month
               key={dayKey}
               onClick={() => onDateClick?.(day)}
               className={cn(
-                'min-h-[100px] p-2 border-r border-b border-muted-foreground/40 dark:border-muted-foreground/15',
+                'relative p-1 md:p-2 border-r border-b border-muted-foreground/40 dark:border-muted-foreground/15 flex flex-col',
                 'hover:bg-accent/50 cursor-pointer transition-colors',
                 !isCurrentMonth && 'bg-muted/5'
               )}
             >
               {/* Date number */}
-              <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center justify-between mb-0.5 md:mb-1 shrink-0">
                 <span
                   className={cn(
-                    'text-sm font-medium',
-                    isCurrentDay && 'flex items-center justify-center w-6 h-6 rounded-md bg-primary text-primary-foreground',
+                    'text-xs md:text-sm font-medium',
+                    isCurrentDay && 'flex items-center justify-center w-5 h-5 md:w-6 md:h-6 rounded-md bg-primary text-primary-foreground',
                     !isCurrentMonth && 'text-muted-foreground/30'
                   )}
                 >
@@ -97,19 +97,20 @@ export function MonthView({ currentDate, events, onDateClick, className }: Month
               </div>
 
               {/* Events */}
-              <div className="space-y-1">
+              <div className="flex-1 min-h-0 space-y-0.5 md:space-y-1 overflow-hidden">
                 {visibleEvents.map((event) => (
                   <div
                     key={event.id}
-                    className="text-xs px-2 py-0.5 rounded border truncate bg-[var(--event-color)]/15 border-[var(--event-color)]/30 text-foreground font-medium"
+                    className="text-[10px] md:text-xs px-1 md:px-2 py-0.5 rounded border truncate bg-[var(--event-color)]/15 border-[var(--event-color)]/30 text-foreground font-medium"
                     style={{ '--event-color': event.color || 'hsl(var(--primary))' } as React.CSSProperties}
                     title={event.title}
                   >
-                    {format(event.start, 'h:mm a')} {event.title}
+                    <span className="hidden md:inline">{format(event.start, 'h:mm a')} </span>
+                    {event.title}
                   </div>
                 ))}
                 {remainingCount > 0 && (
-                  <div className="text-xs text-muted-foreground px-2">
+                  <div className="text-[10px] md:text-xs text-muted-foreground px-1 md:px-2">
                     +{remainingCount} more
                   </div>
                 )}

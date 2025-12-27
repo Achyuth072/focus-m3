@@ -109,7 +109,7 @@ export default function CalendarPage() {
   };
 
   return (
-    <div className="flex flex-col h-dvh">
+    <div className="flex flex-col h-full">
       <CalendarToolbar isMobile={isMobile} />
       <div className="flex-1 min-h-0">
         {renderView()}
