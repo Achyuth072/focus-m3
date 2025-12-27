@@ -46,7 +46,7 @@ export function MonthView({ currentDate, events, onDateClick, className }: Month
   return (
     <div className={cn('h-full flex flex-col bg-background', className)}>
       {/* Week day headers */}
-      <div className="grid grid-cols-7 border-b border-muted-foreground/40">
+      <div className="grid grid-cols-7 border-b border-muted-foreground/40 dark:border-muted-foreground/15">
         {weekDays.map((day) => (
           <div
             key={day}
@@ -60,7 +60,7 @@ export function MonthView({ currentDate, events, onDateClick, className }: Month
       {/* Calendar grid */}
       <div 
         className={cn(
-          'flex-1 grid grid-cols-7 border-l border-t border-muted-foreground/40',
+          'flex-1 grid grid-cols-7 border-l border-t border-muted-foreground/40 dark:border-muted-foreground/15',
           numWeeks === 5 ? 'grid-rows-5' : 'grid-rows-6'
         )}
       >
@@ -78,7 +78,7 @@ export function MonthView({ currentDate, events, onDateClick, className }: Month
               key={dayKey}
               onClick={() => onDateClick?.(day)}
               className={cn(
-                'min-h-[100px] p-2 border-r border-b border-muted-foreground/40',
+                'min-h-[100px] p-2 border-r border-b border-muted-foreground/40 dark:border-muted-foreground/15',
                 'hover:bg-accent/50 cursor-pointer transition-colors',
                 !isCurrentMonth && 'bg-muted/5'
               )}

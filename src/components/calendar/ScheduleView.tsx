@@ -46,7 +46,7 @@ export function ScheduleView({ events, startDate, daysToShow = 30, className }: 
               {/* Date Header */}
               <div className={cn(
                 'sticky top-0 z-10 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60',
-                'py-2 border-b border-muted-foreground/40'
+                'py-2 border-b border-muted-foreground/40 dark:border-muted-foreground/15'
               )}>
                 <div className="flex items-baseline gap-3">
                   <div className={cn(

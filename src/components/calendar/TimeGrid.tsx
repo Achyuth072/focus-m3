@@ -28,7 +28,7 @@ export function TimeGrid({ startDate, daysToShow, events, className }: TimeGridP
         {hours.map((hour) => (
           <div
             key={hour}
-            className="text-xs text-muted-foreground text-right pr-2 pt-2 border-t border-muted-foreground/40"
+            className="text-xs text-muted-foreground text-right pr-2 pt-2 border-t border-muted-foreground/40 dark:border-muted-foreground/15"
             style={{ height: `${HOUR_HEIGHT}px` }}
           >
             {format(new Date().setHours(hour, 0), 'h a')}
@@ -38,7 +38,7 @@ export function TimeGrid({ startDate, daysToShow, events, className }: TimeGridP
 
       {/* Days Columns */}
       <div
-        className="flex-1 grid divide-x divide-muted-foreground/40"
+        className="flex-1 grid divide-x divide-muted-foreground/40 dark:divide-muted-foreground/15"
         style={{ gridTemplateColumns: `repeat(${daysToShow}, 1fr)` }}
       >
         {columns.map((column) => {
@@ -50,7 +50,7 @@ export function TimeGrid({ startDate, daysToShow, events, className }: TimeGridP
             isToday && "bg-primary/5"
           )}>
             {/* Header for the Day */}
-            <div className="sticky top-0 z-10 bg-background border-b border-muted-foreground/40 h-24 flex flex-col items-center justify-center">
+            <div className="sticky top-0 z-10 bg-background border-b border-muted-foreground/40 dark:border-muted-foreground/15 h-24 flex flex-col items-center justify-center">
               <div className={cn(
                 "text-xs",
                 isToday ? "text-primary font-semibold" : "text-muted-foreground"
@@ -69,7 +69,7 @@ export function TimeGrid({ startDate, daysToShow, events, className }: TimeGridP
             {hours.map((hour) => (
               <div
                 key={hour}
-                className="border-t border-muted-foreground/40"
+                className="border-t border-muted-foreground/40 dark:border-muted-foreground/15"
                 style={{ height: `${HOUR_HEIGHT}px` }}
               />
             ))}
