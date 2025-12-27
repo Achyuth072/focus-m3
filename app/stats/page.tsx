@@ -1,11 +1,16 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { Target, CheckCircle2, Flame, Clock } from 'lucide-react';
 import { MetricCard } from '@/components/stats/MetricCard';
-import { FocusTrendChart } from '@/components/stats/FocusTrendChart';
-
 import { useStats } from '@/hooks/useStats';
 import { Skeleton } from '@/components/ui/skeleton';
+
+// Lazy load the chart component (Recharts is ~80KB+)
+const FocusTrendChart = dynamic(
+  () => import('@/components/stats/FocusTrendChart').then(mod => ({ default: mod.FocusTrendChart })),
+  { loading: () => <Skeleton className="h-64 w-full rounded-xl" />, ssr: false }
+);
 
 export default function StatsPage() {
   const { data: stats, isLoading } = useStats();

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { motion, useMotionValue, useTransform, PanInfo } from 'framer-motion';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useUpdateTask, useDeleteTask } from '@/lib/hooks/useTaskMutations';
@@ -30,7 +30,7 @@ function formatDueDate(dateString: string): string {
   return format(date, 'MMM d');
 }
 
-export default function TaskItem({ task, onClick }: TaskItemProps) {
+function TaskItem({ task, onClick }: TaskItemProps) {
   const [isChecking, setIsChecking] = useState(false);
   const updateMutation = useUpdateTask();
   const deleteMutation = useDeleteTask();
@@ -136,3 +136,5 @@ export default function TaskItem({ task, onClick }: TaskItemProps) {
     </motion.div>
   );
 }
+
+export default React.memo(TaskItem);
