@@ -51,7 +51,19 @@ export default function RootLayout({
               </TimerProvider>
             </AuthProvider>
           </QueryProvider>
-          <Toaster position="bottom-center" />
+          <Toaster 
+            position="bottom-center"
+            toastOptions={{
+              unstyled: true,
+              classNames: {
+                toast: 'bg-card border border-border text-foreground rounded-lg p-4 shadow-none flex items-center justify-between gap-3 w-[90vw] sm:w-[420px]',
+                title: 'font-medium text-sm',
+                description: 'text-sm text-muted-foreground',
+                actionButton: 'bg-primary text-primary-foreground px-3 py-1.5 rounded-md text-sm font-medium hover:opacity-90 shrink-0',
+                cancelButton: 'bg-transparent border border-border text-muted-foreground px-3 py-1.5 rounded-md text-sm hover:bg-accent shrink-0',
+              },
+            }}
+          />
         </ThemeProvider>
       </body>
     </html>
