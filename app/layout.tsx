@@ -5,6 +5,7 @@ import QueryProvider from '@/components/QueryProvider';
 import { TimerProvider } from '@/components/TimerProvider';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import AppShell from '@/components/layout/AppShell';
+import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {
   title: 'FocusM3',
@@ -50,6 +51,7 @@ export default function RootLayout({
               </TimerProvider>
             </AuthProvider>
           </QueryProvider>
+          <Toaster position="bottom-center" />
         </ThemeProvider>
       </body>
     </html>

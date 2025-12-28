@@ -195,6 +195,9 @@ export function useDeleteTask() {
       if (error) throw new Error(error.message);
     },
     onMutate: async (id) => {
+      // Import toast dynamically to avoid SSR issues
+      const { toast } = await import("sonner");
+
       await queryClient.cancelQueries({ queryKey: ["tasks"] });
 
       const queryKey = [
@@ -203,9 +206,42 @@ export function useDeleteTask() {
       ];
       const previousTasks = queryClient.getQueryData<Task[]>(queryKey);
 
+      // Optimistically remove from UI
       queryClient.setQueryData<Task[]>(queryKey, (old) =>
         old?.filter((task) => task.id !== id)
       );
+
+      // Find the deleted task for undo
+      const deletedTask = previousTasks?.find((task) => task.id === id);
+
+      // Show undo toast
+      if (deletedTask) {
+        toast("Task deleted", {
+          description: deletedTask.content,
+          duration: 5000,
+          action: {
+            label: "Undo",
+            onClick: async () => {
+              // Restore task optimistically
+              queryClient.setQueryData<Task[]>(queryKey, (old) =>
+                old ? [...old, deletedTask] : [deletedTask]
+              );
+
+              // Re-insert into database
+              const { error } = await supabase
+                .from("tasks")
+                .insert(deletedTask);
+
+              if (error) {
+                toast.error("Failed to restore task");
+                queryClient.invalidateQueries({ queryKey: ["tasks"] });
+              } else {
+                toast("Task restored");
+              }
+            },
+          },
+        });
+      }
 
       return { previousTasks };
     },
