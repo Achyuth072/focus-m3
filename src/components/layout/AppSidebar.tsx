@@ -26,13 +26,14 @@ import {
   Plus,
   Inbox,
   FolderKanban,
+  ChevronDown,
 } from 'lucide-react';
 import { useCompletedTasks } from '@/components/CompletedTasksProvider';
 import { useProjects } from '@/lib/hooks/useProjects';
 import { CreateProjectDialog } from '@/components/projects/CreateProjectDialog';
 
 const mainNavItems = [
-  { label: 'Tasks', icon: CheckSquare, path: '/', isAction: false },
+  { label: 'All Tasks', icon: CheckSquare, path: '/', isAction: false },
   { label: 'Calendar', icon: Calendar, path: '/calendar', isAction: false },
   { label: 'Stats', icon: BarChart3, path: '/stats', isAction: false },
 ];
@@ -50,6 +51,7 @@ export function AppSidebar() {
   const { openSheet } = useCompletedTasks();
   const { data: projects } = useProjects();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [projectsOpen, setProjectsOpen] = useState(true);
 
   const currentProjectId = searchParams.get('project');
 
@@ -79,103 +81,108 @@ export function AppSidebar() {
         </SidebarHeader>
 
         <SidebarContent>
-          {!isMobile && (
-            <>
-              <SidebarGroup>
-                <SidebarGroupContent>
-                  <SidebarMenu>
-                    {mainNavItems.map((item) => {
-                      const Icon = item.icon;
-                      // Tasks is active when on home with no project filter (showing all)
-                      const isActive = item.label === 'Tasks' 
-                        ? pathname === item.path && (!currentProjectId || currentProjectId === 'all')
-                        : pathname === item.path && !item.isAction;
-                      return (
-                        <SidebarMenuItem key={item.label}>
-                          <SidebarMenuButton
-                            onClick={() => {
-                              if (item.isAction) {
-                                openSheet();
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {mainNavItems
+                  .filter((item) => {
+                    if (isMobile) {
+                      return item.label !== 'Stats' && item.label !== 'Calendar';
+                    }
+                    return true;
+                  })
+                  .map((item) => {
+                    const Icon = item.icon;
+                    const isActive = item.label === 'All Tasks' 
+                      ? pathname === item.path && (!currentProjectId || currentProjectId === 'all')
+                      : pathname === item.path && !item.isAction;
+                    return (
+                      <SidebarMenuItem key={item.label}>
+                        <SidebarMenuButton
+                          onClick={() => {
+                            if (item.isAction) {
+                              openSheet();
+                            } else {
+                              if (item.label === 'All Tasks') {
+                                router.push('/?project=all');
                               } else {
-                                // For Tasks, navigate to home without project filter (shows all)
-                                if (item.label === 'Tasks') {
-                                  router.push('/?project=all');
-                                } else {
-                                  router.push(item.path);
-                                }
+                                router.push(item.path);
                               }
-                              if (isMobile) setOpenMobile(false);
-                            }}
-                            isActive={isActive}
-                            tooltip={item.label}
-                          >
-                            <Icon className="h-5 w-5" />
-                            <span>{item.label}</span>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      );
-                    })}
-                  </SidebarMenu>
-                </SidebarGroupContent>
-              </SidebarGroup>
+                            }
+                            if (isMobile) setOpenMobile(false);
+                          }}
+                          isActive={isActive}
+                          tooltip={item.label}
+                        >
+                          <Icon className="h-5 w-5" />
+                          <span>{item.label}</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
 
               <SidebarSeparator />
 
               {/* Projects Section */}
               <SidebarGroup>
-                <SidebarGroupLabel>
+                <SidebarGroupLabel className="cursor-pointer pr-8" onClick={() => setProjectsOpen(!projectsOpen)}>
                   <FolderKanban className="h-4 w-4 mr-2" />
                   Projects
+                  <ChevronDown 
+                    className={`ml-auto h-4 w-4 transition-transform ${projectsOpen ? '' : '-rotate-90'}`} 
+                  />
                 </SidebarGroupLabel>
                 <SidebarGroupAction title="Add Project" onClick={() => setCreateDialogOpen(true)}>
                   <Plus className="h-4 w-4" />
                 </SidebarGroupAction>
-                <SidebarGroupContent>
-                  <SidebarMenu>
-                    {/* Inbox (No Project) */}
-                    <SidebarMenuItem>
-                      <SidebarMenuButton
-                        onClick={() => handleProjectClick('inbox')}
-                        isActive={currentProjectId === 'inbox'}
-                        tooltip="Inbox"
-                      >
-                        <Inbox className="h-4 w-4" />
-                        <span>Inbox</span>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
+                {projectsOpen && (
+                  <SidebarGroupContent>
+                    <SidebarMenu>
+                      {/* Inbox */}
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          onClick={() => handleProjectClick('inbox')}
+                          isActive={currentProjectId === 'inbox'}
+                          tooltip="Inbox"
+                        >
+                          <Inbox className="h-4 w-4" />
+                          <span>Inbox</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
 
-                    {/* User Projects */}
-                    {projects
-                      ?.filter((p) => !p.is_inbox)
-                      .map((project) => (
-                        <SidebarMenuItem key={project.id}>
-                          <SidebarMenuButton
-                            onClick={() => handleProjectClick(project.id)}
-                            isActive={currentProjectId === project.id}
-                            tooltip={project.name}
-                          >
-                            <div
-                              className="h-3 w-3 rounded-full shrink-0"
-                              style={{ backgroundColor: project.color }}
-                            />
-                            <span className="truncate">{project.name}</span>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      ))}
-                  </SidebarMenu>
-                </SidebarGroupContent>
+                      {/* User Projects */}
+                      {projects
+                        ?.filter((p) => !p.is_inbox)
+                        .map((project) => (
+                          <SidebarMenuItem key={project.id}>
+                            <SidebarMenuButton
+                              onClick={() => handleProjectClick(project.id)}
+                              isActive={currentProjectId === project.id}
+                              tooltip={project.name}
+                            >
+                              <div
+                                className="h-3 w-3 rounded-full shrink-0"
+                                style={{ backgroundColor: project.color }}
+                              />
+                              <span className="truncate">{project.name}</span>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        ))}
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                )}
               </SidebarGroup>
 
-              <SidebarSeparator />
-            </>
-          )}
 
-          <SidebarGroup>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {secondaryNavItems
-                  .filter((item) => isMobile ? item.label === 'Settings' : true)
-                  .map((item) => {
+
+          {!isMobile && (
+            <SidebarGroup>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {secondaryNavItems.map((item) => {
                     const Icon = item.icon;
                     const isActive = pathname === item.path;
                     return (
@@ -194,12 +201,30 @@ export function AppSidebar() {
                       </SidebarMenuItem>
                     );
                   })}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          )}
         </SidebarContent>
 
         <SidebarFooter className="border-t border-border">
+          {isMobile && (
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  onClick={() => {
+                    router.push('/settings');
+                    setOpenMobile(false);
+                  }}
+                  isActive={pathname === '/settings'}
+                  tooltip="Settings"
+                >
+                  <Settings className="h-5 w-5" />
+                  <span>Settings</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          )}
           <div className="px-2 py-2 text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">
             v0.1.0
           </div>

@@ -5,7 +5,7 @@ import { CheckSquare, Calendar, BarChart3, Timer, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { label: 'Tasks', icon: CheckSquare, path: '/' },
+  { label: 'All Tasks', icon: CheckSquare, path: '/' },
   { label: 'Calendar', icon: Calendar, path: '/calendar' },
   { label: 'Stats', icon: BarChart3, path: '/stats' },
 ];
