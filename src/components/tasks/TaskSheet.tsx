@@ -17,6 +17,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { cn } from '@/lib/utils';
 import type { Task } from '@/lib/types/task';
+import SubtaskList from './SubtaskList';
 
 interface TaskSheetProps {
   open: boolean;
@@ -46,6 +47,8 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
   const deleteMutation = useDeleteTask();
   const { data: inboxProject } = useInboxProject();
 
+  const [draftSubtasks, setDraftSubtasks] = useState<string[]>([]);
+
   // Reset form when dialog opens
   useEffect(() => {
     if (open) {
@@ -54,6 +57,7 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
         setDescription(initialTask.description || '');
         setDueDate(initialTask.due_date ? new Date(initialTask.due_date) : undefined);
         setPriority(initialTask.priority);
+        setDraftSubtasks([]);
         // Default to preview if description exists, otherwise write
         setActiveTab(initialTask.description ? 'preview' : 'write');
       } else {
@@ -61,6 +65,7 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
         setDescription('');
         setDueDate(initialDate ?? undefined);
         setPriority(4);
+        setDraftSubtasks([]);
         setActiveTab('write');
       }
     }
@@ -87,6 +92,18 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
         project_id: inboxProject?.id,
         due_date: dueDate?.toISOString(),
         priority,
+      }, {
+        onSuccess: (parentTask) => {
+          // If there are draft subtasks, create them
+          draftSubtasks.forEach(sContent => {
+            createMutation.mutate({
+              content: sContent,
+              project_id: parentTask.project_id || undefined,
+              parent_id: parentTask.id,
+              priority: 4,
+            });
+          });
+        }
       });
     }
   };
@@ -190,6 +207,20 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
               </div>
             </TabsContent>
           </Tabs>
+        </div>
+
+        {/* Subtasks / Checklist */}
+        <div className="pt-4 border-t mt-2">
+           <div className="flex items-center gap-2 mb-3">
+             <span className="text-xs font-medium text-muted-foreground ml-1">Checklist</span>
+           </div>
+           
+          <SubtaskList 
+            taskId={initialTask?.id} 
+            projectId={initialTask?.project_id || inboxProject?.id || null}
+            draftSubtasks={draftSubtasks}
+            onDraftSubtasksChange={setDraftSubtasks}
+          />
         </div>
 
         {/* Actions Row */}

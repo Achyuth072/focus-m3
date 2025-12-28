@@ -6,9 +6,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { DeleteConfirmationDialog } from '@/components/ui/DeleteConfirmationDialog';
 import { useUpdateTask, useDeleteTask } from '@/lib/hooks/useTaskMutations';
 import { format, isToday, isTomorrow, isPast, parseISO } from 'date-fns';
-import { Calendar, Flag, Trash2 } from 'lucide-react';
+import { Calendar, Flag, Trash2, ChevronRight, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Task } from '@/lib/types/task';
+import SubtaskList from './SubtaskList';
+import { Button } from '@/components/ui/button';
 
 interface TaskItemProps {
   task: Task;
@@ -37,6 +39,7 @@ function TaskItem({ task, onClick }: TaskItemProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   
   const updateMutation = useUpdateTask();
   const deleteMutation = useDeleteTask();
@@ -84,10 +87,15 @@ function TaskItem({ task, onClick }: TaskItemProps) {
     setShowDeleteDialog(false);
   };
 
+  const toggleExpand = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsExpanded(!isExpanded);
+  };
+
   const isOverdue = task.due_date && isPast(parseISO(task.due_date)) && !isToday(parseISO(task.due_date));
 
   return (
-    <>
+    <div className="group/item">
       <motion.div
         style={{ background }}
         className="relative rounded-xl overflow-hidden"
@@ -136,14 +144,26 @@ function TaskItem({ task, onClick }: TaskItemProps) {
 
           {/* Content */}
           <div className="flex-1 min-w-0">
-            <p
-              className={cn(
-                'text-sm font-medium leading-tight',
-                task.is_completed && 'line-through text-muted-foreground'
-              )}
-            >
-              {task.content}
-            </p>
+            <div className="flex items-start gap-1">
+              <p
+                className={cn(
+                  'text-sm font-medium leading-tight flex-1',
+                  task.is_completed && 'line-through text-muted-foreground'
+                )}
+              >
+                {task.content}
+              </p>
+              
+              {/* Expand Toggle */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleExpand}
+                className="h-5 w-5 -mt-0.5 text-muted-foreground hover:text-foreground opacity-0 group-hover/item:opacity-100 transition-opacity"
+              >
+                {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+              </Button>
+            </div>
 
             {/* Metadata row */}
             {(task.due_date || task.priority < 4) && (
@@ -171,6 +191,18 @@ function TaskItem({ task, onClick }: TaskItemProps) {
         </motion.div>
       </motion.div>
 
+      {/* Expanded Subtasks */}
+      {isExpanded && (
+        <motion.div
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: 'auto', opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          className="ml-11 mr-1 mt-2 mb-4 border-l-2 border-muted pl-4"
+        >
+          <SubtaskList taskId={task.id} projectId={task.project_id} />
+        </motion.div>
+      )}
+
       <DeleteConfirmationDialog
         isOpen={showDeleteDialog}
         onClose={handleCancelDelete}
@@ -178,7 +210,7 @@ function TaskItem({ task, onClick }: TaskItemProps) {
         title="Delete Task"
         description={`Are you sure you want to delete "${task.content}"? This action cannot be undone.`}
       />
-    </>
+    </div>
   );
 }
 

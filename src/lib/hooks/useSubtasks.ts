@@ -19,8 +19,7 @@ export function useSubtasks(parentId: string | null | undefined) {
         .from("tasks")
         .select("*")
         .eq("parent_id", parentId)
-        .order("day_order", { ascending: true })
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: true });
 
       if (error) {
         throw new Error(error.message);
