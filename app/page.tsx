@@ -10,6 +10,7 @@ import AddTaskFab from '@/components/tasks/AddTaskFab';
 import TaskSheet from '@/components/tasks/TaskSheet';
 import { format } from 'date-fns';
 import { TasksPageHeader } from '@/components/tasks/TasksPageHeader';
+import { GroupOption, SortOption } from '@/lib/types/sorting';
 
 const fadeIn = {
   initial: { opacity: 0, y: 10 },
@@ -21,6 +22,8 @@ export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
+  const [sortBy, setSortBy] = useState<SortOption>('date');
+  const [groupBy, setGroupBy] = useState<GroupOption>('none');
 
   useEffect(() => {
     if (!loading && !user) {
@@ -58,11 +61,16 @@ export default function Home() {
           </div>
           
           {/* Completed Tasks Button - Desktop Only */}
-          <TasksPageHeader />
+          <TasksPageHeader 
+            currentSort={sortBy}
+            currentGroup={groupBy}
+            onSortChange={setSortBy}
+            onGroupChange={setGroupBy}
+          />
         </div>
 
         {/* Task List */}
-        <TaskList />
+        <TaskList sortBy={sortBy} groupBy={groupBy} />
       </motion.div>
 
       {/* FAB */}
