@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import type { Task } from '@/lib/types/task';
 import SubtaskList from './SubtaskList';
 import { Button } from '@/components/ui/button';
+import { useProject } from '@/lib/hooks/useProjects';
 
 interface TaskItemProps {
   task: Task;
@@ -43,6 +44,7 @@ function TaskItem({ task, onClick }: TaskItemProps) {
   
   const updateMutation = useUpdateTask();
   const deleteMutation = useDeleteTask();
+  const { data: project } = useProject(task.project_id);
 
   const x = useMotionValue(0);
   const background = useTransform(
@@ -166,7 +168,7 @@ function TaskItem({ task, onClick }: TaskItemProps) {
             </div>
 
             {/* Metadata row */}
-            {(task.due_date || task.priority < 4) && (
+            {(task.due_date || task.priority < 4 || project) && (
               <div className="flex items-center gap-2 mt-1.5">
                 {task.due_date && (
                   <span
@@ -183,6 +185,15 @@ function TaskItem({ task, onClick }: TaskItemProps) {
                   <span className={cn('flex items-center gap-1 text-xs', priorityColors[task.priority])}>
                     <Flag className="h-3 w-3" />
                     P{task.priority}
+                  </span>
+                )}
+                {project && (
+                  <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <div
+                      className="h-2 w-2 rounded-full shrink-0"
+                      style={{ backgroundColor: project.color }}
+                    />
+                    <span className="truncate">{project.name}</span>
                   </span>
                 )}
               </div>

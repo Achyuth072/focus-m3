@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/components/AuthProvider';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import TaskList from '@/components/tasks/TaskList';
 import AddTaskFab from '@/components/tasks/AddTaskFab';
@@ -21,9 +21,12 @@ const fadeIn = {
 export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>('date');
   const [groupBy, setGroupBy] = useState<GroupOption>('none');
+
+  const currentProjectId = searchParams.get('project') || 'all';
 
   useEffect(() => {
     if (!loading && !user) {
@@ -70,7 +73,7 @@ export default function Home() {
         </div>
 
         {/* Task List */}
-        <TaskList sortBy={sortBy} groupBy={groupBy} />
+        <TaskList sortBy={sortBy} groupBy={groupBy} projectId={currentProjectId} />
       </motion.div>
 
       {/* FAB */}

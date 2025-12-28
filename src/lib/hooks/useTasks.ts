@@ -23,9 +23,18 @@ export function useTasks(options: UseTasksOptions = {}) {
         .order("day_order", { ascending: true })
         .order("created_at", { ascending: false });
 
-      if (projectId) {
+      // Filter by project
+      if (projectId === "inbox") {
+        // Inbox: Only tasks without a project
+        query = query.is("project_id", null);
+      } else if (projectId === "all") {
+        // All: Show everything (no filter)
+        // Don't add any project filter
+      } else if (projectId) {
+        // Specific project: Only tasks in that project
         query = query.eq("project_id", projectId);
       }
+      // No projectId or 'all': Show all tasks (no filter)
 
       if (!showCompleted) {
         query = query.eq("is_completed", false);

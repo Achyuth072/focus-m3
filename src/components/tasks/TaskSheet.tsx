@@ -18,6 +18,15 @@ import remarkGfm from 'remark-gfm';
 import { cn } from '@/lib/utils';
 import type { Task } from '@/lib/types/task';
 import SubtaskList from './SubtaskList';
+import { useProjects } from '@/lib/hooks/useProjects';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { FolderKanban, Inbox } from 'lucide-react';
 
 interface TaskSheetProps {
   open: boolean;
@@ -41,11 +50,13 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
   const [priority, setPriority] = useState<1 | 2 | 3 | 4>(4);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 
   const createMutation = useCreateTask();
   const updateMutation = useUpdateTask();
   const deleteMutation = useDeleteTask();
   const { data: inboxProject } = useInboxProject();
+  const { data: projects } = useProjects();
 
   const [draftSubtasks, setDraftSubtasks] = useState<string[]>([]);
 
@@ -58,6 +69,7 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
         setDueDate(initialTask.due_date ? new Date(initialTask.due_date) : undefined);
         setPriority(initialTask.priority);
         setDraftSubtasks([]);
+        setSelectedProjectId(initialTask.project_id);
         // Default to preview if description exists, otherwise write
         setActiveTab(initialTask.description ? 'preview' : 'write');
       } else {
@@ -66,6 +78,7 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
         setDueDate(initialDate ?? undefined);
         setPriority(4);
         setDraftSubtasks([]);
+        setSelectedProjectId(null);
         setActiveTab('write');
       }
     }
@@ -84,12 +97,13 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
         description: description.trim() || undefined,
         due_date: dueDate?.toISOString() ?? null,
         priority,
+        project_id: selectedProjectId,
       });
     } else {
       createMutation.mutate({
         content: trimmedContent,
         description: description.trim() || undefined,
-        project_id: inboxProject?.id,
+        project_id: selectedProjectId || inboxProject?.id,
         due_date: dueDate?.toISOString(),
         priority,
       }, {
@@ -339,6 +353,37 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
                 </Button>
               ))}
             </div>
+
+            {/* Project Selector */}
+            <Select
+              value={selectedProjectId || 'inbox'}
+              onValueChange={(v) => setSelectedProjectId(v === 'inbox' ? null : v)}
+            >
+              <SelectTrigger className="h-8 w-[140px] text-xs border-transparent bg-secondary hover:bg-secondary/80">
+                <SelectValue placeholder="Inbox" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="inbox">
+                  <div className="flex items-center gap-2">
+                    <Inbox className="h-3 w-3" />
+                    <span>Inbox</span>
+                  </div>
+                </SelectItem>
+                {projects
+                  ?.filter((p) => !p.is_inbox)
+                  .map((project) => (
+                    <SelectItem key={project.id} value={project.id}>
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="h-3 w-3 rounded-full shrink-0"
+                          style={{ backgroundColor: project.color }}
+                        />
+                        <span className="truncate">{project.name}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="flex items-center gap-2">

@@ -12,10 +12,11 @@ import { cn } from '@/lib/utils';
 interface TaskListProps {
   sortBy?: SortOption;
   groupBy?: GroupOption;
+  projectId?: string | null;
 }
 
-export default function TaskList({ sortBy = 'date', groupBy = 'none' }: TaskListProps) {
-  const { data: tasks, isLoading } = useTasks();
+export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId }: TaskListProps) {
+  const { data: tasks, isLoading } = useTasks({ projectId });
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   const processedTasks = useMemo(() => {

@@ -200,58 +200,75 @@ export function useDeleteTask() {
 
       await queryClient.cancelQueries({ queryKey: ["tasks"] });
 
-      const queryKey = [
-        "tasks",
-        { projectId: undefined, showCompleted: false },
-      ];
-      const previousTasks = queryClient.getQueryData<Task[]>(queryKey);
+      // Get all task query caches and find the deleted task
+      const allTaskQueries = queryClient.getQueriesData<Task[]>({
+        queryKey: ["tasks"],
+      });
+      let deletedTask: Task | undefined;
 
-      // Optimistically remove from UI
-      queryClient.setQueryData<Task[]>(queryKey, (old) =>
-        old?.filter((task) => task.id !== id)
-      );
+      // Search through all task caches to find the task being deleted
+      for (const [, data] of allTaskQueries) {
+        if (data) {
+          const found = data.find((task) => task.id === id);
+          if (found) {
+            deletedTask = found;
+            break;
+          }
+        }
+      }
 
-      // Find the deleted task for undo
-      const deletedTask = previousTasks?.find((task) => task.id === id);
+      // Optimistically remove from ALL task caches
+      for (const [queryKey] of allTaskQueries) {
+        queryClient.setQueryData<Task[]>(queryKey, (old) =>
+          old?.filter((task) => task.id !== id)
+        );
+      }
 
       // Show undo toast
       if (deletedTask) {
+        const taskToRestore = { ...deletedTask };
         toast("Task deleted", {
           description: deletedTask.content,
           duration: 5000,
           action: {
             label: "Undo",
             onClick: async () => {
-              // Restore task optimistically
-              queryClient.setQueryData<Task[]>(queryKey, (old) =>
-                old ? [...old, deletedTask] : [deletedTask]
-              );
-
-              // Re-insert into database
-              const { error } = await supabase
-                .from("tasks")
-                .insert(deletedTask);
+              // Re-insert into database using insert (task was hard-deleted)
+              const { error } = await supabase.from("tasks").insert({
+                id: taskToRestore.id,
+                user_id: taskToRestore.user_id,
+                project_id: taskToRestore.project_id,
+                parent_id: taskToRestore.parent_id,
+                content: taskToRestore.content,
+                description: taskToRestore.description,
+                priority: taskToRestore.priority,
+                due_date: taskToRestore.due_date,
+                is_completed: taskToRestore.is_completed,
+                completed_at: taskToRestore.completed_at,
+                day_order: taskToRestore.day_order,
+                recurrence: taskToRestore.recurrence,
+                google_event_id: taskToRestore.google_event_id,
+                google_etag: taskToRestore.google_etag,
+              });
 
               if (error) {
+                console.error("Failed to restore task:", error);
                 toast.error("Failed to restore task");
-                queryClient.invalidateQueries({ queryKey: ["tasks"] });
               } else {
                 toast("Task restored");
               }
+              // Always invalidate to sync with database
+              queryClient.invalidateQueries({ queryKey: ["tasks"] });
             },
           },
         });
       }
 
-      return { previousTasks };
+      return { deletedTask };
     },
-    onError: (_err, _id, context) => {
-      if (context?.previousTasks) {
-        queryClient.setQueryData(
-          ["tasks", { projectId: undefined, showCompleted: false }],
-          context.previousTasks
-        );
-      }
+    onError: (_err, _id, _context) => {
+      // Invalidate to refetch from database on error
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
