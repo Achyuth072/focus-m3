@@ -117,7 +117,7 @@ function TaskItem({ task, onClick }: TaskItemProps) {
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
           className={cn(
-            'relative flex items-start gap-3 p-3 rounded-xl border bg-card cursor-pointer transition-colors hover:bg-muted/50',
+            'relative flex items-start gap-3 p-3 rounded-xl border bg-secondary/50 cursor-pointer transition-colors hover:bg-secondary/70',
             isChecking && 'opacity-50'
           )}
           onClick={(e) => {
@@ -159,7 +159,7 @@ function TaskItem({ task, onClick }: TaskItemProps) {
                 variant="ghost"
                 size="icon"
                 onClick={toggleExpand}
-                className="h-5 w-5 -mt-0.5 text-muted-foreground hover:text-foreground opacity-0 group-hover/item:opacity-100 transition-opacity"
+                className="h-5 w-5 -mt-0.5 text-muted-foreground hover:text-foreground transition-colors"
               >
                 {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
               </Button>
