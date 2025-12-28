@@ -238,8 +238,8 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
         </div>
 
         {/* Actions Row */}
-        <div className="flex items-center justify-between gap-2 pt-4 border-t mt-4">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 pt-4 border-t mt-4 overflow-hidden">
+          <div className="flex items-center gap-2 flex-1 overflow-x-auto scrollbar-hide pr-2 mask-linear">
             {/* Date & Time Picker */}
             <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
               <PopoverTrigger asChild>
@@ -335,31 +335,39 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
             </Popover>
 
             {/* Priority Selector */}
-            <div className="flex items-center gap-1">
-              {priorities.map((p) => (
-                <Button
-                  key={p.value}
-                  variant="ghost"
-                  size="sm"
-                  className={cn(
-                    'h-8 w-8 p-0 text-xs font-bold rounded-md transition-all border border-transparent',
-                    priority === p.value 
-                      ? p.color 
-                      : 'bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:border-border'
-                  )}
-                  onClick={() => setPriority(p.value)}
-                >
-                  {p.label}
-                </Button>
-              ))}
-            </div>
+            <Select
+              value={priority.toString()}
+              onValueChange={(v) => setPriority(parseInt(v) as 1 | 2 | 3 | 4)}
+            >
+              <SelectTrigger 
+                className={cn(
+                  "h-8 w-[80px] px-2.5 text-xs font-bold border-transparent transition-all shrink-0",
+                  priorities.find(p => p.value === priority)?.color || 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                )}
+              >
+                <div className="flex items-center gap-1.5">
+                  <Flag className={cn("h-3.5 w-3.5", priority === 4 ? "text-muted-foreground" : "text-white")} />
+                  <span>{priorities.find(p => p.value === priority)?.label}</span>
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                {priorities.map((p) => (
+                  <SelectItem key={p.value} value={p.value.toString()}>
+                    <div className="flex items-center gap-2">
+                      <Flag className={cn("h-3.5 w-3.5", p.value === 4 ? "text-muted-foreground" : p.color.split(' ')[0].replace('bg-', 'text-'))} />
+                      <span className="font-medium">{p.label} - {p.value === 1 ? 'Urgent' : p.value === 2 ? 'High' : p.value === 3 ? 'Normal' : 'Low'}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
             {/* Project Selector */}
             <Select
               value={selectedProjectId || 'inbox'}
               onValueChange={(v) => setSelectedProjectId(v === 'inbox' ? null : v)}
             >
-              <SelectTrigger className="h-8 w-[140px] text-xs border-transparent bg-secondary hover:bg-secondary/80">
+              <SelectTrigger className="h-8 w-[110px] md:w-[140px] text-xs border-transparent bg-secondary hover:bg-secondary/80 shrink-0">
                 <SelectValue placeholder="Inbox" />
               </SelectTrigger>
               <SelectContent>
@@ -386,7 +394,7 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
             </Select>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             {/* Delete Button (only for existing tasks) */}
             {initialTask && (
               <Button
