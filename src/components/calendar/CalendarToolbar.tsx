@@ -46,7 +46,9 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
       case 'year':
         return format(currentDate, 'yyyy');
       case 'month':
-        return format(currentDate, 'MMMM yyyy');
+        return isMobile 
+          ? format(currentDate, 'MMM yyyy') 
+          : format(currentDate, 'MMMM yyyy');
       case 'week':
       case '3day':
       case '4day':
