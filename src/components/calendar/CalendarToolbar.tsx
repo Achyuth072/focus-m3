@@ -52,7 +52,10 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
       case '4day':
         return format(currentDate, 'MMM yyyy');
       case 'day':
-        return format(currentDate, 'EEEE, MMMM d, yyyy');
+        // Shorter format on mobile to prevent overflow
+        return isMobile 
+          ? format(currentDate, 'EEE, MMM d')
+          : format(currentDate, 'EEEE, MMMM d, yyyy');
       case 'schedule':
         return 'Schedule';
       default:
@@ -78,7 +81,7 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
           </Button>
         </div>
 
-        <div className="text-lg font-semibold min-w-[200px]">
+        <div className="text-base md:text-lg font-semibold min-w-0 md:min-w-[200px] truncate">
           {getDateLabel()}
         </div>
       </div>

@@ -15,7 +15,8 @@ interface AppShellProps {
 
 export default function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
-  const isImmersive = pathname === '/focus';
+  const isFocus = pathname === '/focus';
+  const hideMobileNav = pathname === '/focus' || pathname === '/settings';
   const { user, loading } = useAuth();
 
   // Global realtime sync - stays alive during navigation
@@ -29,11 +30,11 @@ export default function AppShell({ children }: AppShellProps) {
   return (
     <CompletedTasksProvider>
       <SidebarProvider defaultOpen={true}>
-        {/* Mobile Top Bar - hidden only on Focus page */}
-        {!isImmersive && <MobileHeader />}
+        {/* Mobile Top Bar - hidden on Focus and Settings pages */}
+        {!hideMobileNav && <MobileHeader />}
 
         {/* Desktop Sidebar - hidden only on Focus page */}
-        {!isImmersive && <AppSidebar />}
+        {!isFocus && <AppSidebar />}
         
         {/* Main Content with proper inset */}
         <SidebarInset>
@@ -42,8 +43,8 @@ export default function AppShell({ children }: AppShellProps) {
           </div>
         </SidebarInset>
 
-        {/* Mobile Bottom Nav - hidden only on Focus page */}
-        {!isImmersive && <MobileNav />}
+        {/* Mobile Bottom Nav - hidden on Focus and Settings pages */}
+        {!hideMobileNav && <MobileNav />}
       </SidebarProvider>
     </CompletedTasksProvider>
   );
