@@ -64,10 +64,10 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
   };
 
   return (
-    <div className={cn('flex items-center justify-between gap-4 p-4 border-b border-l bg-sidebar', className)}>
+    <div className={cn('flex items-center justify-between gap-2 p-2 md:gap-4 md:p-4 border-b border-l bg-sidebar', className)}>
       {/* Left: Date Navigation */}
-      <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" onClick={goToToday}>
+      <div className="flex items-center gap-1 md:gap-2">
+        <Button variant="outline" size={isMobile ? "icon" : "sm"} onClick={goToToday} className={cn(isMobile && "h-8 w-8")}>
           <CalendarIcon className="h-4 w-4 md:mr-2" />
           <span className="hidden md:inline">Today</span>
         </Button>
@@ -88,7 +88,7 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
 
       {/* Right: View Selector */}
       <Select value={view} onValueChange={(v) => setView(v as CalendarView)}>
-        <SelectTrigger className="w-[140px]">
+        <SelectTrigger className="w-[105px] md:w-[140px] h-8 md:h-10 text-xs md:text-sm">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
