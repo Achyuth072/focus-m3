@@ -116,7 +116,7 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
           value={content}
           onChange={(e) => setContent(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="min-h-[150px] md:min-h-[100px] text-base font-medium resize-none border-none shadow-none focus-visible:ring-0 p-0"
+          className="min-h-[150px] md:min-h-[100px] text-base font-medium resize-none border-none shadow-none focus-visible:ring-0 p-0 placeholder:text-muted-foreground/70"
         />
 
         {/* Actions Row */}
@@ -129,8 +129,9 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
                   variant="outline"
                   size="sm"
                   className={cn(
-                    'h-8 gap-1.5',
-                    dueDate && 'text-primary'
+                    'h-8 gap-1.5 font-medium border border-transparent transition-all',
+                    !dueDate && 'bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:border-border',
+                    dueDate && 'bg-primary/10 text-primary hover:bg-primary/20'
                   )}
                 >
                   <CalendarIcon className="h-4 w-4" />
@@ -223,8 +224,10 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
                   variant="ghost"
                   size="sm"
                   className={cn(
-                    'h-8 w-8 p-0 text-xs font-semibold',
-                    priority === p.value ? p.color : 'bg-transparent text-muted-foreground'
+                    'h-8 w-8 p-0 text-xs font-bold rounded-md transition-all border border-transparent',
+                    priority === p.value 
+                      ? p.color 
+                      : 'bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:border-border'
                   )}
                   onClick={() => setPriority(p.value)}
                 >
@@ -240,21 +243,22 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                className="h-8 w-8 p-0 text-muted-foreground/80 hover:text-red-500 hover:bg-red-500/10 transition-colors"
                 onClick={handleDelete}
+                title="Delete task"
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-4.5 w-4.5" />
               </Button>
             )}
 
             {/* Submit Button */}
             <Button
               size="sm"
-              className="h-8"
+              className="h-8 px-4 font-semibold"
               onClick={handleSubmit}
               disabled={!hasContent || isPending}
             >
-              {isPending ? 'Saving...' : initialTask ? 'Save' : 'Add'}
+              {isPending ? 'Saving...' : initialTask ? 'Save' : 'Add Task'}
             </Button>
           </div>
         </div>
