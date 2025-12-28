@@ -88,6 +88,7 @@ export function useCreateTask() {
     },
     onSettled: (_data, _error, variables) => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["stats-dashboard"] });
       // If this was a subtask, also invalidate the parent's subtask list
       if (variables.parent_id) {
         queryClient.invalidateQueries({
@@ -156,6 +157,7 @@ export function useToggleTask() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["stats-dashboard"] });
     },
   });
 }
@@ -217,6 +219,7 @@ export function useDeleteTask() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["stats-dashboard"] });
     },
   });
 }
@@ -243,6 +246,59 @@ export function useReorderTasks() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
+}
+
+export function useClearCompletedTasks() {
+  const queryClient = useQueryClient();
+  const supabase = createClient();
+
+  return useMutation({
+    mutationFn: async (): Promise<void> => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const { error } = await supabase
+        .from("tasks")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("is_completed", true);
+
+      if (error) throw new Error(error.message);
+    },
+    onMutate: async () => {
+      // Cancel outgoing queries
+      await queryClient.cancelQueries({ queryKey: ["tasks"] });
+
+      // Snapshot previous data for rollback
+      const previousTasks = queryClient.getQueriesData({ queryKey: ["tasks"] });
+
+      // Optimistically remove all completed tasks from cache
+      queryClient.setQueriesData({ queryKey: ["tasks"] }, (oldData: any) => {
+        if (!oldData) return oldData;
+        if (Array.isArray(oldData)) {
+          return oldData.filter((task: Task) => !task.is_completed);
+        }
+        return oldData;
+      });
+
+      return { previousTasks };
+    },
+    onError: (_err, _vars, context) => {
+      // Rollback on error
+      if (context?.previousTasks) {
+        context.previousTasks.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+    },
+    onSettled: () => {
+      // Invalidate all task queries to refresh the UI
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["stats-dashboard"] });
     },
   });
 }

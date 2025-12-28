@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { TimePicker } from '@/components/ui/time-picker';
+import { DeleteConfirmationDialog } from '@/components/ui/DeleteConfirmationDialog';
 import { useCreateTask, useUpdateTask, useDeleteTask } from '@/lib/hooks/useTaskMutations';
 import { useInboxProject } from '@/lib/hooks/useTasks';
 import { Calendar as CalendarIcon, Flag, Trash2, X } from 'lucide-react';
@@ -33,6 +34,7 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
   const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
   const [priority, setPriority] = useState<1 | 2 | 3 | 4>(4);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const createMutation = useCreateTask();
   const updateMutation = useUpdateTask();
@@ -79,6 +81,12 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
 
   const handleDelete = () => {
     if (!initialTask) return;
+    setShowDeleteDialog(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!initialTask) return;
+    setShowDeleteDialog(false);
     onClose();
     deleteMutation.mutate(initialTask.id);
   };
@@ -251,6 +259,14 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
           </div>
         </div>
       </DialogContent>
+
+      <DeleteConfirmationDialog
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Task"
+        description={`Are you sure you want to delete "${initialTask?.content}"? This action cannot be undone.`}
+      />
     </Dialog>
   );
 }

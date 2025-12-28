@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { motion, useMotionValue, useTransform, PanInfo } from 'framer-motion';
 import { Checkbox } from '@/components/ui/checkbox';
+import { DeleteConfirmationDialog } from '@/components/ui/DeleteConfirmationDialog';
 import { useUpdateTask, useDeleteTask } from '@/lib/hooks/useTaskMutations';
 import { format, isToday, isTomorrow, isPast, parseISO } from 'date-fns';
 import { Calendar, Flag, Trash2 } from 'lucide-react';
@@ -14,7 +15,8 @@ interface TaskItemProps {
   onClick?: () => void;
 }
 
-const SWIPE_THRESHOLD = 100;
+// Mobile-optimized threshold: require 40% of typical mobile screen width (~150px on small devices)
+const SWIPE_THRESHOLD = 150;
 
 const priorityColors: Record<1 | 2 | 3 | 4, string> = {
   1: 'text-red-500 border-red-500',
@@ -32,6 +34,10 @@ function formatDueDate(dateString: string): string {
 
 function TaskItem({ task, onClick }: TaskItemProps) {
   const [isChecking, setIsChecking] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  
   const updateMutation = useUpdateTask();
   const deleteMutation = useDeleteTask();
 
@@ -52,88 +58,127 @@ function TaskItem({ task, onClick }: TaskItemProps) {
     );
   };
 
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
+
   const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    setIsDragging(false);
     if (info.offset.x < -SWIPE_THRESHOLD) {
-      deleteMutation.mutate(task.id);
+      setPendingDelete(true);
+      setShowDeleteDialog(true);
     }
+    // Reset position
+    x.set(0);
+  };
+
+  const handleConfirmDelete = () => {
+    if (pendingDelete) {
+      deleteMutation.mutate(task.id);
+      setPendingDelete(false);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setPendingDelete(false);
+    setShowDeleteDialog(false);
   };
 
   const isOverdue = task.due_date && isPast(parseISO(task.due_date)) && !isToday(parseISO(task.due_date));
 
   return (
-    <motion.div
-      style={{ background }}
-      className="relative rounded-xl overflow-hidden"
-    >
-      {/* Delete indicator */}
-      <div className="absolute inset-y-0 right-0 flex items-center justify-end pr-4 text-destructive">
-        <Trash2 className="h-5 w-5" />
-      </div>
-
-      {/* Main content */}
+    <>
       <motion.div
-        style={{ x }}
-        drag="x"
-        dragConstraints={{ left: 0, right: 0 }}
-        dragElastic={0.1}
-        onDragEnd={handleDragEnd}
-        className={cn(
-          'relative flex items-start gap-3 p-3 rounded-xl border bg-card cursor-pointer transition-colors hover:bg-muted/50',
-          isChecking && 'opacity-50'
-        )}
-        onClick={onClick}
+        style={{ background }}
+        className="relative rounded-xl overflow-hidden"
       >
-        {/* Checkbox */}
-        <div
-          className="pt-0.5"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <Checkbox
-            checked={task.is_completed}
-            onCheckedChange={handleComplete}
-            className={cn(
-              'h-5 w-5 rounded-full',
-              priorityColors[task.priority]
-            )}
-          />
-        </div>
+        {/* Delete indicator - only visible during drag */}
+        {isDragging && (
+          <div className="absolute inset-y-0 right-0 flex items-center justify-end pr-4 text-destructive">
+            <Trash2 className="h-5 w-5" />
+          </div>
+        )}
 
-        {/* Content */}
-        <div className="flex-1 min-w-0">
-          <p
-            className={cn(
-              'text-sm font-medium leading-tight',
-              task.is_completed && 'line-through text-muted-foreground'
-            )}
-          >
-            {task.content}
-          </p>
-
-          {/* Metadata row */}
-          {(task.due_date || task.priority < 4) && (
-            <div className="flex items-center gap-2 mt-1.5">
-              {task.due_date && (
-                <span
-                  className={cn(
-                    'flex items-center gap-1 text-xs',
-                    isOverdue ? 'text-destructive' : 'text-muted-foreground'
-                  )}
-                >
-                  <Calendar className="h-3 w-3" />
-                  {formatDueDate(task.due_date)}
-                </span>
-              )}
-              {task.priority < 4 && (
-                <span className={cn('flex items-center gap-1 text-xs', priorityColors[task.priority])}>
-                  <Flag className="h-3 w-3" />
-                  P{task.priority}
-                </span>
-              )}
-            </div>
+        {/* Main content */}
+        <motion.div
+          style={{ x }}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={{ left: 0.2, right: 0 }}
+          dragMomentum={false}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          className={cn(
+            'relative flex items-start gap-3 p-3 rounded-xl border bg-card cursor-pointer transition-colors hover:bg-muted/50',
+            isChecking && 'opacity-50'
           )}
-        </div>
+          onClick={(e) => {
+            // Only trigger onClick if we're not dragging
+            if (!isDragging && onClick) {
+              onClick();
+            }
+          }}
+        >
+          {/* Checkbox */}
+          <div
+            className="pt-0.5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Checkbox
+              checked={task.is_completed}
+              onCheckedChange={handleComplete}
+              className={cn(
+                'h-5 w-5 rounded-full',
+                priorityColors[task.priority]
+              )}
+            />
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 min-w-0">
+            <p
+              className={cn(
+                'text-sm font-medium leading-tight',
+                task.is_completed && 'line-through text-muted-foreground'
+              )}
+            >
+              {task.content}
+            </p>
+
+            {/* Metadata row */}
+            {(task.due_date || task.priority < 4) && (
+              <div className="flex items-center gap-2 mt-1.5">
+                {task.due_date && (
+                  <span
+                    className={cn(
+                      'flex items-center gap-1 text-xs',
+                      isOverdue ? 'text-destructive' : 'text-muted-foreground'
+                    )}
+                  >
+                    <Calendar className="h-3 w-3" />
+                    {formatDueDate(task.due_date)}
+                  </span>
+                )}
+                {task.priority < 4 && (
+                  <span className={cn('flex items-center gap-1 text-xs', priorityColors[task.priority])}>
+                    <Flag className="h-3 w-3" />
+                    P{task.priority}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+        </motion.div>
       </motion.div>
-    </motion.div>
+
+      <DeleteConfirmationDialog
+        isOpen={showDeleteDialog}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        title="Delete Task"
+        description={`Are you sure you want to delete "${task.content}"? This action cannot be undone.`}
+      />
+    </>
   );
 }
 

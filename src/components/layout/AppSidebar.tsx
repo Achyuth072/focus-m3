@@ -21,23 +21,26 @@ import {
   BarChart3,
   Timer,
   Settings,
+  CheckCircle2,
 } from 'lucide-react';
+import { useCompletedTasks } from '@/components/CompletedTasksProvider';
 
 const mainNavItems = [
-  { label: 'Tasks', icon: CheckSquare, path: '/' },
-  { label: 'Calendar', icon: Calendar, path: '/calendar' },
-  { label: 'Stats', icon: BarChart3, path: '/stats' },
+  { label: 'Tasks', icon: CheckSquare, path: '/', isAction: false },
+  { label: 'Calendar', icon: Calendar, path: '/calendar', isAction: false },
+  { label: 'Stats', icon: BarChart3, path: '/stats', isAction: false },
 ];
 
 const secondaryNavItems = [
-  { label: 'Focus', icon: Timer, path: '/focus' },
-  { label: 'Settings', icon: Settings, path: '/settings' },
+  { label: 'Focus', icon: Timer, path: '/focus', isAction: false },
+  { label: 'Settings', icon: Settings, path: '/settings', isAction: false },
 ];
 
 export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { isMobile, setOpenMobile } = useSidebar();
+  const { openSheet } = useCompletedTasks();
 
   // Prefetch all routes on mount for instant navigation
   useEffect(() => {
@@ -66,12 +69,16 @@ export function AppSidebar() {
                 <SidebarMenu>
                   {mainNavItems.map((item) => {
                     const Icon = item.icon;
-                    const isActive = pathname === item.path;
+                    const isActive = pathname === item.path && !item.isAction;
                     return (
                       <SidebarMenuItem key={item.label}>
                         <SidebarMenuButton
                           onClick={() => {
-                            router.push(item.path);
+                            if (item.isAction) {
+                              openSheet();
+                            } else {
+                              router.push(item.path);
+                            }
                             if (isMobile) setOpenMobile(false);
                           }}
                           isActive={isActive}
