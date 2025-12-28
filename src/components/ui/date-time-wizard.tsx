@@ -17,10 +17,7 @@ interface DateTimeWizardProps {
 
 export function DateTimeWizard({ date, setDate, onClose }: DateTimeWizardProps) {
   const [step, setStep] = useState<'date' | 'time'>('date');
-  // Initialize with today if no date, but don't commit it until selection?
-  // Actually, TaskSheet passes current `dueDate` or undefined.
-  // If undefined, we can show "Pick a Date" and passing `new Date()` to Calendar just for display?
-  // Better: if undefined, Calendar has no selection. Custom handler sets it.
+
 
   const handleDateSelect = (newDate: Date | undefined) => {
     if (!newDate) {
@@ -45,7 +42,7 @@ export function DateTimeWizard({ date, setDate, onClose }: DateTimeWizardProps) 
 
   const handleTimeChange = (newTime: Date) => {
     // LargeTimePicker returns a Date object with correct time parts
-    // We just update the state.
+
     setDate(newTime);
   };
 
@@ -100,7 +97,7 @@ export function DateTimeWizard({ date, setDate, onClose }: DateTimeWizardProps) 
                   table: 'w-full border-collapse space-y-1',
                   head_row: 'flex w-full justify-between',
                   row: 'flex w-full justify-between mt-2',
-                  // Ensure buttons use full width for easier touching
+
                   day: 'h-9 w-9 p-0 font-normal aria-selected:opacity-100 rounded-md hover:bg-accent hover:text-accent-foreground',
                   head_cell: 'text-muted-foreground rounded-md w-9 font-normal text-[0.8rem] text-center',
               }}

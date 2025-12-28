@@ -69,9 +69,7 @@ export default function SubtaskList({
     }
   };
 
-  // if (isLoading && taskId) {
-  //   return <div className="h-20 flex items-center justify-center text-xs text-muted-foreground">Loading checklist...</div>;
-  // }
+
 
   const items = isDraftMode ? draftSubtasks : subtasks || [];
 

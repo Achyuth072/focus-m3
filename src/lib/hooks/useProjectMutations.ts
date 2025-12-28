@@ -116,7 +116,6 @@ export function useDeleteProject() {
 
       if (updateError) throw new Error(updateError.message);
 
-      // Then delete the project
       const { error } = await supabase.from("projects").delete().eq("id", id);
       if (error) throw new Error(error.message);
     },
