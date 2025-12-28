@@ -9,9 +9,12 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { TimePicker } from '@/components/ui/time-picker';
 import { DeleteConfirmationDialog } from '@/components/ui/DeleteConfirmationDialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCreateTask, useUpdateTask, useDeleteTask } from '@/lib/hooks/useTaskMutations';
 import { useInboxProject } from '@/lib/hooks/useTasks';
 import { Calendar as CalendarIcon, Flag, Trash2, X } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { cn } from '@/lib/utils';
 import type { Task } from '@/lib/types/task';
 
@@ -31,6 +34,8 @@ const priorities: { value: 1 | 2 | 3 | 4; label: string; color: string }[] = [
 
 export default function TaskSheet({ open, onClose, initialTask, initialDate }: TaskSheetProps) {
   const [content, setContent] = useState('');
+  const [description, setDescription] = useState('');
+  const [activeTab, setActiveTab] = useState<'write' | 'preview'>('write');
   const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
   const [priority, setPriority] = useState<1 | 2 | 3 | 4>(4);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
@@ -46,12 +51,17 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
     if (open) {
       if (initialTask) {
         setContent(initialTask.content);
+        setDescription(initialTask.description || '');
         setDueDate(initialTask.due_date ? new Date(initialTask.due_date) : undefined);
         setPriority(initialTask.priority);
+        // Default to preview if description exists, otherwise write
+        setActiveTab(initialTask.description ? 'preview' : 'write');
       } else {
         setContent('');
+        setDescription('');
         setDueDate(initialDate ?? undefined);
         setPriority(4);
+        setActiveTab('write');
       }
     }
   }, [open, initialTask, initialDate]);
@@ -66,12 +76,14 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
       updateMutation.mutate({
         id: initialTask.id,
         content: trimmedContent,
+        description: description.trim() || undefined,
         due_date: dueDate?.toISOString() ?? null,
         priority,
       });
     } else {
       createMutation.mutate({
         content: trimmedContent,
+        description: description.trim() || undefined,
         project_id: inboxProject?.id,
         due_date: dueDate?.toISOString(),
         priority,
@@ -116,8 +128,69 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
           value={content}
           onChange={(e) => setContent(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="min-h-[150px] md:min-h-[100px] text-base font-medium resize-none border-none shadow-none focus-visible:ring-0 p-0 placeholder:text-muted-foreground/70"
+          className="min-h-[60px] text-base font-medium resize-none border-none shadow-none focus-visible:ring-0 p-0 placeholder:text-muted-foreground/70"
         />
+
+        {/* Description Input (Markdown) */}
+        <div className="px-0 pt-2 pb-2">
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'write' | 'preview')} className="w-full">
+            <div className="flex items-center justify-between pb-2">
+              <span className="text-xs font-medium text-muted-foreground ml-1">Description</span>
+              <TabsList className="h-6 p-0 bg-transparent gap-2">
+                {initialTask ? (
+                  <>
+                    <TabsTrigger 
+                      value="preview" 
+                      className="h-6 px-2 text-xs data-[state=active]:bg-secondary data-[state=active]:text-foreground rounded-sm"
+                      disabled={!description.trim()}
+                    >
+                      View
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="write" 
+                      className="h-6 px-2 text-xs data-[state=active]:bg-secondary data-[state=active]:text-foreground rounded-sm"
+                    >
+                      Edit
+                    </TabsTrigger>
+                  </>
+                ) : (
+                  <>
+                    <TabsTrigger 
+                      value="write" 
+                      className="h-6 px-2 text-xs data-[state=active]:bg-secondary data-[state=active]:text-foreground rounded-sm"
+                    >
+                      Write
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="preview" 
+                      className="h-6 px-2 text-xs data-[state=active]:bg-secondary data-[state=active]:text-foreground rounded-sm"
+                      disabled={!description.trim()}
+                    >
+                      Preview
+                    </TabsTrigger>
+                  </>
+                )}
+              </TabsList>
+            </div>
+            
+            <TabsContent value="write" className="mt-0">
+              <Textarea
+                placeholder="Add details... (Markdown supported)"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="min-h-[100px] text-sm resize-none border-none shadow-none focus-visible:ring-0 p-2 bg-secondary/30 rounded-md placeholder:text-muted-foreground/60"
+              />
+            </TabsContent>
+            
+            <TabsContent value="preview" className="mt-0">
+              <div className="min-h-[100px] p-2 text-sm prose prose-sm dark:prose-invert max-w-none bg-secondary/10 rounded-md overflow-y-auto max-h-[300px]">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {description || '*No description*'}
+                </ReactMarkdown>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
 
         {/* Actions Row */}
         <div className="flex items-center justify-between gap-2 pt-4 border-t mt-4">
