@@ -29,6 +29,7 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
         { value: 'month', label: 'Month' },
         { value: 'week', label: 'Week' },
         { value: '3day', label: '3 Days' },
+        { value: 'day', label: 'Day' },
         { value: 'schedule', label: 'Schedule' },
       ]
     : [
