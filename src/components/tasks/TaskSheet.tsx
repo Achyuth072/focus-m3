@@ -103,7 +103,7 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
       createMutation.mutate({
         content: trimmedContent,
         description: description.trim() || undefined,
-        project_id: selectedProjectId || inboxProject?.id,
+        project_id: selectedProjectId || undefined,
         due_date: dueDate?.toISOString(),
         priority,
       }, {
