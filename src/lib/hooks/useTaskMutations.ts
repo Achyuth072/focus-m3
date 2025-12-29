@@ -181,6 +181,7 @@ export function useUpdateTask() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["stats-dashboard"] });
     },
   });
 }
@@ -299,6 +300,7 @@ export function useReorderTasks() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["stats-dashboard"] });
     },
   });
 }

@@ -21,6 +21,8 @@ export function useStats() {
 
   return useQuery({
     queryKey: ["stats-dashboard"],
+    staleTime: 0, // Mark data as stale immediately
+    refetchOnWindowFocus: "always", // Always refetch when window gets focus
     queryFn: async (): Promise<StatsData> => {
       const thirtyDaysAgo = subDays(new Date(), 30).toISOString();
 

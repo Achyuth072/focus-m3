@@ -132,7 +132,7 @@ export function CompletedTasksSheet({ open, onOpenChange }: CompletedTasksSheetP
           </p>
         </div>
       ) : (
-        <div className="space-y-6 p-4">
+        <div className="space-y-6 pt-2 pb-8 px-4">
           <TaskGroup title="Today" tasks={today} />
           <TaskGroup title="Yesterday" tasks={yesterday} />
           <TaskGroup title="This Week" tasks={thisWeek} />
@@ -153,10 +153,10 @@ export function CompletedTasksSheet({ open, onOpenChange }: CompletedTasksSheetP
             </DialogTitle>
             {completedTasks.length > 0 && (
               <Button
-                variant="destructive"
+                variant="ghost"
                 size="sm"
                 onClick={() => setShowClearDialog(true)}
-                className="gap-2"
+                className="gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
               >
                 <Trash2 className="h-4 w-4" />
                 Clear History
@@ -183,21 +183,24 @@ export function CompletedTasksSheet({ open, onOpenChange }: CompletedTasksSheetP
     <>
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerContent className="max-h-[90vh] flex flex-col">
-          <DrawerHeader className="border-b flex-row items-center justify-between space-y-0 pr-12">
-            <DrawerTitle className="flex items-center gap-2">
+          <div className="flex flex-row items-center justify-between border-b px-6 py-4">
+            <DrawerTitle className="flex items-center gap-2 text-base font-semibold">
               <CheckCircle2 className="h-5 w-5 text-green-500" />
               Completed Tasks
             </DrawerTitle>
-            {completedTasks.length > 0 && (
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => setShowClearDialog(true)}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            )}
-          </DrawerHeader>
+            <div className="flex items-center gap-2">
+              {completedTasks.length > 0 && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                  onClick={() => setShowClearDialog(true)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          </div>
           <div className="overflow-y-auto flex-1">
             {content}
           </div>
