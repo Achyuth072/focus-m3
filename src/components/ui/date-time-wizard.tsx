@@ -50,7 +50,7 @@ export function DateTimeWizard({ date, setDate, onClose }: DateTimeWizardProps) 
   // Let's stick to Date first.
 
   return (
-    <div className="flex flex-col w-[320px] bg-popover rounded-md overflow-hidden">
+    <div className="flex flex-col w-full max-w-[320px] mx-auto bg-popover rounded-md overflow-hidden">
       {/* Header / Tabs */}
       <div className="flex items-center justify-between p-2 border-b bg-muted/40">
         <Tabs 
@@ -79,7 +79,7 @@ export function DateTimeWizard({ date, setDate, onClose }: DateTimeWizardProps) 
       </div>
 
       {/* Content Area */}
-      <div className="p-3">
+      <div className="p-2 sm:p-3">
         {step === 'date' ? (
           <div className="animate-in fade-in zoom-in-95 duration-200">
             <Calendar

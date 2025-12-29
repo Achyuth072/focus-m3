@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ResponsiveDialog, ResponsiveDialogContent, ResponsiveDialogHeader, ResponsiveDialogTitle } from '@/components/ui/responsive-dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
 import { DateTimeWizard } from '@/components/ui/date-time-wizard';
 import { DeleteConfirmationDialog } from '@/components/ui/DeleteConfirmationDialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -58,6 +59,7 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
   const { data: projects } = useProjects();
 
   const [draftSubtasks, setDraftSubtasks] = useState<string[]>([]);
+  const isMobile = useMediaQuery("(max-width: 640px)");
 
   // Reset form when dialog opens
   useEffect(() => {
@@ -145,11 +147,11 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="w-[calc(100%-32px)] sm:max-w-[560px] gap-0 rounded-lg">
-        <DialogHeader className="pb-4">
-          <DialogTitle>{initialTask ? 'Edit Task' : 'New Task'}</DialogTitle>
-        </DialogHeader>
+    <ResponsiveDialog open={open} onOpenChange={onClose}>
+      <ResponsiveDialogContent className="w-full sm:max-w-[560px] gap-0 rounded-lg">
+        <ResponsiveDialogHeader className="pb-4">
+          <ResponsiveDialogTitle>{initialTask ? 'Edit Task' : 'New Task'}</ResponsiveDialogTitle>
+        </ResponsiveDialogHeader>
 
         {/* Content Input */}
         <Textarea
@@ -240,11 +242,12 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
         <div className="flex items-center gap-2 pt-4 border-t mt-4 overflow-hidden">
           <div className="flex items-center gap-2 flex-1 overflow-x-auto scrollbar-hide pr-2 mask-linear">
             {/* Date & Time Picker */}
-            <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
-              <PopoverTrigger asChild>
+            {isMobile ? (
+              <ResponsiveDialog open={datePickerOpen} onOpenChange={setDatePickerOpen}>
                 <Button
                   variant="outline"
                   size="sm"
+                  onClick={() => setDatePickerOpen(true)}
                   className={cn(
                     'h-8 gap-1.5 font-medium border border-transparent transition-all',
                     !dueDate && 'bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:border-border',
@@ -268,18 +271,56 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
                     </span>
                   )}
                 </Button>
-              </PopoverTrigger>
-              <PopoverContent 
-                className="w-auto p-0 border-none shadow-xl" 
-                align="start"
-              >
-                <DateTimeWizard 
-                  date={dueDate} 
-                  setDate={setDueDate} 
-                  onClose={() => setDatePickerOpen(false)} 
-                />
-              </PopoverContent>
-            </Popover>
+                <ResponsiveDialogContent className="w-full p-0">
+                  <DateTimeWizard 
+                    date={dueDate} 
+                    setDate={setDueDate} 
+                    onClose={() => setDatePickerOpen(false)} 
+                  />
+                </ResponsiveDialogContent>
+              </ResponsiveDialog>
+            ) : (
+              <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={cn(
+                      'h-8 gap-1.5 font-medium border border-transparent transition-all',
+                      !dueDate && 'bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:border-border',
+                      dueDate && 'bg-primary/10 text-primary hover:bg-primary/20'
+                    )}
+                  >
+                    <CalendarIcon className="h-4 w-4" />
+                    {dueDate ? format(dueDate, 'MMM d, h:mm a') : 'Due Date'}
+                    {dueDate && (
+                      <span
+                        role="button"
+                        title="Clear due date"
+                        className="ml-1 p-0.5 rounded hover:bg-destructive/20"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setDueDate(undefined);
+                        }}
+                      >
+                        <X className="h-3 w-3 hover:text-destructive" />
+                      </span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent 
+                  className="w-auto p-0 border-none shadow-xl" 
+                  align="start"
+                >
+                  <DateTimeWizard 
+                    date={dueDate} 
+                    setDate={setDueDate} 
+                    onClose={() => setDatePickerOpen(false)} 
+                  />
+                </PopoverContent>
+              </Popover>
+            )}
 
             {/* Priority Selector */}
             <Select
@@ -366,7 +407,7 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
             </Button>
           </div>
         </div>
-      </DialogContent>
+      </ResponsiveDialogContent>
 
       <DeleteConfirmationDialog
         isOpen={showDeleteDialog}
@@ -375,6 +416,6 @@ export default function TaskSheet({ open, onClose, initialTask, initialDate }: T
         title="Delete Task"
         description={`Are you sure you want to delete "${initialTask?.content}"? This action cannot be undone.`}
       />
-    </Dialog>
+    </ResponsiveDialog>
   );
 }
