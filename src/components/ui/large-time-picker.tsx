@@ -67,6 +67,7 @@ export function LargeTimePicker({
       let startScrollTop = 0;
 
       const onPointerDown = (e: PointerEvent) => {
+        if (e.pointerType === 'touch') return;
         isDragging = true;
         startY = e.clientY;
         startScrollTop = el.scrollTop;
