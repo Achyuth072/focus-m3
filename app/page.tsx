@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/components/AuthProvider';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 import TaskList from '@/components/tasks/TaskList';
 import { format } from 'date-fns';
 import { TasksPageHeader } from '@/components/tasks/TasksPageHeader';
-import { GroupOption, SortOption } from '@/lib/types/sorting';
+import { useUiStore } from '@/lib/store/uiStore';
 
 const fadeIn = {
   initial: { opacity: 0, y: 10 },
@@ -20,8 +20,7 @@ function HomeContent() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [sortBy, setSortBy] = useState<SortOption>('date');
-  const [groupBy, setGroupBy] = useState<GroupOption>('none');
+  const { sortBy, groupBy, setSortBy, setGroupBy } = useUiStore();
 
   const currentProjectId = searchParams.get('project') || 'all';
 

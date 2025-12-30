@@ -31,6 +31,7 @@ import {
 import { useCompletedTasks } from '@/components/CompletedTasksProvider';
 import { useProjects } from '@/lib/hooks/useProjects';
 import { CreateProjectDialog } from '@/components/projects/CreateProjectDialog';
+import { useUiStore } from '@/lib/store/uiStore';
 
 const mainNavItems = [
   { label: 'All Tasks', icon: CheckSquare, path: '/', isAction: false },
@@ -51,7 +52,7 @@ export function AppSidebar() {
   const { openSheet } = useCompletedTasks();
   const { data: projects } = useProjects();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const [projectsOpen, setProjectsOpen] = useState(true);
+  const { isProjectsOpen, toggleProjectsOpen } = useUiStore();
 
   const currentProjectId = searchParams.get('project');
 
@@ -128,19 +129,19 @@ export function AppSidebar() {
 
               {/* Projects Section */}
               <SidebarGroup>
-                <SidebarGroupLabel className="cursor-pointer pr-8" onClick={() => setProjectsOpen(!projectsOpen)}>
-                  <FolderKanban className="h-4 w-4 mr-2" />
-                  Projects
+                <SidebarGroupLabel className="cursor-pointer pr-10" onClick={toggleProjectsOpen}>
+                  <FolderKanban />
+                  <span className="flex-1">Projects</span>
                   <ChevronDown 
-                    className={`ml-auto h-4 w-4 transition-transform ${projectsOpen ? '' : '-rotate-90'}`} 
+                    className={`h-4 w-4 shrink-0 translate-y-px transition-transform ${isProjectsOpen ? '' : '-rotate-90'}`} 
                   />
                 </SidebarGroupLabel>
                 <SidebarGroupAction title="Add Project" onClick={() => setCreateDialogOpen(true)}>
                   <Plus className="h-4 w-4" />
                 </SidebarGroupAction>
-                {projectsOpen && (
+                {isProjectsOpen && (
                   <SidebarGroupContent>
-                    <SidebarMenu>
+                    <SidebarMenu className="pl-2">
                       {/* Inbox */}
                       <SidebarMenuItem>
                         <SidebarMenuButton
@@ -164,7 +165,7 @@ export function AppSidebar() {
                               tooltip={project.name}
                             >
                               <div
-                                className="h-3 w-3 rounded-full shrink-0"
+                                className="h-3 w-3 rounded-full shrink-0 group-data-[size=lg]/menu-button:h-4 group-data-[size=lg]/menu-button:w-4"
                                 style={{ backgroundColor: project.color }}
                               />
                               <span className="truncate">{project.name}</span>
