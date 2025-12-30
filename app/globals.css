@@ -48,6 +48,11 @@
   /* Animations */
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  /* Pro Max Springs */
+  --ease-spring-s: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-spring-m: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring-bouncy: cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @keyframes accordion-down {

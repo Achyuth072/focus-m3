@@ -174,9 +174,22 @@ CREATE POLICY "Users can delete own projects" ON projects
 CREATE POLICY "Users can view own tasks" ON tasks
   FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can insert own tasks" ON tasks
-  FOR INSERT WITH CHECK (auth.uid() = user_id);
+  FOR INSERT WITH CHECK (
+    auth.uid() = user_id
+    AND (
+      project_id IS NULL 
+      OR EXISTS (SELECT 1 FROM projects WHERE projects.id = project_id AND projects.user_id = auth.uid())
+    )
+  );
 CREATE POLICY "Users can update own tasks" ON tasks
-  FOR UPDATE USING (auth.uid() = user_id);
+  FOR UPDATE USING (auth.uid() = user_id)
+  WITH CHECK (
+    auth.uid() = user_id
+    AND (
+      project_id IS NULL 
+      OR EXISTS (SELECT 1 FROM projects WHERE projects.id = project_id AND projects.user_id = auth.uid())
+    )
+  );
 CREATE POLICY "Users can delete own tasks" ON tasks
   FOR DELETE USING (auth.uid() = user_id);
 
@@ -190,7 +203,7 @@ CREATE POLICY "Users can update own labels" ON labels
 CREATE POLICY "Users can delete own labels" ON labels
   FOR DELETE USING (auth.uid() = user_id);
 
--- Task Labels: Access through task ownership
+-- Task Labels: Access through task ownership AND label ownership
 CREATE POLICY "Users can view own task_labels" ON task_labels
   FOR SELECT USING (
     EXISTS (SELECT 1 FROM tasks WHERE tasks.id = task_labels.task_id AND tasks.user_id = auth.uid())
@@ -198,6 +211,8 @@ CREATE POLICY "Users can view own task_labels" ON task_labels
 CREATE POLICY "Users can insert own task_labels" ON task_labels
   FOR INSERT WITH CHECK (
     EXISTS (SELECT 1 FROM tasks WHERE tasks.id = task_labels.task_id AND tasks.user_id = auth.uid())
+    AND
+    EXISTS (SELECT 1 FROM labels WHERE labels.id = task_labels.label_id AND labels.user_id = auth.uid())
   );
 CREATE POLICY "Users can delete own task_labels" ON task_labels
   FOR DELETE USING (
@@ -208,8 +223,21 @@ CREATE POLICY "Users can delete own task_labels" ON task_labels
 CREATE POLICY "Users can view own focus_logs" ON focus_logs
   FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can insert own focus_logs" ON focus_logs
-  FOR INSERT WITH CHECK (auth.uid() = user_id);
+  FOR INSERT WITH CHECK (
+    auth.uid() = user_id
+    AND (
+      task_id IS NULL 
+      OR EXISTS (SELECT 1 FROM tasks WHERE tasks.id = task_id AND tasks.user_id = auth.uid())
+    )
+  );
 CREATE POLICY "Users can update own focus_logs" ON focus_logs
-  FOR UPDATE USING (auth.uid() = user_id);
+  FOR UPDATE USING (auth.uid() = user_id)
+  WITH CHECK (
+    auth.uid() = user_id
+    AND (
+      task_id IS NULL 
+      OR EXISTS (SELECT 1 FROM tasks WHERE tasks.id = task_id AND tasks.user_id = auth.uid())
+    )
+  );
 CREATE POLICY "Users can delete own focus_logs" ON focus_logs
   FOR DELETE USING (auth.uid() = user_id);
