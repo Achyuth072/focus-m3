@@ -6,8 +6,6 @@ import { useAuth } from '@/components/AuthProvider';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import TaskList from '@/components/tasks/TaskList';
-import AddTaskFab from '@/components/tasks/AddTaskFab';
-import TaskSheet from '@/components/tasks/TaskSheet';
 import { format } from 'date-fns';
 import { TasksPageHeader } from '@/components/tasks/TasksPageHeader';
 import { GroupOption, SortOption } from '@/lib/types/sorting';
@@ -22,7 +20,6 @@ function HomeContent() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>('date');
   const [groupBy, setGroupBy] = useState<GroupOption>('none');
 
@@ -50,41 +47,30 @@ function HomeContent() {
   const greeting = getGreeting();
 
   return (
-    <>
-      <motion.div {...fadeIn}>
-        {/* Header */}
-        <div className="px-6 pt-4 pb-4 flex items-start justify-between">
-          <div>
-            <p className="text-sm text-muted-foreground">
-              {format(today, 'EEEE, MMMM d')}
-            </p>
-            <h1 className="text-3xl font-normal mt-1">
-              {greeting}
-            </h1>
-          </div>
-          
-          {/* Completed Tasks Button - Desktop Only */}
-          <TasksPageHeader 
-            currentSort={sortBy}
-            currentGroup={groupBy}
-            onSortChange={setSortBy}
-            onGroupChange={setGroupBy}
-          />
+    <motion.div {...fadeIn}>
+      {/* Header */}
+      <div className="px-6 pt-4 pb-4 flex items-start justify-between">
+        <div>
+          <p className="text-sm text-muted-foreground">
+            {format(today, 'EEEE, MMMM d')}
+          </p>
+          <h1 className="text-3xl font-normal mt-1">
+            {greeting}
+          </h1>
         </div>
+        
+        {/* Completed Tasks Button - Desktop Only */}
+        <TasksPageHeader 
+          currentSort={sortBy}
+          currentGroup={groupBy}
+          onSortChange={setSortBy}
+          onGroupChange={setGroupBy}
+        />
+      </div>
 
-        {/* Task List */}
-        <TaskList sortBy={sortBy} groupBy={groupBy} projectId={currentProjectId} />
-      </motion.div>
-
-      {/* FAB */}
-      <AddTaskFab onClick={() => setIsAddTaskOpen(true)} />
-
-      {/* Task Sheet (Create Mode) */}
-      <TaskSheet
-        open={isAddTaskOpen}
-        onClose={() => setIsAddTaskOpen(false)}
-      />
-    </>
+      {/* Task List */}
+      <TaskList sortBy={sortBy} groupBy={groupBy} projectId={currentProjectId} />
+    </motion.div>
   );
 }
 
