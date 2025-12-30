@@ -18,7 +18,6 @@ import {
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import { DateTimeWizard } from "@/components/ui/date-time-wizard";
 import { DeleteConfirmationDialog } from "@/components/ui/DeleteConfirmationDialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   useCreateTask,
   useUpdateTask,
@@ -78,7 +77,7 @@ export default function TaskSheet({
 }: TaskSheetProps) {
   const [content, setContent] = useState("");
   const [description, setDescription] = useState("");
-  const [activeTab, setActiveTab] = useState<"write" | "preview">("write");
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
   const [priority, setPriority] = useState<1 | 2 | 3 | 4>(4);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
@@ -109,8 +108,8 @@ export default function TaskSheet({
         setPriority(initialTask.priority);
         setDraftSubtasks([]);
         setSelectedProjectId(initialTask.project_id);
-        // Default to preview if description exists, otherwise write
-        setActiveTab(initialTask.description ? "preview" : "write");
+        // Default to preview if description exists, otherwise edit
+        setIsPreviewMode(!!initialTask.description);
       } else {
         setContent("");
         setDescription("");
@@ -118,7 +117,7 @@ export default function TaskSheet({
         setPriority(4);
         setDraftSubtasks([]);
         setSelectedProjectId(null);
-        setActiveTab("write");
+        setIsPreviewMode(false);
         setShowSubtasks(false);
       }
     }
@@ -203,10 +202,10 @@ export default function TaskSheet({
           // SIMPLE LAYOUT - Quick Add for Task Creation
           <>
             <ResponsiveDialogHeader className="pb-4">
-              <ResponsiveDialogTitle className="sr-only">New Task</ResponsiveDialogTitle>
+              <ResponsiveDialogTitle>New Task</ResponsiveDialogTitle>
             </ResponsiveDialogHeader>
 
-            <div className="px-4">
+            <div className="px-4 sm:px-0">
               {/* Task Name Input */}
               <Textarea
                 autoFocus
@@ -214,7 +213,7 @@ export default function TaskSheet({
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="min-h-[48px] text-base font-medium resize-none border-none shadow-none focus-visible:ring-0 p-0 placeholder:text-muted-foreground/60"
+                className="min-h-[60px] text-base font-medium resize-none border-none shadow-none focus-visible:ring-0 p-0 placeholder:text-muted-foreground/70"
               />
 
             {/* Icon Row - Metadata Controls */}
@@ -227,7 +226,7 @@ export default function TaskSheet({
                     size="sm"
                     onClick={() => setDatePickerOpen(true)}
                     className={cn(
-                      "h-12 min-w-12 px-0 transition-colors",
+                      "h-10 min-w-10 px-0 transition-colors",
                       dueDate && "text-primary bg-primary/10 px-3 w-auto"
                     )}
                     title="Set due date"
@@ -271,7 +270,7 @@ export default function TaskSheet({
                       variant="ghost"
                       size="sm"
                       className={cn(
-                        "h-12 min-w-12 px-0 transition-colors",
+                        "h-10 min-w-10 px-0 transition-colors",
                         dueDate && "text-primary bg-primary/10 px-3 w-auto"
                       )}
                       title="Set due date"
@@ -314,7 +313,7 @@ export default function TaskSheet({
                 size="sm"
                 onClick={() => setShowSubtasks(!showSubtasks)}
                 className={cn(
-                  "h-12 w-12 p-0 transition-colors",
+                  "h-10 w-10 p-0 transition-colors",
                   showSubtasks && "text-primary bg-primary/10"
                 )}
                 title="Toggle subtasks"
@@ -329,10 +328,10 @@ export default function TaskSheet({
               >
                 <SelectTrigger
                   className={cn(
-                    "h-12 min-w-[3rem] border-none transition-colors",
+                    "h-10 min-w-10 border-none transition-colors",
                     priority !== 4 
                       ? "text-primary bg-primary/10 px-3 w-auto" 
-                      : "px-0 w-12 justify-center"
+                      : "px-0 w-10 justify-center"
                   )}
                   title="Set priority"
                 >
@@ -342,7 +341,8 @@ export default function TaskSheet({
                         "h-5 w-5 stroke-[1.5px]",
                         priority === 1 ? "text-red-500 fill-red-500" :
                         priority === 2 ? "text-orange-500 fill-orange-500" :
-                        priority === 3 ? "text-blue-500 fill-blue-500" : ""
+                        priority === 3 ? "text-blue-500 fill-blue-500" : 
+                        "text-muted-foreground"
                       )} 
                     />
                     {/* Only show text/chevron space if priority is set, mimicking the date picker expansion? 
@@ -392,15 +392,16 @@ export default function TaskSheet({
                 />
               </div>
             )}
+            </div>
 
             {/* Footer Row - Project & Send */}
-            <div className="flex items-center justify-between pt-4 border-t mt-3 pb-[calc(0.5rem+env(safe-area-inset-bottom))]">
+            <div className="flex items-center justify-between pt-4 border-t mt-3 px-4 sm:px-0 pb-[calc(0.5rem+env(safe-area-inset-bottom))]">
               {/* Project Selector */}
               <Select
                 value={selectedProjectId || "inbox"}
                 onValueChange={(v) => setSelectedProjectId(v === "inbox" ? null : v)}
               >
-                <SelectTrigger className="h-8 w-[140px] text-xs border-transparent bg-secondary hover:bg-secondary/80">
+                <SelectTrigger className="h-10 w-[140px] text-xs border-transparent bg-secondary hover:bg-secondary/80 focus:ring-0">
                   <SelectValue placeholder="Inbox" />
                 </SelectTrigger>
                 <SelectContent>
@@ -429,14 +430,13 @@ export default function TaskSheet({
               {/* Send Button */}
               <Button
                 size="sm"
-                className="h-9 w-10 p-0 rounded-md [&_svg]:size-5"
+                className="h-10 w-10 p-0 rounded-md [&_svg]:size-5"
                 onClick={handleSubmit}
                 disabled={!hasContent || isPending}
                 title="Create task"
               >
                 <Send className="stroke-[1.5px]" />
               </Button>
-            </div>
             </div>
           </>
         ) : (
@@ -446,7 +446,9 @@ export default function TaskSheet({
               <ResponsiveDialogTitle>Edit Task</ResponsiveDialogTitle>
             </ResponsiveDialogHeader>
 
-            {/* Content Input */}
+            {/* Main Content Area */}
+            <div className="px-4 sm:px-0 space-y-4">
+              {/* Content Input */}
             <Textarea
               autoFocus
               placeholder="What needs to be done?"
@@ -458,69 +460,70 @@ export default function TaskSheet({
 
             {/* Description Input (Markdown) */}
             <div className="px-0 pt-2 pb-2">
-              <Tabs
-                value={activeTab}
-                onValueChange={(v) => setActiveTab(v as "write" | "preview")}
-                className="w-full"
-              >
-                <div className="flex items-center justify-between pb-2">
-                  <span className="text-xs font-medium text-muted-foreground ml-1">
-                    Description
-                  </span>
-                  <TabsList className="h-6 p-0 bg-transparent gap-2">
-                    <TabsTrigger
-                      value="preview"
-                      className="h-6 px-2 text-xs data-[state=active]:bg-secondary data-[state=active]:text-foreground rounded-sm"
-                      disabled={!description.trim()}
-                    >
-                      View
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="write"
-                      className="h-6 px-2 text-xs data-[state=active]:bg-secondary data-[state=active]:text-foreground rounded-sm"
-                    >
-                      Edit
-                    </TabsTrigger>
-                  </TabsList>
+              <div className="flex items-center justify-between pb-2">
+                <span className="text-xs font-medium text-muted-foreground ml-1">
+                  Description
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-[10px] uppercase tracking-wider font-bold text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+                  onClick={() => setIsPreviewMode(!isPreviewMode)}
+                  disabled={!description.trim() && !isPreviewMode}
+                >
+                  {isPreviewMode ? "Edit" : "Preview"}
+                </Button>
+              </div>
+
+              {isPreviewMode ? (
+                <div className="h-[200px] p-3 text-sm prose prose-sm dark:prose-invert max-w-none bg-secondary/10 rounded-md overflow-y-auto border border-border scrollbar-thin">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {description || "*No description*"}
+                  </ReactMarkdown>
                 </div>
-
-                <TabsContent value="write" className="mt-0">
-                  <Textarea
-                    placeholder="Add details... (Markdown supported)"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className="min-h-[100px] text-sm resize-none border-none shadow-none focus-visible:ring-0 p-2 bg-secondary/30 rounded-md placeholder:text-muted-foreground/60"
-                  />
-                </TabsContent>
-
-                <TabsContent value="preview" className="mt-0">
-                  <div className="min-h-[100px] p-2 text-sm prose prose-sm dark:prose-invert max-w-none bg-secondary/10 rounded-md overflow-y-auto max-h-[300px]">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {description || "*No description*"}
-                    </ReactMarkdown>
-                  </div>
-                </TabsContent>
-              </Tabs>
+              ) : (
+                <Textarea
+                  placeholder="Add details... (Markdown supported)"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="h-[200px] text-sm resize-none focus-visible:ring-1 focus-visible:ring-primary/20 p-3 bg-secondary/30 rounded-md placeholder:text-muted-foreground/60 overflow-y-auto border-border transition-colors hover:border-muted-foreground/30 focus:border-primary/30"
+                />
+              )}
             </div>
 
             {/* Subtasks / Checklist */}
             <div className="pt-4 border-t mt-2">
-              <div className="flex items-center gap-2 mb-3">
+              <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-medium text-muted-foreground ml-1">
-                  Checklist
+                  Subtasks
                 </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowSubtasks(!showSubtasks)}
+                  className={cn(
+                    "h-6 w-6 p-0 text-muted-foreground hover:text-foreground transition-all",
+                    showSubtasks && "text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary"
+                  )}
+                  title="Toggle subtasks"
+                >
+                  <ListTodo className="h-4 w-4" />
+                </Button>
               </div>
 
-              <SubtaskList
-                taskId={initialTask?.id}
-                projectId={initialTask?.project_id || inboxProject?.id || null}
-                draftSubtasks={draftSubtasks}
-                onDraftSubtasksChange={setDraftSubtasks}
-              />
+              {showSubtasks && (
+                <SubtaskList
+                  taskId={initialTask?.id}
+                  projectId={initialTask?.project_id || inboxProject?.id || null}
+                  draftSubtasks={draftSubtasks}
+                  onDraftSubtasksChange={setDraftSubtasks}
+                />
+              )}
+            </div>
             </div>
 
             {/* Actions Row */}
-            <div className="flex items-center gap-2 pt-4 border-t mt-4 overflow-hidden">
+            <div className="flex items-center gap-2 pt-4 border-t mt-4 px-4 sm:px-0 overflow-hidden">
               <div className="flex items-center gap-2 flex-1 overflow-x-auto scrollbar-hide pr-2 mask-linear">
                 {/* Date & Time Picker */}
                 {isMobile ? (
@@ -529,23 +532,21 @@ export default function TaskSheet({
                     onOpenChange={setDatePickerOpen}
                   >
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
                       onClick={() => setDatePickerOpen(true)}
                       className={cn(
-                        "h-8 gap-1.5 font-medium border border-transparent transition-all",
-                        !dueDate &&
-                          "bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:border-border",
-                        dueDate && "bg-primary/10 text-primary hover:bg-primary/20"
+                        "h-10 w-10 px-0 text-muted-foreground hover:text-foreground transition-all shrink-0",
+                        dueDate && "w-auto px-2.5 text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary"
                       )}
                     >
-                      <CalendarIcon className="h-4 w-4" />
-                      {dueDate ? format(dueDate, "MMM d, h:mm a") : "Due Date"}
+                      <CalendarIcon className={cn("h-4.5 w-4.5", dueDate && "mr-1.5 h-4 w-4")} />
+                      {dueDate && format(dueDate, "MMM d, h:mm a")}
                       {dueDate && (
                         <span
                           role="button"
                           title="Clear due date"
-                          className="ml-1 p-0.5 rounded hover:bg-destructive/20"
+                          className="ml-1.5 p-0.5 rounded hover:bg-destructive/20"
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
@@ -568,23 +569,20 @@ export default function TaskSheet({
                   <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
                     <PopoverTrigger asChild>
                       <Button
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
                         className={cn(
-                          "h-8 gap-1.5 font-medium border border-transparent transition-all",
-                          !dueDate &&
-                            "bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:border-border",
-                          dueDate &&
-                            "bg-primary/10 text-primary hover:bg-primary/20"
+                          "h-10 w-10 px-0 text-muted-foreground hover:text-foreground transition-all shrink-0",
+                          dueDate && "w-auto px-2.5 text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary"
                         )}
                       >
-                        <CalendarIcon className="h-4 w-4" />
-                        {dueDate ? format(dueDate, "MMM d, h:mm a") : "Due Date"}
+                        <CalendarIcon className={cn("h-4.5 w-4.5", dueDate && "mr-1.5 h-4 w-4")} />
+                        {dueDate && format(dueDate, "MMM d, h:mm a")}
                         {dueDate && (
                           <span
                             role="button"
                             title="Clear due date"
-                            className="ml-1 p-0.5 rounded hover:bg-destructive/20"
+                            className="ml-1.5 p-0.5 rounded hover:bg-destructive/20"
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
@@ -616,21 +614,24 @@ export default function TaskSheet({
                 >
                   <SelectTrigger
                     className={cn(
-                      "h-8 w-[80px] px-2.5 text-xs font-bold border-transparent transition-all shrink-0",
-                      priorities.find((p) => p.value === priority)?.color ||
-                        "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                      "h-10 px-0 border-none transition-all shrink-0 focus:ring-0 [&>svg]:hidden",
+                      priority !== 4 ? "w-auto px-2.5 min-w-16" : "w-10 justify-center",
+                      priority === 4 && "text-muted-foreground hover:text-foreground hover:bg-secondary/50",
+                      priorities.find((p) => p.value === priority)?.color
                     )}
                   >
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-1.5 justify-center w-full">
                       <Flag
                         className={cn(
-                          "h-3.5 w-3.5",
-                          priority === 4 ? "text-muted-foreground" : "text-white"
+                          "h-4 w-4",
+                          priority === 4 ? "text-muted-foreground" : "text-white h-3.5 w-3.5"
                         )}
                       />
-                      <span>
-                        {priorities.find((p) => p.value === priority)?.label}
-                      </span>
+                      {priority !== 4 && (
+                        <span className="text-xs font-semibold">
+                          {priorities.find((p) => p.value === priority)?.label}
+                        </span>
+                      )}
                     </div>
                   </SelectTrigger>
                   <SelectContent>
@@ -664,11 +665,14 @@ export default function TaskSheet({
                 {/* Project Selector */}
                 <Select
                   value={selectedProjectId || "inbox"}
-                  onValueChange={(v) =>
-                    setSelectedProjectId(v === "inbox" ? null : v)
-                  }
+                  onValueChange={(v) => setSelectedProjectId(v === "inbox" ? null : v)}
                 >
-                  <SelectTrigger className="h-8 w-[110px] md:w-[140px] text-xs border-transparent bg-secondary hover:bg-secondary/80 shrink-0">
+                  <SelectTrigger 
+                    className={cn(
+                      "h-10 w-[110px] md:w-[130px] text-xs border-transparent bg-secondary hover:bg-secondary/80 shrink-0 focus:ring-0",
+                      selectedProjectId ? "min-w-16" : "min-w-10"
+                    )}
+                  >
                     <SelectValue placeholder="Inbox" />
                   </SelectTrigger>
                   <SelectContent>
@@ -700,7 +704,7 @@ export default function TaskSheet({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-8 w-8 p-0 text-muted-foreground/80 hover:text-red-500 hover:bg-red-500/10 transition-colors"
+                  className="h-10 w-10 p-0 text-muted-foreground/80 hover:text-red-500 hover:bg-red-500/10 transition-colors"
                   onClick={handleDelete}
                   title="Delete task"
                 >
@@ -710,7 +714,7 @@ export default function TaskSheet({
                 {/* Submit Button */}
                 <Button
                   size="sm"
-                  className="h-8 px-4 font-semibold"
+                  className="h-10 px-4 font-semibold"
                   onClick={handleSubmit}
                   disabled={!hasContent || isPending}
                 >
