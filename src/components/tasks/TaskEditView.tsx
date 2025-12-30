@@ -1,0 +1,250 @@
+"use client";
+
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import {
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/components/ui/responsive-dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ListTodo, Save, Trash2, Inbox } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { cn } from "@/lib/utils";
+import SubtaskList from "./SubtaskList";
+import { TaskDatePicker } from "./shared/TaskDatePicker";
+import { TaskPrioritySelect } from "./shared/TaskPrioritySelect";
+import type { Task, Project } from "@/lib/types/task";
+
+interface TaskEditViewProps {
+  initialTask: Task;
+  content: string;
+  setContent: (value: string) => void;
+  description: string;
+  setDescription: (value: string) => void;
+  isPreviewMode: boolean;
+  setIsPreviewMode: (value: boolean) => void;
+  dueDate: Date | undefined;
+  setDueDate: (value: Date | undefined) => void;
+  priority: 1 | 2 | 3 | 4;
+  setPriority: (value: 1 | 2 | 3 | 4) => void;
+  selectedProjectId: string | null;
+  setSelectedProjectId: (value: string | null) => void;
+  datePickerOpen: boolean;
+  setDatePickerOpen: (value: boolean) => void;
+  showSubtasks: boolean;
+  setShowSubtasks: (value: boolean) => void;
+  draftSubtasks: string[];
+  setDraftSubtasks: (value: string[]) => void;
+  inboxProjectId: string | null;
+  projects: Project[] | undefined;
+  isMobile: boolean;
+  hasContent: boolean;
+  isPending: boolean;
+  onSubmit: () => void;
+  onDelete: () => void;
+  onKeyDown: (e: React.KeyboardEvent) => void;
+}
+
+export function TaskEditView({
+  initialTask,
+  content,
+  setContent,
+  description,
+  setDescription,
+  isPreviewMode,
+  setIsPreviewMode,
+  dueDate,
+  setDueDate,
+  priority,
+  setPriority,
+  selectedProjectId,
+  setSelectedProjectId,
+  datePickerOpen,
+  setDatePickerOpen,
+  showSubtasks,
+  setShowSubtasks,
+  draftSubtasks,
+  setDraftSubtasks,
+  inboxProjectId,
+  projects,
+  isMobile,
+  hasContent,
+  isPending,
+  onSubmit,
+  onDelete,
+  onKeyDown,
+}: TaskEditViewProps) {
+  return (
+    <div className="flex flex-col h-full max-h-[85vh]">
+      <ResponsiveDialogHeader className="pb-4 shrink-0">
+        <ResponsiveDialogTitle>Edit Task</ResponsiveDialogTitle>
+      </ResponsiveDialogHeader>
+
+      {/* Scrollable Content Area */}
+      <div className="flex-1 overflow-y-auto px-4 sm:px-0 space-y-4 scrollbar-thin">
+        {/* Content Input */}
+        <Textarea
+          autoFocus
+          placeholder="What needs to be done?"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          onKeyDown={onKeyDown}
+          className="min-h-[60px] text-base font-medium resize-none border-none shadow-none focus-visible:ring-0 p-0 placeholder:text-muted-foreground/70"
+        />
+
+        {/* Description Input (Markdown) */}
+        <div className="px-0 pt-2 pb-2">
+          <div className="flex items-center justify-between pb-2">
+            <span className="text-xs font-medium text-muted-foreground ml-1">
+              Description
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 text-[10px] uppercase tracking-wider font-bold text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+              onClick={() => setIsPreviewMode(!isPreviewMode)}
+              disabled={!description.trim() && !isPreviewMode}
+            >
+              {isPreviewMode ? "Edit" : "Preview"}
+            </Button>
+          </div>
+
+          {isPreviewMode ? (
+            <div className="h-[200px] p-3 text-sm prose prose-sm dark:prose-invert max-w-none bg-secondary/10 rounded-md overflow-y-auto border border-border scrollbar-thin">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {description || "*No description*"}
+              </ReactMarkdown>
+            </div>
+          ) : (
+            <Textarea
+              placeholder="Add details... (Markdown supported)"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="h-[200px] text-sm resize-none focus-visible:ring-1 focus-visible:ring-primary/20 p-3 bg-secondary/30 rounded-md placeholder:text-muted-foreground/60 overflow-y-auto border-border transition-colors hover:border-muted-foreground/30 focus:border-primary/30"
+            />
+          )}
+        </div>
+
+        {/* Subtasks / Checklist */}
+        <div className="pt-4 border-t mt-2">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-medium text-muted-foreground ml-1">
+              Subtasks
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowSubtasks(!showSubtasks)}
+              className={cn(
+                "h-6 w-6 p-0 text-muted-foreground hover:text-foreground transition-all",
+                showSubtasks && "text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary"
+              )}
+              title="Toggle subtasks"
+            >
+              <ListTodo className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {showSubtasks && (
+            <SubtaskList
+              taskId={initialTask.id}
+              projectId={initialTask.project_id || inboxProjectId}
+              draftSubtasks={draftSubtasks}
+              onDraftSubtasksChange={setDraftSubtasks}
+            />
+          )}
+        </div>
+      </div>
+
+      {/* Fixed Footer - Actions Row */}
+      <div className="shrink-0 flex items-center gap-2 pt-4 border-t mt-4 px-4 sm:px-0 pb-[calc(0.5rem+env(safe-area-inset-bottom))] overflow-hidden bg-background">
+        <div className="flex items-center gap-2 flex-1 overflow-x-auto scrollbar-hide pr-2 mask-linear">
+          {/* Date & Time Picker */}
+          <TaskDatePicker
+            date={dueDate}
+            setDate={setDueDate}
+            isMobile={isMobile}
+            open={datePickerOpen}
+            onOpenChange={setDatePickerOpen}
+            variant="compact"
+          />
+
+          {/* Priority Selector */}
+          <TaskPrioritySelect
+            priority={priority}
+            setPriority={setPriority}
+            variant="compact"
+          />
+
+          {/* Project Selector */}
+          <Select
+            value={selectedProjectId || "inbox"}
+            onValueChange={(v) => setSelectedProjectId(v === "inbox" ? null : v)}
+          >
+            <SelectTrigger
+              className={cn(
+                "h-10 w-[110px] md:w-[130px] text-xs border-transparent bg-secondary hover:bg-secondary/80 shrink-0 focus:ring-0",
+                selectedProjectId ? "min-w-16" : "min-w-10"
+              )}
+            >
+              <SelectValue placeholder="Inbox" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="inbox">
+                <div className="flex items-center gap-2">
+                  <Inbox className="h-3 w-3" />
+                  <span>Inbox</span>
+                </div>
+              </SelectItem>
+              {projects
+                ?.filter((p) => !p.is_inbox)
+                .map((project) => (
+                  <SelectItem key={project.id} value={project.id}>
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="h-3 w-3 rounded-full shrink-0"
+                        style={{ backgroundColor: project.color }}
+                      />
+                      <span className="truncate">{project.name}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          {/* Delete Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-10 w-10 p-0 text-muted-foreground/80 hover:text-red-500 hover:bg-red-500/10 transition-colors"
+            onClick={onDelete}
+            title="Delete task"
+          >
+            <Trash2 className="h-4.5 w-4.5" />
+          </Button>
+
+          {/* Submit Button */}
+          <Button
+            size="sm"
+            variant={isPending ? "ghost" : "default"}
+            className="h-10 w-10 p-0 rounded-md [&_svg]:size-5"
+            onClick={onSubmit}
+            disabled={!hasContent || isPending}
+            title="Save changes"
+          >
+            <Save className={cn("stroke-[1.5px]", isPending && "opacity-50")} />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
