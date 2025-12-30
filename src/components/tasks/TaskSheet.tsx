@@ -31,6 +31,7 @@ import {
   X,
   ListTodo,
   Send,
+  Save,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -523,7 +524,7 @@ export default function TaskSheet({
             </div>
 
             {/* Actions Row */}
-            <div className="flex items-center gap-2 pt-4 border-t mt-4 px-4 sm:px-0 overflow-hidden">
+            <div className="flex items-center gap-2 pt-4 border-t mt-4 px-4 sm:px-0 pb-[calc(0.5rem+env(safe-area-inset-bottom))] overflow-hidden">
               <div className="flex items-center gap-2 flex-1 overflow-x-auto scrollbar-hide pr-2 mask-linear">
                 {/* Date & Time Picker */}
                 {isMobile ? (
@@ -714,11 +715,13 @@ export default function TaskSheet({
                 {/* Submit Button */}
                 <Button
                   size="sm"
-                  className="h-10 px-4 font-semibold"
+                  variant={isPending ? "ghost" : "default"}
+                  className="h-10 w-10 p-0 rounded-md [&_svg]:size-5"
                   onClick={handleSubmit}
                   disabled={!hasContent || isPending}
+                  title="Save changes"
                 >
-                  {isPending ? "Saving..." : "Save"}
+                  <Save className={cn("stroke-[1.5px]", isPending && "opacity-50")} />
                 </Button>
               </div>
             </div>
