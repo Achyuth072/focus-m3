@@ -26,5 +26,5 @@ export const DEFAULT_TIMER_SETTINGS: TimerSettings = {
   sessionsBeforeLongBreak: 4,
 };
 
-export const TIMER_STATE_KEY = "focusm3-timer-state";
-export const TIMER_SETTINGS_KEY = "focusm3-timer-settings";
+export const TIMER_STATE_KEY = "kanso-timer-state";
+export const TIMER_SETTINGS_KEY = "kanso-timer-settings";

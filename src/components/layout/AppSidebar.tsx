@@ -72,10 +72,10 @@ export function AppSidebar() {
         <SidebarHeader className="border-b border-border">
           <div className="flex items-center gap-2 px-2 py-4">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground font-semibold">
-              F
+              K
             </div>
             <span className="font-semibold text-lg">
-              FocusM3
+              Kanso
             </span>
           </div>
         </SidebarHeader>

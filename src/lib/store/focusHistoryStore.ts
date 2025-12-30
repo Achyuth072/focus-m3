@@ -33,7 +33,7 @@ export const useFocusHistoryStore = create<FocusHistoryState>()(
       clearHistory: () => set({ sessions: [] }),
     }),
     {
-      name: "focusm3-focus-history",
+      name: "kanso-focus-history",
     }
   )
 );

@@ -1,6 +1,6 @@
 {
-  "name": "FocusM3",
-  "short_name": "Focus",
+  "name": "Kanso",
+  "short_name": "Kanso",
   "description": "Your personal productivity super-app",
   "start_url": "/",
   "display": "standalone",

@@ -146,7 +146,7 @@ export default function SettingsPage() {
         {/* App Info */}
         <div className="pt-8 border-t border-border/50">
           <p className="text-xs text-muted-foreground text-center">
-            FocusM3 • Version 1.0.0
+            Kanso • Version 1.0.0
           </p>
         </div>
       </div>

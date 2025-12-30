@@ -8,13 +8,13 @@ import AppShell from '@/components/layout/AppShell';
 import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {
-  title: 'FocusM3',
+  title: 'Kanso',
   description: 'Your personal productivity super-app',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'FocusM3',
+    title: 'Kanso',
   },
 };
 

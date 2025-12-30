@@ -1,4 +1,4 @@
--- FocusM3 Database Schema
+-- Kanso Database Schema
 -- Run this in Supabase SQL Editor
 
 -- Enable UUID extension
