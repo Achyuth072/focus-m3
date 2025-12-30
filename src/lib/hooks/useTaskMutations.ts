@@ -88,6 +88,7 @@ export function useCreateTask() {
     },
     onSettled: (_data, _error, variables) => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["calendar-tasks"] });
       queryClient.invalidateQueries({ queryKey: ["stats-dashboard"] });
       // If this was a subtask, also invalidate the parent's subtask list
       if (variables.parent_id) {
@@ -157,6 +158,7 @@ export function useToggleTask() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["calendar-tasks"] });
       queryClient.invalidateQueries({ queryKey: ["stats-dashboard"] });
     },
   });
@@ -181,6 +183,7 @@ export function useUpdateTask() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["calendar-tasks"] });
       queryClient.invalidateQueries({ queryKey: ["stats-dashboard"] });
     },
   });
@@ -273,6 +276,7 @@ export function useDeleteTask() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["calendar-tasks"] });
       queryClient.invalidateQueries({ queryKey: ["stats-dashboard"] });
     },
   });
@@ -300,6 +304,7 @@ export function useReorderTasks() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["calendar-tasks"] });
       queryClient.invalidateQueries({ queryKey: ["stats-dashboard"] });
     },
   });
@@ -353,6 +358,7 @@ export function useClearCompletedTasks() {
     onSettled: () => {
       // Invalidate all task queries to refresh the UI
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["calendar-tasks"] });
       queryClient.invalidateQueries({ queryKey: ["stats-dashboard"] });
     },
   });

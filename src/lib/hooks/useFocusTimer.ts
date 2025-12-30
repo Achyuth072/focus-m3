@@ -65,6 +65,7 @@ function getDurationForMode(mode: TimerMode, settings: TimerSettings): number {
  * State machine: Focus -> Short Break -> Focus -> ... -> Long Break
  */
 export function useFocusTimer() {
+  const queryClient = useQueryClient();
   const [settings, setSettingsState] = useState<TimerSettings>(
     DEFAULT_TIMER_SETTINGS
   );
@@ -121,11 +122,14 @@ export function useFocusTimer() {
           end_time: new Date().toISOString(),
           duration_seconds: durationSeconds,
         });
+
+        // Invalidate stats to trigger immediate update
+        queryClient.invalidateQueries({ queryKey: ["stats-dashboard"] });
       } catch (err) {
         console.error("Failed to log focus session:", err);
       }
     },
-    [supabase]
+    [supabase, queryClient]
   );
 
   const handleTimerComplete = useCallback(
