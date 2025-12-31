@@ -26,12 +26,12 @@ export function TimeGrid({ startDate, daysToShow, events, className }: TimeGridP
   return (
     <div className={cn('flex h-full overflow-auto bg-background', className)}>
       {/* Time Labels Column */}
-      <div className="w-16 flex-shrink-0 border-r border-border">
-        <div className="h-24 border-b border-muted-foreground/40" /> {/* Spacer for header */}
+      <div className="w-16 flex-shrink-0 border-r border-border/40">
+        <div className="h-24 border-b border-border/40" /> {/* Spacer for header */}
         {hours.map((hour) => (
           <div
             key={hour}
-            className="text-xs text-muted-foreground text-right pr-2 pt-2 border-t border-muted-foreground/40 dark:border-muted-foreground/15"
+            className="text-xs text-muted-foreground text-right pr-2 pt-2 border-t border-border/40"
             style={{ height: `${HOUR_HEIGHT}px` }}
           >
             {format(new Date().setHours(hour, 0), 'h a')}
@@ -41,7 +41,7 @@ export function TimeGrid({ startDate, daysToShow, events, className }: TimeGridP
 
       {/* Days Columns */}
       <div
-        className="flex-1 grid divide-x divide-muted-foreground/40 dark:divide-muted-foreground/15"
+        className="flex-1 grid divide-x divide-border/40"
         style={{ gridTemplateColumns: `repeat(${daysToShow}, 1fr)` }}
       >
         {columns.map((column) => {
@@ -53,7 +53,7 @@ export function TimeGrid({ startDate, daysToShow, events, className }: TimeGridP
             isToday && "bg-primary/5"
           )}>
             {/* Header for the Day */}
-            <div className="sticky top-0 z-10 bg-background border-b border-muted-foreground/40 dark:border-muted-foreground/15 h-24 flex flex-col items-center justify-center">
+            <div className="sticky top-0 z-10 bg-background border-b border-border/40 h-24 flex flex-col items-center justify-center">
               <div className={cn(
                 "text-xs",
                 isToday ? "text-primary font-semibold" : "text-muted-foreground"
@@ -72,7 +72,7 @@ export function TimeGrid({ startDate, daysToShow, events, className }: TimeGridP
             {hours.map((hour) => (
               <div
                 key={hour}
-                className="border-t border-muted-foreground/40 dark:border-muted-foreground/15"
+                className="border-t border-border/40"
                 style={{ height: `${HOUR_HEIGHT}px` }}
               />
             ))}

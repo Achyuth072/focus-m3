@@ -14,13 +14,13 @@ export function YearView({ currentYear, onDateClick, className }: YearViewProps)
   const start = startOfYear(new Date(currentYear, 0, 1));
 
   return (
-    <div className={cn('h-full overflow-y-auto', className)}>
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 p-6">
+    <div className={cn('h-full overflow-y-auto bg-background', className)}>
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-8 p-8 max-w-7xl mx-auto">
       {Array.from({ length: 12 }).map((_, i) => {
         const monthDate = addMonths(start, i);
         
         return (
-          <div key={i} className="border rounded-lg p-3 bg-card">
+          <div key={i} className="flex justify-center">
             <Calendar
               {...({
                 mode: "single",
@@ -29,24 +29,24 @@ export function YearView({ currentYear, onDateClick, className }: YearViewProps)
                 onSelect: onDateClick,
                 showOutsideDays: false,
               } as any)}
-              className="w-full [&_td]:text-xs [&_th]:text-xs"
+              className="p-0 select-none [--cell-size:28px]"
               classNames={{
                 months: 'flex flex-col',
-                month: 'space-y-2',
-                nav: 'hidden', // Hide prev/next buttons in year view
-                caption: 'flex justify-center pt-1 relative items-center text-sm font-medium',
-                head_row: 'flex',
-                head_cell: 'text-muted-foreground rounded-md w-8 font-normal text-[0.7rem]',
-                row: 'flex w-full mt-1',
+                month: 'space-y-3',
+                nav: 'hidden',
+                caption: 'flex justify-center pt-1 relative items-center text-sm font-semibold text-primary',
+                head_row: 'flex gap-1',
+                head_cell: 'text-muted-foreground/60 w-[28px] font-medium text-[0.7rem]',
+                row: 'flex w-full mt-1 gap-1',
                 cell: 'relative p-0 text-center text-xs focus-within:relative focus-within:z-20',
                 day: cn(
-                  'h-8 w-8 p-0 font-normal aria-selected:opacity-100',
-                  'hover:bg-accent hover:text-accent-foreground'
+                  'h-[28px] w-[28px] p-0 font-normal rounded-md aria-selected:opacity-100',
+                  'hover:bg-primary/10 hover:text-primary transition-colors text-muted-foreground'
                 ),
-                day_selected: 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground',
-                day_today: 'bg-accent text-accent-foreground',
-                day_outside: 'hidden',
-                day_disabled: 'text-muted-foreground opacity-50',
+                selected: 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground',
+                today: 'bg-primary text-primary-foreground font-bold !opacity-100',
+                outside: 'invisible',
+                disabled: 'text-muted-foreground opacity-20',
               }}
             />
           </div>

@@ -45,8 +45,8 @@ export function ScheduleView({ events, startDate, daysToShow = 30, className }: 
             <div key={dayKey} className="space-y-2">
               {/* Date Header */}
               <div className={cn(
-                'sticky top-0 z-10 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60',
-                'py-2 border-b border-muted-foreground/40 dark:border-muted-foreground/15'
+                'sticky top-0 z-10 bg-background',
+                'py-2 border-b border-border/40'
               )}>
                 <div className="flex items-baseline gap-3">
                   <div className={cn(
@@ -76,8 +76,8 @@ export function ScheduleView({ events, startDate, daysToShow = 30, className }: 
                     <div
                       key={event.id}
                       className={cn(
-                        'flex gap-3 p-3 rounded-lg hover:bg-accent/50 cursor-pointer transition-colors border',
-                        'bg-(--event-color)/15 border-(--event-color)/30 font-medium'
+                        'flex gap-3 p-3 rounded-xl hover:bg-accent/50 cursor-pointer transition-colors border mx-2 mb-2',
+                        'bg-(--event-color)/15 border-(--event-color)/30 shadow-sm font-medium'
                       )}
                       style={{ '--event-color': event.color || 'hsl(var(--primary))' } as React.CSSProperties}
                     >

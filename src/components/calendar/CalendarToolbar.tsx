@@ -83,14 +83,14 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
           </Button>
         </div>
 
-        <div className="text-base md:text-lg font-semibold min-w-0 md:min-w-[200px] truncate">
+        <div className="text-lg md:text-2xl font-semibold min-w-0 md:min-w-[200px] truncate">
           {getDateLabel()}
         </div>
       </div>
 
       {/* Right: View Selector */}
       <Select value={view} onValueChange={(v) => setView(v as CalendarView)}>
-        <SelectTrigger className="w-[105px] md:w-[140px] h-8 md:h-10 text-xs md:text-sm">
+        <SelectTrigger className="w-[105px] md:w-[140px] h-8 md:h-9 text-xs md:text-sm px-3 font-medium bg-background hover:bg-accent hover:text-accent-foreground transition-colors">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
