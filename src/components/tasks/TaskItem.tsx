@@ -129,7 +129,10 @@ function TaskItem({ task, onClick }: TaskItemProps) {
     <div className="group/item">
         <motion.div
           style={{ background }}
-          className={cn("relative overflow-hidden", isDesktop ? "rounded-sm" : "")}
+          className={cn(
+            "relative overflow-hidden",
+            isDesktop ? "rounded-sm" : "rounded-xl mx-2 mb-2"
+          )}
         >
         {/* Swipe indicators - only visible during drag */}
         {isDragging && (
@@ -158,7 +161,7 @@ function TaskItem({ task, onClick }: TaskItemProps) {
             "relative flex group items-center transition-colors bg-background cursor-pointer",
             isDesktop
               ? "gap-2 px-2 py-1 h-8 rounded-sm hover:bg-secondary/40"
-              : "items-center gap-3 py-3 px-1 border-b border-border/40 active:bg-secondary/20", // Comfortable Row
+              : "items-center gap-3 py-3 px-3 rounded-xl active:bg-secondary/20", // Floating Squircle Row
             isChecking && "opacity-50"
           )}
           onClick={(e) => {

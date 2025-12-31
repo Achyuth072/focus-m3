@@ -102,7 +102,7 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId 
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-12 md:h-8 border-b border-border/40 bg-muted/30 animate-pulse"
+              className="h-12 md:h-8 md:border-b md:border-border/40 rounded-xl md:rounded-sm mx-2 md:mx-0 mb-2 md:mb-0 bg-muted/30 animate-pulse"
             />
           ))}
         </div>
