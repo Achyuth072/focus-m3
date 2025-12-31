@@ -97,12 +97,12 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId 
 
   if (isLoading) {
     return (
-      <div className="px-6 py-4">
-        <div className="space-y-2">
+      <div className="px-4 md:px-6 py-4">
+        <div className="space-y-0">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-16 rounded-xl bg-muted/50 animate-pulse"
+              className="h-12 md:h-8 border-b border-border/40 bg-muted/30 animate-pulse"
             />
           ))}
         </div>
@@ -128,7 +128,7 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId 
         {/* Active Tasks Grouped */}
         {groups ? (
           groups.map((group) => (
-            <div key={group.title} className="space-y-2">
+            <div key={group.title} className="space-y-0 md:space-y-0.5">
               <h3 className="text-sm font-semibold text-muted-foreground px-1">{group.title}</h3>
               {group.tasks.map((task) => (
                 <TaskItem
@@ -141,7 +141,7 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId 
           ))
         ) : (
           // Active Tasks Flat
-          <div className="space-y-2">
+          <div className="space-y-0 md:space-y-0.5">
              {active.map((task) => (
               <TaskItem
                 key={task.id}
@@ -158,7 +158,7 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId 
             <p className="text-xs font-medium text-muted-foreground px-1 mb-2">
               Completed ({completed.length})
             </p>
-            <div className="space-y-2 opacity-60">
+            <div className="space-y-0 md:space-y-0.5 opacity-60">
               {completed.map((task) => (
                 <TaskItem
                   key={task.id}

@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircle2, ListFilter } from 'lucide-react';
+import { CheckCircle2, ListFilter, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCompletedTasks } from '@/components/CompletedTasksProvider';
 import {
@@ -19,6 +19,7 @@ interface TasksPageHeaderProps {
   currentGroup: GroupOption;
   onSortChange: (sort: SortOption) => void;
   onGroupChange: (group: GroupOption) => void;
+  onNewTask?: () => void;
 }
 
 export function TasksPageHeader({
@@ -26,6 +27,7 @@ export function TasksPageHeader({
   currentGroup,
   onSortChange,
   onGroupChange,
+  onNewTask,
 }: TasksPageHeaderProps) {
   const { openSheet } = useCompletedTasks();
 
@@ -72,6 +74,17 @@ export function TasksPageHeader({
       >
         <CheckCircle2 className="h-4 w-4" />
         Completed
+      </Button>
+
+      {/* New Task Button - Desktop Only */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={onNewTask}
+        className="hidden md:flex items-center gap-2"
+      >
+        <Plus className="h-4 w-4" />
+        New Task
       </Button>
     </div>
   );

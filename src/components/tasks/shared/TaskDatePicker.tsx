@@ -98,11 +98,9 @@ export function TaskDatePicker({
             !isCompact && "max-w-[320px] mx-auto h-auto rounded-[10px] mb-4 bg-popover [&>div.h-2]:hidden"
           )}
         >
-          {!isCompact && (
-            <ResponsiveDialogHeader className="sr-only">
-              <ResponsiveDialogTitle>Set Due Date</ResponsiveDialogTitle>
-            </ResponsiveDialogHeader>
-          )}
+          <ResponsiveDialogHeader className="sr-only">
+            <ResponsiveDialogTitle>Set Due Date</ResponsiveDialogTitle>
+          </ResponsiveDialogHeader>
           <DateTimeWizard
             date={date}
             setDate={setDate}

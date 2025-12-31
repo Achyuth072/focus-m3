@@ -50,7 +50,7 @@ export default function TaskSheet({
   const deleteMutation = useDeleteTask();
   const { data: inboxProject } = useInboxProject();
   const { data: projects } = useProjects();
-  const isMobile = useMediaQuery("(max-width: 640px)");
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   // Reset form when dialog opens
   useEffect(() => {
@@ -146,7 +146,7 @@ export default function TaskSheet({
     <ResponsiveDialog open={open} onOpenChange={onClose}>
       <ResponsiveDialogContent
         className={cn(
-          "w-full sm:max-w-[560px] gap-0 rounded-lg",
+          "w-full sm:max-w-lg gap-0 rounded-lg",
           isCreationMode && "sm:top-[35%]"
         )}
       >

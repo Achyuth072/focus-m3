@@ -81,7 +81,7 @@ export function TaskCreateView({
           value={content}
           onChange={(e) => setContent(e.target.value)}
           onKeyDown={onKeyDown}
-          className="min-h-[60px] text-base font-medium resize-none border-none shadow-none focus-visible:ring-0 p-0 placeholder:text-muted-foreground/70"
+          className="min-h-[60px] text-lg font-medium resize-none border-none shadow-none focus-visible:ring-0 p-0 placeholder:text-muted-foreground/70"
         />
 
         {/* Icon Row - Metadata Controls */}
@@ -138,7 +138,7 @@ export function TaskCreateView({
           value={selectedProjectId || "inbox"}
           onValueChange={(v) => setSelectedProjectId(v === "inbox" ? null : v)}
         >
-          <SelectTrigger className="h-10 w-[140px] text-xs border-transparent bg-secondary hover:bg-secondary/80 focus:ring-0">
+          <SelectTrigger className="h-10 w-[140px] text-xs border-transparent bg-transparent hover:bg-secondary/50 focus:ring-0">
             <SelectValue placeholder="Inbox" />
           </SelectTrigger>
           <SelectContent>

@@ -96,7 +96,7 @@ export function TaskEditView({
           value={content}
           onChange={(e) => setContent(e.target.value)}
           onKeyDown={onKeyDown}
-          className="min-h-[60px] text-base font-medium resize-none border-none shadow-none focus-visible:ring-0 p-0 placeholder:text-muted-foreground/70"
+          className="min-h-[60px] text-lg font-medium resize-none border-none shadow-none focus-visible:ring-0 p-0 placeholder:text-muted-foreground/70"
         />
 
         {/* Description Input (Markdown) */}
@@ -117,7 +117,7 @@ export function TaskEditView({
           </div>
 
           {isPreviewMode ? (
-            <div className="h-[200px] p-3 text-sm prose prose-sm dark:prose-invert max-w-none bg-secondary/10 rounded-md overflow-y-auto border border-border scrollbar-thin">
+            <div className="h-[200px] p-3 text-sm prose prose-sm dark:prose-invert max-w-none bg-secondary/10 rounded-md overflow-y-auto border border-border/40 scrollbar-thin">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {description || "*No description*"}
               </ReactMarkdown>
@@ -127,7 +127,7 @@ export function TaskEditView({
               placeholder="Add details... (Markdown supported)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="h-[200px] text-sm resize-none focus-visible:ring-1 focus-visible:ring-primary/20 p-3 bg-secondary/30 rounded-md placeholder:text-muted-foreground/60 overflow-y-auto border-border transition-colors hover:border-muted-foreground/30 focus:border-primary/30"
+              className="h-[200px] text-sm resize-none border-none shadow-none focus-visible:ring-0 p-3 bg-transparent hover:bg-secondary/20 focus:bg-secondary/30 rounded-md placeholder:text-muted-foreground/60 overflow-y-auto transition-colors"
             />
           )}
         </div>
@@ -190,7 +190,7 @@ export function TaskEditView({
           >
             <SelectTrigger
               className={cn(
-                "h-10 w-[110px] md:w-[130px] text-xs border-transparent bg-secondary hover:bg-secondary/80 shrink-0 focus:ring-0",
+                "h-10 w-[110px] md:w-[130px] text-xs border-transparent bg-transparent hover:bg-secondary/50 shrink-0 focus:ring-0",
                 selectedProjectId ? "min-w-16" : "min-w-10"
               )}
             >

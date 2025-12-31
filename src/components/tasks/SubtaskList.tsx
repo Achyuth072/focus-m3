@@ -95,7 +95,7 @@ export default function SubtaskList({
                   }
                 }}
                 disabled={isDraftMode}
-                className="mt-0.5"
+                className="mt-0.5 !rounded-sm"
               />
               <span
                 className={cn(

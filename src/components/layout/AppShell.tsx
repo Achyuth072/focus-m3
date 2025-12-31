@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
 import { CompletedTasksProvider } from '@/components/CompletedTasksProvider';
+import { TaskActionsProvider, useTaskActions } from '@/components/TaskActionsProvider';
 import { useRealtimeSync } from '@/lib/hooks/useRealtimeSync';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/layout/AppSidebar';
@@ -16,21 +17,15 @@ interface AppShellProps {
   children: React.ReactNode;
 }
 
-export default function AppShell({ children }: AppShellProps) {
+function AppShellContent({ children }: AppShellProps) {
   const pathname = usePathname();
   const isFocus = pathname === '/focus';
   const hideMobileNav = pathname === '/focus' || pathname === '/settings';
   const isTasksPage = pathname === '/';
-  const { user, loading } = useAuth();
-  const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
+  const { isAddTaskOpen, openAddTask, closeAddTask } = useTaskActions();
 
   // Global realtime sync - stays alive during navigation
   useRealtimeSync();
-
-  // Don't render shell for unauthenticated users
-  if (loading || !user) {
-    return <>{children}</>;
-  }
 
   return (
     <CompletedTasksProvider>
@@ -52,16 +47,30 @@ export default function AppShell({ children }: AppShellProps) {
         {!hideMobileNav && <MobileNav />}
 
         {/* FAB - Only on Tasks page, rendered outside template animation */}
-        {isTasksPage && <AddTaskFab onClick={() => setIsAddTaskOpen(true)} />}
+        {isTasksPage && <AddTaskFab onClick={openAddTask} />}
 
         {/* Task Sheet - Only on Tasks page */}
         {isTasksPage && (
           <TaskSheet
             open={isAddTaskOpen}
-            onClose={() => setIsAddTaskOpen(false)}
+            onClose={closeAddTask}
           />
         )}
       </SidebarProvider>
     </CompletedTasksProvider>
+  );
+}
+
+export default function AppShell({ children }: AppShellProps) {
+  const { user, loading } = useAuth();
+
+  return (
+    <TaskActionsProvider>
+      {(loading || !user) ? (
+        <>{children}</>
+      ) : (
+        <AppShellContent>{children}</AppShellContent>
+      )}
+    </TaskActionsProvider>
   );
 }

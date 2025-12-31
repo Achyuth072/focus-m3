@@ -9,6 +9,7 @@ import TaskList from '@/components/tasks/TaskList';
 import { format } from 'date-fns';
 import { TasksPageHeader } from '@/components/tasks/TasksPageHeader';
 import { useUiStore } from '@/lib/store/uiStore';
+import { useTaskActions } from '@/components/TaskActionsProvider';
 
 const fadeIn = {
   initial: { opacity: 0, y: 10 },
@@ -21,6 +22,7 @@ function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { sortBy, groupBy, setSortBy, setGroupBy } = useUiStore();
+  const { openAddTask } = useTaskActions();
 
   const currentProjectId = searchParams.get('project') || 'all';
 
@@ -53,7 +55,7 @@ function HomeContent() {
           <p className="text-sm text-muted-foreground">
             {format(today, 'EEEE, MMMM d')}
           </p>
-          <h1 className="text-3xl font-normal mt-1">
+          <h1 className="text-[28px] md:text-[32px] font-semibold tracking-tight mt-1 text-primary">
             {greeting}
           </h1>
         </div>
@@ -64,6 +66,7 @@ function HomeContent() {
           currentGroup={groupBy}
           onSortChange={setSortBy}
           onGroupChange={setGroupBy}
+          onNewTask={openAddTask}
         />
       </div>
 

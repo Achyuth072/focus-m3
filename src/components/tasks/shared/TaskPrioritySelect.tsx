@@ -36,19 +36,19 @@ export function TaskPrioritySelect({
     >
       <SelectTrigger
         className={cn(
-          "h-10 border-none transition-all shrink-0 focus:ring-0",
+          "h-10 border-none transition-all shrink-0 focus:ring-0 [&>svg]:hidden",
           isCompact
             ? cn(
-                "px-0 [&>svg]:hidden",
+                "px-0",
                 priority !== 4 ? "w-auto px-2.5 min-w-16" : "w-10 justify-center",
                 priority === 4 && "text-muted-foreground hover:text-foreground hover:bg-secondary/50",
                 priorities.find((p) => p.value === priority)?.color
               )
             : cn(
-                "min-w-10",
+                "min-w-10 items-center justify-center",
                 priority !== 4 
                   ? "text-primary bg-primary/10 px-3 w-auto" 
-                  : "px-0 w-10 justify-center"
+                  : "px-0 w-10 bg-transparent hover:bg-accent hover:text-accent-foreground"
               )
         )}
         title="Set priority"
@@ -60,7 +60,7 @@ export function TaskPrioritySelect({
               priority === 1 ? (isCompact ? "text-white h-3.5 w-3.5" : "text-red-500 fill-red-500") :
               priority === 2 ? (isCompact ? "text-white h-3.5 w-3.5" : "text-orange-500 fill-orange-500") :
               priority === 3 ? (isCompact ? "text-white h-3.5 w-3.5" : "text-blue-500 fill-blue-500") :
-              "text-muted-foreground"
+              "" // Removed text-muted-foreground to match other icons
             )}
           />
           {isCompact && priority !== 4 && (

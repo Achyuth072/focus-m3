@@ -29,7 +29,7 @@ function CompletedTaskItem({ task }: { task: Task }) {
   const formattedDate = completedDate ? format(completedDate, 'h:mm a') : '';
 
   return (
-    <div className="flex items-start gap-3 p-3 rounded-xl border bg-card hover:bg-muted/50 transition-colors group">
+    <div className="flex items-start gap-3 py-2 md:py-2 px-4 border-b border-border/40 hover:bg-secondary/30 transition-colors group min-h-[44px]">
       <button
         onClick={handleUncomplete}
         className="pt-0.5 text-green-500 hover:text-green-600 transition-colors"
@@ -88,9 +88,9 @@ function TaskGroup({ title, tasks }: { title: string; tasks: Task[] }) {
   if (tasks.length === 0) return null;
 
   return (
-    <div className="space-y-2">
-      <h3 className="text-sm font-semibold text-muted-foreground px-1">{title}</h3>
-      <div className="space-y-2">
+    <div className="space-y-0">
+      <h3 className="text-sm font-semibold text-muted-foreground px-4 py-3 bg-secondary/20">{title}</h3>
+      <div className="space-y-0">
         {tasks.map((task) => (
           <CompletedTaskItem key={task.id} task={task} />
         ))}
@@ -132,7 +132,7 @@ export function CompletedTasksSheet({ open, onOpenChange }: CompletedTasksSheetP
           </p>
         </div>
       ) : (
-        <div className="space-y-6 pt-2 pb-8 px-4">
+        <div className="space-y-0 pt-2 pb-8">
           <TaskGroup title="Today" tasks={today} />
           <TaskGroup title="Yesterday" tasks={yesterday} />
           <TaskGroup title="This Week" tasks={thisWeek} />
@@ -145,7 +145,7 @@ export function CompletedTasksSheet({ open, onOpenChange }: CompletedTasksSheetP
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
+        <DialogContent className="max-w-lg max-h-[80vh] flex flex-col">
           <DialogHeader className="flex-row items-center justify-between space-y-0 pr-12">
             <DialogTitle className="flex items-center gap-2">
               <CheckCircle2 className="h-5 w-5 text-green-500" />
