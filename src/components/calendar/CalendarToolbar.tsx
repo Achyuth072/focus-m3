@@ -69,7 +69,7 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
     <div className={cn('flex items-center justify-between gap-2 p-2 md:gap-4 md:p-4 border-b border-l bg-sidebar', className)}>
       {/* Left: Date Navigation */}
       <div className="flex items-center gap-1 md:gap-2">
-        <Button variant="outline" size={isMobile ? "icon" : "sm"} onClick={goToToday} className={cn(isMobile && "h-8 w-8")}>
+        <Button variant="outline" size={isMobile ? "icon" : "sm"} onClick={goToToday} className={cn(isMobile && "h-8 w-8", "dark:bg-white/[0.03] dark:border-white/10")}>
           <CalendarIcon className="h-4 w-4 md:mr-2" />
           <span className="hidden md:inline">Today</span>
         </Button>
@@ -90,7 +90,7 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
 
       {/* Right: View Selector */}
       <Select value={view} onValueChange={(v) => setView(v as CalendarView)}>
-        <SelectTrigger className="w-[105px] md:w-[140px] h-8 md:h-9 text-xs md:text-sm px-3 font-medium bg-background hover:bg-accent hover:text-accent-foreground transition-colors">
+        <SelectTrigger className="w-[105px] md:w-[140px] h-8 md:h-9 text-xs md:text-sm px-3 font-medium bg-background hover:bg-accent hover:text-accent-foreground transition-colors dark:bg-white/[0.03] dark:border-white/10">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

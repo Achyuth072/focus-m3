@@ -190,7 +190,7 @@ export function TaskEditView({
           >
             <SelectTrigger
               className={cn(
-                "h-10 w-[110px] md:w-[130px] text-xs border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground shrink-0 focus:ring-0",
+                "h-10 w-[110px] md:w-[130px] text-xs border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground shrink-0 focus:ring-0 dark:bg-white/[0.03] dark:border-white/10",
                 selectedProjectId ? "min-w-16" : "min-w-10"
               )}
             >

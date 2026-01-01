@@ -126,12 +126,16 @@ function TaskItem({ task, onClick }: TaskItemProps) {
     !isToday(parseISO(task.due_date));
 
   return (
-    <div className="group/item">
+    <div className={cn(
+      "group/item",
+      isDesktop && "hover:shadow-md dark:hover:ring-1 dark:hover:ring-white/10 transition-shadow rounded-sm",
+      isDesktop && isExpanded && "pb-4"
+    )}>
         <motion.div
           style={{ background }}
           className={cn(
-            "relative overflow-hidden",
-            isDesktop ? "rounded-sm" : "rounded-xl mx-2 mb-2"
+            "relative",
+            isDesktop ? "rounded-sm" : "rounded-xl mx-2 mb-2 overflow-hidden"
           )}
         >
         {/* Swipe indicators - only visible during drag */}
@@ -160,7 +164,7 @@ function TaskItem({ task, onClick }: TaskItemProps) {
           className={cn(
             "relative flex group items-center transition-colors bg-background cursor-pointer",
             isDesktop
-              ? "gap-2 px-2 py-1 h-8 rounded-sm hover:bg-secondary/40 shadow-none hover:shadow transition-all"
+              ? "gap-2 px-2 py-1 h-8 rounded-sm hover:bg-secondary/40 dark:hover:bg-secondary/60 transition-all"
               : "items-center gap-3 py-3 px-3 rounded-xl active:bg-secondary/20", // Floating Squircle Row
             isChecking && "opacity-50"
           )}
@@ -311,7 +315,7 @@ function TaskItem({ task, onClick }: TaskItemProps) {
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: "auto", opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
-          className="ml-11 mr-1 mt-2 mb-4 border-l-2 border-muted pl-4"
+          className="ml-11 mr-1 mt-2 border-l-2 border-muted pl-4"
         >
           <SubtaskList taskId={task.id} projectId={task.project_id} />
         </motion.div>

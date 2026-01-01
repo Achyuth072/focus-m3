@@ -102,7 +102,7 @@ export function TaskCreateView({
             size="sm"
             onClick={() => setShowSubtasks(!showSubtasks)}
             className={cn(
-              "h-10 w-10 p-0 transition-all hover:text-foreground shadow-sm group [&_svg]:!size-5",
+              "h-10 w-10 p-0 transition-all text-muted-foreground hover:text-foreground shadow-sm dark:bg-white/[0.03] dark:border dark:border-white/10 group [&_svg]:!size-5",
               showSubtasks && "text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary"
             )}
             title="Toggle subtasks"

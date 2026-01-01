@@ -78,7 +78,7 @@ export function TaskDatePicker({
           size="sm"
           onClick={() => onOpenChange(true)}
           className={cn(
-            "h-10 transition-all shrink-0 group [&_svg]:!size-5",
+            "h-10 transition-all shrink-0 group [&_svg]:!size-5 dark:bg-white/[0.03] dark:border dark:border-white/10",
             isCompact
               ? cn(
                   "w-10 px-0 text-muted-foreground hover:text-foreground",
@@ -119,7 +119,7 @@ export function TaskDatePicker({
           variant="ghost"
           size="sm"
           className={cn(
-            "h-10 transition-all shrink-0 group [&_svg]:!size-5",
+            "h-10 transition-all shrink-0 group [&_svg]:!size-5 dark:bg-white/[0.03] dark:border dark:border-white/10",
             isCompact
               ? cn(
                   "w-10 px-0 text-muted-foreground hover:text-foreground",
