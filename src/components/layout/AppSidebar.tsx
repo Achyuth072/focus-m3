@@ -15,6 +15,7 @@ import {
   SidebarHeader,
   SidebarFooter,
   SidebarSeparator,
+  SidebarTrigger,
   useSidebar,
 } from '@/components/ui/sidebar';
 import {
@@ -69,15 +70,18 @@ export function AppSidebar() {
 
   return (
     <>
-      <Sidebar variant="sidebar" collapsible="none" className="h-screen border-r">
+      <Sidebar variant="sidebar" collapsible="icon" className="h-screen border-r">
         <SidebarHeader className="border-b border-border">
-          <div className="flex items-center gap-2 px-2 py-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground font-semibold">
-              K
+          <div className="flex items-center justify-between px-2 py-4">
+            <div className="flex items-center gap-2 group-data-[collapsible=icon]:w-full group-data-[collapsible=icon]:justify-center">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-semibold shrink-0">
+                K
+              </div>
+              <span className="font-semibold text-lg group-data-[collapsible=icon]:hidden">
+                Kanso
+              </span>
             </div>
-            <span className="font-semibold text-lg">
-              Kanso
-            </span>
+            <SidebarTrigger className="h-8 w-8 group-data-[collapsible=icon]:hidden" />
           </div>
         </SidebarHeader>
 
@@ -141,7 +145,7 @@ export function AppSidebar() {
                 </SidebarGroupAction>
                 {isProjectsOpen && (
                   <SidebarGroupContent>
-                    <SidebarMenu className="pl-2">
+                    <SidebarMenu className="pl-2 group-data-[collapsible=icon]:pl-0">
                       {/* Inbox */}
                       <SidebarMenuItem>
                         <SidebarMenuButton
@@ -149,7 +153,9 @@ export function AppSidebar() {
                           isActive={currentProjectId === 'inbox'}
                           tooltip="Inbox"
                         >
-                          <Inbox className="h-4 w-4" />
+                          <div className="flex items-center justify-center w-5 h-5 shrink-0">
+                            <Inbox className="h-4 w-4" />
+                          </div>
                           <span>Inbox</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -164,10 +170,12 @@ export function AppSidebar() {
                               isActive={currentProjectId === project.id}
                               tooltip={project.name}
                             >
-                              <div
-                                className="h-3 w-3 rounded-full shrink-0 group-data-[size=lg]/menu-button:h-4 group-data-[size=lg]/menu-button:w-4"
-                                style={{ backgroundColor: project.color }}
-                              />
+                              <div className="flex items-center justify-center w-5 h-5 shrink-0">
+                                <div
+                                  className="h-3 w-3 rounded-full"
+                                  style={{ backgroundColor: project.color }}
+                                />
+                              </div>
                               <span className="truncate">{project.name}</span>
                             </SidebarMenuButton>
                           </SidebarMenuItem>
@@ -226,6 +234,10 @@ export function AppSidebar() {
               </SidebarMenuItem>
             </SidebarMenu>
           )}
+          {/* Expand trigger - visible only when collapsed */}
+          <div className="hidden group-data-[collapsible=icon]:flex justify-center py-2">
+            <SidebarTrigger className="h-8 w-8" />
+          </div>
           <div className="px-2 py-2 text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">
             v0.1.0
           </div>
