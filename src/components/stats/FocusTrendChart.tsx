@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 interface FocusTrendChartProps {
   data: Array<{
     date: string;
-    minutes: number;
+    hours: number;
   }>;
   className?: string;
 }
@@ -21,7 +21,7 @@ export function FocusTrendChart({ data, className }: FocusTrendChartProps) {
             Focus Trend
           </h3>
           <p className="text-sm text-muted-foreground mt-1">
-            Last 7 days
+            Last 7 days (ends today)
           </p>
         </div>
         
@@ -39,7 +39,7 @@ export function FocusTrendChart({ data, className }: FocusTrendChartProps) {
               fontSize={12}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => `${value}m`}
+              tickFormatter={(value) => `${value}h`}
             />
             <Tooltip
               contentStyle={{
@@ -52,7 +52,7 @@ export function FocusTrendChart({ data, className }: FocusTrendChartProps) {
             />
             <Line 
               type="monotone" 
-              dataKey="minutes" 
+              dataKey="hours" 
               stroke="hsl(var(--primary))" 
               strokeWidth={2}
               dot={{ fill: 'hsl(var(--primary))', r: 4 }}

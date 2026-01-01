@@ -23,7 +23,7 @@ export function MetricCard({ title, value, icon: Icon, trend, className }: Metri
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
             {title}
           </p>
-          <p className="text-3xl font-semibold tracking-tight">
+          <p className="text-4xl font-semibold tracking-tight">
             {value}
           </p>
           {trend && (
@@ -37,8 +37,8 @@ export function MetricCard({ title, value, icon: Icon, trend, className }: Metri
           )}
         </div>
         {Icon && (
-          <div className="p-2 rounded-lg bg-primary/10">
-            <Icon className="h-5 w-5 text-primary" />
+          <div className="p-2 rounded-lg bg-secondary/30">
+            <Icon className="h-5 w-5 text-muted-foreground" />
           </div>
         )}
       </div>

@@ -4,7 +4,7 @@ import { startOfDay, subDays, format, isSameDay } from "date-fns";
 
 export interface DailyStats {
   date: string;
-  minutes: number;
+  hours: number;
   tasksCompleted: number;
 }
 
@@ -68,7 +68,7 @@ export function useStats() {
 
         dailyTrend.push({
           date: dateStr,
-          minutes: Math.round(daySeconds / 60),
+          hours: Math.round((daySeconds / 3600) * 10) / 10, // Convert to hours with 1 decimal
           tasksCompleted: 0, // Placeholder if we want to track this per day later
         });
       }
