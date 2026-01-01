@@ -160,7 +160,7 @@ function TaskItem({ task, onClick }: TaskItemProps) {
           className={cn(
             "relative flex group items-center transition-colors bg-background cursor-pointer",
             isDesktop
-              ? "gap-2 px-2 py-1 h-8 rounded-sm hover:bg-secondary/40"
+              ? "gap-2 px-2 py-1 h-8 rounded-sm hover:bg-secondary/40 shadow-none hover:shadow transition-all"
               : "items-center gap-3 py-3 px-3 rounded-xl active:bg-secondary/20", // Floating Squircle Row
             isChecking && "opacity-50"
           )}

@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ListTodo, Save, Trash2, Inbox } from "lucide-react";
+import { ListChecks, Save, Trash2, Inbox } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { cn } from "@/lib/utils";
@@ -88,7 +88,7 @@ export function TaskEditView({
       </ResponsiveDialogHeader>
 
       {/* Scrollable Content Area */}
-      <div className="flex-1 overflow-y-auto px-4 sm:px-0 space-y-4 scrollbar-thin">
+      <div className="flex-1 overflow-y-auto px-4 sm:pl-0 sm:pr-4 space-y-4 scrollbar-thin">
         {/* Content Input */}
         <Textarea
           autoFocus
@@ -143,12 +143,12 @@ export function TaskEditView({
               size="sm"
               onClick={() => setShowSubtasks(!showSubtasks)}
               className={cn(
-                "h-6 w-6 p-0 text-muted-foreground hover:text-foreground transition-all",
+                "h-6 w-6 p-0 text-muted-foreground hover:text-foreground transition-all [&_svg]:!size-4",
                 showSubtasks && "text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary"
               )}
               title="Toggle subtasks"
             >
-              <ListTodo className="h-4 w-4" />
+              <ListChecks strokeWidth={2} />
             </Button>
           </div>
 
@@ -164,8 +164,8 @@ export function TaskEditView({
       </div>
 
       {/* Fixed Footer - Actions Row */}
-      <div className="shrink-0 flex items-center gap-2 pt-4 border-t mt-4 px-4 sm:px-0 pb-[calc(0.5rem+env(safe-area-inset-bottom))] overflow-hidden bg-background">
-        <div className="flex items-center gap-2 flex-1 overflow-x-auto scrollbar-hide pr-2 mask-linear">
+      <div className="shrink-0 flex items-center gap-2 pt-4 border-t mt-4 px-4 sm:px-0 pb-[calc(0.5rem+env(safe-area-inset-bottom))] bg-background">
+        <div className="flex items-center gap-2 flex-1 overflow-x-auto scrollbar-hide pr-2 mask-linear py-1">
           {/* Date & Time Picker */}
           <TaskDatePicker
             date={dueDate}
@@ -173,14 +173,14 @@ export function TaskEditView({
             isMobile={isMobile}
             open={datePickerOpen}
             onOpenChange={setDatePickerOpen}
-            variant="compact"
+            variant="icon"
           />
 
           {/* Priority Selector */}
           <TaskPrioritySelect
             priority={priority}
             setPriority={setPriority}
-            variant="compact"
+            variant="icon"
           />
 
           {/* Project Selector */}
@@ -190,7 +190,7 @@ export function TaskEditView({
           >
             <SelectTrigger
               className={cn(
-                "h-10 w-[110px] md:w-[130px] text-xs border-transparent bg-transparent hover:bg-secondary/50 shrink-0 focus:ring-0",
+                "h-10 w-[110px] md:w-[130px] text-xs border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground shrink-0 focus:ring-0",
                 selectedProjectId ? "min-w-16" : "min-w-10"
               )}
             >
@@ -225,23 +225,23 @@ export function TaskEditView({
           <Button
             variant="ghost"
             size="sm"
-            className="h-10 w-10 p-0 text-muted-foreground/80 hover:text-red-500 hover:bg-red-500/10 transition-colors"
+            className="h-10 w-10 p-0 text-muted-foreground/80 hover:text-red-500 hover:bg-red-500/10 transition-colors [&_svg]:!size-5"
             onClick={onDelete}
             title="Delete task"
           >
-            <Trash2 className="h-4.5 w-4.5" />
+            <Trash2 strokeWidth={1.5} />
           </Button>
 
           {/* Submit Button */}
           <Button
             size="sm"
             variant={isPending ? "ghost" : "default"}
-            className="h-10 w-10 p-0 rounded-md [&_svg]:size-5"
+            className="h-10 w-10 p-0 rounded-md [&_svg]:!size-5"
             onClick={onSubmit}
             disabled={!hasContent || isPending}
             title="Save changes"
           >
-            <Save className={cn("stroke-[1.5px]", isPending && "opacity-50")} />
+            <Save strokeWidth={1.5} className={cn(isPending && "opacity-50")} />
           </Button>
         </div>
       </div>

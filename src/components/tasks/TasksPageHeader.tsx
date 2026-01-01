@@ -77,8 +77,9 @@ export function TasksPageHeader({
       </Button>
 
       {/* New Task Button - Desktop Only */}
+
       <Button
-        variant="ghost"
+        variant="outline"
         size="sm"
         onClick={onNewTask}
         className="hidden md:flex items-center gap-2"

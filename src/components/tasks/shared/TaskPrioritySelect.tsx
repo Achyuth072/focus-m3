@@ -36,7 +36,7 @@ export function TaskPrioritySelect({
     >
       <SelectTrigger
         className={cn(
-          "h-10 border-none transition-all shrink-0 focus:ring-0 [&>svg]:hidden",
+          "h-10 border-none transition-all shrink-0 focus:ring-0 [&>svg]:hidden group",
           isCompact
             ? cn(
                 "px-0",
@@ -55,8 +55,9 @@ export function TaskPrioritySelect({
       >
         <div className="flex items-center gap-1.5 justify-center">
           <Flag
+            strokeWidth={1.5}
             className={cn(
-              isCompact ? "h-4 w-4" : "h-5 w-5 stroke-[1.5px]",
+              isCompact ? "h-5 w-5" : "h-5 w-5 transition-all",
               priority === 1 ? (isCompact ? "text-white h-3.5 w-3.5" : "text-red-500 fill-red-500") :
               priority === 2 ? (isCompact ? "text-white h-3.5 w-3.5" : "text-orange-500 fill-orange-500") :
               priority === 3 ? (isCompact ? "text-white h-3.5 w-3.5" : "text-blue-500 fill-blue-500") :

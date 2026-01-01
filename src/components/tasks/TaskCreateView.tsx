@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ListTodo, Send, FolderKanban, Inbox } from "lucide-react";
+import { ListChecks, Send, FolderKanban, Inbox } from "lucide-react";
 import { cn } from "@/lib/utils";
 import SubtaskList from "./SubtaskList";
 import { TaskDatePicker } from "./shared/TaskDatePicker";
@@ -102,12 +102,12 @@ export function TaskCreateView({
             size="sm"
             onClick={() => setShowSubtasks(!showSubtasks)}
             className={cn(
-              "h-10 w-10 p-0 transition-colors",
-              showSubtasks && "text-primary bg-primary/10"
+              "h-10 w-10 p-0 transition-all hover:text-foreground shadow-sm group [&_svg]:!size-5",
+              showSubtasks && "text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary"
             )}
             title="Toggle subtasks"
           >
-            <ListTodo className="h-5 w-5 stroke-[1.5px]" />
+            <ListChecks strokeWidth={2} className="transition-all" />
           </Button>
 
           {/* Priority Selector */}
@@ -144,7 +144,7 @@ export function TaskCreateView({
           <SelectContent>
             <SelectItem value="inbox">
               <div className="flex items-center gap-2">
-                <Inbox className="h-3 w-3" />
+                <Inbox strokeWidth={2} className="h-3 w-3" />
                 <span>Inbox</span>
               </div>
             </SelectItem>

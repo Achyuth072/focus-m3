@@ -39,8 +39,9 @@ export function TaskDatePicker({
   const buttonContent = (
     <div className="flex items-center gap-1.5">
       <CalendarIcon
+        strokeWidth={1.5}
         className={cn(
-          isCompact ? "h-4.5 w-4.5" : "h-5 w-5 stroke-[1.5px]",
+          isCompact ? "h-5 w-5" : "h-5 w-5 transition-all",
           date && (isCompact ? "mr-1.5 h-4 w-4" : "text-primary")
         )}
       />
@@ -77,14 +78,14 @@ export function TaskDatePicker({
           size="sm"
           onClick={() => onOpenChange(true)}
           className={cn(
-            "h-10 transition-all shrink-0",
+            "h-10 transition-all shrink-0 group [&_svg]:!size-5",
             isCompact
               ? cn(
                   "w-10 px-0 text-muted-foreground hover:text-foreground",
                   date && "w-auto px-2.5 text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary"
                 )
               : cn(
-                  "min-w-10 px-0",
+                  "min-w-10 px-0 shadow-sm",
                   date && "text-primary bg-primary/10 px-3 w-auto"
                 )
           )}
@@ -118,14 +119,14 @@ export function TaskDatePicker({
           variant="ghost"
           size="sm"
           className={cn(
-            "h-10 transition-all shrink-0",
+            "h-10 transition-all shrink-0 group [&_svg]:!size-5",
             isCompact
               ? cn(
                   "w-10 px-0 text-muted-foreground hover:text-foreground",
                   date && "w-auto px-2.5 text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary"
                 )
               : cn(
-                  "min-w-10 px-0",
+                  "min-w-10 px-0 shadow-sm",
                   date && "text-primary bg-primary/10 px-3 w-auto"
                 )
           )}
