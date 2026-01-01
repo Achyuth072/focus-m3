@@ -29,24 +29,24 @@ export function MobileHeader() {
   return (
     <header className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between h-16 px-4 border-b bg-sidebar md:hidden">
       {/* Left: Hamburger Menu */}
-      <SidebarTrigger className="h-10 w-10" />
+      <SidebarTrigger className="h-10 w-10 active:scale-95 transition-transform" />
 
       {/* Right: Focus Timer + More Menu */}
       <div className="flex items-center gap-2">
         {/* Dynamic Focus Timer */}
         <button
           onClick={() => router.push('/focus')}
-          className="flex items-center gap-2 px-3 py-2 min-h-[48px] rounded-lg hover:bg-sidebar-accent transition-colors border border-transparent hover:border-border"
+          className="flex items-center gap-2 px-3 py-2 min-h-[40px] rounded-lg hover:bg-sidebar-accent active:bg-sidebar-accent active:scale-95 transition-all"
         >
           <Timer className={`h-5 w-5 ${state.isRunning ? 'text-primary animate-pulse' : 'text-muted-foreground'}`} />
-          <span className={`text-base font-mono font-semibold tabular-nums ${state.isRunning ? 'text-primary' : 'text-muted-foreground'}`}>
+          <span className={`text-base font-mono font-semibold tabular-nums leading-none ${state.isRunning ? 'text-primary' : 'text-muted-foreground'}`}>
             {displayTime}
           </span>
         </button>
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-10 w-10">
+            <Button variant="ghost" size="icon" className="h-10 w-10 active:scale-95 transition-transform">
               <MoreVertical className="h-5 w-5" />
               <span className="sr-only">More options</span>
             </Button>
