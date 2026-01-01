@@ -65,7 +65,7 @@ export function FocusSettingsDialog() {
               type="number"
               value={focusDuration}
               onChange={(e) => setFocusDuration(Number(e.target.value))}
-              className="w-16 h-8 text-sm"
+              className="w-16 h-8 text-sm bg-secondary/30 border-transparent hover:bg-secondary/50 text-center rounded-md"
               min={1}
               max={120}
             />
@@ -91,7 +91,7 @@ export function FocusSettingsDialog() {
               type="number"
               value={shortBreak}
               onChange={(e) => setShortBreak(Number(e.target.value))}
-              className="w-16 h-8 text-sm"
+              className="w-16 h-8 text-sm bg-secondary/30 border-transparent hover:bg-secondary/50 text-center rounded-md"
               min={1}
               max={30}
             />
@@ -117,7 +117,7 @@ export function FocusSettingsDialog() {
               type="number"
               value={longBreak}
               onChange={(e) => setLongBreak(Number(e.target.value))}
-              className="w-16 h-8 text-sm"
+              className="w-16 h-8 text-sm bg-secondary/30 border-transparent hover:bg-secondary/50 text-center rounded-md"
               min={5}
               max={60}
             />
@@ -142,7 +142,7 @@ export function FocusSettingsDialog() {
             type="number"
             value={sessions}
             onChange={(e) => setSessions(Number(e.target.value))}
-            className="w-16 h-8 text-sm"
+            className="w-16 h-8 text-sm bg-secondary/30 border-transparent hover:bg-secondary/50 text-center rounded-md"
             min={2}
             max={10}
           />

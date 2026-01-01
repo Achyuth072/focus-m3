@@ -39,7 +39,7 @@ export default function StatsPage() {
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Statistics</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">Statistics</h1>
           <p className="text-sm text-muted-foreground mt-1">
             Track your productivity and progress
           </p>
@@ -73,48 +73,12 @@ export default function StatsPage() {
           />
         </div>
 
-        {/* Middle Row - Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Chart */}
+        <div>
           <FocusTrendChart 
-            data={focusTrendData} 
-            className="lg:col-span-2"
+            data={focusTrendData}
           />
-          
-          {/* Recent Achievements */}
-          <div className="p-6 border border-border/50 rounded-lg bg-card">
-            <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-4">
-              Recent Achievements
-            </h3>
-            <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                <div className="p-1.5 rounded-full bg-primary/10 mt-0.5">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium">7-Day Streak</p>
-                  <p className="text-xs text-muted-foreground">Completed tasks every day this week</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="p-1.5 rounded-full bg-primary/10 mt-0.5">
-                  <Target className="h-3.5 w-3.5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium">Focus Master</p>
-                  <p className="text-xs text-muted-foreground">Completed 10 focus sessions</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="p-1.5 rounded-full bg-primary/10 mt-0.5">
-                  <Flame className="h-3.5 w-3.5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium">Early Bird</p>
-                  <p className="text-xs text-muted-foreground">Started work before 9 AM</p>
-                </div>
-              </div>
-            </div>
-          </div>
+
         </div>
       </div>
     </div>

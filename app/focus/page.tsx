@@ -60,18 +60,18 @@ export default function FocusPage() {
       </Button>
 
       {/* Mode Badge */}
-      <div className="px-4 py-1.5 rounded-full mb-8 text-sm font-medium bg-secondary text-secondary-foreground">
+      <div className="text-sm font-medium text-muted-foreground uppercase tracking-widest">
         {MODE_LABELS[state.mode]}
       </div>
 
       {/* Timer Display */}
-      <div className="text-7xl sm:text-8xl md:text-9xl font-extralight font-mono tracking-tight text-foreground">
+      <div className="text-7xl sm:text-8xl md:text-9xl font-light font-mono tracking-tight text-foreground tabular-nums mt-6">
         {formatTime(state.remainingSeconds)}
       </div>
 
       {/* Progress Bar */}
       <div className="w-full max-w-xs mt-8 mb-4">
-        <Progress value={progress} className="h-1.5" />
+        <Progress value={progress} className="h-0.5" />
       </div>
 
       {/* Session Counter */}
@@ -83,9 +83,9 @@ export default function FocusPage() {
       <div className="flex items-center gap-4">
         {/* Stop */}
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
-          className="h-14 w-14 rounded-full"
+          className="h-14 w-14 rounded-full text-muted-foreground hover:text-foreground"
           onClick={stop}
         >
           <Square className="h-5 w-5" />
@@ -109,9 +109,9 @@ export default function FocusPage() {
 
         {/* Skip */}
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
-          className="h-14 w-14 rounded-full"
+          className="h-14 w-14 rounded-full text-muted-foreground hover:text-foreground"
           onClick={skip}
         >
           <SkipForward className="h-5 w-5" />
