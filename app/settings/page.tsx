@@ -9,6 +9,7 @@ import { Moon, Sun, Monitor, LogOut, User, Loader2, ArrowLeft } from 'lucide-rea
 import { cn } from '@/lib/utils';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
@@ -17,6 +18,7 @@ export default function SettingsPage() {
   const supabase = createClient();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [activeTab, setActiveTab] = useState<'appearance' | 'account'>('appearance');
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   // Prevent flash during sign-out remount
   if (!user) {
@@ -45,7 +47,7 @@ export default function SettingsPage() {
               variant="ghost"
               size="icon"
               onClick={() => router.back()}
-              className="h-10 w-10"
+              className="h-12 w-12"
             >
               <ArrowLeft className="h-5 w-5" />
               <span className="sr-only">Back</span>
@@ -96,7 +98,7 @@ export default function SettingsPage() {
           {/* Main Content */}
           <main className="md:pt-[88px] space-y-12">
             {/* Appearance Section */}
-            {activeTab === 'appearance' && (
+            {(!isDesktop || activeTab === 'appearance') && (
               <section className="space-y-4">
                 <div>
                   <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
@@ -138,7 +140,7 @@ export default function SettingsPage() {
             )}
 
             {/* Account Section */}
-            {activeTab === 'account' && (
+            {(!isDesktop || activeTab === 'account') && (
               <section className="space-y-4">
                 <div>
                   <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">

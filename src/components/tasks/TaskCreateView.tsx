@@ -138,7 +138,7 @@ export function TaskCreateView({
           value={selectedProjectId || "inbox"}
           onValueChange={(v) => setSelectedProjectId(v === "inbox" ? null : v)}
         >
-          <SelectTrigger className="h-10 w-[140px] text-xs border-transparent bg-transparent hover:bg-secondary/50 focus:ring-0">
+          <SelectTrigger className="h-10 w-[140px] text-xs border border-transparent dark:border-white/10 bg-secondary/20 dark:bg-white/[0.05] hover:bg-secondary/30 focus:ring-0 transition-colors">
             <SelectValue placeholder="Inbox" />
           </SelectTrigger>
           <SelectContent>

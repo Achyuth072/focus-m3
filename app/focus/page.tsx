@@ -54,7 +54,7 @@ export default function FocusPage() {
         variant="ghost"
         size="icon"
         onClick={() => router.back()}
-        className="absolute top-4 left-4 h-12 w-12 rounded-full"
+        className="absolute top-4 left-4 h-14 w-14 rounded-full hover:bg-secondary/50 active:scale-95 transition-all"
       >
         <X className="h-6 w-6" />
       </Button>
