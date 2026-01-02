@@ -67,7 +67,8 @@ function groupOverlappingEvents(events: CalendarEvent[]): CalendarEvent[][] {
 
 /**
  * Position events for a single day
- * Returns events with calculated top, height, left, width, column, columnSpan
+ * Renders events as thin row strips that strictly fit within their time slot
+ * Dynamic compression reduces height if many events overlap
  */
 export function layoutDayEvents(
   events: CalendarEvent[],
@@ -79,31 +80,53 @@ export function layoutDayEvents(
     .map((e) => clampToDay(e, day))
     .sort((a, b) => a.start.getTime() - b.start.getTime());
 
-  const groups = groupOverlappingEvents(dayEvents);
+  if (dayEvents.length === 0) return [];
 
-  return groups.flatMap((group) => {
-    const columnCount = group.length;
+  const MAX_ROW_HEIGHT_PERCENT = 1.94; // ~28px max height
+  const MIN_ROW_HEIGHT_PERCENT = 1.0; // ~14px min height
+  const SLOT_HEIGHT_PERCENT = 4.16; // 1 hour (60/1440 * 100)
 
-    return group.map((event, index) => {
-      const top = timeToPercent(event.start);
-      const bottom = timeToPercent(event.end);
-      const height = bottom - top;
+  const positioned: PositionedEvent[] = [];
 
-      // Calculate horizontal position based on overlap
-      const width = 100 / columnCount;
-      const left = (index * 100) / columnCount;
+  // Group events by hour to handle slot fitting
+  const hourGroups: Record<number, CalendarEvent[]> = {};
 
-      return {
+  dayEvents.forEach((event) => {
+    const hour = event.start.getHours();
+    if (!hourGroups[hour]) hourGroups[hour] = [];
+    hourGroups[hour].push(event);
+  });
+
+  // Process each hour group
+  Object.entries(hourGroups).forEach(([hourStr, groupEvents]) => {
+    const count = groupEvents.length;
+    // Calculate height: fit in slot, but clamp between min and max
+    let height = Math.min(
+      MAX_ROW_HEIGHT_PERCENT,
+      Math.max(MIN_ROW_HEIGHT_PERCENT, SLOT_HEIGHT_PERCENT / count)
+    );
+
+    // Add a tiny gap between items unless they are very compressed
+    const margin = height < 1.4 ? 0 : 0.1;
+
+    groupEvents.forEach((event, index) => {
+      const startPercent = timeToPercent(event.start);
+      // Position relative to the start of the group
+      const offset = index * (height + margin);
+
+      positioned.push({
         ...event,
-        top,
-        height,
-        left,
-        width,
+        top: startPercent + offset,
+        height: height,
+        left: 0,
+        width: 100,
         column: index,
-        columnSpan: columnCount,
-      };
+        columnSpan: 1,
+      });
     });
   });
+
+  return positioned;
 }
 
 /**

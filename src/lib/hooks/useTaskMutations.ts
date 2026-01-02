@@ -31,6 +31,7 @@ export function useCreateTask() {
           due_date: input.due_date || null,
           project_id: input.project_id || null,
           parent_id: input.parent_id || null,
+          recurrence: input.recurrence || null,
         })
         .select()
         .single();
@@ -111,7 +112,17 @@ export function useToggleTask() {
     }: {
       id: string;
       is_completed: boolean;
-    }): Promise<Task> => {
+    }): Promise<{ task: Task; newRecurringTask?: Task }> => {
+      // First, get the task to check if it's recurring
+      const { data: currentTask, error: fetchError } = await supabase
+        .from("tasks")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (fetchError) throw new Error(fetchError.message);
+
+      // Update the current task
       const { data, error } = await supabase
         .from("tasks")
         .update({
@@ -123,7 +134,64 @@ export function useToggleTask() {
         .single();
 
       if (error) throw new Error(error.message);
-      return data as Task;
+
+      const updatedTask = data as Task;
+      let newRecurringTask: Task | undefined;
+
+      // If completing a recurring task, create the next instance
+      // Handle both JSONB (object) and TEXT (string) cases
+      let recurrenceRule = currentTask.recurrence;
+      if (typeof recurrenceRule === "string") {
+        try {
+          recurrenceRule = JSON.parse(recurrenceRule);
+        } catch {
+          console.error("Failed to parse recurrence string:", recurrenceRule);
+          recurrenceRule = null;
+        }
+      }
+
+      console.log("[Recurring Task Debug]", {
+        is_completed,
+        recurrenceRule,
+        hasRecurrence: !!recurrenceRule,
+      });
+
+      if (is_completed && recurrenceRule) {
+        const { calculateNextDueDate } = await import("@/lib/utils/recurrence");
+
+        const completedDate = new Date();
+        const nextDueDate = calculateNextDueDate(completedDate, recurrenceRule);
+
+        console.log("[Recurring Task Debug] Creating next instance:", {
+          nextDueDate: nextDueDate.toISOString(),
+          content: currentTask.content,
+        });
+
+        // Create new task instance
+        const { data: newTask, error: createError } = await supabase
+          .from("tasks")
+          .insert({
+            user_id: currentTask.user_id,
+            project_id: currentTask.project_id,
+            content: currentTask.content,
+            description: currentTask.description,
+            priority: currentTask.priority,
+            due_date: nextDueDate.toISOString(),
+            recurrence: recurrenceRule,
+            is_completed: false,
+          })
+          .select()
+          .single();
+
+        if (createError) {
+          console.error("Failed to create recurring task:", createError);
+        } else {
+          console.log("[Recurring Task Debug] New task created:", newTask);
+          newRecurringTask = newTask as Task;
+        }
+      }
+
+      return { task: updatedTask, newRecurringTask };
     },
     onMutate: async ({ id, is_completed }) => {
       await queryClient.cancelQueries({ queryKey: ["tasks"] });

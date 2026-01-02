@@ -16,6 +16,7 @@ import { useProjects } from "@/lib/hooks/useProjects";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/lib/types/task";
+import type { RecurrenceRule } from "@/lib/utils/recurrence";
 import { TaskCreateView } from "./TaskCreateView";
 import { TaskEditView } from "./TaskEditView";
 
@@ -38,6 +39,7 @@ export default function TaskSheet({
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
   const [priority, setPriority] = useState<1 | 2 | 3 | 4>(4);
+  const [recurrence, setRecurrence] = useState<RecurrenceRule | null>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
@@ -60,6 +62,7 @@ export default function TaskSheet({
         setDescription(initialTask.description || "");
         setDueDate(initialTask.due_date ? new Date(initialTask.due_date) : undefined);
         setPriority(initialTask.priority);
+        setRecurrence(initialTask.recurrence || null);
         setDraftSubtasks([]);
         setSelectedProjectId(initialTask.project_id);
         setIsPreviewMode(!!initialTask.description);
@@ -68,6 +71,7 @@ export default function TaskSheet({
         setDescription("");
         setDueDate(initialDate ?? undefined);
         setPriority(4);
+        setRecurrence(null);
         setDraftSubtasks([]);
         setSelectedProjectId(null);
         setIsPreviewMode(false);
@@ -91,6 +95,7 @@ export default function TaskSheet({
         due_date: dueDate?.toISOString() ?? null,
         priority,
         project_id: selectedProjectId,
+        recurrence: recurrence,
       });
     } else {
       createMutation.mutate(
@@ -100,6 +105,7 @@ export default function TaskSheet({
           project_id: selectedProjectId || undefined,
           due_date: dueDate?.toISOString(),
           priority,
+          recurrence: recurrence,
         },
         {
           onSuccess: (parentTask) => {
@@ -158,6 +164,8 @@ export default function TaskSheet({
             setDueDate={setDueDate}
             priority={priority}
             setPriority={setPriority}
+            recurrence={recurrence}
+            setRecurrence={setRecurrence}
             selectedProjectId={selectedProjectId}
             setSelectedProjectId={setSelectedProjectId}
             datePickerOpen={datePickerOpen}
@@ -187,6 +195,8 @@ export default function TaskSheet({
             setDueDate={setDueDate}
             priority={priority}
             setPriority={setPriority}
+            recurrence={recurrence}
+            setRecurrence={setRecurrence}
             selectedProjectId={selectedProjectId}
             setSelectedProjectId={setSelectedProjectId}
             datePickerOpen={datePickerOpen}

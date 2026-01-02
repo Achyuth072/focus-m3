@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { motion, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DeleteConfirmationDialog } from "@/components/ui/DeleteConfirmationDialog";
-import { useUpdateTask, useDeleteTask } from "@/lib/hooks/useTaskMutations";
+import { useUpdateTask, useDeleteTask, useToggleTask } from "@/lib/hooks/useTaskMutations";
 import { format, isToday, isTomorrow, isPast, parseISO } from "date-fns";
 import {
   Calendar,
@@ -54,6 +54,7 @@ function TaskItem({ task, onClick }: TaskItemProps) {
 
   const updateMutation = useUpdateTask();
   const deleteMutation = useDeleteTask();
+  const toggleMutation = useToggleTask();
   const { data: project } = useProject(task.project_id);
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -66,7 +67,7 @@ function TaskItem({ task, onClick }: TaskItemProps) {
 
   const handleComplete = (checked: boolean) => {
     setIsChecking(true);
-    updateMutation.mutate(
+    toggleMutation.mutate(
       { id: task.id, is_completed: checked },
       {
         onSettled: () => setIsChecking(false),
@@ -197,13 +198,11 @@ function TaskItem({ task, onClick }: TaskItemProps) {
           </div>
 
           {/* Content */}
-          <div className="flex-1 min-w-0 flex items-center justify-between gap-2">
-            <div
-              className={cn(
-                "flex flex-1 gap-2",
-                isDesktop ? "items-center" : "items-start"
-              )}
-            >
+          <div className={cn(
+            "flex-1 min-w-0",
+            isDesktop ? "flex items-center justify-between gap-2" : "flex flex-col gap-0"
+          )}>
+            <div className="flex items-center gap-2 flex-1">
               <p
                 className={cn(
                   "font-medium leading-tight truncate",
@@ -214,14 +213,16 @@ function TaskItem({ task, onClick }: TaskItemProps) {
                 {task.content}
               </p>
 
-              {/* Metadata row */}
-              {(task.due_date || task.priority < 4 || project) && (
-                <div
-                  className={cn(
-                    "flex items-center gap-2",
-                    isDesktop ? "shrink-0 ml-auto" : "mt-1.5"
-                  )}
-                >
+            </div>
+            
+            {/* Metadata row */}
+            {(task.due_date || task.priority < 4 || project) && (
+              <div
+                className={cn(
+                  "flex items-center gap-2 flex-wrap",
+                  isDesktop ? "shrink-0" : "mt-1 ml-0"
+                )}
+              >
                   {/* Expand Toggle */}
                   {isDesktop ? (
                     <Button
@@ -305,7 +306,6 @@ function TaskItem({ task, onClick }: TaskItemProps) {
                 )}
               </Button>
             )}
-          </div>
         </motion.div>
       </motion.div>
 

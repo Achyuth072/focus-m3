@@ -1,3 +1,5 @@
+import type { RecurrenceRule } from "@/lib/utils/recurrence";
+
 export interface Task {
   id: string;
   user_id: string;
@@ -10,7 +12,7 @@ export interface Task {
   is_completed: boolean;
   completed_at: string | null;
   day_order: number;
-  recurrence: string | null;
+  recurrence: RecurrenceRule | null;
   google_event_id: string | null;
   google_etag: string | null;
   created_at: string;
@@ -36,6 +38,7 @@ export interface CreateTaskInput {
   due_date?: string;
   project_id?: string;
   parent_id?: string;
+  recurrence?: RecurrenceRule | null;
 }
 
 export interface UpdateTaskInput {
@@ -47,6 +50,7 @@ export interface UpdateTaskInput {
   is_completed?: boolean;
   day_order?: number;
   project_id?: string | null;
+  recurrence?: RecurrenceRule | null;
 }
 
 export interface ParsedTask {

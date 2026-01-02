@@ -18,7 +18,9 @@ import { cn } from "@/lib/utils";
 import SubtaskList from "./SubtaskList";
 import { TaskDatePicker } from "./shared/TaskDatePicker";
 import { TaskPrioritySelect } from "./shared/TaskPrioritySelect";
+import RecurrencePicker from "./TaskSheet/RecurrencePicker";
 import type { Project } from "@/lib/types/task";
+import type { RecurrenceRule } from "@/lib/utils/recurrence";
 
 interface TaskCreateViewProps {
   content: string;
@@ -27,6 +29,8 @@ interface TaskCreateViewProps {
   setDueDate: (value: Date | undefined) => void;
   priority: 1 | 2 | 3 | 4;
   setPriority: (value: 1 | 2 | 3 | 4) => void;
+  recurrence: RecurrenceRule | null;
+  setRecurrence: (value: RecurrenceRule | null) => void;
   selectedProjectId: string | null;
   setSelectedProjectId: (value: string | null) => void;
   datePickerOpen: boolean;
@@ -51,6 +55,8 @@ export function TaskCreateView({
   setDueDate,
   priority,
   setPriority,
+  recurrence,
+  setRecurrence,
   selectedProjectId,
   setSelectedProjectId,
   datePickerOpen,
@@ -114,6 +120,13 @@ export function TaskCreateView({
           <TaskPrioritySelect
             priority={priority}
             setPriority={setPriority}
+            variant="icon"
+          />
+
+          {/* Recurrence Picker */}
+          <RecurrencePicker
+            value={recurrence}
+            onChange={setRecurrence}
             variant="icon"
           />
         </div>

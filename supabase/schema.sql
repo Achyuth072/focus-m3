@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS tasks (
   is_completed BOOLEAN DEFAULT false,
   completed_at TIMESTAMPTZ,
   day_order INT DEFAULT 0,
-  recurrence TEXT,
+  recurrence JSONB,
   google_event_id TEXT,
   google_etag TEXT,
   created_at TIMESTAMPTZ DEFAULT now() NOT NULL,

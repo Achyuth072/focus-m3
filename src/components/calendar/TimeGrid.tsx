@@ -86,22 +86,26 @@ export function TimeGrid({ startDate, daysToShow, events, className }: TimeGridP
                 <div
                   key={event.id}
                   className={cn(
-                    'absolute rounded-md border p-2 text-xs cursor-pointer',
-                    'hover:z-20 hover:shadow-sm transition-all',
-                    'bg-(--event-color)/15 border-(--event-color)/30 text-foreground font-medium'
+                    'absolute rounded-md border px-2 py-0.5 text-xs cursor-pointer overflow-hidden flex items-center gap-1.5',
+                    'hover:z-20 hover:shadow-lg transition-all',
+                    'bg-(--event-color)/15 border-(--event-color)/30 text-foreground'
                   )}
                   style={{
                     '--event-color': event.color || 'hsl(var(--primary))',
                     top: `${topPx + 96}px`, // +96px for h-24 header height
-                    height: `${Math.max(heightPx, 30)}px`, // Minimum 30px height
-                    left: `${event.left}%`,
-                    width: `${event.width - 2}%`, // -2% for spacing
+                    height: `${Math.max(heightPx, 20)}px`, // Minimum 20px height
+                    left: '2px',
+                    right: '2px',
+                    width: 'calc(100% - 4px)',
                   } as React.CSSProperties}
                 >
-                  <div className="font-semibold truncate">{event.title}</div>
-                  <div className="text-muted-foreground">
+                  {/* Time - Only show if enough width/height, but for pill style we try to show inline */}
+                  <div className="text-muted-foreground text-[10px] leading-tight font-medium shrink-0">
                     {format(event.start, 'h:mm a')}
                   </div>
+                  
+                  {/* Title */}
+                  <div className="font-semibold truncate text-[11px] leading-tight flex-1">{event.title}</div>
                 </div>
               );
             })}

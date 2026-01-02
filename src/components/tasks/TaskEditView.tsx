@@ -20,7 +20,9 @@ import { cn } from "@/lib/utils";
 import SubtaskList from "./SubtaskList";
 import { TaskDatePicker } from "./shared/TaskDatePicker";
 import { TaskPrioritySelect } from "./shared/TaskPrioritySelect";
+import RecurrencePicker from "./TaskSheet/RecurrencePicker";
 import type { Task, Project } from "@/lib/types/task";
+import type { RecurrenceRule } from "@/lib/utils/recurrence";
 
 interface TaskEditViewProps {
   initialTask: Task;
@@ -34,6 +36,8 @@ interface TaskEditViewProps {
   setDueDate: (value: Date | undefined) => void;
   priority: 1 | 2 | 3 | 4;
   setPriority: (value: 1 | 2 | 3 | 4) => void;
+  recurrence: RecurrenceRule | null;
+  setRecurrence: (value: RecurrenceRule | null) => void;
   selectedProjectId: string | null;
   setSelectedProjectId: (value: string | null) => void;
   datePickerOpen: boolean;
@@ -64,6 +68,8 @@ export function TaskEditView({
   setDueDate,
   priority,
   setPriority,
+  recurrence,
+  setRecurrence,
   selectedProjectId,
   setSelectedProjectId,
   datePickerOpen,
@@ -165,7 +171,7 @@ export function TaskEditView({
 
       {/* Fixed Footer - Actions Row */}
       <div className="shrink-0 flex items-center gap-2 pt-4 border-t mt-4 px-4 sm:px-0 pb-[calc(0.5rem+env(safe-area-inset-bottom))] bg-background">
-        <div className="flex items-center gap-2 flex-1 overflow-x-auto scrollbar-hide pr-2 mask-linear py-1">
+        <div className="flex items-center gap-3 flex-1 overflow-x-auto scrollbar-hide pr-2 mask-linear py-1">
           {/* Date & Time Picker */}
           <TaskDatePicker
             date={dueDate}
@@ -177,11 +183,22 @@ export function TaskEditView({
           />
 
           {/* Priority Selector */}
-          <TaskPrioritySelect
-            priority={priority}
-            setPriority={setPriority}
-            variant="icon"
-          />
+          <div className="shrink-0">
+            <TaskPrioritySelect
+              priority={priority}
+              setPriority={setPriority}
+              variant="icon"
+            />
+          </div>
+
+          {/* Recurrence Picker */}
+          <div className="shrink-0">
+            <RecurrencePicker
+              value={recurrence}
+              onChange={setRecurrence}
+              variant="icon"
+            />
+          </div>
 
           {/* Project Selector */}
           <Select
