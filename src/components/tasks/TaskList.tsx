@@ -31,10 +31,11 @@ interface TaskListProps {
   sortBy?: SortOption;
   groupBy?: GroupOption;
   projectId?: string | null;
+  filter?: string;
 }
 
-export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId }: TaskListProps) {
-  const { data: tasks, isLoading } = useTasks({ projectId });
+export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId, filter }: TaskListProps) {
+  const { data: tasks, isLoading } = useTasks({ projectId, filter });
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [localTasks, setLocalTasks] = useState<Task[]>([]);
   const updateMutation = useUpdateTask();

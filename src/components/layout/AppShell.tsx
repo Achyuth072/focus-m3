@@ -12,6 +12,7 @@ import { MobileNav } from '@/components/layout/MobileNav';
 import { MobileHeader } from '@/components/layout/MobileHeader';
 import AddTaskFab from '@/components/tasks/AddTaskFab';
 import TaskSheet from '@/components/tasks/TaskSheet';
+import { CommandMenu } from '@/components/command-menu';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -49,13 +50,14 @@ function AppShellContent({ children }: AppShellProps) {
         {/* FAB - Only on Tasks page, rendered outside template animation */}
         {isTasksPage && <AddTaskFab onClick={openAddTask} />}
 
-        {/* Task Sheet - Only on Tasks page */}
-        {isTasksPage && (
-          <TaskSheet
-            open={isAddTaskOpen}
-            onClose={closeAddTask}
-          />
-        )}
+        {/* Global Task Sheet */}
+        <TaskSheet
+          open={isAddTaskOpen}
+          onClose={closeAddTask}
+        />
+        
+        {/* Global Command Menu */}
+        <CommandMenu />
       </SidebarProvider>
     </CompletedTasksProvider>
   );

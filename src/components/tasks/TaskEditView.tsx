@@ -17,6 +17,7 @@ import { ListChecks, Save, Trash2, Inbox } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { cn } from "@/lib/utils";
+import { useHorizontalScroll } from "@/lib/hooks/useHorizontalScroll";
 import SubtaskList from "./SubtaskList";
 import { TaskDatePicker } from "./shared/TaskDatePicker";
 import { TaskPrioritySelect } from "./shared/TaskPrioritySelect";
@@ -87,14 +88,16 @@ export function TaskEditView({
   onDelete,
   onKeyDown,
 }: TaskEditViewProps) {
+  const scrollRef = useHorizontalScroll();
+
   return (
-    <div className="flex flex-col h-full max-h-[85vh]">
+    <div className="flex flex-col h-full max-h-[85vh] w-full max-w-full overflow-hidden">
       <ResponsiveDialogHeader className="pb-4 shrink-0">
         <ResponsiveDialogTitle>Edit Task</ResponsiveDialogTitle>
       </ResponsiveDialogHeader>
 
       {/* Scrollable Content Area */}
-      <div className="flex-1 overflow-y-auto px-4 sm:pl-0 sm:pr-4 space-y-4 scrollbar-thin">
+      <div className="flex-1 overflow-y-auto px-4 sm:pl-0 sm:pr-4 space-y-4 scrollbar-thin w-full">
         {/* Content Input */}
         <Textarea
           autoFocus
@@ -170,8 +173,8 @@ export function TaskEditView({
       </div>
 
       {/* Fixed Footer - Actions Row */}
-      <div className="shrink-0 flex items-center gap-2 pt-4 border-t mt-4 px-4 sm:px-0 pb-[calc(0.5rem+env(safe-area-inset-bottom))] bg-background">
-        <div className="flex items-center gap-3 flex-1 overflow-x-auto scrollbar-hide pr-2 mask-linear py-1">
+      <div className="shrink-0 grid grid-cols-[1fr_auto] gap-2 pt-4 border-t mt-4 px-4 sm:px-0 pb-[calc(0.5rem+env(safe-area-inset-bottom))] bg-background w-full max-w-full">
+        <div ref={scrollRef} className="flex items-center gap-3 overflow-x-auto scrollbar-hide pr-8 py-1 min-w-0 mask-linear-horizontal">
           {/* Date & Time Picker */}
           <TaskDatePicker
             date={dueDate}

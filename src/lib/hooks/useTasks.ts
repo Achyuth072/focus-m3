@@ -7,14 +7,15 @@ import type { Task } from "@/lib/types/task";
 interface UseTasksOptions {
   projectId?: string | null;
   showCompleted?: boolean;
+  filter?: string;
 }
 
 export function useTasks(options: UseTasksOptions = {}) {
-  const { projectId, showCompleted = false } = options;
+  const { projectId, showCompleted = false, filter } = options;
   const supabase = createClient();
 
   return useQuery({
-    queryKey: ["tasks", { projectId, showCompleted }],
+    queryKey: ["tasks", { projectId, showCompleted, filter }],
     queryFn: async (): Promise<Task[]> => {
       let query = supabase
         .from("tasks")
@@ -22,6 +23,15 @@ export function useTasks(options: UseTasksOptions = {}) {
         .is("parent_id", null) // Exclude subtasks from main list
         .order("day_order", { ascending: true })
         .order("created_at", { ascending: false });
+
+      // Apply Quick Filters
+      if (filter === "today") {
+        const today = new Date();
+        today.setHours(23, 59, 59, 999);
+        query = query.lte("due_date", today.toISOString());
+      } else if (filter === "p1") {
+        query = query.eq("priority", 1);
+      }
 
       // Filter by project
       if (projectId === "inbox") {

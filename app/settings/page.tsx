@@ -10,13 +10,15 @@ import { cn } from '@/lib/utils';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
+import { SignOutConfirmation } from '@/components/auth/SignOutConfirmation';
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const router = useRouter();
   const supabase = createClient();
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
   const [activeTab, setActiveTab] = useState<'appearance' | 'account'>('appearance');
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -26,8 +28,9 @@ export default function SettingsPage() {
   }
 
   const handleSignOut = async () => {
+    setShowSignOutConfirm(false);
     setIsSigningOut(true);
-    await supabase.auth.signOut();
+    await signOut();
     router.push('/login');
   };
 
@@ -110,29 +113,29 @@ export default function SettingsPage() {
                   <label className="text-sm font-medium">Theme</label>
                   <div className="grid grid-cols-3 gap-3">
                     {themeOptions.map((option) => {
-                      const Icon = option.icon;
-                      const isActive = theme === option.value;
-                      
-                      return (
-                        <button
-                          key={option.value}
-                          onClick={() => setTheme(option.value)}
-                          className={cn(
-                            'flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-colors',
-                            isActive
-                              ? 'border-foreground bg-secondary/30'
-                              : 'border-border/50 hover:border-border bg-background'
-                          )}
-                        >
-                          <Icon className="h-5 w-5 text-muted-foreground" />
-                          <span className={cn(
-                            'text-sm font-medium',
-                            isActive ? 'text-foreground' : 'text-muted-foreground'
-                          )}>
-                            {option.label}
-                          </span>
-                        </button>
-                      );
+                       const Icon = option.icon;
+                       const isActive = theme === option.value;
+                       
+                       return (
+                         <button
+                           key={option.value}
+                           onClick={() => setTheme(option.value)}
+                           className={cn(
+                             'flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-colors',
+                             isActive
+                               ? 'border-foreground bg-secondary/30'
+                               : 'border-border/50 hover:border-border bg-background'
+                           )}
+                         >
+                           <Icon className="h-5 w-5 text-muted-foreground" />
+                           <span className={cn(
+                             'text-sm font-medium',
+                             isActive ? 'text-foreground' : 'text-muted-foreground'
+                           )}>
+                             {option.label}
+                           </span>
+                         </button>
+                       );
                     })}
                   </div>
                 </div>
@@ -166,7 +169,7 @@ export default function SettingsPage() {
                   <Button
                     variant="outline"
                     className="w-full justify-start"
-                    onClick={handleSignOut}
+                    onClick={() => setShowSignOutConfirm(true)}
                     disabled={isSigningOut}
                   >
                     {isSigningOut ? (
@@ -195,8 +198,15 @@ export default function SettingsPage() {
         </div>
       </div>
 
+      <SignOutConfirmation 
+        isOpen={showSignOutConfirm}
+        onClose={() => setShowSignOutConfirm(false)}
+        onConfirm={handleSignOut}
+      />
+
       {/* Loading Overlay */}
       {isSigningOut && <LoaderOverlay message="Signing out..." />}
     </div>
   );
 }
+

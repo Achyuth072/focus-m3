@@ -10,6 +10,7 @@ import { format } from 'date-fns';
 import { TasksPageHeader } from '@/components/tasks/TasksPageHeader';
 import { useUiStore } from '@/lib/store/uiStore';
 import { useTaskActions } from '@/components/TaskActionsProvider';
+import { PlusIcon } from 'lucide-react';
 
 const fadeIn = {
   initial: { opacity: 0, y: 10 },
@@ -25,6 +26,7 @@ function HomeContent() {
   const { openAddTask } = useTaskActions();
 
   const currentProjectId = searchParams.get('project') || 'all';
+  const filter = searchParams.get('filter') || undefined;
 
   useEffect(() => {
     if (!loading && !user) {
@@ -52,8 +54,22 @@ function HomeContent() {
       {/* Header */}
       <div className="px-6 pt-4 pb-4 flex items-start justify-between">
         <div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
             {format(today, 'EEEE, MMMM d')}
+            {filter && (
+              <span className="flex items-center gap-1.5 before:content-['•'] before:text-muted-foreground/40">
+                <span className="capitalize text-primary font-medium">
+                  {filter === 'p1' ? 'High Priority' : filter}
+                </span>
+                <button 
+                  onClick={() => router.push('/')}
+                  className="hover:bg-accent/60 p-0.5 rounded-full transition-colors"
+                  title="Clear filter"
+                >
+                  <PlusIcon className="h-3.5 w-3.5 rotate-45" />
+                </button>
+              </span>
+            )}
           </p>
           <h1 className="text-[28px] md:text-[32px] font-semibold tracking-tight mt-1 text-primary">
             {greeting}
@@ -71,7 +87,13 @@ function HomeContent() {
       </div>
 
       {/* Task List */}
-      <TaskList sortBy={sortBy} groupBy={groupBy} projectId={currentProjectId} />
+      {/* Task List */}
+      <TaskList 
+        sortBy={sortBy} 
+        groupBy={groupBy} 
+        projectId={currentProjectId} 
+        filter={filter}
+      />
     </motion.div>
   );
 }
