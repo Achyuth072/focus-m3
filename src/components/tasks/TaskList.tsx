@@ -1,13 +1,31 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { useTasks } from '@/lib/hooks/useTasks';
 import TaskItem from './TaskItem';
+import SortableTaskItem from './SortableTaskItem';
 import TaskSheet from './TaskSheet';
 import type { Task } from '@/lib/types/task';
 import { SortOption, GroupOption } from '@/lib/types/sorting';
 import { compareAsc, parseISO, isBefore, isToday, isTomorrow, startOfDay, format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { useUpdateTask } from '@/lib/hooks/useTaskMutations';
 
 interface TaskListProps {
   sortBy?: SortOption;
@@ -18,6 +36,26 @@ interface TaskListProps {
 export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId }: TaskListProps) {
   const { data: tasks, isLoading } = useTasks({ projectId });
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [localTasks, setLocalTasks] = useState<Task[]>([]);
+  const updateMutation = useUpdateTask();
+
+  // Configure sensors with activation constraints to avoid conflicts with swipe
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 8px movement required before drag starts
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250, // 250ms hold required on touch devices
+        tolerance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const processedTasks = useMemo(() => {
     if (!tasks) return { active: [], completed: [] };
@@ -95,6 +133,33 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId 
 
   }, [tasks, sortBy, groupBy]);
 
+  // Sync local tasks with processed tasks
+  useMemo(() => {
+    setLocalTasks(processedTasks.active);
+  }, [processedTasks.active]);
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = localTasks.findIndex((task) => task.id === active.id);
+    const newIndex = localTasks.findIndex((task) => task.id === over.id);
+
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    // Optimistic update
+    const reordered = arrayMove(localTasks, oldIndex, newIndex);
+    setLocalTasks(reordered);
+
+    // Persist to database - update day_order for the moved task
+    const movedTask = localTasks[oldIndex];
+    updateMutation.mutate({
+      id: movedTask.id,
+      day_order: newIndex,
+    });
+  };
+
   if (isLoading) {
     return (
       <div className="px-4 md:px-6 py-4">
@@ -124,52 +189,63 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId 
 
   return (
     <>
-      <div className="px-4 md:px-6 space-y-4">
-        {/* Active Tasks Grouped */}
-        {groups ? (
-          groups.map((group) => (
-            <div key={group.title} className="space-y-0 md:space-y-0.5">
-              <h3 className="text-sm font-semibold text-muted-foreground px-1">{group.title}</h3>
-              {group.tasks.map((task) => (
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                  onClick={() => setSelectedTask(task)}
-                />
-              ))}
-            </div>
-          ))
-        ) : (
-          // Active Tasks Flat
-          <div className="space-y-0 md:space-y-0.5">
-             {active.map((task) => (
-              <TaskItem
-                key={task.id}
-                task={task}
-                onClick={() => setSelectedTask(task)}
-              />
-            ))}
-          </div>
-        )}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="px-4 md:px-6 space-y-4">
+          {/* Active Tasks Grouped */}
+          {groups ? (
+            groups.map((group) => (
+              <div key={group.title} className="space-y-0 md:space-y-0.5">
+                <h3 className="text-sm font-semibold text-muted-foreground px-1">{group.title}</h3>
+                {group.tasks.map((task) => (
+                  <TaskItem
+                    key={task.id}
+                    task={task}
+                    onClick={() => setSelectedTask(task)}
+                  />
+                ))}
+              </div>
+            ))
+          ) : (
+            // Active Tasks Flat - with Drag & Drop
+            <SortableContext
+              items={localTasks.map((t) => t.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="space-y-0 md:space-y-0.5">
+                {localTasks.map((task) => (
+                  <SortableTaskItem
+                    key={task.id}
+                    task={task}
+                    onClick={() => setSelectedTask(task)}
+                  />
+                ))}
+              </div>
+            </SortableContext>
+          )}
 
-        {/* Completed Section */}
-        {completed.length > 0 && (
-          <div className="pt-4">
-            <p className="text-xs font-medium text-muted-foreground px-1 mb-2">
-              Completed ({completed.length})
-            </p>
-            <div className="space-y-0 md:space-y-0.5 opacity-60">
-              {completed.map((task) => (
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                  onClick={() => setSelectedTask(task)}
-                />
-              ))}
+          {/* Completed Section */}
+          {completed.length > 0 && (
+            <div className="pt-4">
+              <p className="text-xs font-medium text-muted-foreground px-1 mb-2">
+                Completed ({completed.length})
+              </p>
+              <div className="space-y-0 md:space-y-0.5 opacity-60">
+                {completed.map((task) => (
+                  <TaskItem
+                    key={task.id}
+                    task={task}
+                    onClick={() => setSelectedTask(task)}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      </DndContext>
 
       {/* Edit Sheet */}
       <TaskSheet

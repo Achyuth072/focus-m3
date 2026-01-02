@@ -184,6 +184,11 @@ select {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+  .no-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+  }
 }
 @layer utilities {
   .appearance-none {

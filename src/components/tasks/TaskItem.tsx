@@ -10,6 +10,7 @@ import {
   Calendar,
   Flag,
   Trash2,
+  Pencil,
   ChevronRight,
   ChevronDown,
   GripVertical,
@@ -20,7 +21,6 @@ import SubtaskList from "./SubtaskList";
 import { Button } from "@/components/ui/button";
 import { useProject } from "@/lib/hooks/useProjects";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
-import { TaskDatePicker } from "./shared/TaskDatePicker";
 
 interface TaskItemProps {
   task: Task;
@@ -51,7 +51,6 @@ function TaskItem({ task, onClick }: TaskItemProps) {
   const [pendingDelete, setPendingDelete] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [datePickerOpen, setDatePickerOpen] = useState(false);
 
   const updateMutation = useUpdateTask();
   const deleteMutation = useDeleteTask();
@@ -62,7 +61,7 @@ function TaskItem({ task, onClick }: TaskItemProps) {
   const background = useTransform(
     x,
     [-SWIPE_THRESHOLD, -50, 0, 50, SCHEDULE_SWIPE_THRESHOLD],
-    ["hsl(0 84.2% 60.2%)", "hsl(0 84.2% 60.2% / 0.3)", "transparent", "hsl(221.2 83.2% 53.3% / 0.3)", "hsl(221.2 83.2% 53.3%)"]
+    ["hsl(0 84.2% 60.2%)", "hsl(0 84.2% 60.2% / 0.3)", "transparent", "hsl(142 76% 36% / 0.3)", "hsl(142 76% 36%)"]
   );
 
   const handleComplete = (checked: boolean) => {
@@ -73,13 +72,6 @@ function TaskItem({ task, onClick }: TaskItemProps) {
         onSettled: () => setIsChecking(false),
       }
     );
-  };
-
-  const handleDateChange = (newDate: Date | undefined) => {
-    updateMutation.mutate({
-      id: task.id,
-      due_date: newDate ? newDate.toISOString() : null,
-    });
   };
 
   const handleDragStart = () => {
@@ -93,14 +85,21 @@ function TaskItem({ task, onClick }: TaskItemProps) {
     setIsDragging(false);
     if (info.offset.x < -SWIPE_THRESHOLD) {
       // Left swipe: Delete
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
       setPendingDelete(true);
       setShowDeleteDialog(true);
     } else if (info.offset.x > SCHEDULE_SWIPE_THRESHOLD) {
-      // Right swipe: Schedule
-      setDatePickerOpen(true);
+      // Right swipe: Edit
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+      if (onClick) {
+        onClick();
+      }
     }
-    // Reset position
-    x.set(0);
+    // Snap back is handled by dragSnapToOrigin
   };
 
   const handleConfirmDelete = () => {
@@ -145,9 +144,9 @@ function TaskItem({ task, onClick }: TaskItemProps) {
             <div className="absolute inset-y-0 right-0 flex items-center justify-end pr-4 text-white">
               <Trash2 className="h-5 w-5" />
             </div>
-            {/* Schedule indicator (right swipe) */}
+            {/* Edit indicator (right swipe) */}
             <div className="absolute inset-y-0 left-0 flex items-center justify-start pl-4 text-white">
-              <Calendar className="h-5 w-5" />
+              <Pencil className="h-5 w-5" />
             </div>
           </>
         )}
@@ -159,6 +158,7 @@ function TaskItem({ task, onClick }: TaskItemProps) {
           dragConstraints={{ left: -SWIPE_THRESHOLD * 1.2, right: SCHEDULE_SWIPE_THRESHOLD * 1.2 }}
           dragElastic={{ left: 0.2, right: 0.2 }}
           dragMomentum={false}
+          dragSnapToOrigin={true}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
           className={cn(
@@ -319,20 +319,6 @@ function TaskItem({ task, onClick }: TaskItemProps) {
         >
           <SubtaskList taskId={task.id} projectId={task.project_id} />
         </motion.div>
-      )}
-
-      {/* Date Picker for Schedule Swipe - Hidden trigger, Mobile only */}
-      {!isDesktop && (
-        <div className="hidden">
-          <TaskDatePicker
-            date={task.due_date ? parseISO(task.due_date) : undefined}
-            setDate={handleDateChange}
-            isMobile={true}
-            open={datePickerOpen}
-            onOpenChange={setDatePickerOpen}
-            variant="compact"
-          />
-        </div>
       )}
 
       <DeleteConfirmationDialog
