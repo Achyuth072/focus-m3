@@ -159,6 +159,7 @@ function TaskItem({ task, onClick, dragListeners, dragAttributes, isDragging = f
         <motion.div
           style={{ x }}
           drag={isDesktop || isDragging ? false : "x"} // Disable swipe during drag
+          dragDirectionLock
           dragConstraints={{ left: -SWIPE_THRESHOLD * 1.2, right: SCHEDULE_SWIPE_THRESHOLD * 1.2 }}
           dragElastic={{ left: 0.2, right: 0.2 }}
           dragMomentum={false}
@@ -169,7 +170,7 @@ function TaskItem({ task, onClick, dragListeners, dragAttributes, isDragging = f
             "relative flex group items-center transition-colors bg-background cursor-pointer",
             isDesktop
               ? "gap-2 px-2 py-1 h-8 rounded-sm hover:bg-secondary/40 dark:hover:bg-secondary/60 transition-all"
-              : "items-center gap-3 py-4 px-4 border-b border-border active:bg-secondary/20", // Mobile: Prominent separator
+              : "items-center gap-3 py-3 px-4 active:bg-secondary/20", // Mobile: Sleeker padding, no bulky border-b
             isChecking && "opacity-50"
           )}
           onClick={(e) => {
@@ -193,6 +194,7 @@ function TaskItem({ task, onClick, dragListeners, dragAttributes, isDragging = f
               {...dragListeners} 
               {...dragAttributes}
               className="cursor-grab active:cursor-grabbing text-muted-foreground/50 shrink-0"
+              style={{ touchAction: 'none' }}
             >
               <GripVertical className="h-5 w-5" />
             </div>
@@ -321,8 +323,13 @@ function TaskItem({ task, onClick, dragListeners, dragAttributes, isDragging = f
                 )}
               </Button>
             )}
+          </motion.div>
+
+          {/* Indented Separator (Mobile only) */}
+          {!isDesktop && (
+            <div className="absolute bottom-0 left-[44px] right-0 h-[1px] bg-border" />
+          )}
         </motion.div>
-      </motion.div>
 
       {/* Expanded Subtasks */}
       {isExpanded && (
