@@ -185,6 +185,10 @@ function TaskItem({ task, onClick, dragListeners, dragAttributes, isDragging = f
             <div 
               {...dragListeners}
               {...dragAttributes}
+              onPointerDown={(e) => {
+                e.stopPropagation();
+                dragListeners?.onPointerDown?.(e);
+              }}
               className="opacity-0 group-hover:opacity-100 cursor-grab active:cursor-grabbing text-muted-foreground/50 hover:text-foreground transition-opacity"
             >
               <GripVertical className="h-4 w-4" />
@@ -193,6 +197,10 @@ function TaskItem({ task, onClick, dragListeners, dragAttributes, isDragging = f
             <div 
               {...dragListeners} 
               {...dragAttributes}
+              onPointerDown={(e) => {
+                e.stopPropagation();
+                dragListeners?.onPointerDown?.(e);
+              }}
               className="cursor-grab active:cursor-grabbing text-muted-foreground/50 shrink-0"
               style={{ touchAction: 'none' }}
             >

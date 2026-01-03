@@ -39,7 +39,7 @@ function AppShellContent({ children }: AppShellProps) {
         
         {/* Main Content with proper inset */}
         <SidebarInset>
-          <div className="flex-1 pt-16 pb-20 md:pt-0 md:pb-0 overflow-y-auto scrollbar-hide">
+          <div className="flex-1 pt-16 pb-20 md:pt-0 md:pb-0 overflow-y-auto overflow-x-hidden scrollbar-hide">
             {children}
           </div>
         </SidebarInset>
