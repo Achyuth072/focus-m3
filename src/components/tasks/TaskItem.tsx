@@ -25,6 +25,9 @@ import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 interface TaskItemProps {
   task: Task;
   onClick?: () => void;
+  dragListeners?: any;
+  dragAttributes?: any;
+  isDragging?: boolean;
 }
 
 // Mobile-optimized threshold: require 40% of typical mobile screen width (~150px on small devices)
@@ -45,11 +48,11 @@ function formatDueDate(dateString: string): string {
   return format(date, "MMM d");
 }
 
-function TaskItem({ task, onClick }: TaskItemProps) {
+function TaskItem({ task, onClick, dragListeners, dragAttributes, isDragging = false }: TaskItemProps) {
   const [isChecking, setIsChecking] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
+  const [isSwipeDragging, setIsSwipeDragging] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
   const updateMutation = useUpdateTask();
@@ -76,14 +79,14 @@ function TaskItem({ task, onClick }: TaskItemProps) {
   };
 
   const handleDragStart = () => {
-    setIsDragging(true);
+    setIsSwipeDragging(true);
   };
 
   const handleDragEnd = (
     _: MouseEvent | TouchEvent | PointerEvent,
     info: PanInfo
   ) => {
-    setIsDragging(false);
+    setIsSwipeDragging(false);
     if (info.offset.x < -SWIPE_THRESHOLD) {
       // Left swipe: Delete
       if (navigator.vibrate) {
@@ -135,11 +138,11 @@ function TaskItem({ task, onClick }: TaskItemProps) {
           style={{ background }}
           className={cn(
             "relative",
-            isDesktop ? "rounded-sm" : "rounded-xl mx-2 mb-2 overflow-hidden"
+            isDesktop ? "rounded-sm" : "overflow-hidden" // Mobile: removed rounded-xl/mx-2/mb-2 for separator look
           )}
         >
         {/* Swipe indicators - only visible during drag */}
-        {isDragging && (
+        {isSwipeDragging && (
           <>
             {/* Delete indicator (left swipe) */}
             <div className="absolute inset-y-0 right-0 flex items-center justify-end pr-4 text-white">
@@ -155,7 +158,7 @@ function TaskItem({ task, onClick }: TaskItemProps) {
         {/* Main content */}
         <motion.div
           style={{ x }}
-          drag={isDesktop ? undefined : "x"}
+          drag={isDesktop || isDragging ? false : "x"} // Disable swipe during drag
           dragConstraints={{ left: -SWIPE_THRESHOLD * 1.2, right: SCHEDULE_SWIPE_THRESHOLD * 1.2 }}
           dragElastic={{ left: 0.2, right: 0.2 }}
           dragMomentum={false}
@@ -166,20 +169,32 @@ function TaskItem({ task, onClick }: TaskItemProps) {
             "relative flex group items-center transition-colors bg-background cursor-pointer",
             isDesktop
               ? "gap-2 px-2 py-1 h-8 rounded-sm hover:bg-secondary/40 dark:hover:bg-secondary/60 transition-all"
-              : "items-center gap-3 py-3 px-3 rounded-xl active:bg-secondary/20", // Floating Squircle Row
+              : "items-center gap-3 py-4 px-4 border-b border-border active:bg-secondary/20", // Mobile: Prominent separator
             isChecking && "opacity-50"
           )}
           onClick={(e) => {
             // Only trigger onClick if we're not dragging
-            if (!isDragging && onClick) {
+            if (!isSwipeDragging && onClick) {
               onClick();
             }
           }}
         >
-          {/* Desktop Drag Handle */}
-          {isDesktop && (
-            <div className="opacity-0 group-hover:opacity-100 cursor-grab active:cursor-grabbing text-muted-foreground/50 hover:text-foreground transition-opacity">
+          {/* Drag Handle */}
+          {isDesktop ? (
+            <div 
+              {...dragListeners}
+              {...dragAttributes}
+              className="opacity-0 group-hover:opacity-100 cursor-grab active:cursor-grabbing text-muted-foreground/50 hover:text-foreground transition-opacity"
+            >
               <GripVertical className="h-4 w-4" />
+            </div>
+          ) : (
+            <div 
+              {...dragListeners} 
+              {...dragAttributes}
+              className="cursor-grab active:cursor-grabbing text-muted-foreground/50 shrink-0"
+            >
+              <GripVertical className="h-5 w-5" />
             </div>
           )}
           {/* Checkbox */}

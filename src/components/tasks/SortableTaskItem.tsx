@@ -22,14 +22,20 @@ export default function SortableTaskItem({ task, onClick }: SortableTaskItemProp
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    // No transition - snappy movement instead of smooth
     opacity: isDragging ? 0.5 : 1,
   };
 
-  // Apply drag listeners to the entire item - sensors will handle activation constraints
+  // Pass drag listeners and state to TaskItem for dedicated handle
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <TaskItem task={task} onClick={onClick} />
+    <div ref={setNodeRef} style={style}>
+      <TaskItem 
+        task={task} 
+        onClick={onClick} 
+        dragListeners={listeners}
+        dragAttributes={attributes}
+        isDragging={isDragging}
+      />
     </div>
   );
 }
