@@ -9,7 +9,7 @@ import { YearView } from '@/components/calendar/YearView';
 import { MonthView } from '@/components/calendar/MonthView';
 import { ScheduleView } from '@/components/calendar/ScheduleView';
 
-import { useCalendarEvents } from '@/hooks/useCalendarEvents';
+import { useCalendarEvents } from '@/lib/hooks/useCalendarEvents';
 
 export default function CalendarPage() {
   const { currentDate, view, events, setView, setDate } = useCalendarStore();

@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import { Target, CheckCircle2, Flame, Clock } from 'lucide-react';
 import { MetricCard } from '@/components/stats/MetricCard';
-import { useStats } from '@/hooks/useStats';
+import { useStats } from '@/lib/hooks/useStats';
 import { Skeleton } from '@/components/ui/skeleton';
 
 // Lazy load the chart component (Recharts is ~80KB+)
