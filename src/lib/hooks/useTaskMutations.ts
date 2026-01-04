@@ -370,6 +370,43 @@ export function useReorderTasks() {
         if (error) throw new Error(error.message);
       }
     },
+    onMutate: async (orderedIds) => {
+      await queryClient.cancelQueries({ queryKey: ["tasks"] });
+
+      const previousTasks = queryClient.getQueryData<Task[]>([
+        "tasks",
+        { projectId: undefined, showCompleted: false },
+      ]);
+
+      // Note: This optimistic update only targets the default 'all' view.
+      // In TaskList, we handle the local state ourselves.
+      queryClient.setQueryData<Task[]>(
+        ["tasks", { projectId: undefined, showCompleted: false }],
+        (old) => {
+          if (!old) return old;
+          const taskMap = new Map(old.map((t) => [t.id, t]));
+          return orderedIds
+            .map((id) => {
+              const task = taskMap.get(id);
+              if (task) {
+                return { ...task, day_order: orderedIds.indexOf(id) };
+              }
+              return null;
+            })
+            .filter((t): t is Task => !!t);
+        }
+      );
+
+      return { previousTasks };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previousTasks) {
+        queryClient.setQueryData(
+          ["tasks", { projectId: undefined, showCompleted: false }],
+          context.previousTasks
+        );
+      }
+    },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
       queryClient.invalidateQueries({ queryKey: ["calendar-tasks"] });
