@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useTimer } from '@/components/TimerProvider';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Play, Pause, Square, SkipForward, X } from 'lucide-react';
 import { FocusSettingsDialog } from '@/components/FocusSettingsDialog';
@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
 import type { Task } from '@/lib/types/task';
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 
 const MODE_LABELS: Record<TimerMode, string> = {
   focus: 'Focus',
@@ -29,6 +30,7 @@ export default function FocusPage() {
   const router = useRouter();
   const { state, settings, start, pause, stop, skip } = useTimer();
   const supabase = createClient();
+  const isPhone = useMediaQuery("(max-width: 640px) or ((hover: none) and (pointer: coarse))");
 
   // Fetch active task if one is set
   const { data: activeTask } = useQuery({
@@ -69,14 +71,19 @@ export default function FocusPage() {
       className="min-h-screen flex flex-col items-center justify-center p-6 bg-background relative select-none cursor-default"
     >
       {/* Close Button */}
-      <Button
-        variant="ghost"
-        size="icon"
+      <motion.button
         onClick={() => router.back()}
-        className="absolute top-4 left-4 h-14 w-14 rounded-full hover:bg-secondary/50 active:scale-95 transition-all"
+        onTapStart={() => {
+          if (isPhone && typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
+        }}
+        whileTap={isPhone ? { scale: 0.95 } : {}}
+        className={cn(
+          buttonVariants({ variant: "ghost", size: "icon" }),
+          "absolute top-4 left-4 h-14 w-14 rounded-full hover:bg-secondary/50 active:scale-95 active:bg-secondary/30 transition-all cursor-pointer"
+        )}
       >
         <X className="h-6 w-6" />
-      </Button>
+      </motion.button>
 
       {/* Mode Badge */}
       <div className="text-sm font-medium text-muted-foreground uppercase tracking-widest">
@@ -108,22 +115,30 @@ export default function FocusPage() {
       {/* Controls */}
       <div className="flex items-center gap-4">
         {/* Stop */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-14 w-14 rounded-full text-muted-foreground hover:text-foreground"
+        <motion.button
+          className={cn(
+            buttonVariants({ variant: "ghost", size: "icon" }),
+            "h-14 w-14 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-all cursor-pointer"
+          )}
+          onTapStart={() => {
+            if (isPhone && typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
+          }}
+          whileTap={isPhone ? { scale: 0.95 } : {}}
           onClick={stop}
         >
           <Square className="h-5 w-5" />
-        </Button>
+        </motion.button>
 
         {/* Play/Pause - Main action button */}
-        <Button
-          size="icon"
+        <motion.button
           className={cn(
-            "h-20 w-20 rounded-full transition-transform",
-            "hover:scale-105 active:scale-95"
+            buttonVariants({ variant: "default", size: "icon" }),
+            "h-20 w-20 rounded-full transition-all hover:scale-105 active:scale-95 active:opacity-90 cursor-pointer"
           )}
+          onTapStart={() => {
+            if (isPhone && typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
+          }}
+          whileTap={isPhone ? { scale: 0.95 } : {}}
           onClick={handlePlayPause}
         >
           {state.isRunning ? (
@@ -131,17 +146,22 @@ export default function FocusPage() {
           ) : (
             <Play className="h-8 w-8 ml-1" />
           )}
-        </Button>
+        </motion.button>
 
         {/* Skip */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-14 w-14 rounded-full text-muted-foreground hover:text-foreground"
+        <motion.button
+          className={cn(
+            buttonVariants({ variant: "ghost", size: "icon" }),
+            "h-14 w-14 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-all cursor-pointer"
+          )}
+          onTapStart={() => {
+            if (isPhone && typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
+          }}
+          whileTap={isPhone ? { scale: 0.95 } : {}}
           onClick={skip}
         >
           <SkipForward className="h-5 w-5" />
-        </Button>
+        </motion.button>
       </div>
 
       {/* Settings Dialog */}
