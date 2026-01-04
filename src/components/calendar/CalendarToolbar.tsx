@@ -13,6 +13,7 @@ import {
 import { useCalendarStore } from '@/lib/calendar/store';
 import type { CalendarView } from '@/lib/calendar/types';
 import { cn } from '@/lib/utils';
+import { useHaptic } from '@/lib/hooks/useHaptic';
 
 interface CalendarToolbarProps {
   isMobile?: boolean;
@@ -21,6 +22,7 @@ interface CalendarToolbarProps {
 
 export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
   const { currentDate, view, setView, goToToday, next, prev } = useCalendarStore();
+  const { trigger } = useHaptic();
 
   // Desktop views: Year, Month, Week, 4-Day, Day, Schedule
   // Mobile views: Month, Week, 3-Day, Schedule
@@ -69,16 +71,16 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
     <div className={cn('flex items-center justify-between gap-2 p-2 md:gap-4 md:p-4 border-b border-l bg-sidebar', className)}>
       {/* Left: Date Navigation */}
       <div className="flex items-center gap-1 md:gap-2">
-        <Button variant="outline" size={isMobile ? "icon" : "sm"} onClick={goToToday} className={cn(isMobile && "h-8 w-8", "dark:bg-white/[0.03] dark:border-white/10")}>
+        <Button variant="outline" size={isMobile ? "icon" : "sm"} onClick={() => { trigger(30); goToToday(); }} className={cn(isMobile && "h-8 w-8", "dark:bg-white/[0.03] dark:border-white/10")}>
           <CalendarIcon className="h-4 w-4 md:mr-2" />
           <span className="hidden md:inline">Today</span>
         </Button>
         
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" onClick={prev}>
+          <Button variant="ghost" size="icon" onClick={() => { trigger(30); prev(); }}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={next}>
+          <Button variant="ghost" size="icon" onClick={() => { trigger(30); next(); }}>
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>

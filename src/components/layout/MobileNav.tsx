@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { CheckSquare, Calendar, BarChart3, Timer, Settings } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -16,6 +17,11 @@ export function MobileNav() {
   const pathname = usePathname();
   const router = useRouter();
   const { trigger, isPhone } = useHaptic();
+
+  // Prefetch all routes on mount for instant navigation
+  useEffect(() => {
+    navItems.forEach((item) => router.prefetch(item.path));
+  }, [router]);
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-sidebar md:hidden pb-[env(safe-area-inset-bottom)]">

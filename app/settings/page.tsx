@@ -14,6 +14,7 @@ import { SignOutConfirmation } from '@/components/auth/SignOutConfirmation';
 import { useUiStore } from '@/lib/store/uiStore';
 import { Switch } from '@/components/ui/switch';
 import { Vibrate } from 'lucide-react';
+import { useHaptic } from '@/lib/hooks/useHaptic';
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
@@ -25,6 +26,7 @@ export default function SettingsPage() {
   const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
   const [activeTab, setActiveTab] = useState<'appearance' | 'account'>('appearance');
   const isDesktop = useMediaQuery("(min-width: 768px)");
+  const { trigger } = useHaptic();
 
   // Prevent flash during sign-out remount
   if (!user) {
@@ -123,7 +125,10 @@ export default function SettingsPage() {
                        return (
                          <button
                            key={option.value}
-                           onClick={() => setTheme(option.value)}
+                           onClick={() => {
+                             trigger(25);
+                             setTheme(option.value);
+                           }}
                            className={cn(
                              'flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-colors',
                              isActive
@@ -204,7 +209,10 @@ export default function SettingsPage() {
                   <Button
                     variant="outline"
                     className="w-full justify-start"
-                    onClick={() => setShowSignOutConfirm(true)}
+                    onClick={() => {
+                      trigger(50);
+                      setShowSignOutConfirm(true);
+                    }}
                     disabled={isSigningOut}
                   >
                     {isSigningOut ? (

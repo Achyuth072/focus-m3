@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   ResponsiveDialog,
   ResponsiveDialogContent,
@@ -19,6 +19,7 @@ import type { Task } from "@/lib/types/task";
 import type { RecurrenceRule } from "@/lib/utils/recurrence";
 import { TaskCreateView } from "./TaskCreateView";
 import { TaskEditView } from "./TaskEditView";
+import { useHaptic } from "@/lib/hooks/useHaptic";
 
 interface TaskSheetProps {
   open: boolean;
@@ -33,6 +34,19 @@ export default function TaskSheet({
   initialTask,
   initialDate,
 }: TaskSheetProps) {
+  // Preserve initialTask during close animation to prevent flicker to Create mode
+  const staleTaskRef = useRef<Task | null | undefined>(initialTask);
+  
+  // Update ref only when dialog opens with a new task
+  useEffect(() => {
+    if (open && initialTask !== undefined) {
+      staleTaskRef.current = initialTask;
+    }
+  }, [open, initialTask]);
+
+  // Use the preserved task for rendering during close animation
+  const effectiveTask = open ? initialTask : staleTaskRef.current;
+
   // Form State
   const [content, setContent] = useState("");
   const [description, setDescription] = useState("");
@@ -56,6 +70,7 @@ export default function TaskSheet({
   const { data: inboxProject } = useInboxProject();
   const { data: projects } = useProjects();
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const { trigger } = useHaptic();
 
   // Reset form when dialog opens
   useEffect(() => {
@@ -92,6 +107,7 @@ export default function TaskSheet({
     const trimmedContent = content.trim();
     if (!trimmedContent) return;
 
+    trigger(50); // Haptic feedback on save
     onClose();
 
     if (initialTask) {
@@ -157,7 +173,7 @@ export default function TaskSheet({
   // Derived State
   const hasContent = content.trim().length > 0;
   const isPending = createMutation.isPending || updateMutation.isPending;
-  const isCreationMode = !initialTask;
+  const isCreationMode = !effectiveTask;
 
   return (
     <ResponsiveDialog open={open} onOpenChange={onClose}>

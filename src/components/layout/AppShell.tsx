@@ -13,6 +13,7 @@ import { MobileHeader } from '@/components/layout/MobileHeader';
 import AddTaskFab from '@/components/tasks/AddTaskFab';
 import TaskSheet from '@/components/tasks/TaskSheet';
 import { CommandMenu } from '@/components/command-menu';
+import { cn } from '@/lib/utils';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -39,7 +40,10 @@ function AppShellContent({ children }: AppShellProps) {
         
         {/* Main Content with proper inset */}
         <SidebarInset>
-          <div className="flex-1 pt-16 pb-20 md:pt-0 md:pb-0 overflow-y-auto overflow-x-hidden scrollbar-hide">
+          <div className={cn(
+            "flex-1 overflow-y-auto overflow-x-hidden scrollbar-hide md:pt-0 md:pb-0",
+            !hideMobileNav && "pt-16 pb-20"
+          )}>
             {children}
           </div>
         </SidebarInset>

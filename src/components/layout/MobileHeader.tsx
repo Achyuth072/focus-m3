@@ -16,6 +16,7 @@ import { useCompletedTasks } from '@/components/CompletedTasksProvider';
 import { useQuery } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
 import type { Task } from '@/lib/types/task';
+import { useHaptic } from '@/lib/hooks/useHaptic';
 
 export function MobileHeader() {
   const router = useRouter();
@@ -23,6 +24,7 @@ export function MobileHeader() {
   const { state } = useTimer();
   const { openSheet } = useCompletedTasks();
   const supabase = createClient();
+  const { trigger } = useHaptic();
 
   // Fetch active task if one is set
   const { data: activeTask } = useQuery({
@@ -54,7 +56,10 @@ export function MobileHeader() {
       <div className="flex items-center gap-2">
         {/* Dynamic Focus Timer */}
         <button
-          onClick={() => router.push('/focus')}
+          onClick={() => {
+            trigger(30);
+            router.push('/focus');
+          }}
           className="flex items-center gap-2 px-3 py-2 min-h-[40px] rounded-lg hover:bg-sidebar-accent active:bg-sidebar-accent active:scale-95 transition-all"
         >
           <Timer className={`h-5 w-5 ${state.isRunning ? 'text-primary animate-pulse' : 'text-muted-foreground'}`} />
