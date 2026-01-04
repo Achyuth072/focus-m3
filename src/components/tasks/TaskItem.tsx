@@ -33,6 +33,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useRouter } from 'next/navigation';
 import { useTimer } from "@/components/TimerProvider";
+import { useHaptic } from "@/lib/hooks/useHaptic";
 
 interface TaskItemProps {
   task: Task;
@@ -74,9 +75,11 @@ function TaskItem({ task, onClick, dragListeners, dragAttributes, isDragging = f
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const { start } = useTimer();
   const router = useRouter();
+  const { trigger, isPhone } = useHaptic();
 
   const handlePlayFocus = (e: React.MouseEvent) => {
     e.stopPropagation();
+    trigger(30);
     start(task.id);
     router.push('/focus');
   };
@@ -89,6 +92,7 @@ function TaskItem({ task, onClick, dragListeners, dragAttributes, isDragging = f
   );
 
   const handleComplete = (checked: boolean) => {
+    trigger(checked ? [10, 30] : 30); // Double tick for completion
     setIsChecking(true);
     toggleMutation.mutate(
       { id: task.id, is_completed: checked },
@@ -109,16 +113,12 @@ function TaskItem({ task, onClick, dragListeners, dragAttributes, isDragging = f
     setIsSwipeDragging(false);
     if (info.offset.x < -SWIPE_THRESHOLD) {
       // Left swipe: Delete
-      if (navigator.vibrate) {
-        navigator.vibrate(50);
-      }
+      trigger(50);
       setPendingDelete(true);
       setShowDeleteDialog(true);
     } else if (info.offset.x > SCHEDULE_SWIPE_THRESHOLD) {
       // Right swipe: Edit
-      if (navigator.vibrate) {
-        navigator.vibrate(50);
-      }
+      trigger(50);
       if (onClick) {
         onClick();
       }
@@ -140,6 +140,7 @@ function TaskItem({ task, onClick, dragListeners, dragAttributes, isDragging = f
 
   const toggleExpand = (e: React.MouseEvent) => {
     e.stopPropagation();
+    trigger(15);
     setIsExpanded(!isExpanded);
   };
 

@@ -101,7 +101,7 @@ export function layoutDayEvents(
   Object.entries(hourGroups).forEach(([hourStr, groupEvents]) => {
     const count = groupEvents.length;
     // Calculate height: fit in slot, but clamp between min and max
-    let height = Math.min(
+    const height = Math.min(
       MAX_ROW_HEIGHT_PERCENT,
       Math.max(MIN_ROW_HEIGHT_PERCENT, SLOT_HEIGHT_PERCENT / count)
     );

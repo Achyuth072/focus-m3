@@ -5,6 +5,9 @@ import { motion } from 'framer-motion';
 import { Settings } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
+import { useUiStore } from "@/lib/store/uiStore";
+import { useHaptic } from "@/lib/hooks/useHaptic";
+import { Switch } from "@/components/ui/switch";
 import { cn } from '@/lib/utils';
 import {
   Dialog,
@@ -31,9 +34,10 @@ import { useTimer } from '@/components/TimerProvider';
 
 export function FocusSettingsDialog() {
   const { settings, updateSettings } = useTimer();
+  const { hapticsEnabled, setHapticsEnabled } = useUiStore();
+  const { trigger, isPhone } = useHaptic();
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
-  const isPhone = useMediaQuery("(max-width: 640px) or ((hover: none) and (pointer: coarse))");
 
   // Local state for form
   const [focusDuration, setFocusDuration] = useState(settings.focusDuration);
@@ -154,6 +158,22 @@ export function FocusSettingsDialog() {
           step={1}
           className="w-full"
         />
+        {/* Mobile Preferences (Only visible on mobile-like viewports in the settings drawer) */}
+        {!isDesktop && (
+          <div className="space-y-4 pt-4 border-t border-border">
+            <Label className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Preferences</Label>
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label className="text-sm font-medium">Haptic Feedback</Label>
+                <p className="text-xs text-muted-foreground">Vibrate on interactions</p>
+              </div>
+              <Switch 
+                checked={hapticsEnabled} 
+                onCheckedChange={setHapticsEnabled} 
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -167,9 +187,7 @@ export function FocusSettingsDialog() {
               buttonVariants({ variant: "ghost" }),
               "text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-all cursor-pointer"
             )}
-            onTapStart={() => {
-              if (isPhone && typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
-            }}
+            onTapStart={() => trigger(50)}
             whileTap={isPhone ? { scale: 0.95 } : {}}
           >
             <Settings className="h-4 w-4 mr-2" />
@@ -203,9 +221,7 @@ export function FocusSettingsDialog() {
             buttonVariants({ variant: "ghost" }),
             "text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-all cursor-pointer"
           )}
-          onTapStart={() => {
-            if (isPhone && typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
-          }}
+          onTapStart={() => trigger(50)}
           whileTap={isPhone ? { scale: 0.95 } : {}}
         >
           <Settings className="h-4 w-4 mr-2" />

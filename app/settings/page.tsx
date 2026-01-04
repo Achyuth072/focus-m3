@@ -11,9 +11,13 @@ import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
 import { SignOutConfirmation } from '@/components/auth/SignOutConfirmation';
+import { useUiStore } from '@/lib/store/uiStore';
+import { Switch } from '@/components/ui/switch';
+import { Vibrate } from 'lucide-react';
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
+  const { hapticsEnabled, setHapticsEnabled } = useUiStore();
   const { user, signOut } = useAuth();
   const router = useRouter();
   const supabase = createClient();
@@ -137,6 +141,37 @@ export default function SettingsPage() {
                          </button>
                        );
                     })}
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* Preference Section (Mobile Only) */}
+            {!isDesktop && (
+              <section className="space-y-4">
+                <div>
+                  <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Preferences
+                  </h2>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-4 rounded-lg border border-border/50 bg-background">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-full bg-secondary/30">
+                        <Vibrate className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">Haptic Feedback</p>
+                        <p className="text-xs text-muted-foreground">
+                          Vibrate on interactions
+                        </p>
+                      </div>
+                    </div>
+                    <Switch 
+                      checked={hapticsEnabled}
+                      onCheckedChange={setHapticsEnabled}
+                    />
                   </div>
                 </div>
               </section>

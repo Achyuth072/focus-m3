@@ -14,6 +14,9 @@ interface UiState {
   groupBy: GroupOption;
   setSortBy: (sort: SortOption) => void;
   setGroupBy: (group: GroupOption) => void;
+  // Global Settings
+  hapticsEnabled: boolean;
+  setHapticsEnabled: (enabled: boolean) => void;
 }
 
 export const useUiStore = create<UiState>()(
@@ -29,6 +32,10 @@ export const useUiStore = create<UiState>()(
       groupBy: "none",
       setSortBy: (sort) => set({ sortBy: sort }),
       setGroupBy: (group) => set({ groupBy: group }),
+
+      // Global Settings defaults
+      hapticsEnabled: true,
+      setHapticsEnabled: (enabled) => set({ hapticsEnabled: enabled }),
     }),
     {
       name: "kanso-ui-state",

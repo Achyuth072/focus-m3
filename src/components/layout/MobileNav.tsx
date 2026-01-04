@@ -2,6 +2,8 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import { CheckSquare, Calendar, BarChart3, Timer, Settings } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { useHaptic } from '@/lib/hooks/useHaptic';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -13,6 +15,7 @@ const navItems = [
 export function MobileNav() {
   const pathname = usePathname();
   const router = useRouter();
+  const { trigger, isPhone } = useHaptic();
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-sidebar md:hidden pb-[env(safe-area-inset-bottom)]">
@@ -22,11 +25,13 @@ export function MobileNav() {
           const isActive = pathname === item.path;
           
           return (
-            <button
+            <motion.button
               key={item.path}
+              onTapStart={() => trigger(20)} // Subtle vibration for nav
+              whileTap={isPhone ? { scale: 0.95 } : {}}
               onClick={() => router.push(item.path)}
               className={cn(
-                'flex flex-col items-center justify-center flex-1 h-full gap-1 transition-all active:scale-95',
+                'flex flex-col items-center justify-center flex-1 h-full gap-1 transition-all cursor-pointer outline-none',
                 isActive
                   ? 'text-primary'
                   : 'text-muted-foreground hover:text-foreground'
@@ -39,7 +44,7 @@ export function MobileNav() {
                 <Icon className="h-6 w-6" />
               </div>
               <span className="text-[13px] font-medium leading-none">{item.label}</span>
-            </button>
+            </motion.button>
           );
         })}
       </div>

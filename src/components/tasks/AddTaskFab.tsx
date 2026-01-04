@@ -1,20 +1,29 @@
 'use client';
 
 import { Plus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
+import { motion } from 'framer-motion';
+import { useHaptic } from '@/lib/hooks/useHaptic';
+import { cn } from '@/lib/utils';
 
 interface AddTaskFabProps {
   onClick: () => void;
 }
 
 export default function AddTaskFab({ onClick }: AddTaskFabProps) {
+  const { trigger, isPhone } = useHaptic();
+
   return (
-    <Button
+    <motion.button
+      onTapStart={() => trigger(40)}
+      whileTap={isPhone ? { scale: 0.95 } : {}}
       onClick={onClick}
-      size="lg"
-      className="fixed bottom-22 right-6 h-14 w-14 rounded-xl shadow-lg md:hidden"
+      className={cn(
+        buttonVariants({ size: "lg" }),
+        "fixed bottom-22 right-6 h-14 w-14 rounded-xl shadow-lg md:hidden cursor-pointer"
+      )}
     >
       <Plus className="h-6 w-6" />
-    </Button>
+    </motion.button>
   );
 }

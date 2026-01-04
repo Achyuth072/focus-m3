@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
 import type { Task } from '@/lib/types/task';
-import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
+import { useHaptic } from "@/lib/hooks/useHaptic";
 
 const MODE_LABELS: Record<TimerMode, string> = {
   focus: 'Focus',
@@ -30,7 +30,7 @@ export default function FocusPage() {
   const router = useRouter();
   const { state, settings, start, pause, stop, skip } = useTimer();
   const supabase = createClient();
-  const isPhone = useMediaQuery("(max-width: 640px) or ((hover: none) and (pointer: coarse))");
+  const { trigger, isPhone } = useHaptic();
 
   // Fetch active task if one is set
   const { data: activeTask } = useQuery({
@@ -73,9 +73,7 @@ export default function FocusPage() {
       {/* Close Button */}
       <motion.button
         onClick={() => router.back()}
-        onTapStart={() => {
-          if (isPhone && typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
-        }}
+        onTapStart={() => trigger(50)}
         whileTap={isPhone ? { scale: 0.95 } : {}}
         className={cn(
           buttonVariants({ variant: "ghost", size: "icon" }),
@@ -120,9 +118,7 @@ export default function FocusPage() {
             buttonVariants({ variant: "ghost", size: "icon" }),
             "h-14 w-14 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-all cursor-pointer"
           )}
-          onTapStart={() => {
-            if (isPhone && typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
-          }}
+          onTapStart={() => trigger(50)}
           whileTap={isPhone ? { scale: 0.95 } : {}}
           onClick={stop}
         >
@@ -135,9 +131,7 @@ export default function FocusPage() {
             buttonVariants({ variant: "default", size: "icon" }),
             "h-20 w-20 rounded-full transition-all hover:scale-105 active:scale-95 active:opacity-90 cursor-pointer"
           )}
-          onTapStart={() => {
-            if (isPhone && typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
-          }}
+          onTapStart={() => trigger(50)}
           whileTap={isPhone ? { scale: 0.95 } : {}}
           onClick={handlePlayPause}
         >
@@ -154,9 +148,7 @@ export default function FocusPage() {
             buttonVariants({ variant: "ghost", size: "icon" }),
             "h-14 w-14 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-all cursor-pointer"
           )}
-          onTapStart={() => {
-            if (isPhone && typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
-          }}
+          onTapStart={() => trigger(50)}
           whileTap={isPhone ? { scale: 0.95 } : {}}
           onClick={skip}
         >

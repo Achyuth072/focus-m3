@@ -74,7 +74,7 @@ export function useStats() {
       }
 
       // Calculate Streak (Simplified: consecutive days with at least one completed task or focus session)
-      let streak = 0;
+      const streak = 0;
 
       return {
         totalFocusHours,
