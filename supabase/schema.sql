@@ -42,6 +42,8 @@ CREATE TABLE IF NOT EXISTS tasks (
   description TEXT,
   priority INT DEFAULT 4 CHECK (priority BETWEEN 1 AND 4),
   due_date TIMESTAMPTZ,
+  do_date TIMESTAMPTZ,
+  is_evening BOOLEAN DEFAULT false,
   is_completed BOOLEAN DEFAULT false,
   completed_at TIMESTAMPTZ,
   day_order INT DEFAULT 0,

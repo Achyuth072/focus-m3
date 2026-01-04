@@ -103,7 +103,7 @@ export function TaskCreateView({
         />
 
         {/* Icon Row - Metadata Controls */}
-        <div className="flex items-center gap-3 pt-4 pb-3">
+        <div className="flex items-center gap-2 pt-4 pb-3 overflow-x-auto scrollbar-hide flex-wrap">
           {/* Date Picker */}
           <TaskDatePicker
             date={dueDate}
@@ -138,7 +138,7 @@ export function TaskCreateView({
             variant="ghost"
             size="sm"
             className={cn(
-              "h-10 px-3 transition-all text-muted-foreground hover:text-foreground hover:bg-accent shadow-sm dark:bg-white/[0.03] dark:border dark:border-white/10 gap-1.5",
+              "h-10 px-3 transition-all text-muted-foreground hover:text-foreground hover:bg-accent shadow-sm dark:bg-white/[0.03] dark:border dark:border-white/10 gap-1.5 shrink-0",
               isEvening && "text-purple-600 dark:text-purple-400 border-purple-500/50 bg-purple-500/10 hover:bg-purple-500/20"
             )}
             onClick={() => {
@@ -150,8 +150,8 @@ export function TaskCreateView({
             }}
             title="This Evening"
           >
-            <Moon strokeWidth={2} className="h-3.5 w-3.5" />
-            <span className="text-xs font-medium">Evening</span>
+            <Moon strokeWidth={2} className="h-4 w-4" />
+            {!isMobile && <span className="text-xs font-medium">Evening</span>}
           </Button>
 
           {/* Subtask Toggle */}
@@ -160,7 +160,7 @@ export function TaskCreateView({
             size="sm"
             onClick={() => setShowSubtasks(!showSubtasks)}
             className={cn(
-              "h-10 w-10 p-0 transition-all text-muted-foreground hover:text-foreground hover:bg-accent shadow-sm dark:bg-white/[0.03] dark:border dark:border-white/10 group [&_svg]:!size-5",
+              "h-10 w-10 p-0 transition-all text-muted-foreground hover:text-foreground hover:bg-accent shadow-sm dark:bg-white/[0.03] dark:border dark:border-white/10 group [&_svg]:!size-5 shrink-0",
               showSubtasks && "text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary"
             )}
             title="Toggle subtasks"
@@ -169,18 +169,22 @@ export function TaskCreateView({
           </Button>
 
           {/* Priority Selector */}
-          <TaskPrioritySelect
-            priority={priority}
-            setPriority={setPriority}
-            variant="icon"
-          />
+          <div className="shrink-0">
+            <TaskPrioritySelect
+              priority={priority}
+              setPriority={setPriority}
+              variant="icon"
+            />
+          </div>
 
           {/* Recurrence Picker */}
-          <RecurrencePicker
-            value={recurrence}
-            onChange={setRecurrence}
-            variant="icon"
-          />
+          <div className="shrink-0">
+            <RecurrencePicker
+              value={recurrence}
+              onChange={setRecurrence}
+              variant="icon"
+            />
+          </div>
         </div>
 
         {/* Subtasks Section - Collapsible */}

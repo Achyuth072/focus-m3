@@ -42,7 +42,7 @@ function AppShellContent({ children }: AppShellProps) {
         <SidebarInset>
           <div className={cn(
             "flex-1 overflow-y-auto overflow-x-hidden scrollbar-hide md:pt-0 md:pb-0",
-            !hideMobileNav && "pt-16 pb-20"
+            !hideMobileNav && "pt-16 pb-[calc(64px+env(safe-area-inset-bottom))]"
           )}>
             {children}
           </div>

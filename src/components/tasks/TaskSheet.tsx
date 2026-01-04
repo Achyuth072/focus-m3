@@ -108,7 +108,6 @@ export default function TaskSheet({
     if (!trimmedContent) return;
 
     trigger(50); // Haptic feedback on save
-    onClose();
 
     if (initialTask) {
       updateMutation.mutate({
@@ -128,8 +127,8 @@ export default function TaskSheet({
           content: trimmedContent,
           description: description.trim() || undefined,
           project_id: selectedProjectId || undefined,
-          due_date: dueDate?.toISOString(),
-          do_date: doDate?.toISOString(),
+          due_date: dueDate?.toISOString() ?? undefined,
+          do_date: doDate?.toISOString() ?? undefined,
           is_evening: isEvening,
           priority,
           recurrence: recurrence,
@@ -144,10 +143,13 @@ export default function TaskSheet({
                 priority: 4,
               });
             });
+            setDraftSubtasks([]);
           },
         }
       );
     }
+
+    onClose();
   };
 
   const handleDelete = () => {

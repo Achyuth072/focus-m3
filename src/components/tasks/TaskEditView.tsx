@@ -228,7 +228,7 @@ export function TaskEditView({
             title="This Evening"
           >
             <Moon className="h-3.5 w-3.5" />
-            Evening
+            {!isMobile && "Evening"}
           </Button>
 
           {/* Priority Selector */}
