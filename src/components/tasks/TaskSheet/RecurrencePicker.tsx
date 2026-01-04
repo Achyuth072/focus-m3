@@ -62,7 +62,7 @@ export default function RecurrencePicker({
               "h-10 w-10 p-0 transition-all shadow-sm dark:bg-white/[0.03] dark:border dark:border-white/10 group relative",
               hasRecurrence
                 ? "text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary"
-                : "text-muted-foreground hover:text-foreground"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent"
             )}
             title={formatRecurrenceRule(value)}
           >

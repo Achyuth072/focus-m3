@@ -45,10 +45,10 @@ export function TaskPrioritySelect({
                 priorities.find((p) => p.value === priority)?.color
               )
             : cn(
-                "min-w-10 items-center justify-center",
+                "min-w-10 items-center justify-center shadow-sm",
                 priority !== 4 
                   ? "text-primary bg-primary/10 px-3 w-auto" 
-                  : "px-0 w-10 bg-transparent hover:bg-accent hover:text-accent-foreground"
+                  : "px-0 w-10 text-muted-foreground hover:text-foreground hover:bg-accent"
               )
         )}
         title="Set priority"

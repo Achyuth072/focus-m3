@@ -9,6 +9,8 @@ export interface Task {
   description: string | null;
   priority: 1 | 2 | 3 | 4;
   due_date: string | null;
+  do_date: string | null;
+  is_evening: boolean;
   is_completed: boolean;
   completed_at: string | null;
   day_order: number;
@@ -36,6 +38,8 @@ export interface CreateTaskInput {
   description?: string;
   priority?: 1 | 2 | 3 | 4;
   due_date?: string;
+  do_date?: string;
+  is_evening?: boolean;
   project_id?: string;
   parent_id?: string;
   recurrence?: RecurrenceRule | null;
@@ -47,6 +51,8 @@ export interface UpdateTaskInput {
   description?: string;
   priority?: 1 | 2 | 3 | 4;
   due_date?: string | null;
+  do_date?: string | null;
+  is_evening?: boolean;
   is_completed?: boolean;
   day_order?: number;
   project_id?: string | null;

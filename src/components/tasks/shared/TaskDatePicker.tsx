@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/responsive-dialog";
 import { DateTimeWizard } from "@/components/ui/date-time-wizard";
 import { cn } from "@/lib/utils";
+import { LucideIcon } from "lucide-react";
 
 interface TaskDatePickerProps {
   date: Date | undefined;
@@ -24,6 +25,12 @@ interface TaskDatePickerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   variant?: "icon" | "compact";
+  title?: string;
+  activeClassName?: string;
+  icon?: LucideIcon;
+  side?: "top" | "bottom" | "left" | "right";
+  sideOffset?: number;
+  align?: "start" | "center" | "end";
 }
 
 export function TaskDatePicker({
@@ -33,12 +40,18 @@ export function TaskDatePicker({
   open,
   onOpenChange,
   variant = "icon",
+  title = "Due Date",
+  activeClassName = "text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary",
+  icon: Icon = CalendarIcon,
+  side = "bottom",
+  sideOffset = 4,
+  align = "start",
 }: TaskDatePickerProps) {
   const isCompact = variant === "compact";
 
   const buttonContent = (
     <div className="flex items-center gap-1.5">
-      <CalendarIcon
+      <Icon
         strokeWidth={1.5}
         className={cn(
           isCompact ? "h-5 w-5" : "h-5 w-5 transition-all",
@@ -47,15 +60,15 @@ export function TaskDatePicker({
       />
       {date && (
         <>
-          <span className={cn("text-sm font-medium", isCompact ? "" : "text-primary ml-1")}>
+          <span className={cn("text-sm font-medium", isCompact ? "" : "ml-1")}>
             {format(date, "MMM d, h:mm a")}
           </span>
           <span
             role="button"
-            title="Clear due date"
+            title={`Clear ${title.toLowerCase()}`}
             className={cn(
               "ml-1 p-0.5 rounded",
-              isCompact ? "hover:bg-destructive/20" : "rounded-full hover:bg-primary/20"
+              isCompact ? "hover:bg-destructive/20" : "rounded-full hover:bg-current/10"
             )}
             onClick={(e) => {
               e.preventDefault();
@@ -82,14 +95,14 @@ export function TaskDatePicker({
             isCompact
               ? cn(
                   "w-10 px-0 text-muted-foreground hover:text-foreground",
-                  date && "w-auto px-2.5 text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary"
+                  date && cn("w-auto px-2.5", activeClassName)
                 )
               : cn(
-                  "min-w-10 px-0 shadow-sm",
-                  date && "text-primary bg-primary/10 px-3 w-auto"
+                  "min-w-10 px-0 shadow-sm text-muted-foreground hover:text-foreground hover:bg-accent",
+                  date && cn("px-3 w-auto hover:bg-transparent", activeClassName)
                 )
           )}
-          title="Set due date"
+          title={`Set ${title.toLowerCase()}`}
         >
           {buttonContent}
         </Button>
@@ -100,7 +113,7 @@ export function TaskDatePicker({
           )}
         >
           <ResponsiveDialogHeader className="sr-only">
-            <ResponsiveDialogTitle>Set Due Date</ResponsiveDialogTitle>
+            <ResponsiveDialogTitle>Set {title}</ResponsiveDialogTitle>
           </ResponsiveDialogHeader>
           <DateTimeWizard
             date={date}
@@ -123,19 +136,24 @@ export function TaskDatePicker({
             isCompact
               ? cn(
                   "w-10 px-0 text-muted-foreground hover:text-foreground",
-                  date && "w-auto px-2.5 text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary"
+                  date && cn("w-auto px-2.5", activeClassName)
                 )
               : cn(
-                  "min-w-10 px-0 shadow-sm",
-                  date && "text-primary bg-primary/10 px-3 w-auto"
+                  "min-w-10 px-0 shadow-sm text-muted-foreground hover:text-foreground hover:bg-accent",
+                  date && cn("px-3 w-auto hover:bg-transparent", activeClassName)
                 )
           )}
-          title="Set due date"
+          title={`Set ${title.toLowerCase()}`}
         >
           {buttonContent}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 border-none shadow-xl" align="start">
+      <PopoverContent 
+        className="w-auto p-0 border-none shadow-xl" 
+        align={align}
+        side={side}
+        sideOffset={sideOffset}
+      >
         <DateTimeWizard
           date={date}
           setDate={setDate}

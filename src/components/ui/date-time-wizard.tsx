@@ -106,6 +106,47 @@ export function DateTimeWizard({ date, setDate, onClose }: DateTimeWizardProps) 
                   head_cell: 'text-muted-foreground rounded-md w-9 font-normal text-[0.8rem] text-center',
               }}
             />
+            {/* Quick Presets */}
+            <div className="grid grid-cols-3 gap-2 mt-3 p-1 bg-muted/20 rounded-md border border-border/50">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 text-[10px] sm:text-xs font-semibold hover:bg-background hover:shadow-sm"
+                onClick={() => {
+                  const today = new Date();
+                  today.setHours(12, 0, 0, 0); // Default Noon
+                  handleDateSelect(today);
+                }}
+              >
+                Today
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 text-[10px] sm:text-xs font-semibold hover:bg-background hover:shadow-sm"
+                onClick={() => {
+                  const tomorrow = new Date();
+                  tomorrow.setDate(tomorrow.getDate() + 1);
+                  tomorrow.setHours(12, 0, 0, 0); // Default Noon
+                  handleDateSelect(tomorrow);
+                }}
+              >
+                Tomorrow
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 text-[10px] sm:text-xs font-bold text-purple-600 dark:text-purple-400 hover:bg-purple-500/10 hover:text-purple-700 dark:hover:text-purple-300"
+                onClick={() => {
+                  const evening = new Date();
+                  evening.setHours(18, 0, 0, 0); // 6 PM
+                  setTempDate(evening);
+                }}
+              >
+                Evening
+              </Button>
+            </div>
+
             {/* Date View Footer */}
             <div className="mt-2 w-full flex justify-end">
                 <Button 

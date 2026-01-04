@@ -63,10 +63,14 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId,
   );
 
   const processedTasks = useMemo(() => {
-    if (!tasks) return { active: [], completed: [] };
+    if (!tasks) return { active: [], completed: [], evening: [] };
 
-    const active = tasks.filter((t) => !t.is_completed);
     const completed = tasks.filter((t) => t.is_completed);
+    
+    // Separate "This Evening" tasks from regular active tasks
+    const allActive = tasks.filter((t) => !t.is_completed);
+    const evening = allActive.filter((t) => t.is_evening);
+    const active = allActive.filter((t) => !t.is_evening);
 
     // Sorting Helper
     const sortFn = (a: Task, b: Task) => {
@@ -78,25 +82,32 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId,
         if (diff !== 0) return diff;
       }
       if (sortBy === 'date') {
-        if (!a.due_date) return 1;
-        if (!b.due_date) return -1;
-        const diff = compareAsc(parseISO(a.due_date), parseISO(b.due_date));
+        // Prioritize do_date (when to start) over due_date (deadline)
+        const aDate = a.do_date || a.due_date;
+        const bDate = b.do_date || b.due_date;
+        
+        if (!aDate) return 1;
+        if (!bDate) return -1;
+        const diff = compareAsc(parseISO(aDate), parseISO(bDate));
         if (diff !== 0) return diff;
       }
       if (sortBy === 'alphabetical') {
         return a.content.localeCompare(b.content);
       }
       // Default: Date if not already sorted
-      if (!a.due_date) return 1;
-      if (!b.due_date) return -1;
-      return compareAsc(parseISO(a.due_date), parseISO(b.due_date));
+      const aDate = a.do_date || a.due_date;
+      const bDate = b.do_date || b.due_date;
+      if (!aDate) return 1;
+      if (!bDate) return -1;
+      return compareAsc(parseISO(aDate), parseISO(bDate));
     };
 
     active.sort(sortFn);
+    evening.sort(sortFn);
 
     // Grouping
     if (groupBy === 'none') {
-      return { active, completed, groups: null };
+      return { active, completed, evening, groups: null };
     }
 
     const groups: Record<string, Task[]> = {};
@@ -120,11 +131,14 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId,
       groupOrder.forEach(k => groups[k] = []);
 
       active.forEach((task) => {
-        if (!task.due_date) {
+        // Use do_date (start date) if available, otherwise fall back to due_date
+        const taskDate = task.do_date || task.due_date;
+        
+        if (!taskDate) {
           groups['No Date'].push(task);
           return;
         }
-        const date = parseISO(task.due_date);
+        const date = parseISO(taskDate);
         if (isBefore(date, today)) groups['Overdue'].push(task);
         else if (isToday(date)) groups['Today'].push(task);
         else if (isTomorrow(date)) groups['Tomorrow'].push(task);
@@ -137,7 +151,7 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId,
       .filter(key => groups[key].length > 0)
       .map(key => ({ title: key, tasks: groups[key] }));
 
-    return { active, completed, groups: finalGroups };
+    return { active, completed, evening, groups: finalGroups };
 
   }, [tasks, sortBy, groupBy]);
 
@@ -191,7 +205,7 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId,
     );
   }
 
-  const { active, completed, groups } = processedTasks;
+  const { active, completed, evening, groups } = processedTasks;
 
   if (active.length === 0 && completed.length === 0) {
     return (
@@ -241,6 +255,25 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId,
                 ))}
               </div>
             </SortableContext>
+          )}
+
+          {/* This Evening Section */}
+          {evening.length > 0 && (
+            <div className="pt-4">
+              <p className="text-xs font-medium text-muted-foreground px-1 mb-2 flex items-center gap-1.5">
+                <span className="text-sm">🌙</span>
+                This Evening ({evening.length})
+              </p>
+              <div className="space-y-0 md:space-y-0.5">
+                {evening.map((task) => (
+                  <TaskItem
+                    key={task.id}
+                    task={task}
+                    onClick={() => setSelectedTask(task)}
+                  />
+                ))}
+              </div>
+            </div>
           )}
 
           {/* Completed Section */}

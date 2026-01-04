@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ListChecks, Send, FolderKanban, Inbox } from "lucide-react";
+import { ListChecks, Send, FolderKanban, Inbox, Moon, Calendar as CalendarIcon, CalendarClock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import SubtaskList from "./SubtaskList";
 import { TaskDatePicker } from "./shared/TaskDatePicker";
@@ -27,6 +27,10 @@ interface TaskCreateViewProps {
   setContent: (value: string) => void;
   dueDate: Date | undefined;
   setDueDate: (value: Date | undefined) => void;
+  doDate: Date | undefined;
+  setDoDate: (value: Date | undefined) => void;
+  isEvening: boolean;
+  setIsEvening: (value: boolean) => void;
   priority: 1 | 2 | 3 | 4;
   setPriority: (value: 1 | 2 | 3 | 4) => void;
   recurrence: RecurrenceRule | null;
@@ -35,6 +39,8 @@ interface TaskCreateViewProps {
   setSelectedProjectId: (value: string | null) => void;
   datePickerOpen: boolean;
   setDatePickerOpen: (value: boolean) => void;
+  doDatePickerOpen: boolean;
+  setDoDatePickerOpen: (value: boolean) => void;
   showSubtasks: boolean;
   setShowSubtasks: (value: boolean) => void;
   draftSubtasks: string[];
@@ -53,6 +59,10 @@ export function TaskCreateView({
   setContent,
   dueDate,
   setDueDate,
+  doDate,
+  setDoDate,
+  isEvening,
+  setIsEvening,
   priority,
   setPriority,
   recurrence,
@@ -61,6 +71,8 @@ export function TaskCreateView({
   setSelectedProjectId,
   datePickerOpen,
   setDatePickerOpen,
+  doDatePickerOpen,
+  setDoDatePickerOpen,
   showSubtasks,
   setShowSubtasks,
   draftSubtasks,
@@ -100,7 +112,47 @@ export function TaskCreateView({
             open={datePickerOpen}
             onOpenChange={setDatePickerOpen}
             variant="icon"
+            side="right"
+            align="center"
+            sideOffset={15}
           />
+
+          {/* Start Date (Do Date) */}
+          <TaskDatePicker
+            date={doDate}
+            setDate={setDoDate}
+            isMobile={isMobile}
+            open={doDatePickerOpen}
+            onOpenChange={setDoDatePickerOpen}
+            variant="icon"
+            title="Start Date"
+            icon={CalendarClock}
+            side="right"
+            align="center"
+            sideOffset={15}
+            activeClassName="text-green-600 dark:text-green-400 border-green-500/50 bg-green-500/10"
+          />
+
+          {/* This Evening Toggle */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className={cn(
+              "h-10 px-3 transition-all text-muted-foreground hover:text-foreground hover:bg-accent shadow-sm dark:bg-white/[0.03] dark:border dark:border-white/10 gap-1.5",
+              isEvening && "text-purple-600 dark:text-purple-400 border-purple-500/50 bg-purple-500/10 hover:bg-purple-500/20"
+            )}
+            onClick={() => {
+              const nextValue = !isEvening;
+              setIsEvening(nextValue);
+              if (nextValue && !doDate) {
+                setDoDate(new Date());
+              }
+            }}
+            title="This Evening"
+          >
+            <Moon strokeWidth={2} className="h-3.5 w-3.5" />
+            <span className="text-xs font-medium">Evening</span>
+          </Button>
 
           {/* Subtask Toggle */}
           <Button
@@ -108,7 +160,7 @@ export function TaskCreateView({
             size="sm"
             onClick={() => setShowSubtasks(!showSubtasks)}
             className={cn(
-              "h-10 w-10 p-0 transition-all text-muted-foreground hover:text-foreground shadow-sm dark:bg-white/[0.03] dark:border dark:border-white/10 group [&_svg]:!size-5",
+              "h-10 w-10 p-0 transition-all text-muted-foreground hover:text-foreground hover:bg-accent shadow-sm dark:bg-white/[0.03] dark:border dark:border-white/10 group [&_svg]:!size-5",
               showSubtasks && "text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary"
             )}
             title="Toggle subtasks"

@@ -18,12 +18,15 @@ function ShareForm() {
   // Form State
   const [content, setContent] = useState("");
   const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
+  const [doDate, setDoDate] = useState<Date | undefined>(undefined);
+  const [isEvening, setIsEvening] = useState(false);
   const [priority, setPriority] = useState<1 | 2 | 3 | 4>(4);
   const [recurrence, setRecurrence] = useState<RecurrenceRule | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   
   // UI State
   const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const [doDatePickerOpen, setDoDatePickerOpen] = useState(false);
   const [showSubtasks, setShowSubtasks] = useState(false);
   const [draftSubtasks, setDraftSubtasks] = useState<string[]>([]);
   
@@ -51,6 +54,8 @@ function ShareForm() {
         // But CreateView only supports content editing. Let's stick to content.
         priority,
         due_date: dueDate?.toISOString(),
+        do_date: doDate?.toISOString(),
+        is_evening: isEvening,
         project_id: selectedProjectId || undefined,
         parent_id: undefined,
         recurrence, 
@@ -85,6 +90,10 @@ function ShareForm() {
           setContent={setContent}
           dueDate={dueDate}
           setDueDate={setDueDate}
+          doDate={doDate}
+          setDoDate={setDoDate}
+          isEvening={isEvening}
+          setIsEvening={setIsEvening}
           priority={priority}
           setPriority={setPriority}
           recurrence={recurrence}
@@ -93,6 +102,8 @@ function ShareForm() {
           setSelectedProjectId={setSelectedProjectId}
           datePickerOpen={datePickerOpen}
           setDatePickerOpen={setDatePickerOpen}
+          doDatePickerOpen={doDatePickerOpen}
+          setDoDatePickerOpen={setDoDatePickerOpen}
           showSubtasks={showSubtasks}
           setShowSubtasks={setShowSubtasks}
           draftSubtasks={draftSubtasks}

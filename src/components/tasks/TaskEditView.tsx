@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ListChecks, Save, Trash2, Inbox } from "lucide-react";
+import { ListChecks, Save, Trash2, Inbox, Moon, Calendar as CalendarIcon, CalendarClock } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { cn } from "@/lib/utils";
@@ -35,6 +35,10 @@ interface TaskEditViewProps {
   setIsPreviewMode: (value: boolean) => void;
   dueDate: Date | undefined;
   setDueDate: (value: Date | undefined) => void;
+  doDate: Date | undefined;
+  setDoDate: (value: Date | undefined) => void;
+  isEvening: boolean;
+  setIsEvening: (value: boolean) => void;
   priority: 1 | 2 | 3 | 4;
   setPriority: (value: 1 | 2 | 3 | 4) => void;
   recurrence: RecurrenceRule | null;
@@ -43,6 +47,8 @@ interface TaskEditViewProps {
   setSelectedProjectId: (value: string | null) => void;
   datePickerOpen: boolean;
   setDatePickerOpen: (value: boolean) => void;
+  doDatePickerOpen: boolean;
+  setDoDatePickerOpen: (value: boolean) => void;
   showSubtasks: boolean;
   setShowSubtasks: (value: boolean) => void;
   draftSubtasks: string[];
@@ -67,6 +73,10 @@ export function TaskEditView({
   setIsPreviewMode,
   dueDate,
   setDueDate,
+  doDate,
+  setDoDate,
+  isEvening,
+  setIsEvening,
   priority,
   setPriority,
   recurrence,
@@ -75,6 +85,8 @@ export function TaskEditView({
   setSelectedProjectId,
   datePickerOpen,
   setDatePickerOpen,
+  doDatePickerOpen,
+  setDoDatePickerOpen,
   showSubtasks,
   setShowSubtasks,
   draftSubtasks,
@@ -175,7 +187,7 @@ export function TaskEditView({
       {/* Fixed Footer - Actions Row */}
       <div className="shrink-0 grid grid-cols-[1fr_auto] gap-2 pt-4 border-t mt-4 px-4 sm:px-0 pb-[calc(0.5rem+env(safe-area-inset-bottom))] bg-background w-full max-w-full">
         <div ref={scrollRef} className="flex items-center gap-3 overflow-x-auto scrollbar-hide pr-8 py-1 min-w-0 mask-linear-horizontal">
-          {/* Date & Time Picker */}
+          {/* Date & Time Picker (Due Date) */}
           <TaskDatePicker
             date={dueDate}
             setDate={setDueDate}
@@ -184,6 +196,40 @@ export function TaskEditView({
             onOpenChange={setDatePickerOpen}
             variant="icon"
           />
+
+          {/* Start Date (Do Date) */}
+          <TaskDatePicker
+            date={doDate}
+            setDate={setDoDate}
+            isMobile={isMobile}
+            open={doDatePickerOpen}
+            onOpenChange={setDoDatePickerOpen}
+            variant="icon"
+            title="Start Date"
+            icon={CalendarClock}
+            activeClassName="text-green-600 dark:text-green-400 border-green-500/50 bg-green-500/10"
+          />
+
+          {/* This Evening Toggle */}
+          <Button
+            variant="outline"
+            size="sm"
+            className={cn(
+              "h-10 px-3 text-xs border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground shrink-0 dark:bg-white/[0.03] dark:border-white/10 gap-1.5",
+              isEvening && "border-purple-500/50 text-purple-600 dark:text-purple-400 bg-purple-500/10"
+            )}
+            onClick={() => {
+              const nextValue = !isEvening;
+              setIsEvening(nextValue);
+              if (nextValue && !doDate) {
+                setDoDate(new Date());
+              }
+            }}
+            title="This Evening"
+          >
+            <Moon className="h-3.5 w-3.5" />
+            Evening
+          </Button>
 
           {/* Priority Selector */}
           <div className="shrink-0">

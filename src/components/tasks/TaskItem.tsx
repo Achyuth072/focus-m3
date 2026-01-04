@@ -14,6 +14,9 @@ import {
   ChevronRight,
   ChevronDown,
   GripVertical,
+  Play,
+  Moon,
+  CalendarClock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/lib/types/task";
@@ -21,6 +24,15 @@ import SubtaskList from "./SubtaskList";
 import { Button } from "@/components/ui/button";
 import { useProject } from "@/lib/hooks/useProjects";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useRouter } from 'next/navigation';
+import { useTimer } from "@/components/TimerProvider";
 
 interface TaskItemProps {
   task: Task;
@@ -60,6 +72,14 @@ function TaskItem({ task, onClick, dragListeners, dragAttributes, isDragging = f
   const toggleMutation = useToggleTask();
   const { data: project } = useProject(task.project_id);
   const isDesktop = useMediaQuery("(min-width: 768px)");
+  const { start } = useTimer();
+  const router = useRouter();
+
+  const handlePlayFocus = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    start(task.id);
+    router.push('/focus');
+  };
 
   const x = useMotionValue(0);
   const background = useTransform(
@@ -275,6 +295,18 @@ function TaskItem({ task, onClick, dragListeners, dragAttributes, isDragging = f
                       {formatDueDate(task.due_date)}
                     </span>
                   )}
+                  {task.do_date && (
+                    <span className="flex items-center gap-1 text-[10px] sm:text-xs text-green-600 dark:text-green-400 font-medium">
+                      <CalendarClock className="h-3 w-3" />
+                      {isToday(parseISO(task.do_date)) ? "Today" : format(parseISO(task.do_date), "MMM d")}
+                    </span>
+                  )}
+                  {task.is_evening && (
+                    <span className="flex items-center gap-1 text-[10px] sm:text-xs text-purple-600 dark:text-purple-400 font-medium">
+                      <Moon className="h-3 w-3 fill-current" />
+                      Evening
+                    </span>
+                  )}
                   {task.priority < 4 && (
                     <span
                       className={cn(
@@ -298,6 +330,19 @@ function TaskItem({ task, onClick, dragListeners, dragAttributes, isDragging = f
                     </span>
                   )}
 
+                  {/* Desktop Play Action */}
+                  {isDesktop && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handlePlayFocus}
+                      className="h-6 w-6 text-muted-foreground hover:text-green-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                      title="Start focus timer"
+                    >
+                      <Play className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
+
                   {/* Desktop Delete Action */}
                   {isDesktop && (
                     <Button
@@ -315,6 +360,18 @@ function TaskItem({ task, onClick, dragListeners, dragAttributes, isDragging = f
                 </div>
               )}
             </div>
+
+            {/* Mobile Play Action */}
+            {!isDesktop && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handlePlayFocus}
+                className="h-8 w-8 text-muted-foreground hover:text-green-600 transition-colors"
+              >
+                <Play className="h-4 w-4" />
+              </Button>
+            )}
 
             {/* Mobile Expand Toggle - Outside metadata */}
             {!isDesktop && (

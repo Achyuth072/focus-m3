@@ -11,14 +11,33 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useRouter, usePathname } from 'next/navigation';
-import { useFocusTimer } from '@/lib/hooks/useFocusTimer';
+import { useTimer } from "@/components/TimerProvider";
 import { useCompletedTasks } from '@/components/CompletedTasksProvider';
+import { useQuery } from '@tanstack/react-query';
+import { createClient } from '@/lib/supabase/client';
+import type { Task } from '@/lib/types/task';
 
 export function MobileHeader() {
   const router = useRouter();
   const pathname = usePathname();
-  const { state } = useFocusTimer();
+  const { state } = useTimer();
   const { openSheet } = useCompletedTasks();
+  const supabase = createClient();
+
+  // Fetch active task if one is set
+  const { data: activeTask } = useQuery({
+    queryKey: ['task', state.activeTaskId],
+    queryFn: async () => {
+      if (!state.activeTaskId) return null;
+      const { data } = await supabase
+        .from('tasks')
+        .select('*')
+        .eq('id', state.activeTaskId)
+        .single();
+      return data as Task | null;
+    },
+    enabled: !!state.activeTaskId,
+  });
 
   const minutes = Math.floor(state.remainingSeconds / 60);
   const seconds = state.remainingSeconds % 60;
@@ -39,9 +58,16 @@ export function MobileHeader() {
           className="flex items-center gap-2 px-3 py-2 min-h-[40px] rounded-lg hover:bg-sidebar-accent active:bg-sidebar-accent active:scale-95 transition-all"
         >
           <Timer className={`h-5 w-5 ${state.isRunning ? 'text-primary animate-pulse' : 'text-muted-foreground'}`} />
-          <span className={`text-base font-mono font-semibold tabular-nums leading-none ${state.isRunning ? 'text-primary' : 'text-muted-foreground'}`}>
-            {displayTime}
-          </span>
+          <div className="flex flex-col items-start">
+            <span className={`text-base font-mono font-semibold tabular-nums leading-none ${state.isRunning ? 'text-primary' : 'text-muted-foreground'}`}>
+              {displayTime}
+            </span>
+            {activeTask && (
+              <span className="text-xs text-muted-foreground truncate max-w-[120px]">
+                {activeTask.content}
+              </span>
+            )}
+          </div>
         </button>
         
         <DropdownMenu>

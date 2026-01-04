@@ -38,9 +38,12 @@ export default function TaskSheet({
   const [description, setDescription] = useState("");
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
+  const [doDate, setDoDate] = useState<Date | undefined>(undefined);
+  const [isEvening, setIsEvening] = useState(false);
   const [priority, setPriority] = useState<1 | 2 | 3 | 4>(4);
   const [recurrence, setRecurrence] = useState<RecurrenceRule | null>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const [doDatePickerOpen, setDoDatePickerOpen] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [draftSubtasks, setDraftSubtasks] = useState<string[]>([]);
@@ -61,6 +64,8 @@ export default function TaskSheet({
         setContent(initialTask.content);
         setDescription(initialTask.description || "");
         setDueDate(initialTask.due_date ? new Date(initialTask.due_date) : undefined);
+        setDoDate(initialTask.do_date ? new Date(initialTask.do_date) : undefined);
+        setIsEvening(initialTask.is_evening || false);
         setPriority(initialTask.priority);
         setRecurrence(initialTask.recurrence || null);
         setDraftSubtasks([]);
@@ -70,6 +75,8 @@ export default function TaskSheet({
         setContent("");
         setDescription("");
         setDueDate(initialDate ?? undefined);
+        setDoDate(undefined);
+        setIsEvening(false);
         setPriority(4);
         setRecurrence(null);
         setDraftSubtasks([]);
@@ -93,6 +100,8 @@ export default function TaskSheet({
         content: trimmedContent,
         description: description.trim() || undefined,
         due_date: dueDate?.toISOString() ?? null,
+        do_date: doDate?.toISOString() ?? null,
+        is_evening: isEvening,
         priority,
         project_id: selectedProjectId,
         recurrence: recurrence,
@@ -104,6 +113,8 @@ export default function TaskSheet({
           description: description.trim() || undefined,
           project_id: selectedProjectId || undefined,
           due_date: dueDate?.toISOString(),
+          do_date: doDate?.toISOString(),
+          is_evening: isEvening,
           priority,
           recurrence: recurrence,
         },
@@ -151,10 +162,7 @@ export default function TaskSheet({
   return (
     <ResponsiveDialog open={open} onOpenChange={onClose}>
       <ResponsiveDialogContent
-        className={cn(
-          "w-full sm:max-w-lg gap-0 rounded-lg",
-          isCreationMode && "sm:top-[35%]"
-        )}
+        className="w-full sm:max-w-lg gap-0 rounded-lg"
       >
         {isCreationMode ? (
           <TaskCreateView
@@ -162,6 +170,10 @@ export default function TaskSheet({
             setContent={setContent}
             dueDate={dueDate}
             setDueDate={setDueDate}
+            doDate={doDate}
+            setDoDate={setDoDate}
+            isEvening={isEvening}
+            setIsEvening={setIsEvening}
             priority={priority}
             setPriority={setPriority}
             recurrence={recurrence}
@@ -170,6 +182,8 @@ export default function TaskSheet({
             setSelectedProjectId={setSelectedProjectId}
             datePickerOpen={datePickerOpen}
             setDatePickerOpen={setDatePickerOpen}
+            doDatePickerOpen={doDatePickerOpen}
+            setDoDatePickerOpen={setDoDatePickerOpen}
             showSubtasks={showSubtasks}
             setShowSubtasks={setShowSubtasks}
             draftSubtasks={draftSubtasks}
@@ -193,6 +207,10 @@ export default function TaskSheet({
             setIsPreviewMode={setIsPreviewMode}
             dueDate={dueDate}
             setDueDate={setDueDate}
+            doDate={doDate}
+            setDoDate={setDoDate}
+            isEvening={isEvening}
+            setIsEvening={setIsEvening}
             priority={priority}
             setPriority={setPriority}
             recurrence={recurrence}
@@ -201,6 +219,8 @@ export default function TaskSheet({
             setSelectedProjectId={setSelectedProjectId}
             datePickerOpen={datePickerOpen}
             setDatePickerOpen={setDatePickerOpen}
+            doDatePickerOpen={doDatePickerOpen}
+            setDoDatePickerOpen={setDoDatePickerOpen}
             showSubtasks={showSubtasks}
             setShowSubtasks={setShowSubtasks}
             draftSubtasks={draftSubtasks}

@@ -9,6 +9,9 @@ import { FocusSettingsDialog } from '@/components/FocusSettingsDialog';
 import type { TimerMode } from '@/lib/types/timer';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
+import { createClient } from '@/lib/supabase/client';
+import type { Task } from '@/lib/types/task';
 
 const MODE_LABELS: Record<TimerMode, string> = {
   focus: 'Focus',
@@ -25,6 +28,22 @@ function formatTime(seconds: number): string {
 export default function FocusPage() {
   const router = useRouter();
   const { state, settings, start, pause, stop, skip } = useTimer();
+  const supabase = createClient();
+
+  // Fetch active task if one is set
+  const { data: activeTask } = useQuery({
+    queryKey: ['task', state.activeTaskId],
+    queryFn: async () => {
+      if (!state.activeTaskId) return null;
+      const { data } = await supabase
+        .from('tasks')
+        .select('*')
+        .eq('id', state.activeTaskId)
+        .single();
+      return data as Task | null;
+    },
+    enabled: !!state.activeTaskId,
+  });
 
   const totalSeconds =
     state.mode === 'focus'
@@ -63,6 +82,13 @@ export default function FocusPage() {
       <div className="text-sm font-medium text-muted-foreground uppercase tracking-widest">
         {MODE_LABELS[state.mode]}
       </div>
+
+      {/* Active Task Name */}
+      {activeTask && (
+        <div className="text-lg font-medium text-foreground mt-4 max-w-md text-center px-4">
+          {activeTask.content}
+        </div>
+      )}
 
       {/* Timer Display */}
       <div className="text-7xl sm:text-8xl md:text-9xl font-light font-mono tracking-tight text-foreground tabular-nums mt-6">
