@@ -1,8 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Settings } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
+import { cn } from '@/lib/utils';
 import {
   Dialog,
   DialogContent,
@@ -29,7 +32,8 @@ import { useTimer } from '@/components/TimerProvider';
 export function FocusSettingsDialog() {
   const { settings, updateSettings } = useTimer();
   const [open, setOpen] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const isPhone = useMediaQuery("(max-width: 640px) or ((hover: none) and (pointer: coarse))");
 
   // Local state for form
   const [focusDuration, setFocusDuration] = useState(settings.focusDuration);
@@ -37,12 +41,7 @@ export function FocusSettingsDialog() {
   const [longBreak, setLongBreak] = useState(settings.longBreakDuration);
   const [sessions, setSessions] = useState(settings.sessionsBeforeLongBreak);
 
-  useEffect(() => {
-    const checkDesktop = () => setIsDesktop(window.innerWidth >= 768);
-    checkDesktop();
-    window.addEventListener('resize', checkDesktop);
-    return () => window.removeEventListener('resize', checkDesktop);
-  }, []);
+
 
   const handleSave = () => {
     updateSettings({
@@ -163,16 +162,19 @@ export function FocusSettingsDialog() {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button 
-            variant="ghost" 
-            className="text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-all"
-            onClick={() => {
-              if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
+          <motion.button
+            className={cn(
+              buttonVariants({ variant: "ghost" }),
+              "text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-all cursor-pointer"
+            )}
+            onTapStart={() => {
+              if (isPhone && typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
             }}
+            whileTap={isPhone ? { scale: 0.95 } : {}}
           >
             <Settings className="h-4 w-4 mr-2" />
             Adjust Settings
-          </Button>
+          </motion.button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -196,16 +198,19 @@ export function FocusSettingsDialog() {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button 
-          variant="ghost" 
-          className="text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-all"
-          onClick={() => {
-            if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
+        <motion.button
+          className={cn(
+            buttonVariants({ variant: "ghost" }),
+            "text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-all cursor-pointer"
+          )}
+          onTapStart={() => {
+            if (isPhone && typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
           }}
+          whileTap={isPhone ? { scale: 0.95 } : {}}
         >
           <Settings className="h-4 w-4 mr-2" />
           Adjust Settings
-        </Button>
+        </motion.button>
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className="text-left">
