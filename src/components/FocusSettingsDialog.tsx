@@ -163,7 +163,13 @@ export function FocusSettingsDialog() {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button variant="ghost" className="text-muted-foreground">
+          <Button 
+            variant="ghost" 
+            className="text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-all"
+            onClick={() => {
+              if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
+            }}
+          >
             <Settings className="h-4 w-4 mr-2" />
             Adjust Settings
           </Button>
@@ -190,7 +196,13 @@ export function FocusSettingsDialog() {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button variant="ghost" className="text-muted-foreground">
+        <Button 
+          variant="ghost" 
+          className="text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-all"
+          onClick={() => {
+            if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
+          }}
+        >
           <Settings className="h-4 w-4 mr-2" />
           Adjust Settings
         </Button>
