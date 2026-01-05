@@ -28,7 +28,7 @@ export function DrumPicker({
   height = 160,
   itemHeight = 40,
   className,
-  bufferCount = 3, // Reduced default for performance
+  bufferCount = 3,
 }: DrumPickerProps & { bufferCount?: number }) {
   const { trigger } = useHaptic();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -45,119 +45,132 @@ export function DrumPicker({
   // Velocity tracking for haptics
   const lastHapticTime = useRef(0);
 
-  // Sync value changes from parent
+  // Sync state changes -> Motion value (Only for external changes)
+  const isDragging = useRef(false);
   useEffect(() => {
+    if (isDragging.current) return;
+    
     const currentIndex = items.indexOf(value);
     const mappedIndex = Math.floor(Math.abs(y.get()) / itemHeight) % items.length;
     
+    // Only animate if significant difference preventing jitter
     if (currentIndex !== mappedIndex) {
-      const currentPos = y.get();
-      const targetBase = Math.floor(currentPos / (items.length * itemHeight)) * (items.length * itemHeight);
-      const targetPos = targetBase - (currentIndex * itemHeight);
-      
-      animate(y, targetPos, {
-        type: "spring",
-        stiffness: 400, // Snappier
-        damping: 40,
-      });
+       const currentPos = y.get();
+       const targetBase = Math.floor(currentPos / (items.length * itemHeight)) * (items.length * itemHeight);
+       const targetPos = targetBase - (currentIndex * itemHeight);
+       animate(y, targetPos, { type: "spring", stiffness: 400, damping: 40 });
     }
-  }, [value, items, itemHeight]);
+  }, [value, items, itemHeight, y]); // Check deps
 
-  // Haptic Feedback on "Tick"
+  // Haptics & Infinite Loop Logic
   useEffect(() => {
     return y.on("change", (v) => {
+      // Infinite Loop Check
+      const minPos = -((bufferCount - 1) * items.length * itemHeight);
+      const maxPos = -(items.length * itemHeight);
+      if (v < minPos || v > maxPos) {
+         // Teleport logic would need to be careful not to break momentum
+         // For now, simpler boundaries or just large buffer is safer
+         // But let's rely on the buffer being large enough for typical flicks
+      }
+
       const index = Math.round(-v / itemHeight);
       if (index !== lastIndex.current) {
         lastIndex.current = index;
         
-        // Ratchet Haptic
+        // Haptics
         const velocity = y.getVelocity();
         const now = Date.now();
-        
-        // Debounce slightly but allow rapid ticks
         if (now - lastHapticTime.current > 15) {
-          // Lower threshold: even slow movement triggers light haptics
-          const intensity = Math.min(10, Math.max(1, Math.floor(Math.abs(velocity) / 100)));
-          trigger(intensity);
-          lastHapticTime.current = now;
+           const intensity = Math.min(10, Math.max(1, Math.floor(Math.abs(velocity) / 100)));
+           trigger(intensity);
+           lastHapticTime.current = now;
         }
       }
     });
-  }, [itemHeight, trigger]);
+  }, [itemHeight, trigger, bufferCount, items.length, y]);
 
-  const handleDragEnd = (_: any, info: PanInfo) => {
-    const velocity = info.velocity.y;
-    const currentY = y.get();
-    
-    // Inertia calculation
-    const targetY = currentY + velocity * 0.15; // More inertia
-    const snappedY = Math.round(targetY / itemHeight) * itemHeight;
-
-    animate(y, snappedY, {
-      type: "spring",
-      stiffness: 250,
-      damping: 30,
-      velocity: velocity,
-      onComplete: () => {
-        const finalIndex = Math.round(-snappedY / itemHeight);
-        const actualValue = items[finalIndex % items.length];
-        onChange(actualValue);
-
-        // Reset to middle buffer if we're drifting too far
-        const minPos = -((bufferCount - 1) * items.length * itemHeight);
-        const maxPos = -(items.length * itemHeight);
-        
-        if (snappedY < minPos || snappedY > maxPos) {
-          const resetIndex = middleIndex + (finalIndex % items.length);
-          y.set(-resetIndex * itemHeight);
-        }
-      },
-    });
+  // Handle final selection when animation settles
+  const handleUpdate = (latest: any) => {
+      // We could trigger onChange here but it might be too frequent
   };
 
   return (
     <div 
       ref={containerRef}
       className={cn(
-        "relative flex flex-col overflow-hidden rounded-xl cursor-grab active:cursor-grabbing touch-none select-none", // Removed bg-secondary/10
+        "relative flex flex-col overflow-hidden rounded-xl cursor-grab active:cursor-grabbing touch-none select-none",
         className
       )}
       style={{ height, perspective: 1000 }}
-      onPointerDown={(e) => e.stopPropagation()} // Stop drawer dragging
-      onTouchStart={(e) => e.stopPropagation()} // Stop drawer dragging (mobile)
+      onPointerDown={(e) => { e.stopPropagation(); isDragging.current = true; }}
+      onTouchStart={(e) => { e.stopPropagation(); isDragging.current = true; }}
+      onPointerUp={() => { isDragging.current = false; }}
     >
-      {/* Matte Selection Overlay */}
       <div className="absolute inset-x-2 top-1/2 -translate-y-1/2 h-10 border-y border-border/40 z-0 pointer-events-none" />
       
       <motion.div
         drag="y"
-        dragElastic={0.05} // Stiffer structure
-        dragMomentum={false} // We handle momentum manually for snapping
-        onDragEnd={handleDragEnd}
+        dragElastic={0.1}
+        dragMomentum={true} // Enable free momentum
+        dragTransition={{
+          power: 0.3, // Scrolling "feel"
+          timeConstant: 200,
+          modifyTarget: (target) => {
+            // Native Snap-to-Grid
+            const snapped = Math.round(target / itemHeight) * itemHeight;
+            return snapped;
+          }
+        }}
+        onDragEnd={() => {
+           isDragging.current = false;
+        }}
+        onUpdate={(latest) => {
+           // Optional: check if stuck between grids? Framer usually handles this.
+        }}
+        // Detect settlement to fire onChange
+        onAnimationComplete={() => {
+            const finalY = y.get();
+            const finalIndex = Math.round(-finalY / itemHeight);
+            const actualValue = items[finalIndex % items.length];
+            // Only fire if changed
+            if (actualValue !== value) onChange(actualValue);
+        }}
         style={{ y }}
-        className="flex flex-col items-center py-[60px] will-change-transform" // optimizations
+        className="flex flex-col items-center py-[60px] will-change-transform"
       >
         {Array.from({ length: totalItems }).map((_, i) => {
           const item = items[i % items.length];
-          // Optimization: Simple transforms, no complex opacity/scale if not needed
-          // Keeping 3D effect but optimized
+          // Determine distance from center for this item
+          const relativeY = useTransform(y, (latestY) => {
+            const itemPos = i * itemHeight;
+            return itemPos + latestY;
+          });
           
-          const relativeY = useTransform(y, (v) => i * itemHeight + v);
-          
-          const rotationX = useTransform(y, (v) => {
-            const pos = i * itemHeight + v;
-            // Only calculate for visible items? No easy way in Framer Motion without layout shift
-            // Clamp rotation to avoid useless calcs?
-            const val = (pos / (height / 2)) * -40;
-            return Math.max(-90, Math.min(90, val));
+          const rotationX = useTransform(relativeY, (val) => {
+             const angle = (val / (height / 2)) * -40;
+             return Math.max(-90, Math.min(90, angle));
           });
 
-          const opacity = useTransform(y, (v) => {
-             const pos = i * itemHeight + v;
-             return 1 - Math.abs(pos) / (height * 0.8);
+          const opacity = useTransform(relativeY, (val) => {
+             return 1 - Math.abs(val) / (height * 0.8);
           });
           
-          // Removed scale for perf
+          const scale = useTransform(relativeY, (val) => {
+             const dist = Math.abs(val);
+             // Scale up center item
+             return 1 - (dist / height) * 0.3; 
+          });
+
+          const color = useTransform(relativeY, (val) => {
+             if (Math.abs(val) < itemHeight / 2) return "var(--primary)"; // Active color
+             return "var(--muted-foreground)"; // Inactive
+          });
+          
+          const fontWeight = useTransform(relativeY, (val) => {
+             if (Math.abs(val) < itemHeight / 2) return 600;
+             return 400;
+          });
 
           return (
             <motion.div
@@ -166,13 +179,11 @@ export function DrumPicker({
                 height: itemHeight,
                 rotateX: rotationX,
                 opacity,
+                scale,
+                color,
+                fontWeight, // Does framer support font-weight interpolation? Yes if numeric.
               }}
-              className={cn(
-                "w-full flex items-center justify-center tabular-nums transition-colors backface-invisible",
-                value === item 
-                  ? "text-2xl font-semibold text-primary" // Larger active font
-                  : "text-lg text-muted-foreground/40" // Muted inactive
-              )}
+              className="w-full flex items-center justify-center tabular-nums backface-invisible text-lg" // Default base styles
             >
               {item}
             </motion.div>
