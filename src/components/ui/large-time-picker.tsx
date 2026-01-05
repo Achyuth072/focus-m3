@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { useHaptic } from "@/lib/hooks/useHaptic";
 
 interface LargeTimePickerProps {
   value: Date;
@@ -42,14 +43,21 @@ export function LargeTimePicker({
   const lastPeriodRef = useRef(isPM);
 
   const isAdjusting = useRef(false);
+  const { trigger } = useHaptic();
+
+  // Velocity tracking for haptic ratchet
+  const lastScrollTime = useRef(Date.now());
+  const lastScrollPos = useRef({ hour: 0, minute: 0 });
 
   // Initialize scroll positions to middle buffer on mount
   useEffect(() => {
     if (hourRef.current) {
       hourRef.current.scrollTop = (HOUR_COUNT + hours12 - 1) * ITEM_HEIGHT;
+      lastScrollPos.current.hour = hourRef.current.scrollTop;
     }
     if (minuteRef.current) {
       minuteRef.current.scrollTop = (MINUTE_COUNT + minutes) * ITEM_HEIGHT;
+      lastScrollPos.current.minute = minuteRef.current.scrollTop;
     }
     if (periodRef.current) {
       periodRef.current.scrollTop = (isPM ? 1 : 0) * ITEM_HEIGHT;
@@ -142,13 +150,26 @@ export function LargeTimePicker({
 
     if (hourValue !== lastHourRef.current) {
       lastHourRef.current = hourValue;
+
+      // Velocity-based haptic ratchet
+      const now = Date.now();
+      const deltaTime = now - lastScrollTime.current;
+      const deltaPos = Math.abs(scrollPos - lastScrollPos.current.hour);
+      const velocity = deltaPos / (deltaTime || 1);
+      
+      // Scale haptic intensity: 2ms (slow) to 5ms (fast)
+      const intensity = Math.min(5, Math.max(2, Math.floor(velocity / 2)));
+      trigger(intensity);
+
+      lastScrollTime.current = now;
+      lastScrollPos.current.hour = scrollPos;
+
       const newDate = new Date(value);
       const hours24 = isPM
         ? hourValue === 12 ? 12 : hourValue + 12
         : hourValue === 12 ? 0 : hourValue;
       newDate.setHours(hours24);
       onChangeRef.current(newDate);
-      if (navigator.vibrate) navigator.vibrate(5);
     }
   };
 
@@ -162,10 +183,23 @@ export function LargeTimePicker({
 
     if (minuteValue !== lastMinuteRef.current) {
       lastMinuteRef.current = minuteValue;
+
+      // Velocity-based haptic ratchet
+      const now = Date.now();
+      const deltaTime = now - lastScrollTime.current;
+      const deltaPos = Math.abs(scrollPos - lastScrollPos.current.minute);
+      const velocity = deltaPos / (deltaTime || 1);
+      
+      // Scale haptic intensity: 2ms (slow) to 5ms (fast)
+      const intensity = Math.min(5, Math.max(2, Math.floor(velocity / 2)));
+      trigger(intensity);
+
+      lastScrollTime.current = now;
+      lastScrollPos.current.minute = scrollPos;
+
       const newDate = new Date(value);
       newDate.setMinutes(minuteValue);
       onChangeRef.current(newDate);
-      if (navigator.vibrate) navigator.vibrate(5);
     }
   };
 

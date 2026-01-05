@@ -3,6 +3,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import type { Task, CreateTaskInput, UpdateTaskInput } from "@/lib/types/task";
+import { useHaptic } from "@/lib/hooks/useHaptic";
 
 export function useCreateTask() {
   const queryClient = useQueryClient();
@@ -266,6 +267,7 @@ export function useUpdateTask() {
 export function useDeleteTask() {
   const queryClient = useQueryClient();
   const supabase = createClient();
+  const { trigger } = useHaptic(); // Use haptic hook
 
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {
@@ -305,6 +307,11 @@ export function useDeleteTask() {
       // Show undo toast
       if (deletedTask) {
         const taskToRestore = { ...deletedTask };
+
+        // Success Haptic (Double Tick)
+        trigger(20);
+        setTimeout(() => trigger(20), 150);
+
         toast("Task deleted", {
           description: deletedTask.content,
           duration: 5000,
@@ -333,8 +340,16 @@ export function useDeleteTask() {
 
               if (error) {
                 console.error("Failed to restore task:", error);
+
+                // Error Haptic (Strong Pulse)
+                trigger(50);
+
                 toast.error("Failed to restore task");
               } else {
+                // Success Haptic (Double Tick)
+                trigger(20);
+                setTimeout(() => trigger(20), 150);
+
                 toast("Task restored");
               }
               // Always invalidate to sync with database

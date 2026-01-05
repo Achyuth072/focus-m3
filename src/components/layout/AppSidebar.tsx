@@ -33,6 +33,7 @@ import { useCompletedTasks } from '@/components/CompletedTasksProvider';
 import { useProjects } from '@/lib/hooks/useProjects';
 import { CreateProjectDialog } from '@/components/projects/CreateProjectDialog';
 import { useUiStore } from '@/lib/store/uiStore';
+import { useHaptic } from '@/lib/hooks/useHaptic';
 
 const mainNavItems = [
   { label: 'All Tasks', icon: CheckSquare, path: '/', isAction: false },
@@ -54,6 +55,7 @@ export function AppSidebar() {
   const { data: projects } = useProjects();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const { isProjectsOpen, toggleProjectsOpen } = useUiStore();
+  const { trigger } = useHaptic();
 
   const currentProjectId = searchParams.get('project');
 
@@ -64,6 +66,7 @@ export function AppSidebar() {
   }, [router]);
 
   const handleProjectClick = (projectId: string | 'inbox') => {
+    trigger(25);
     router.push(`/?project=${projectId}`);
     if (isMobile) setOpenMobile(false);
   };
@@ -105,6 +108,7 @@ export function AppSidebar() {
                       <SidebarMenuItem key={item.label}>
                         <SidebarMenuButton
                           onClick={() => {
+                            trigger(20);
                             if (item.isAction) {
                               openSheet();
                             } else {
@@ -133,14 +137,20 @@ export function AppSidebar() {
 
               {/* Projects Section */}
               <SidebarGroup>
-                <SidebarGroupLabel className="cursor-pointer pr-10" onClick={toggleProjectsOpen}>
+                <SidebarGroupLabel className="cursor-pointer pr-10" onClick={() => {
+                  trigger(15);
+                  toggleProjectsOpen();
+                }}>
                   <FolderKanban />
                   <span className="flex-1">Projects</span>
                   <ChevronDown 
                     className={`h-4 w-4 shrink-0 translate-y-px transition-transform ${isProjectsOpen ? '' : '-rotate-90'}`} 
                   />
                 </SidebarGroupLabel>
-                <SidebarGroupAction title="Add Project" onClick={() => setCreateDialogOpen(true)}>
+                <SidebarGroupAction title="Add Project" onClick={() => {
+                  trigger(20);
+                  setCreateDialogOpen(true);
+                }}>
                   <Plus className="h-4 w-4" />
                 </SidebarGroupAction>
                 {isProjectsOpen && (
@@ -198,6 +208,7 @@ export function AppSidebar() {
                       <SidebarMenuItem key={item.label}>
                         <SidebarMenuButton
                           onClick={() => {
+                            trigger(20);
                             router.push(item.path);
                             if (isMobile) setOpenMobile(false);
                           }}
