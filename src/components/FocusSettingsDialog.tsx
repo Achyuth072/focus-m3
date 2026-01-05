@@ -5,9 +5,7 @@ import { motion } from 'framer-motion';
 import { Settings } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
-import { useUiStore } from "@/lib/store/uiStore";
 import { useHaptic } from "@/lib/hooks/useHaptic";
-import { Switch } from "@/components/ui/switch";
 import { cn } from '@/lib/utils';
 import {
   Dialog,
@@ -34,7 +32,6 @@ import { useTimer } from '@/components/TimerProvider';
 
 export function FocusSettingsDialog() {
   const { settings, updateSettings } = useTimer();
-  const { hapticsEnabled, setHapticsEnabled } = useUiStore();
   const { trigger, isPhone } = useHaptic();
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -164,25 +161,6 @@ export function FocusSettingsDialog() {
           step={1}
           className="w-full"
         />
-        {/* Mobile Preferences (Only visible on mobile-like viewports in the settings drawer) */}
-        {!isDesktop && (
-          <div className="space-y-4 pt-4 border-t border-border">
-            <Label className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Preferences</Label>
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label className="text-sm font-medium">Haptic Feedback</Label>
-                <p className="text-xs text-muted-foreground">Vibrate on interactions</p>
-              </div>
-              <Switch 
-                checked={hapticsEnabled} 
-                onCheckedChange={(checked) => {
-                  trigger(15);
-                  setHapticsEnabled(checked);
-                }}
-              />
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
