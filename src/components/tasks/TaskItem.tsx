@@ -41,6 +41,7 @@ interface TaskItemProps {
   dragListeners?: any;
   dragAttributes?: any;
   isDragging?: boolean;
+  isKeyboardSelected?: boolean;
 }
 
 // Mobile-optimized threshold: require 40% of typical mobile screen width (~150px on small devices)
@@ -61,7 +62,7 @@ function formatDueDate(dateString: string): string {
   return format(date, "MMM d");
 }
 
-function TaskItem({ task, onClick, dragListeners, dragAttributes, isDragging = false }: TaskItemProps) {
+function TaskItem({ task, onClick, dragListeners, dragAttributes, isDragging = false, isKeyboardSelected = false }: TaskItemProps) {
   const [isChecking, setIsChecking] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(false);
@@ -192,7 +193,8 @@ function TaskItem({ task, onClick, dragListeners, dragAttributes, isDragging = f
             isDesktop
               ? "gap-2 px-2 py-1 h-8 rounded-sm hover:bg-secondary/40 dark:hover:bg-secondary/60 transition-all"
               : "items-center gap-3 py-3 px-4 active:bg-secondary/20", // Mobile: Sleeker padding, no bulky border-b
-            isChecking && "opacity-50"
+            isChecking && "opacity-50",
+            isKeyboardSelected && "ring-2 ring-primary bg-secondary/40 z-10"
           )}
           onClick={(e) => {
             // Only trigger onClick if we're not dragging

@@ -25,9 +25,10 @@ import type { Task } from '@/lib/types/task';
 import { SortOption, GroupOption } from '@/lib/types/sorting';
 import { compareAsc, parseISO, isBefore, isToday, isTomorrow, startOfDay, format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { useUpdateTask, useReorderTasks } from '@/lib/hooks/useTaskMutations';
+import { useUpdateTask, useReorderTasks, useDeleteTask, useToggleTask } from '@/lib/hooks/useTaskMutations';
 import { useUiStore } from '@/lib/store/uiStore';
 import { useHaptic } from '@/lib/hooks/useHaptic';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 interface TaskListProps {
   sortBy?: SortOption;
@@ -40,8 +41,12 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId,
   const { data: tasks, isLoading } = useTasks({ projectId, filter });
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [localTasks, setLocalTasks] = useState<Task[]>([]);
+  const [keyboardSelectedId, setKeyboardSelectedId] = useState<string | null>(null);
+  
   const updateMutation = useUpdateTask();
   const reorderMutation = useReorderTasks();
+  const deleteMutation = useDeleteTask();
+  const toggleMutation = useToggleTask();
   const { setSortBy } = useUiStore();
   const { trigger } = useHaptic();
   const justDragged = useRef(false);
@@ -199,6 +204,73 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId,
     reorderMutation.mutate(reordered.map((t) => t.id));
   };
 
+
+  // --- Keyboard Navigation ---
+
+  const navigableTasks = useMemo(() => {
+    let list: Task[] = [];
+    if (processedTasks.groups) {
+      processedTasks.groups.forEach(g => list.push(...g.tasks));
+    } else {
+      list.push(...localTasks);
+    }
+    // Add evening
+    list.push(...processedTasks.evening);
+    // Add completed
+    list.push(...processedTasks.completed);
+    return list;
+  }, [processedTasks, localTasks]);
+
+  const handleNav = (direction: 1 | -1) => {
+    if (navigableTasks.length === 0) return;
+    
+    const currentIndex = navigableTasks.findIndex(t => t.id === keyboardSelectedId);
+    if (currentIndex === -1) {
+      // Select first if nothing selected
+      setKeyboardSelectedId(navigableTasks[0].id);
+      return;
+    }
+
+    const nextIndex = currentIndex + direction;
+    if (nextIndex >= 0 && nextIndex < navigableTasks.length) {
+      setKeyboardSelectedId(navigableTasks[nextIndex].id);
+      
+      // Scroll into view logic could go here if needed, 
+      // but native focus handling often easier if we actually focused the element.
+      // For now, visual highlight only.
+    }
+  };
+
+  useHotkeys('j', () => handleNav(1), { preventDefault: true });
+  useHotkeys('k', () => handleNav(-1), { preventDefault: true });
+  
+  useHotkeys('space', (e) => {
+    e.preventDefault(); // Prevent scrolling
+    if (keyboardSelectedId) {
+      const task = navigableTasks.find(t => t.id === keyboardSelectedId);
+      if (task) {
+        toggleMutation.mutate({ id: task.id, is_completed: !task.is_completed });
+      }
+    }
+  });
+
+  useHotkeys(['enter', 'e'], () => {
+    if (keyboardSelectedId) {
+      const task = navigableTasks.find(t => t.id === keyboardSelectedId);
+      if (task) setSelectedTask(task);
+    }
+  }, { preventDefault: true });
+
+  useHotkeys(['d', 'backspace'], () => {
+    if (keyboardSelectedId) {
+       // Optional: Add confirmation or simply visually strike through?
+       // For safety, let's just trigger delete mutation
+       deleteMutation.mutate(keyboardSelectedId);
+       // Select next task automatically
+       handleNav(1); 
+    }
+  });
+
   if (isLoading) {
     return (
       <div className="px-4 md:px-6 py-4">
@@ -245,6 +317,7 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId,
                     key={task.id}
                     task={task}
                     onClick={() => setSelectedTask(task)}
+                    isKeyboardSelected={task.id === keyboardSelectedId}
                   />
                 ))}
               </div>
@@ -261,6 +334,7 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId,
                     key={task.id}
                     task={task}
                     onClick={() => setSelectedTask(task)}
+                    isKeyboardSelected={task.id === keyboardSelectedId}
                   />
                 ))}
               </div>
@@ -280,6 +354,7 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId,
                     key={task.id}
                     task={task}
                     onClick={() => setSelectedTask(task)}
+                    isKeyboardSelected={task.id === keyboardSelectedId}
                   />
                 ))}
               </div>
@@ -298,6 +373,7 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId,
                     key={task.id}
                     task={task}
                     onClick={() => setSelectedTask(task)}
+                    isKeyboardSelected={task.id === keyboardSelectedId}
                   />
                 ))}
               </div>

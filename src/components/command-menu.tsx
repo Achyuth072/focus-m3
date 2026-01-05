@@ -38,9 +38,14 @@ import { useAuth } from "@/components/AuthProvider"
 import { useSidebar } from "@/components/ui/sidebar"
 import { SignOutConfirmation } from "@/components/auth/SignOutConfirmation"
 
-export function CommandMenu() {
+interface CommandMenuProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
   const router = useRouter()
-  const [open, setOpen] = React.useState(false)
+  // const [open, setOpen] = React.useState(false) // Controlled by parent
   const [showSignOutConfirm, setShowSignOutConfirm] = React.useState(false)
   const { setTheme } = useTheme()
   const { data: projects } = useProjects()
@@ -49,26 +54,17 @@ export function CommandMenu() {
   const { signOut } = useAuth()
   const { toggleSidebar } = useSidebar()
   
-  React.useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault()
-        setOpen((open) => !open)
-      }
-    }
+  // Internal shortcut listener removed in favor of GlobalHotkeys
 
-    document.addEventListener("keydown", down)
-    return () => document.removeEventListener("keydown", down)
-  }, [])
 
   const runCommand = React.useCallback((command: () => void) => {
-    setOpen(false)
+    onOpenChange(false)
     command()
-  }, [])
+  }, [onOpenChange])
 
   return (
     <>
-      <CommandDialog open={open} onOpenChange={setOpen}>
+      <CommandDialog open={open} onOpenChange={onOpenChange}>
         <CommandInput placeholder="Type a command or search..." />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>

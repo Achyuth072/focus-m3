@@ -8,9 +8,10 @@ import type { Task } from "@/lib/types/task";
 interface SortableTaskItemProps {
   task: Task;
   onClick?: () => void;
+  isKeyboardSelected?: boolean;
 }
 
-export default function SortableTaskItem({ task, onClick }: SortableTaskItemProps) {
+export default function SortableTaskItem({ task, onClick, isKeyboardSelected }: SortableTaskItemProps) {
   const {
     attributes,
     listeners,
@@ -35,6 +36,7 @@ export default function SortableTaskItem({ task, onClick }: SortableTaskItemProp
         dragListeners={listeners}
         dragAttributes={attributes}
         isDragging={isDragging}
+        isKeyboardSelected={isKeyboardSelected}
       />
     </div>
   );

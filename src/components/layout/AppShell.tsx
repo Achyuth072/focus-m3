@@ -13,6 +13,8 @@ import { MobileHeader } from '@/components/layout/MobileHeader';
 import AddTaskFab from '@/components/tasks/AddTaskFab';
 import TaskSheet from '@/components/tasks/TaskSheet';
 import { CommandMenu } from '@/components/command-menu';
+import { GlobalHotkeys } from '@/components/layout/GlobalHotkeys';
+import { ShortcutsHelp } from '@/components/ui/ShortcutsHelp';
 import { cn } from '@/lib/utils';
 
 interface AppShellProps {
@@ -25,6 +27,9 @@ function AppShellContent({ children }: AppShellProps) {
   const hideMobileNav = pathname === '/focus' || pathname === '/settings';
   const isTasksPage = pathname === '/';
   const { isAddTaskOpen, openAddTask, closeAddTask } = useTaskActions();
+  
+  const [commandOpen, setCommandOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   // Global realtime sync - stays alive during navigation
   useRealtimeSync();
@@ -32,6 +37,10 @@ function AppShellContent({ children }: AppShellProps) {
   return (
     <CompletedTasksProvider>
       <SidebarProvider defaultOpen={true}>
+        <GlobalHotkeys 
+          setCommandOpen={setCommandOpen}
+          setHelpOpen={setHelpOpen}
+        />
         {/* Mobile Top Bar - hidden on Focus and Settings pages */}
         {!hideMobileNav && <MobileHeader />}
 
@@ -61,7 +70,8 @@ function AppShellContent({ children }: AppShellProps) {
         />
         
         {/* Global Command Menu */}
-        <CommandMenu />
+        <CommandMenu open={commandOpen} onOpenChange={setCommandOpen} />
+        <ShortcutsHelp open={helpOpen} onOpenChange={setHelpOpen} />
       </SidebarProvider>
     </CompletedTasksProvider>
   );
