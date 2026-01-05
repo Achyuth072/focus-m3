@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useHaptic } from "@/lib/hooks/useHaptic";
 import { DrumPicker } from "./drum-picker";
@@ -20,8 +20,8 @@ export function LargeTimePicker({
   const minutes = value.getMinutes();
   const isPM = value.getHours() >= 12;
 
-  const hoursList = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
-  const minutesList = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'));
+  const hoursList = React.useMemo(() => Array.from({ length: 12 }, (_, i) => (i + 1).toString()), []);
+  const minutesList = React.useMemo(() => Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0')), []);
 
   const handleHourChange = (newHour: string) => {
     const hourValue = parseInt(newHour, 10);

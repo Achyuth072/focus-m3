@@ -47,8 +47,11 @@ export function DrumPicker({
 
   // Sync state changes -> Motion value (Only for external changes)
   const isDragging = useRef(false);
+  const isMomentum = useRef(false); // Track momentum phase
+
   useEffect(() => {
-    if (isDragging.current) return;
+    // Prevent interfering if user is actively interacting (Drag or Momentum)
+    if (isDragging.current || isMomentum.current) return;
     
     const currentIndex = items.indexOf(value);
     const mappedIndex = Math.floor(Math.abs(y.get()) / itemHeight) % items.length;
@@ -68,10 +71,12 @@ export function DrumPicker({
       // Infinite Loop Check
       const minPos = -((bufferCount - 1) * items.length * itemHeight);
       const maxPos = -(items.length * itemHeight);
-      if (v < minPos || v > maxPos) {
-         // Teleport logic would need to be careful not to break momentum
-         // For now, simpler boundaries or just large buffer is safer
-         // But let's rely on the buffer being large enough for typical flicks
+      
+      // Safety check for NaN or Infinity which causes blanking
+      if (!Number.isFinite(v)) {
+          console.warn("DrumPicker: y value corrupted", v);
+          y.set(-initialIndex * itemHeight); // Emergency Reset
+          return;
       }
 
       const index = Math.round(-v / itemHeight);
@@ -92,6 +97,8 @@ export function DrumPicker({
 
   // Handle final selection when animation/momentum settles
   const handleSettled = () => {
+      isMomentum.current = false; // Momentum finished
+
       const finalY = y.get();
       const itemLength = items.length;
       const heightStep = itemHeight;
@@ -150,13 +157,14 @@ export function DrumPicker({
             return snapped;
           }
         }}
-        onDragEnd={() => { isDragging.current = false; }}
+        onDragEnd={() => { 
+            isDragging.current = false; 
+            isMomentum.current = true; // Start momentum tracking
+        }}
         onDragTransitionEnd={handleSettled} // Fires after drag momentum ends
         onAnimationComplete={(def) => {
-            // Only handle if it's a programmatic animation (not drag)
-            // But checking definition is hard.
-            // If we aren't dragging, running handleSettled is safe as it checks value
-            if (!isDragging.current) handleSettled();
+            // Only handle if it's a programmatic animation (not drag/momentum)
+            if (!isDragging.current && !isMomentum.current) handleSettled();
         }}
         style={{ y }}
         className="flex flex-col items-center py-[60px] will-change-transform"
