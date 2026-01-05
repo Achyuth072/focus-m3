@@ -90,9 +90,38 @@ export function DrumPicker({
     });
   }, [itemHeight, trigger, bufferCount, items.length, y]);
 
-  // Handle final selection when animation settles
-  const handleUpdate = (latest: any) => {
-      // We could trigger onChange here but it might be too frequent
+  // Handle final selection when animation/momentum settles
+  const handleSettled = () => {
+      const finalY = y.get();
+      const itemLength = items.length;
+      const heightStep = itemHeight;
+      const totalHeight = itemLength * heightStep;
+      
+      const finalIndex = Math.round(-finalY / heightStep);
+      
+      // Fix Modulo Bug: Handle negative indices correctly
+      const wrappedIndex = ((finalIndex % itemLength) + itemLength) % itemLength;
+      const actualValue = items[wrappedIndex];
+      
+      // Fire Change
+      if (actualValue && actualValue !== value) {
+          onChange(actualValue);
+      } else if (!actualValue) {
+          // Fallback if something went wrong
+          console.error("DrumPicker: selection out of bounds", wrappedIndex);
+      }
+
+      // Infinite Loop Reset: Teleport to middle buffer if near edges
+      // We want to keep the user in the center buffer (e.g. buffer index 1 of 0,1,2)
+      // center range is approximately: middleIndex +/- itemLength/2
+      const currentBufferIndex = Math.floor(finalIndex / itemLength);
+      const targetBufferIndex = Math.floor(bufferCount / 2);
+      
+      if (currentBufferIndex !== targetBufferIndex) {
+          // Calculate offset to jump back to center without visual shift
+          const offsetDist = (currentBufferIndex - targetBufferIndex) * totalHeight;
+          y.set(finalY + offsetDist);
+      }
   };
 
   return (
@@ -112,29 +141,22 @@ export function DrumPicker({
       <motion.div
         drag="y"
         dragElastic={0.1}
-        dragMomentum={true} // Enable free momentum
+        dragMomentum={true}
         dragTransition={{
-          power: 0.3, // Scrolling "feel"
+          power: 0.3, 
           timeConstant: 200,
           modifyTarget: (target) => {
-            // Native Snap-to-Grid
             const snapped = Math.round(target / itemHeight) * itemHeight;
             return snapped;
           }
         }}
-        onDragEnd={() => {
-           isDragging.current = false;
-        }}
-        onUpdate={(latest) => {
-           // Optional: check if stuck between grids? Framer usually handles this.
-        }}
-        // Detect settlement to fire onChange
-        onAnimationComplete={() => {
-            const finalY = y.get();
-            const finalIndex = Math.round(-finalY / itemHeight);
-            const actualValue = items[finalIndex % items.length];
-            // Only fire if changed
-            if (actualValue !== value) onChange(actualValue);
+        onDragEnd={() => { isDragging.current = false; }}
+        onDragTransitionEnd={handleSettled} // Fires after drag momentum ends
+        onAnimationComplete={(def) => {
+            // Only handle if it's a programmatic animation (not drag)
+            // But checking definition is hard.
+            // If we aren't dragging, running handleSettled is safe as it checks value
+            if (!isDragging.current) handleSettled();
         }}
         style={{ y }}
         className="flex flex-col items-center py-[60px] will-change-transform"
