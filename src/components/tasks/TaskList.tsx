@@ -27,6 +27,7 @@ import { compareAsc, parseISO, isBefore, isToday, isTomorrow, startOfDay, format
 import { cn } from '@/lib/utils';
 import { useUpdateTask, useReorderTasks } from '@/lib/hooks/useTaskMutations';
 import { useUiStore } from '@/lib/store/uiStore';
+import { useHaptic } from '@/lib/hooks/useHaptic';
 
 interface TaskListProps {
   sortBy?: SortOption;
@@ -42,6 +43,7 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId,
   const updateMutation = useUpdateTask();
   const reorderMutation = useReorderTasks();
   const { setSortBy } = useUiStore();
+  const { trigger } = useHaptic();
   const justDragged = useRef(false);
 
   // Configure sensors with activation constraints to avoid conflicts with swipe
@@ -164,6 +166,10 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId,
     setLocalTasks(processedTasks.active);
   }, [processedTasks.active]);
 
+  const handleDragStart = () => {
+    trigger(50);
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
@@ -173,6 +179,9 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId,
     const newIndex = localTasks.findIndex((task) => task.id === over.id);
 
     if (oldIndex === -1 || newIndex === -1) return;
+
+    // Haptic feedback on successful drop
+    trigger(30);
 
     // Mark as just dragged to skip sync overwrite
     justDragged.current = true;
@@ -222,6 +231,7 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId,
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
         <div className="px-4 md:px-6 space-y-4">
