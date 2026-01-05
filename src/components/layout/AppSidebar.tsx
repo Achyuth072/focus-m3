@@ -233,6 +233,7 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   onClick={() => {
+                    trigger(20);
                     router.push('/settings');
                     setOpenMobile(false);
                   }}

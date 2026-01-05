@@ -101,7 +101,10 @@ export function CreateProjectDialog({ open, onOpenChange }: CreateProjectDialogP
           </div>
 
           <div className="flex justify-end gap-3 pt-4 border-t px-4 sm:px-0 pb-[calc(0.5rem+env(safe-area-inset-bottom))]">
-            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
+            <Button type="button" variant="ghost" onClick={() => {
+              trigger(10);
+              onOpenChange(false);
+            }}>
               Cancel
             </Button>
             <Button type="submit" disabled={!name.trim() || createProject.isPending}>
