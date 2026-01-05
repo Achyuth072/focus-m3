@@ -11,6 +11,7 @@ import { Repeat } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { RecurrenceRule } from "@/lib/utils/recurrence";
 import { formatRecurrenceRule } from "@/lib/utils/recurrence";
+import { useHaptic } from "@/lib/hooks/useHaptic";
 
 interface RecurrencePickerProps {
   value: RecurrenceRule | null;
@@ -50,6 +51,7 @@ export default function RecurrencePicker({
   const isIconVariant = variant === "icon";
   const hasRecurrence = value !== null;
   const badgeLetter = getRecurrenceBadge(value);
+  const { trigger } = useHaptic();
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -95,6 +97,7 @@ export default function RecurrencePicker({
               }
               className="w-full justify-start"
               onClick={() => {
+                trigger(20);
                 onChange(preset.value);
                 setOpen(false);
               }}

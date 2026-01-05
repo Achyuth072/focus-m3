@@ -17,6 +17,7 @@ import {
 import { DateTimeWizard } from "@/components/ui/date-time-wizard";
 import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react";
+import { useHaptic } from "@/lib/hooks/useHaptic";
 
 interface TaskDatePickerProps {
   date: Date | undefined;
@@ -48,6 +49,7 @@ export function TaskDatePicker({
   align = "start",
 }: TaskDatePickerProps) {
   const isCompact = variant === "compact";
+  const { trigger } = useHaptic();
 
   const buttonContent = (
     <div className="flex items-center gap-1.5">
@@ -73,6 +75,7 @@ export function TaskDatePicker({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
+              trigger(15);
               setDate(undefined);
             }}
           >

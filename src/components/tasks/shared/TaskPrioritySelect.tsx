@@ -8,6 +8,7 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
+import { useHaptic } from "@/lib/hooks/useHaptic";
 
 export const priorities: { value: 1 | 2 | 3 | 4; label: string; color: string }[] = [
   { value: 1, label: "P1", color: "bg-red-500 text-white hover:bg-red-600" },
@@ -28,11 +29,15 @@ export function TaskPrioritySelect({
   variant = "icon",
 }: TaskPrioritySelectProps) {
   const isCompact = variant === "compact";
+  const { trigger } = useHaptic();
 
   return (
     <Select
       value={priority.toString()}
-      onValueChange={(v) => setPriority(parseInt(v) as 1 | 2 | 3 | 4)}
+      onValueChange={(v) => {
+        trigger(25);
+        setPriority(parseInt(v) as 1 | 2 | 3 | 4);
+      }}
     >
       <SelectTrigger
         className={cn(

@@ -22,6 +22,7 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
+import { useHaptic } from '@/lib/hooks/useHaptic';
 
 interface DeleteConfirmationDialogProps {
   isOpen: boolean;
@@ -39,9 +40,16 @@ export function DeleteConfirmationDialog({
   description = 'Are you sure you want to delete this task? This action cannot be undone.',
 }: DeleteConfirmationDialogProps) {
   const isDesktop = useMediaQuery('(min-width: 768px)');
+  const { trigger } = useHaptic();
 
   const handleConfirm = () => {
+    trigger(50);
     onConfirm();
+    onClose();
+  };
+
+  const handleCancel = () => {
+    trigger(10);
     onClose();
   };
 
@@ -54,7 +62,7 @@ export function DeleteConfirmationDialog({
             <AlertDialogDescription>{description}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel onClick={handleCancel}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirm}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
@@ -83,7 +91,7 @@ export function DeleteConfirmationDialog({
             Delete
           </Button>
           <DrawerClose asChild>
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full" onClick={handleCancel}>
               Cancel
             </Button>
           </DrawerClose>
