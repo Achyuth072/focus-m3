@@ -48,12 +48,18 @@ export function FocusSettingsDialog() {
 
 
   const handleSave = () => {
+    trigger(40);
     updateSettings({
       focusDuration,
       shortBreakDuration: shortBreak,
       longBreakDuration: longBreak,
       sessionsBeforeLongBreak: sessions,
     });
+    setOpen(false);
+  };
+
+  const handleCancel = () => {
+    trigger(10);
     setOpen(false);
   };
 
@@ -169,7 +175,10 @@ export function FocusSettingsDialog() {
               </div>
               <Switch 
                 checked={hapticsEnabled} 
-                onCheckedChange={setHapticsEnabled} 
+                onCheckedChange={(checked) => {
+                  trigger(15);
+                  setHapticsEnabled(checked);
+                }}
               />
             </div>
           </div>
@@ -203,7 +212,7 @@ export function FocusSettingsDialog() {
           </DialogHeader>
           <SettingsForm />
           <div className="flex justify-end gap-3 pt-4">
-            <Button variant="outline" onClick={() => setOpen(false)}>
+            <Button variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
             <Button onClick={handleSave}>Save Changes</Button>
@@ -241,7 +250,7 @@ export function FocusSettingsDialog() {
         <DrawerFooter className="pt-2">
           <Button onClick={handleSave}>Save Changes</Button>
           <DrawerClose asChild>
-            <Button variant="outline">Cancel</Button>
+            <Button variant="outline" onClick={handleCancel}>Cancel</Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>

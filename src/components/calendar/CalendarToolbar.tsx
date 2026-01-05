@@ -91,7 +91,10 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
       </div>
 
       {/* Right: View Selector */}
-      <Select value={view} onValueChange={(v) => setView(v as CalendarView)}>
+      <Select value={view} onValueChange={(v) => {
+        trigger(25);
+        setView(v as CalendarView);
+      }}>
         <SelectTrigger className="w-[105px] md:w-[140px] h-8 md:h-9 text-xs md:text-sm px-3 font-medium bg-background hover:bg-accent hover:text-accent-foreground transition-colors dark:bg-white/[0.03] dark:border-white/10">
           <SelectValue />
         </SelectTrigger>

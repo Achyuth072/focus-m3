@@ -6,6 +6,7 @@ import { Trash2, Plus } from "lucide-react";
 import { useSubtasks } from "@/lib/hooks/useSubtasks";
 import { useCreateTask, useToggleTask, useDeleteTask } from "@/lib/hooks/useTaskMutations";
 import { cn } from "@/lib/utils";
+import { useHaptic } from "@/lib/hooks/useHaptic";
 
 interface SubtaskListProps {
   taskId?: string;
@@ -25,6 +26,7 @@ export default function SubtaskList({
   const createMutation = useCreateTask();
   const toggleMutation = useToggleTask();
   const deleteMutation = useDeleteTask();
+  const { trigger } = useHaptic();
 
   const isDraftMode = !taskId;
 
@@ -91,6 +93,7 @@ export default function SubtaskList({
                 checked={isCompleted}
                 onCheckedChange={(checked) => {
                   if (!isDraftMode && typeof item !== 'string') {
+                    trigger(20);
                     toggleMutation.mutate({ id: item.id, is_completed: checked as boolean });
                   }
                 }}
