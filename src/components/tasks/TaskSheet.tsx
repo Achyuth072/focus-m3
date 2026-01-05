@@ -26,6 +26,7 @@ interface TaskSheetProps {
   onClose: () => void;
   initialTask?: Task | null;
   initialDate?: Date | null;
+  initialContent?: string;
 }
 
 export default function TaskSheet({
@@ -33,6 +34,7 @@ export default function TaskSheet({
   onClose,
   initialTask,
   initialDate,
+  initialContent,
 }: TaskSheetProps) {
   // Preserve initialTask during close animation to prevent flicker to Create mode
   const staleTaskRef = useRef<Task | null | undefined>(initialTask);
@@ -87,7 +89,7 @@ export default function TaskSheet({
         setSelectedProjectId(initialTask.project_id);
         setIsPreviewMode(!!initialTask.description);
       } else {
-        setContent("");
+        setContent(initialContent || "");
         setDescription("");
         setDueDate(initialDate ?? undefined);
         setDoDate(undefined);
@@ -100,7 +102,7 @@ export default function TaskSheet({
         setShowSubtasks(false);
       }
     }
-  }, [open, initialTask, initialDate]);
+  }, [open, initialTask, initialDate, initialContent]);
 
   // Handlers
   const handleSubmit = () => {
