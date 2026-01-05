@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useTasks } from '@/lib/hooks/useTasks';
 import { format, isToday, isYesterday, parseISO, startOfWeek, isAfter } from 'date-fns';
-import { CheckCircle2, Clock, X, Trash2 } from 'lucide-react';
+import { CheckCircle2, Clock, X, Trash2, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Task } from '@/lib/types/task';
 import { useUpdateTask, useClearCompletedTasks } from '@/lib/hooks/useTaskMutations';
@@ -12,6 +12,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from '@
 import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
 import { Button } from '@/components/ui/button';
 import { DeleteConfirmationDialog } from '@/components/ui/DeleteConfirmationDialog';
+import { Input } from '@/components/ui/input';
 import { useHaptic } from '@/lib/hooks/useHaptic';
 
 interface CompletedTasksSheetProps {
@@ -90,7 +91,9 @@ function TaskGroup({ title, tasks }: { title: string; tasks: Task[] }) {
 
   return (
     <div className="space-y-0">
-      <h3 className="text-sm font-semibold text-muted-foreground px-4 py-3 bg-secondary/20">{title}</h3>
+      <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground/60 px-6 py-3 border-b border-border/40">
+        {title}
+      </h3>
       <div className="space-y-0">
         {tasks.map((task) => (
           <CompletedTaskItem key={task.id} task={task} />
@@ -105,10 +108,19 @@ export function CompletedTasksSheet({ open, onOpenChange }: CompletedTasksSheetP
   const isDesktop = useMediaQuery('(min-width: 768px)');
   const clearMutation = useClearCompletedTasks();
   const [showClearDialog, setShowClearDialog] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const { trigger } = useHaptic();
 
   const completedTasks = tasks.filter((task) => task.is_completed);
-  const { today, yesterday, thisWeek, older } = groupTasksByDate(completedTasks);
+  
+  const filteredCompletedTasks = completedTasks.filter((task) => 
+    task.content.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const { today, yesterday, thisWeek, older } = groupTasksByDate(filteredCompletedTasks);
+
+  const isSearching = searchQuery.length > 0;
+  const hasResults = filteredCompletedTasks.length > 0;
 
   const handleClearHistory = () => {
     // Close dialogs immediately for instant feedback
@@ -133,8 +145,16 @@ export function CompletedTasksSheet({ open, onOpenChange }: CompletedTasksSheetP
             Tasks you complete will appear here. Start checking off items from your task list!
           </p>
         </div>
+      ) : !hasResults && isSearching ? (
+        <div className="flex flex-col items-center justify-center py-12 text-center px-4">
+          <Search className="h-12 w-12 text-muted-foreground/30 mb-4" />
+          <h2 className="text-lg font-medium mb-1">No tasks found</h2>
+          <p className="text-sm text-muted-foreground">
+            Try searching for something else
+          </p>
+        </div>
       ) : (
-        <div className="space-y-0 pt-2 pb-8">
+        <div className="space-y-0 pb-8">
           <TaskGroup title="Today" tasks={today} />
           <TaskGroup title="Yesterday" tasks={yesterday} />
           <TaskGroup title="This Week" tasks={thisWeek} />
@@ -147,27 +167,43 @@ export function CompletedTasksSheet({ open, onOpenChange }: CompletedTasksSheetP
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-lg max-h-[80vh] flex flex-col">
-          <DialogHeader className="flex-row items-center justify-between space-y-0 pr-12">
-            <DialogTitle className="flex items-center gap-2">
-              <CheckCircle2 className="h-5 w-5 text-green-500" />
-              Completed Tasks
+        <DialogContent className="max-w-lg max-h-[80vh] flex flex-col p-0 overflow-hidden border-border bg-background">
+          <DialogHeader className="flex-row items-center justify-between space-y-0 px-6 py-4 border-b border-border/50">
+            <DialogTitle className="flex items-center gap-2 cursor-default">
+              <CheckCircle2 className="h-4 w-4 text-green-500" />
+              <span className="text-lg font-semibold tracking-tight">Logbook</span>
             </DialogTitle>
-            {completedTasks.length > 0 && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  trigger(50);
-                  setShowClearDialog(true);
-                }}
-                className="gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-              >
-                <Trash2 className="h-4 w-4" />
-                Clear History
-              </Button>
-            )}
+            <div className="flex items-center gap-2 pr-8">
+              {completedTasks.length > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    trigger(50);
+                    setShowClearDialog(true);
+                  }}
+                  className="h-8 gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all rounded-sm"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  <span className="text-xs">Clear History</span>
+                </Button>
+              )}
+            </div>
           </DialogHeader>
+          
+          {completedTasks.length > 0 && (
+            <div className="px-6 py-3 border-b border-border/40 bg-secondary/5">
+              <div className="relative group">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
+                <Input
+                  className="pl-9 bg-secondary/20 border-border/40 focus:border-border/60 focus:bg-secondary/30 h-9 text-sm transition-all placeholder:text-muted-foreground/40"
+                  placeholder="Search completed tasks..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+            </div>
+          )}
           <div className="overflow-y-auto flex-1">
             {content}
           </div>
@@ -188,27 +224,41 @@ export function CompletedTasksSheet({ open, onOpenChange }: CompletedTasksSheetP
     <>
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerContent className="max-h-[90vh] flex flex-col">
-          <div className="flex flex-row items-center justify-between border-b px-6 py-4">
+          <div className="flex flex-row items-center justify-between border-b border-border px-6 py-4">
             <DrawerTitle className="flex items-center gap-2 text-base font-semibold">
               <CheckCircle2 className="h-5 w-5 text-green-500" />
-              Completed Tasks
+              Logbook
             </DrawerTitle>
             <div className="flex items-center gap-2">
               {completedTasks.length > 0 && (
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                  className="h-10 w-10 text-muted-foreground active:bg-destructive/10 active:text-destructive active:scale-95 transition-all rounded-md"
                   onClick={() => {
                     trigger(50);
                     setShowClearDialog(true);
                   }}
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-5 w-5" />
                 </Button>
               )}
             </div>
           </div>
+
+          {completedTasks.length > 0 && (
+            <div className="px-6 py-4 border-b border-border/40 bg-secondary/5">
+              <div className="relative">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/40" />
+                <Input
+                  className="pl-11 bg-secondary/20 h-12 text-base shadow-none border-border/30 focus:border-border/60 focus:bg-secondary/30 rounded-xl transition-all"
+                  placeholder="Search completed tasks..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+            </div>
+          )}
           <div className="overflow-y-auto flex-1">
             {content}
           </div>
