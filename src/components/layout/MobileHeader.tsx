@@ -85,14 +85,20 @@ export function MobileHeader() {
           <DropdownMenuContent align="end">
             {isTasksPage && (
               <>
-                <DropdownMenuItem onClick={openSheet}>
+                <DropdownMenuItem onClick={() => {
+                  trigger(20);
+                  openSheet();
+                }}>
                   <CheckCircle2 className="h-4 w-4 mr-2" />
                   Completed Tasks
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
               </>
             )}
-            <DropdownMenuItem onClick={() => router.push('/settings')}>
+            <DropdownMenuItem onClick={() => {
+              trigger(20);
+              router.push('/settings');
+            }}>
               <SettingsIcon className="h-4 w-4 mr-2" />
               Settings
             </DropdownMenuItem>

@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
+import { useHaptic } from "@/lib/hooks/useHaptic"
 import {
   Sheet,
   SheetContent,
@@ -270,6 +271,7 @@ const SidebarTrigger = React.forwardRef<
   React.ComponentProps<typeof Button>
 >(({ className, onClick, ...props }, ref) => {
   const { toggleSidebar } = useSidebar()
+  const { trigger } = useHaptic()
 
   return (
     <Button
@@ -279,6 +281,7 @@ const SidebarTrigger = React.forwardRef<
       size="icon"
       className={cn("h-7 w-7", className)}
       onClick={(event) => {
+        trigger(20)
         onClick?.(event)
         toggleSidebar()
       }}

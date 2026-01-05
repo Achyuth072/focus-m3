@@ -12,6 +12,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from '@
 import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
 import { Button } from '@/components/ui/button';
 import { DeleteConfirmationDialog } from '@/components/ui/DeleteConfirmationDialog';
+import { useHaptic } from '@/lib/hooks/useHaptic';
 
 interface CompletedTasksSheetProps {
   open: boolean;
@@ -104,6 +105,7 @@ export function CompletedTasksSheet({ open, onOpenChange }: CompletedTasksSheetP
   const isDesktop = useMediaQuery('(min-width: 768px)');
   const clearMutation = useClearCompletedTasks();
   const [showClearDialog, setShowClearDialog] = useState(false);
+  const { trigger } = useHaptic();
 
   const completedTasks = tasks.filter((task) => task.is_completed);
   const { today, yesterday, thisWeek, older } = groupTasksByDate(completedTasks);
@@ -155,7 +157,10 @@ export function CompletedTasksSheet({ open, onOpenChange }: CompletedTasksSheetP
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setShowClearDialog(true)}
+                onClick={() => {
+                  trigger(50);
+                  setShowClearDialog(true);
+                }}
                 className="gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
               >
                 <Trash2 className="h-4 w-4" />
@@ -194,7 +199,10 @@ export function CompletedTasksSheet({ open, onOpenChange }: CompletedTasksSheetP
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                  onClick={() => setShowClearDialog(true)}
+                  onClick={() => {
+                    trigger(50);
+                    setShowClearDialog(true);
+                  }}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
