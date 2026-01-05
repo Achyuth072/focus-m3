@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import TaskSheet from '@/components/tasks/TaskSheet';
 
-export default function SharePage() {
+function SharePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
@@ -53,5 +53,13 @@ export default function SharePage() {
         initialContent={sharedContent}
       />
     </div>
+  );
+}
+
+export default function SharePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+      <SharePageContent />
+    </Suspense>
   );
 }
