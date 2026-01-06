@@ -17,7 +17,7 @@ export default function StatsPage() {
 
   if (isLoading) {
     return (
-      <div className="h-full overflow-auto p-6">
+      <div className="p-6">
         <div className="max-w-7xl mx-auto space-y-6">
           <Skeleton className="h-8 w-48" />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -35,7 +35,7 @@ export default function StatsPage() {
   const focusTrendData = stats?.dailyTrend || [];
 
   return (
-    <div className="h-full overflow-auto p-6">
+    <div className="p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div>

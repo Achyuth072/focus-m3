@@ -63,45 +63,51 @@ function AppShellContent({ children }: AppShellProps) {
         {!isFocus && <AppSidebar />}
         
         {/* Main Content with proper inset */}
-        <SidebarInset>
+        <SidebarInset className="relative">
+          <AnimatePresence>
+            {isGuestMode && showBanner && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+                className={cn(
+                  "fixed z-30 pointer-events-none flex justify-center",
+                  "left-0 right-0 px-4 top-[72px]", // Mobile: Floating comfortably below header
+                  "md:left-[var(--sidebar-width)] md:px-0 md:top-4 md:right-6 md:justify-end" // Desktop: Floating top-right banner
+                )}
+              >
+                <div className="pointer-events-auto flex items-center justify-between w-full max-w-[500px] md:w-[350px] bg-sidebar border border-border text-foreground text-[13px] font-medium py-2.5 px-4 rounded-xl shadow-2xl shadow-black/5 backdrop-blur-md">
+                  <div className="flex items-center gap-3">
+                    <div className="flex-shrink-0 w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.3)]" />
+                    <div className="flex flex-col leading-tight">
+                      <span className="font-semibold tracking-tight">Guest Mode</span>
+                      <span className="text-[11px] text-muted-foreground font-normal">Data stored locally on this device</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={dismissBanner}
+                    className="p-1.5 hover:bg-accent rounded-lg transition-colors flex-shrink-0 cursor-pointer text-muted-foreground hover:text-foreground"
+                    aria-label="Dismiss banner"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <div className={cn(
             "flex-1 overflow-y-auto overflow-x-hidden scrollbar-hide md:pt-0 md:pb-0",
             !hideMobileNav && "pt-16"
           )}>
             {children}
-            {!hideMobileNav && pathname !== '/calendar' && <div className="h-32 w-full flex-none" aria-hidden="true" />}
+            {!hideMobileNav && pathname === '/' && <div className="h-32 w-full flex-none" aria-hidden="true" />}
+            {!hideMobileNav && pathname !== '/' && pathname !== '/calendar' && <div className="h-20 w-full flex-none" aria-hidden="true" />}
           </div>
         </SidebarInset>
-
-        {/* Floating Guest Mode Banner - overlays content, no layout shift */}
-        <AnimatePresence>
-          {isGuestMode && showBanner && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.15, ease: 'easeOut' }}
-              className={cn(
-                "fixed left-0 right-0 z-40 flex justify-center pointer-events-none",
-                !hideMobileNav ? "top-[68px]" : "top-2",
-                "md:top-2 md:left-auto md:right-4"
-              )}
-            >
-              <div className="pointer-events-auto bg-blue-500/95 dark:bg-blue-600/95 text-white text-xs font-medium py-1.5 px-4 rounded-full shadow-lg backdrop-blur-sm flex items-center gap-2">
-                <span>Guest Mode • Browser data only</span>
-                <button
-                  onClick={dismissBanner}
-                  className="p-0.5 hover:bg-white/20 rounded-full transition-colors"
-                  aria-label="Dismiss banner"
-                >
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* Mobile Bottom Nav - hidden on Focus and Settings pages */}
         {!hideMobileNav && <MobileNav />}
