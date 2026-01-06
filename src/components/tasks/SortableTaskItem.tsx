@@ -17,7 +17,6 @@ export default function SortableTaskItem({ task, onClick, isKeyboardSelected }: 
     listeners,
     setNodeRef,
     transform,
-    transition,
     isDragging,
   } = useSortable({ id: task.id });
 

@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ListChecks, Save, Trash2, Inbox, Moon, Calendar as CalendarIcon, CalendarClock } from "lucide-react";
+import { ListChecks, Save, Trash2, Inbox, Moon, CalendarClock } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { cn } from "@/lib/utils";

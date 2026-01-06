@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { motion, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DeleteConfirmationDialog } from "@/components/ui/DeleteConfirmationDialog";
-import { useUpdateTask, useDeleteTask, useToggleTask } from "@/lib/hooks/useTaskMutations";
+import { useDeleteTask, useToggleTask } from "@/lib/hooks/useTaskMutations";
 import { format, isToday, isTomorrow, isPast, parseISO } from "date-fns";
 import {
   Calendar,
@@ -24,13 +24,7 @@ import SubtaskList from "./SubtaskList";
 import { Button } from "@/components/ui/button";
 import { useProject } from "@/lib/hooks/useProjects";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+
 import { useRouter } from 'next/navigation';
 import { useTimer } from "@/components/TimerProvider";
 import { useHaptic } from "@/lib/hooks/useHaptic";
@@ -38,7 +32,9 @@ import { useHaptic } from "@/lib/hooks/useHaptic";
 interface TaskItemProps {
   task: Task;
   onClick?: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dragListeners?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dragAttributes?: any;
   isDragging?: boolean;
   isKeyboardSelected?: boolean;
@@ -69,14 +65,14 @@ function TaskItem({ task, onClick, dragListeners, dragAttributes, isDragging = f
   const [isSwipeDragging, setIsSwipeDragging] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const updateMutation = useUpdateTask();
+
   const deleteMutation = useDeleteTask();
   const toggleMutation = useToggleTask();
   const { data: project } = useProject(task.project_id);
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const { start } = useTimer();
   const router = useRouter();
-  const { trigger, isPhone } = useHaptic();
+  const { trigger } = useHaptic();
 
   const handlePlayFocus = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -196,7 +192,7 @@ function TaskItem({ task, onClick, dragListeners, dragAttributes, isDragging = f
             isChecking && "opacity-50",
             isKeyboardSelected && "ring-2 ring-primary bg-secondary/40 z-10"
           )}
-          onClick={(e) => {
+          onClick={() => {
             // Only trigger onClick if we're not dragging
             if (!isSwipeDragging && onClick) {
               onClick();

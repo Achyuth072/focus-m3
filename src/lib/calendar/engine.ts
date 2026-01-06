@@ -37,33 +37,9 @@ function clampToDay(event: CalendarEvent, day: Date): CalendarEvent {
 }
 
 /**
- * Check if two events overlap in time
- */
-function eventsOverlap(a: CalendarEvent, b: CalendarEvent): boolean {
-  return a.start < b.end && b.start < a.end;
-}
-
-/**
  * Group overlapping events together
  * This is critical for calculating column widths
  */
-function groupOverlappingEvents(events: CalendarEvent[]): CalendarEvent[][] {
-  const groups: CalendarEvent[][] = [];
-
-  events.forEach((event) => {
-    let placed = false;
-    for (const group of groups) {
-      if (group.some((e) => eventsOverlap(e, event))) {
-        group.push(event);
-        placed = true;
-        break;
-      }
-    }
-    if (!placed) groups.push([event]);
-  });
-
-  return groups;
-}
 
 /**
  * Position events for a single day
@@ -98,7 +74,7 @@ export function layoutDayEvents(
   });
 
   // Process each hour group
-  Object.entries(hourGroups).forEach(([hourStr, groupEvents]) => {
+  Object.entries(hourGroups).forEach(([_hourStr, groupEvents]) => {
     const count = groupEvents.length;
     // Calculate height: fit in slot, but clamp between min and max
     const height = Math.min(

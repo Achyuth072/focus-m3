@@ -12,7 +12,6 @@ import {
   PlusIcon,
   SettingsIcon,
   SunIcon,
-  TargetIcon,
   HashIcon,
   CheckCircle2,
   Columns,

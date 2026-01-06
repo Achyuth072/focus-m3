@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React from "react";
 import { cn } from "@/lib/utils";
-import { useHaptic } from "@/lib/hooks/useHaptic";
+
 import { DrumPicker } from "./drum-picker";
 
 interface LargeTimePickerProps {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useHotkeys } from 'react-hotkeys-hook';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { useSidebar } from '@/components/ui/sidebar';
 import { useTaskActions } from '@/components/TaskActionsProvider';

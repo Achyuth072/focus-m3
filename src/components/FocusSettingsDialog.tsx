@@ -30,37 +30,27 @@ import { Slider } from '@/components/ui/slider';
 import { Input } from '@/components/ui/input';
 import { useTimer } from '@/components/TimerProvider';
 
-export function FocusSettingsDialog() {
-  const { settings, updateSettings } = useTimer();
-  const { trigger, isPhone } = useHaptic();
-  const [open, setOpen] = useState(false);
-  const isDesktop = useMediaQuery("(min-width: 768px)");
-
-  // Local state for form
-  const [focusDuration, setFocusDuration] = useState(settings.focusDuration);
-  const [shortBreak, setShortBreak] = useState(settings.shortBreakDuration);
-  const [longBreak, setLongBreak] = useState(settings.longBreakDuration);
-  const [sessions, setSessions] = useState(settings.sessionsBeforeLongBreak);
-
-
-
-  const handleSave = () => {
-    trigger(40);
-    updateSettings({
-      focusDuration,
-      shortBreakDuration: shortBreak,
-      longBreakDuration: longBreak,
-      sessionsBeforeLongBreak: sessions,
-    });
-    setOpen(false);
-  };
-
-  const handleCancel = () => {
-    trigger(10);
-    setOpen(false);
-  };
-
-  const SettingsForm = () => (
+// Extracted settings form component to prevent recreation on every render
+function SettingsForm({
+  focusDuration,
+  setFocusDuration,
+  shortBreak,
+  setShortBreak,
+  longBreak,
+  setLongBreak,
+  sessions,
+  setSessions
+}: {
+  focusDuration: number;
+  setFocusDuration: (value: number) => void;
+  shortBreak: number;
+  setShortBreak: (value: number) => void;
+  longBreak: number;
+  setLongBreak: (value: number) => void;
+  sessions: number;
+  setSessions: (value: number) => void;
+}) {
+  return (
     <div className="space-y-6 py-4">
       {/* Focus Duration */}
       <div className="space-y-3">
@@ -164,6 +154,39 @@ export function FocusSettingsDialog() {
       </div>
     </div>
   );
+}
+
+export function FocusSettingsDialog() {
+  const { settings, updateSettings } = useTimer();
+  const { trigger, isPhone } = useHaptic();
+  const [open, setOpen] = useState(false);
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+
+  // Local state for form
+  const [focusDuration, setFocusDuration] = useState(settings.focusDuration);
+  const [shortBreak, setShortBreak] = useState(settings.shortBreakDuration);
+  const [longBreak, setLongBreak] = useState(settings.longBreakDuration);
+  const [sessions, setSessions] = useState(settings.sessionsBeforeLongBreak);
+
+
+
+  const handleSave = () => {
+    trigger(40);
+    updateSettings({
+      focusDuration,
+      shortBreakDuration: shortBreak,
+      longBreakDuration: longBreak,
+      sessionsBeforeLongBreak: sessions,
+    });
+    setOpen(false);
+  };
+
+  const handleCancel = () => {
+    trigger(10);
+    setOpen(false);
+  };
+
+
 
   if (isDesktop) {
     return (
@@ -188,7 +211,16 @@ export function FocusSettingsDialog() {
               Customize your focus and break durations
             </DialogDescription>
           </DialogHeader>
-          <SettingsForm />
+          <SettingsForm 
+            focusDuration={focusDuration}
+            setFocusDuration={setFocusDuration}
+            shortBreak={shortBreak}
+            setShortBreak={setShortBreak}
+            longBreak={longBreak}
+            setLongBreak={setLongBreak}
+            sessions={sessions}
+            setSessions={setSessions}
+          />
           <div className="flex justify-end gap-3 pt-4">
             <Button variant="outline" onClick={handleCancel}>
               Cancel
@@ -223,7 +255,16 @@ export function FocusSettingsDialog() {
           </DrawerDescription>
         </DrawerHeader>
         <div className="px-4">
-          <SettingsForm />
+          <SettingsForm 
+            focusDuration={focusDuration}
+            setFocusDuration={setFocusDuration}
+            shortBreak={shortBreak}
+            setShortBreak={setShortBreak}
+            longBreak={longBreak}
+            setLongBreak={setLongBreak}
+            sessions={sessions}
+            setSessions={setSessions}
+          />
         </div>
         <DrawerFooter className="pt-2">
           <Button onClick={handleSave}>Save Changes</Button>

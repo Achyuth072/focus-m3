@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { LoaderOverlay } from '@/components/ui/loader-overlay';
 import { Moon, Sun, Monitor, LogOut, User, Loader2, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { createClient } from '@/lib/supabase/client';
+
 import { useRouter } from 'next/navigation';
 import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
 import { SignOutConfirmation } from '@/components/auth/SignOutConfirmation';
@@ -21,7 +21,7 @@ export default function SettingsPage() {
   const { hapticsEnabled, setHapticsEnabled } = useUiStore();
   const { user, signOut } = useAuth();
   const router = useRouter();
-  const supabase = createClient();
+
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
   const [activeTab, setActiveTab] = useState<'appearance' | 'account'>('appearance');

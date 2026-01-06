@@ -1,7 +1,8 @@
 "use client";
 
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import type { TimerMode, TimerState, TimerSettings } from "@/lib/types/timer";
 import {

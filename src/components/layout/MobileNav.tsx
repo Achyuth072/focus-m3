@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { CheckSquare, Calendar, BarChart3, Timer, Settings } from 'lucide-react';
+import { CheckSquare, Calendar, BarChart3 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useHaptic } from '@/lib/hooks/useHaptic';
 import { cn } from '@/lib/utils';

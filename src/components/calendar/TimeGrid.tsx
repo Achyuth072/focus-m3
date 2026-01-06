@@ -6,7 +6,6 @@ import { cn } from '@/lib/utils';
 import { getDayRange, layoutDayRange } from '@/lib/calendar/engine';
 import type { CalendarEvent } from '@/lib/calendar/types';
 
-const PIXELS_PER_MINUTE = 2;
 const HOUR_HEIGHT = 120; // 60 minutes * 2 pixels
 
 interface TimeGridProps {

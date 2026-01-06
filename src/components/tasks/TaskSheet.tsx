@@ -1,6 +1,7 @@
 "use client";
+/* eslint-disable react-hooks/set-state-in-effect */
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   ResponsiveDialog,
   ResponsiveDialogContent,
@@ -14,7 +15,7 @@ import {
 import { useInboxProject } from "@/lib/hooks/useTasks";
 import { useProjects } from "@/lib/hooks/useProjects";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
-import { cn } from "@/lib/utils";
+
 import type { Task } from "@/lib/types/task";
 import type { RecurrenceRule } from "@/lib/utils/recurrence";
 import { TaskCreateView } from "./TaskCreateView";
@@ -37,17 +38,17 @@ export default function TaskSheet({
   initialContent,
 }: TaskSheetProps) {
   // Preserve initialTask during close animation to prevent flicker to Create mode
-  const staleTaskRef = useRef<Task | null | undefined>(initialTask);
+  const [preservedTask, setPreservedTask] = useState<Task | null | undefined>(initialTask);
   
-  // Update ref only when dialog opens with a new task
+  // Update preserved task only when dialog opens with a new task
   useEffect(() => {
     if (open && initialTask !== undefined) {
-      staleTaskRef.current = initialTask;
+      setPreservedTask(initialTask);
     }
   }, [open, initialTask]);
 
   // Use the preserved task for rendering during close animation
-  const effectiveTask = open ? initialTask : staleTaskRef.current;
+  const effectiveTask = open ? initialTask : preservedTask;
 
   // Form State
   const [content, setContent] = useState("");

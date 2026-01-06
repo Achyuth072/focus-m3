@@ -1,6 +1,8 @@
 'use client';
+/* eslint-disable react-hooks/set-state-in-effect */
 
-import { useState, useMemo, useRef } from 'react';
+  import { useState, useMemo, useRef, useEffect } from 'react';
+
 import {
   DndContext,
   closestCenter,
@@ -23,9 +25,8 @@ import SortableTaskItem from './SortableTaskItem';
 import TaskSheet from './TaskSheet';
 import type { Task } from '@/lib/types/task';
 import { SortOption, GroupOption } from '@/lib/types/sorting';
-import { compareAsc, parseISO, isBefore, isToday, isTomorrow, startOfDay, format } from 'date-fns';
-import { cn } from '@/lib/utils';
-import { useUpdateTask, useReorderTasks, useDeleteTask, useToggleTask } from '@/lib/hooks/useTaskMutations';
+import { compareAsc, parseISO, isBefore, isToday, isTomorrow, startOfDay } from 'date-fns';
+import { useReorderTasks, useDeleteTask, useToggleTask } from '@/lib/hooks/useTaskMutations';
 import { useUiStore } from '@/lib/store/uiStore';
 import { useHaptic } from '@/lib/hooks/useHaptic';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -43,7 +44,6 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId,
   const [localTasks, setLocalTasks] = useState<Task[]>([]);
   const [keyboardSelectedId, setKeyboardSelectedId] = useState<string | null>(null);
   
-  const updateMutation = useUpdateTask();
   const reorderMutation = useReorderTasks();
   const deleteMutation = useDeleteTask();
   const toggleMutation = useToggleTask();
@@ -163,7 +163,7 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId,
   }, [tasks, sortBy, groupBy]);
 
   // Sync local tasks with processed tasks (skip if just dragged)
-  useMemo(() => {
+  useEffect(() => {
     if (justDragged.current) {
       justDragged.current = false;
       return; // Skip sync - keep optimistic order
@@ -208,7 +208,7 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId,
   // --- Keyboard Navigation ---
 
   const navigableTasks = useMemo(() => {
-    let list: Task[] = [];
+    const list: Task[] = [];
     if (processedTasks.groups) {
       processedTasks.groups.forEach(g => list.push(...g.tasks));
     } else {

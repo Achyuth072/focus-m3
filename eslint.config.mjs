@@ -12,7 +12,22 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Ignore generated service worker
+    "public/sw.js",
   ]),
+  // Custom rule overrides
+  {
+    rules: {
+      // Allow underscore-prefixed unused variables (common pattern for intentionally unused params)
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+        },
+      ],
+    },
+  },
 ]);
 
 export default eslintConfig;

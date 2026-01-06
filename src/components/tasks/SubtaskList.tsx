@@ -22,7 +22,7 @@ export default function SubtaskList({
   onDraftSubtasksChange
 }: SubtaskListProps) {
   const [newSubtaskContent, setNewSubtaskContent] = useState("");
-  const { data: subtasks, isLoading } = useSubtasks(taskId || null);
+  const { data: subtasks } = useSubtasks(taskId || null);
   const createMutation = useCreateTask();
   const toggleMutation = useToggleTask();
   const deleteMutation = useDeleteTask();
@@ -112,7 +112,7 @@ export default function SubtaskList({
                 variant="ghost"
                 size="icon"
                 className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-                onClick={() => handleDeleteSubtask(isDraftMode ? index : (item as any).id)}
+                onClick={() => handleDeleteSubtask(isDraftMode ? index : (item as { id: string }).id)}
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </Button>

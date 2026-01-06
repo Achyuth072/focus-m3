@@ -31,12 +31,20 @@ export function useCalendarEvents() {
     },
   });
 
+  // Define the shape of the data returned by Supabase
+  type CalendarTaskData = {
+    id: string;
+    content: string;
+    due_date: string; // Supabase returns dates as strings
+    project_id: string | null;
+    projects: { color: string } | { color: string }[] | null;
+  };
+
   // Memoize the transformation to prevent recalculating on every render
   const calendarEvents = useMemo(() => {
     if (!tasks) return [];
 
-    return tasks.map((t: any) => {
-      const task = t;
+    return (tasks as unknown as CalendarTaskData[]).map((task) => {
       const startDate = new Date(task.due_date);
       const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
 

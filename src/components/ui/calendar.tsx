@@ -4,7 +4,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "lucide-react"
-import { DayButton, DayPicker, getDefaultClassNames } from "react-day-picker"
+import { DayButton, DayPicker, getDefaultClassNames, type DropdownProps } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
@@ -170,8 +170,8 @@ function Calendar({
             </td>
           )
         },
-        Dropdown: ({ value, onChange, options, ...props }: any) => {
-          const selected = options?.find((opt: any) => opt.value?.toString() === value?.toString())
+        Dropdown: ({ value, onChange, options }: DropdownProps) => {
+          const selected = options?.find((opt) => opt.value?.toString() === value?.toString())
           const handleChange = (newValue: string) => {
             const changeEvent = {
               target: { value: newValue },
@@ -187,7 +187,7 @@ function Calendar({
                 <SelectValue>{selected?.label ?? value}</SelectValue>
               </SelectTrigger>
               <SelectContent position="popper">
-                {options?.map((opt: any, id: number) => (
+                {options?.map((opt, id: number) => (
                   <SelectItem 
                     key={`${opt.value}-${id}`} 
                     value={opt.value?.toString() ?? ""}

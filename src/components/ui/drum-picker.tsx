@@ -1,13 +1,11 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   motion,
   useMotionValue,
-  useSpring,
   useTransform,
   animate,
-  PanInfo,
 } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useHaptic } from "@/lib/hooks/useHaptic";
@@ -69,8 +67,6 @@ export function DrumPicker({
   useEffect(() => {
     return y.on("change", (v) => {
       // Infinite Loop Check
-      const minPos = -((bufferCount - 1) * items.length * itemHeight);
-      const maxPos = -(items.length * itemHeight);
       
       // Safety check for NaN or Infinity which causes blanking
       if (!Number.isFinite(v)) {
@@ -93,7 +89,7 @@ export function DrumPicker({
         }
       }
     });
-  }, [itemHeight, trigger, bufferCount, items.length, y]);
+  }, [itemHeight, trigger, bufferCount, items.length, y, initialIndex]);
 
   // Handle final selection when animation/momentum settles
   const handleSettled = () => {
@@ -162,64 +158,87 @@ export function DrumPicker({
             isMomentum.current = true; // Start momentum tracking
         }}
         onDragTransitionEnd={handleSettled} // Fires after drag momentum ends
-        onAnimationComplete={(def) => {
+        onAnimationComplete={() => {
             // Only handle if it's a programmatic animation (not drag/momentum)
             if (!isDragging.current && !isMomentum.current) handleSettled();
         }}
         style={{ y }}
         className="flex flex-col items-center py-[60px] will-change-transform"
       >
-        {Array.from({ length: totalItems }).map((_, i) => {
-          const item = items[i % items.length];
-          // Determine distance from center for this item
-          const relativeY = useTransform(y, (latestY) => {
-            const itemPos = i * itemHeight;
-            return itemPos + latestY;
-          });
-          
-          const rotationX = useTransform(relativeY, (val) => {
-             const angle = (val / (height / 2)) * -40;
-             return Math.max(-90, Math.min(90, angle));
-          });
-
-          const opacity = useTransform(relativeY, (val) => {
-             return 1 - Math.abs(val) / (height * 0.8);
-          });
-          
-          const scale = useTransform(relativeY, (val) => {
-             const dist = Math.abs(val);
-             // Scale up center item
-             return 1 - (dist / height) * 0.3; 
-          });
-
-          const color = useTransform(relativeY, (val) => {
-             if (Math.abs(val) < itemHeight / 2) return "var(--primary)"; // Active color
-             return "var(--muted-foreground)"; // Inactive
-          });
-          
-          const fontWeight = useTransform(relativeY, (val) => {
-             if (Math.abs(val) < itemHeight / 2) return 600;
-             return 400;
-          });
-
-          return (
-            <motion.div
-              key={i}
-              style={{ 
-                height: itemHeight,
-                rotateX: rotationX,
-                opacity,
-                scale,
-                color,
-                fontWeight, // Does framer support font-weight interpolation? Yes if numeric.
-              }}
-              className="w-full flex items-center justify-center tabular-nums backface-invisible text-lg" // Default base styles
-            >
-              {item}
-            </motion.div>
-          );
-        })}
+        {Array.from({ length: totalItems }).map((_, i) => (
+          <DrumItem
+            key={i}
+            item={items[i % items.length]}
+            index={i}
+            y={y}
+            itemHeight={itemHeight}
+            height={height}
+          />
+        ))}
       </motion.div>
     </div>
   );
 }
+
+function DrumItem({
+  item,
+  index,
+  y,
+  itemHeight,
+  height,
+}: {
+  item: string;
+  index: number;
+  y: import("framer-motion").MotionValue<number>;
+  itemHeight: number;
+  height: number;
+}) {
+  // Determine distance from center for this item
+  const relativeY = useTransform(y, (latestY) => {
+    const itemPos = index * itemHeight;
+    return itemPos + latestY;
+  });
+
+  const rotationX = useTransform(relativeY, (val) => {
+    const angle = (val / (height / 2)) * -40;
+    return Math.max(-90, Math.min(90, angle));
+  });
+
+  const opacity = useTransform(relativeY, (val) => {
+    return 1 - Math.abs(val) / (height * 0.8);
+  });
+
+  const scale = useTransform(relativeY, (val) => {
+    const dist = Math.abs(val);
+    // Scale up center item
+    return 1 - (dist / height) * 0.3;
+  });
+
+  const color = useTransform(relativeY, (val) => {
+    if (Math.abs(val) < itemHeight / 2) return "var(--primary)"; // Active color
+    return "var(--muted-foreground)"; // Inactive
+  });
+
+  const fontWeight = useTransform(relativeY, (val) => {
+    if (Math.abs(val) < itemHeight / 2) return 600;
+    return 400;
+  });
+
+  return (
+    <motion.div
+      style={{
+        height: itemHeight,
+        rotateX: rotationX,
+        opacity,
+        scale,
+        color,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        fontWeight: fontWeight as any, // Cast to any to avoid type complaints with numeric font weights in framer
+      }}
+      className="w-full flex items-center justify-center tabular-nums backface-invisible text-lg" // Default base styles
+    >
+      {item}
+    </motion.div>
+  );
+}
+

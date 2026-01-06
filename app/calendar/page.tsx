@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { startOfWeek, startOfMonth, startOfYear } from 'date-fns';
+import { startOfWeek } from 'date-fns';
 import { useCalendarStore } from '@/lib/calendar/store';
 import { CalendarToolbar } from '@/components/calendar/CalendarToolbar';
 import { TimeGrid } from '@/components/calendar/TimeGrid';

@@ -3,12 +3,12 @@
 import React, { useState } from 'react';
 import { useTasks } from '@/lib/hooks/useTasks';
 import { format, isToday, isYesterday, parseISO, startOfWeek, isAfter } from 'date-fns';
-import { CheckCircle2, Clock, X, Trash2, Search } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { CheckCircle2, Clock, Trash2, Search } from 'lucide-react';
+
 import type { Task } from '@/lib/types/task';
 import { useUpdateTask, useClearCompletedTasks } from '@/lib/hooks/useTaskMutations';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from '@/components/ui/drawer';
+import { Drawer, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
 import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
 import { Button } from '@/components/ui/button';
 import { DeleteConfirmationDialog } from '@/components/ui/DeleteConfirmationDialog';

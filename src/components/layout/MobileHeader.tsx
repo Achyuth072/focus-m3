@@ -1,6 +1,6 @@
 'use client';
 
-import { Menu, MoreVertical, Timer, CheckCircle2, Settings as SettingsIcon } from 'lucide-react';
+import { MoreVertical, Timer, CheckCircle2, Settings as SettingsIcon } from 'lucide-react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import {

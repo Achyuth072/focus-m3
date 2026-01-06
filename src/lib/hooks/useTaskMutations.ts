@@ -465,13 +465,16 @@ export function useClearCompletedTasks() {
       const previousTasks = queryClient.getQueriesData({ queryKey: ["tasks"] });
 
       // Optimistically remove all completed tasks from cache
-      queryClient.setQueriesData({ queryKey: ["tasks"] }, (oldData: any) => {
-        if (!oldData) return oldData;
-        if (Array.isArray(oldData)) {
-          return oldData.filter((task: Task) => !task.is_completed);
+      queryClient.setQueriesData(
+        { queryKey: ["tasks"] },
+        (oldData: Task[] | undefined) => {
+          if (!oldData) return oldData;
+          if (Array.isArray(oldData)) {
+            return oldData.filter((task: Task) => !task.is_completed);
+          }
+          return oldData;
         }
-        return oldData;
-      });
+      );
 
       return { previousTasks };
     },

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
-import { startOfDay, subDays, format, isSameDay } from "date-fns";
+import { subDays, format, isSameDay } from "date-fns";
 
 export interface DailyStats {
   date: string;

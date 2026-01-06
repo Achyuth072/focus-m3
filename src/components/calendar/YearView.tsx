@@ -22,13 +22,11 @@ export function YearView({ currentYear, onDateClick, className }: YearViewProps)
         return (
           <div key={i} className="flex justify-center">
             <Calendar
-              {...({
-                mode: "single",
-                month: monthDate,
-                selected: undefined,
-                onSelect: onDateClick,
-                showOutsideDays: false,
-              } as any)}
+              mode="single"
+              month={monthDate}
+              selected={undefined}
+              onSelect={(date) => date && onDateClick?.(date)}
+              showOutsideDays={false}
               className="p-0 select-none [--cell-size:28px]"
               classNames={{
                 months: 'flex flex-col',
