@@ -251,7 +251,7 @@ export function AppSidebar() {
             <SidebarTrigger className="h-8 w-8" />
           </div>
           <div className="px-2 py-2 text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">
-            v0.1.0
+            v1.0.0
           </div>
         </SidebarFooter>
       </Sidebar>
