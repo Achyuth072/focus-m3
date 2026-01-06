@@ -2,14 +2,25 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/components/AuthProvider";
+import { mockStore } from "@/lib/mock/mock-store";
 import type { Project } from "@/lib/types/task";
 
 export function useProjects() {
+  const { isGuestMode } = useAuth();
   const supabase = createClient();
 
   return useQuery({
-    queryKey: ["projects"],
+    queryKey: ["projects", isGuestMode],
     queryFn: async (): Promise<Project[]> => {
+      // Guest Mode: Use mock store
+      if (isGuestMode) {
+        return mockStore
+          .getProjects()
+          .sort((a, b) => a.name.localeCompare(b.name));
+      }
+
+      // Normal Supabase flow
       const { data, error } = await supabase
         .from("projects")
         .select("*")
@@ -27,13 +38,20 @@ export function useProjects() {
 }
 
 export function useProject(projectId: string | null) {
+  const { isGuestMode } = useAuth();
   const supabase = createClient();
 
   return useQuery({
-    queryKey: ["project", projectId],
+    queryKey: ["project", projectId, isGuestMode],
     queryFn: async (): Promise<Project | null> => {
       if (!projectId) return null;
 
+      // Guest Mode: Use mock store
+      if (isGuestMode) {
+        return mockStore.getProject(projectId);
+      }
+
+      // Normal Supabase flow
       const { data, error } = await supabase
         .from("projects")
         .select("*")

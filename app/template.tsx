@@ -22,7 +22,6 @@ export default function Template({ children }: { children: React.ReactNode }) {
       animate="animate"
       exit="exit"
       transition={pageTransition}
-      style={{ height: '100%' }}
     >
       {children}
     </motion.div>

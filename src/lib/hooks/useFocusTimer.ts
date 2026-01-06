@@ -11,6 +11,8 @@ import {
   TIMER_SETTINGS_KEY,
 } from "@/lib/types/timer";
 import { useFocusHistoryStore } from "@/lib/store/focusHistoryStore";
+import { useAuth } from "@/components/AuthProvider";
+import { mockStore } from "@/lib/mock/mock-store";
 
 function loadSettings(): TimerSettings {
   if (typeof window === "undefined") return DEFAULT_TIMER_SETTINGS;
@@ -81,6 +83,7 @@ export function useFocusTimer() {
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const supabase = createClient();
+  const { isGuestMode } = useAuth();
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -109,6 +112,20 @@ export function useFocusTimer() {
   const logFocusSession = useCallback(
     async (taskId: string, durationSeconds: number) => {
       try {
+        if (isGuestMode) {
+          mockStore.addFocusLog({
+            task_id: taskId,
+            user_id: "guest",
+            start_time: new Date(
+              Date.now() - durationSeconds * 1000
+            ).toISOString(),
+            end_time: new Date().toISOString(),
+            duration_seconds: durationSeconds,
+          });
+          queryClient.invalidateQueries({ queryKey: ["stats-dashboard"] });
+          return;
+        }
+
         const {
           data: { user },
         } = await supabase.auth.getUser();
@@ -130,7 +147,7 @@ export function useFocusTimer() {
         console.error("Failed to log focus session:", err);
       }
     },
-    [supabase, queryClient]
+    [supabase, queryClient, isGuestMode]
   );
 
   const handleTimerComplete = useCallback(

@@ -3,12 +3,16 @@
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/components/AuthProvider";
 
 export function useRealtimeSync() {
   const queryClient = useQueryClient();
   const supabase = createClient();
+  const { isGuestMode } = useAuth();
 
   useEffect(() => {
+    if (isGuestMode) return;
+
     const channel = supabase
       .channel("tasks-changes")
       .on(
@@ -28,5 +32,5 @@ export function useRealtimeSync() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [queryClient, supabase]);
+  }, [queryClient, supabase, isGuestMode]);
 }

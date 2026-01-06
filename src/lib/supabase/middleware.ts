@@ -40,20 +40,24 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname === "/access-denied" ||
     request.nextUrl.pathname.startsWith("/auth/");
 
+  // Check for guest mode cookie
+  const isGuest = request.cookies.get("kanso_guest_mode")?.value === "true";
+
   // Handle auth errors (e.g., "Refresh Token Not Found")
   // Only redirect to login if NOT already on a public route
-  if (error && !isPublicRoute) {
+  if (error && !isPublicRoute && !isGuest) {
     await supabase.auth.signOut();
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (!user && !isPublicRoute) {
+  if (!user && !isPublicRoute && !isGuest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
   if (
     user &&
     !isPublicRoute &&
+    !isGuest &&
     !ALLOWED_EMAILS.includes((user.email ?? "").toLowerCase())
   ) {
     await supabase.auth.signOut();

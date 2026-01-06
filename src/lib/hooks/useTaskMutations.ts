@@ -2,17 +2,43 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/components/AuthProvider";
+import { mockStore } from "@/lib/mock/mock-store";
 import type { Task, CreateTaskInput, UpdateTaskInput } from "@/lib/types/task";
 import { useHaptic } from "@/lib/hooks/useHaptic";
 
 export function useCreateTask() {
   const queryClient = useQueryClient();
   const supabase = createClient();
+  const { isGuestMode } = useAuth();
+  // We need to import mockStore here or in the fn if we want to use it.
+  // Since it's a singleton, importing at top is fine.
 
   return useMutation({
     mutationFn: async (
       input: CreateTaskInput & { _clientId?: string }
     ): Promise<Task> => {
+      // Guest Mode
+      if (isGuestMode) {
+        return mockStore.addTask({
+          user_id: "guest",
+          content: input.content,
+          description: input.description || null,
+          priority: input.priority || 4,
+          due_date: input.due_date || null,
+          do_date: input.do_date || null,
+          is_evening: input.is_evening || false,
+          project_id: input.project_id || null,
+          parent_id: input.parent_id || null,
+          recurrence: input.recurrence || null,
+          is_completed: false,
+          completed_at: null,
+          day_order: 0,
+          google_event_id: null,
+          google_etag: null,
+        });
+      }
+
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -45,20 +71,25 @@ export function useCreateTask() {
     onMutate: async (newTask) => {
       await queryClient.cancelQueries({ queryKey: ["tasks"] });
 
+      // If guest mode, we don't need optimistic updates because mockStore is synchronous
+      // and fast, BUT keeping optimistic UI makes it feel same as prod.
+      // However, mockStore persists immediately so careful not to dupe.
+      // Actually, since mockStore is local, the mutationFn resolves instantly.
+      // We can keep optimistic update logic or skip it for guest.
+      // Skipping simplifies things, but let's keep it consistent.
+
       const previousTasks = queryClient.getQueryData<Task[]>([
         "tasks",
-        { projectId: undefined, showCompleted: false },
+        { projectId: undefined, showCompleted: false, isGuestMode },
       ]);
 
-      // Generate stable ID for optimistic update
       const clientId = crypto.randomUUID();
-      // Attach to input so mutationFn can use the same ID
       (newTask as CreateTaskInput & { _clientId?: string })._clientId =
         clientId;
 
       const optimisticTask: Task = {
         id: clientId,
-        user_id: "",
+        user_id: isGuestMode ? "guest" : "",
         project_id: newTask.project_id || null,
         parent_id: newTask.parent_id || null,
         content: newTask.content,
@@ -78,7 +109,7 @@ export function useCreateTask() {
       };
 
       queryClient.setQueryData<Task[]>(
-        ["tasks", { projectId: undefined, showCompleted: false }],
+        ["tasks", { projectId: undefined, showCompleted: false, isGuestMode }],
         (old) => [optimisticTask, ...(old || [])]
       );
 
@@ -87,7 +118,10 @@ export function useCreateTask() {
     onError: (_err, _newTask, context) => {
       if (context?.previousTasks) {
         queryClient.setQueryData(
-          ["tasks", { projectId: undefined, showCompleted: false }],
+          [
+            "tasks",
+            { projectId: undefined, showCompleted: false, isGuestMode },
+          ],
           context.previousTasks
         );
       }
@@ -109,6 +143,7 @@ export function useCreateTask() {
 export function useToggleTask() {
   const queryClient = useQueryClient();
   const supabase = createClient();
+  const { isGuestMode } = useAuth();
 
   return useMutation({
     mutationFn: async ({
@@ -118,6 +153,64 @@ export function useToggleTask() {
       id: string;
       is_completed: boolean;
     }): Promise<{ task: Task; newRecurringTask?: Task }> => {
+      // Guest Mode
+      if (isGuestMode) {
+        const updatedTask = mockStore.updateTask(id, {
+          is_completed,
+          completed_at: is_completed ? new Date().toISOString() : null,
+        });
+
+        if (!updatedTask) throw new Error("Task not found");
+
+        // Record a focus session if completed (simulated 25min session)
+        if (is_completed) {
+          mockStore.addFocusLog({
+            user_id: "guest",
+            task_id: id,
+            start_time: new Date(Date.now() - 25 * 60000).toISOString(),
+            end_time: new Date().toISOString(),
+            duration_seconds: 25 * 60,
+          });
+        }
+
+        // Handle recurrence for guest mode
+        let newRecurringTask: Task | undefined;
+        let recurrenceRule = updatedTask.recurrence;
+        if (typeof recurrenceRule === "string") {
+          try {
+            recurrenceRule = JSON.parse(recurrenceRule);
+          } catch {
+            recurrenceRule = null;
+          }
+        }
+
+        if (is_completed && recurrenceRule) {
+          const { calculateNextDueDate } = await import(
+            "@/lib/utils/recurrence"
+          );
+          const completedDate = new Date();
+          const nextDueDate = calculateNextDueDate(
+            completedDate,
+            recurrenceRule
+          );
+
+          newRecurringTask = mockStore.addTask({
+            user_id: "guest",
+            project_id: updatedTask.project_id,
+            content: updatedTask.content,
+            description: updatedTask.description,
+            priority: updatedTask.priority,
+            due_date: nextDueDate.toISOString(),
+            do_date: updatedTask.do_date,
+            is_evening: updatedTask.is_evening || false,
+            recurrence: recurrenceRule, // Keep recurrence
+            is_completed: false,
+          } as Omit<Task, "id" | "created_at" | "updated_at">);
+        }
+
+        return { task: updatedTask, newRecurringTask };
+      }
+
       // First, get the task to check if it's recurring
       const { data: currentTask, error: fetchError } = await supabase
         .from("tasks")
@@ -205,7 +298,7 @@ export function useToggleTask() {
 
       const queryKey = [
         "tasks",
-        { projectId: undefined, showCompleted: false },
+        { projectId: undefined, showCompleted: false, isGuestMode },
       ];
       const previousTasks = queryClient.getQueryData<Task[]>(queryKey);
 
@@ -226,7 +319,10 @@ export function useToggleTask() {
     onError: (_err, _vars, context) => {
       if (context?.previousTasks) {
         queryClient.setQueryData(
-          ["tasks", { projectId: undefined, showCompleted: false }],
+          [
+            "tasks",
+            { projectId: undefined, showCompleted: false, isGuestMode },
+          ],
           context.previousTasks
         );
       }
@@ -242,9 +338,18 @@ export function useToggleTask() {
 export function useUpdateTask() {
   const queryClient = useQueryClient();
   const supabase = createClient();
+  const { isGuestMode } = useAuth();
 
   return useMutation({
     mutationFn: async (input: UpdateTaskInput): Promise<Task> => {
+      // Guest Mode
+      if (isGuestMode) {
+        const { id, ...updates } = input;
+        const updatedTask = mockStore.updateTask(id, updates);
+        if (!updatedTask) throw new Error("Task not found");
+        return updatedTask;
+      }
+
       const { id, ...updates } = input;
       const { data, error } = await supabase
         .from("tasks")
@@ -268,9 +373,20 @@ export function useDeleteTask() {
   const queryClient = useQueryClient();
   const supabase = createClient();
   const { trigger } = useHaptic(); // Use haptic hook
+  const { isGuestMode } = useAuth();
 
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {
+      // Guest Mode
+      if (isGuestMode) {
+        // Find task before deleting for undo
+        const task = mockStore.getTask(id);
+        if (!task) return; // Already deleted?
+
+        mockStore.deleteTask(id);
+        return;
+      }
+
       const { error } = await supabase.from("tasks").delete().eq("id", id);
       if (error) throw new Error(error.message);
     },
@@ -318,6 +434,16 @@ export function useDeleteTask() {
           action: {
             label: "Undo",
             onClick: async () => {
+              if (isGuestMode) {
+                // Restore to mock store
+                mockStore.addTask(taskToRestore);
+                queryClient.invalidateQueries({ queryKey: ["tasks"] });
+                trigger(20);
+                setTimeout(() => trigger(20), 150);
+                toast("Task restored");
+                return;
+              }
+
               // Re-insert into database using insert (task was hard-deleted)
               const { error } = await supabase.from("tasks").insert({
                 id: taskToRestore.id,
@@ -376,9 +502,17 @@ export function useDeleteTask() {
 export function useReorderTasks() {
   const queryClient = useQueryClient();
   const supabase = createClient();
+  const { isGuestMode } = useAuth();
 
   return useMutation({
     mutationFn: async (orderedIds: string[]): Promise<void> => {
+      if (isGuestMode) {
+        orderedIds.forEach((id, index) => {
+          mockStore.updateTask(id, { day_order: index });
+        });
+        return;
+      }
+
       const updates = orderedIds.map((id, index) => ({
         id,
         day_order: index,
@@ -441,9 +575,18 @@ export function useReorderTasks() {
 export function useClearCompletedTasks() {
   const queryClient = useQueryClient();
   const supabase = createClient();
+  const { isGuestMode } = useAuth();
 
   return useMutation({
     mutationFn: async (): Promise<void> => {
+      if (isGuestMode) {
+        const completedTasks = mockStore
+          .getTasks()
+          .filter((t) => t.is_completed);
+        completedTasks.forEach((t) => mockStore.deleteTask(t.id));
+        return;
+      }
+
       const {
         data: { user },
       } = await supabase.auth.getUser();

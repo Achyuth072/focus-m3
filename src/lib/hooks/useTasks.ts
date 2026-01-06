@@ -2,6 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/components/AuthProvider";
+import { mockStore } from "@/lib/mock/mock-store";
 import type { Task } from "@/lib/types/task";
 
 interface UseTasksOptions {
@@ -12,11 +14,50 @@ interface UseTasksOptions {
 
 export function useTasks(options: UseTasksOptions = {}) {
   const { projectId, showCompleted = false, filter } = options;
+  const { isGuestMode } = useAuth();
   const supabase = createClient();
 
   return useQuery({
-    queryKey: ["tasks", { projectId, showCompleted, filter }],
+    queryKey: ["tasks", { projectId, showCompleted, filter, isGuestMode }],
     queryFn: async (): Promise<Task[]> => {
+      // Guest Mode: Use mock store
+      if (isGuestMode) {
+        let tasks = mockStore.getTasks();
+
+        // Apply filters
+        if (filter === "today") {
+          const today = new Date();
+          today.setHours(23, 59, 59, 999);
+          tasks = tasks.filter(
+            (t) => t.due_date && new Date(t.due_date) <= today
+          );
+        } else if (filter === "p1") {
+          tasks = tasks.filter((t) => t.priority === 1);
+        }
+
+        // Filter by project
+        if (projectId === "inbox") {
+          tasks = tasks.filter((t) => !t.project_id);
+        } else if (projectId === "all") {
+          // Show all
+        } else if (projectId) {
+          tasks = tasks.filter((t) => t.project_id === projectId);
+        }
+
+        // Filter completed
+        if (!showCompleted) {
+          tasks = tasks.filter((t) => !t.is_completed);
+        }
+
+        // Exclude subtasks and sort
+        tasks = tasks
+          .filter((t) => !t.parent_id)
+          .sort((a, b) => a.day_order - b.day_order);
+
+        return tasks;
+      }
+
+      // Normal Supabase flow
       let query = supabase
         .from("tasks")
         .select("*")
@@ -62,13 +103,20 @@ export function useTasks(options: UseTasksOptions = {}) {
 }
 
 export function useTask(taskId: string | null) {
+  const { isGuestMode } = useAuth();
   const supabase = createClient();
 
   return useQuery({
-    queryKey: ["task", taskId],
+    queryKey: ["task", taskId, isGuestMode],
     queryFn: async (): Promise<Task | null> => {
       if (!taskId) return null;
 
+      // Guest Mode: Use mock store
+      if (isGuestMode) {
+        return mockStore.getTask(taskId);
+      }
+
+      // Normal Supabase flow
       const { data, error } = await supabase
         .from("tasks")
         .select("*")

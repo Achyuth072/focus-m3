@@ -2,6 +2,8 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/components/AuthProvider";
+import { mockStore } from "@/lib/mock/mock-store";
 import type { Project } from "@/lib/types/task";
 
 interface CreateProjectInput {
@@ -19,9 +21,21 @@ interface UpdateProjectInput {
 export function useCreateProject() {
   const queryClient = useQueryClient();
   const supabase = createClient();
+  const { isGuestMode } = useAuth();
 
   return useMutation({
     mutationFn: async (input: CreateProjectInput): Promise<Project> => {
+      // Guest Mode
+      if (isGuestMode) {
+        return mockStore.addProject({
+          ...input,
+          user_id: "guest",
+          view_style: "list",
+          is_inbox: false,
+          is_archived: false,
+        });
+      }
+
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -47,6 +61,7 @@ export function useCreateProject() {
 
       const previousProjects = queryClient.getQueryData<Project[]>([
         "projects",
+        isGuestMode,
       ]);
 
       const optimisticProject: Project = {
@@ -61,7 +76,7 @@ export function useCreateProject() {
         updated_at: new Date().toISOString(),
       };
 
-      queryClient.setQueryData<Project[]>(["projects"], (old) => [
+      queryClient.setQueryData<Project[]>(["projects", isGuestMode], (old) => [
         ...(old || []),
         optimisticProject,
       ]);
@@ -70,7 +85,10 @@ export function useCreateProject() {
     },
     onError: (_err, _newProject, context) => {
       if (context?.previousProjects) {
-        queryClient.setQueryData(["projects"], context.previousProjects);
+        queryClient.setQueryData(
+          ["projects", isGuestMode],
+          context.previousProjects
+        );
       }
     },
     onSettled: () => {
@@ -82,9 +100,18 @@ export function useCreateProject() {
 export function useUpdateProject() {
   const queryClient = useQueryClient();
   const supabase = createClient();
+  const { isGuestMode } = useAuth();
 
   return useMutation({
     mutationFn: async (input: UpdateProjectInput): Promise<Project> => {
+      // Guest Mode
+      if (isGuestMode) {
+        const { id, ...updates } = input;
+        const updatedProject = mockStore.updateProject(id, updates);
+        if (!updatedProject) throw new Error("Project not found");
+        return updatedProject;
+      }
+
       const { id, ...updates } = input;
       const { data, error } = await supabase
         .from("projects")
@@ -105,9 +132,16 @@ export function useUpdateProject() {
 export function useDeleteProject() {
   const queryClient = useQueryClient();
   const supabase = createClient();
+  const { isGuestMode } = useAuth();
 
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {
+      // Guest Mode
+      if (isGuestMode) {
+        mockStore.deleteProject(id);
+        return;
+      }
+
       // First, move all tasks in this project to Inbox (project_id = null)
       const { error: updateError } = await supabase
         .from("tasks")
@@ -124,9 +158,10 @@ export function useDeleteProject() {
 
       const previousProjects = queryClient.getQueryData<Project[]>([
         "projects",
+        isGuestMode,
       ]);
 
-      queryClient.setQueryData<Project[]>(["projects"], (old) =>
+      queryClient.setQueryData<Project[]>(["projects", isGuestMode], (old) =>
         old?.filter((project) => project.id !== id)
       );
 
@@ -134,7 +169,10 @@ export function useDeleteProject() {
     },
     onError: (_err, _id, context) => {
       if (context?.previousProjects) {
-        queryClient.setQueryData(["projects"], context.previousProjects);
+        queryClient.setQueryData(
+          ["projects", isGuestMode],
+          context.previousProjects
+        );
       }
     },
     onSettled: () => {

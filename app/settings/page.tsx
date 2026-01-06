@@ -5,7 +5,7 @@ import { useTheme } from 'next-themes';
 import { useAuth } from '@/components/AuthProvider';
 import { Button } from '@/components/ui/button';
 import { LoaderOverlay } from '@/components/ui/loader-overlay';
-import { Moon, Sun, Monitor, LogOut, User, Loader2, ArrowLeft } from 'lucide-react';
+import { Moon, Sun, Monitor, LogOut, User, Loader2, ArrowLeft, RotateCcw, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 import { useRouter } from 'next/navigation';
@@ -15,12 +15,16 @@ import { useUiStore } from '@/lib/store/uiStore';
 import { Switch } from '@/components/ui/switch';
 import { Vibrate } from 'lucide-react';
 import { useHaptic } from '@/lib/hooks/useHaptic';
+import { useQueryClient } from '@tanstack/react-query';
+import { mockStore } from '@/lib/mock/mock-store';
+import { toast } from 'sonner';
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const { hapticsEnabled, setHapticsEnabled } = useUiStore();
-  const { user, signOut } = useAuth();
+  const { user, signOut, isGuestMode } = useAuth();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
@@ -38,6 +42,22 @@ export default function SettingsPage() {
     setIsSigningOut(true);
     await signOut();
     router.push('/login');
+  };
+
+  const handleResetDemo = () => {
+    mockStore.reset();
+    queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    queryClient.invalidateQueries({ queryKey: ['projects'] });
+    queryClient.invalidateQueries({ queryKey: ['stats-dashboard'] });
+    toast.success('Demo data reset successfully');
+  };
+
+  const handleClearData = () => {
+    mockStore.clearData();
+    queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    queryClient.invalidateQueries({ queryKey: ['projects'] });
+    queryClient.invalidateQueries({ queryKey: ['stats-dashboard'] });
+    toast.success('All data cleared');
   };
 
   const themeOptions = [
@@ -177,6 +197,51 @@ export default function SettingsPage() {
                       checked={hapticsEnabled}
                       onCheckedChange={setHapticsEnabled}
                     />
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* Guest Mode Section */}
+            {isGuestMode && (!isDesktop || activeTab === 'account') && (
+              <section className="space-y-4">
+                <div>
+                  <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Guest Mode
+                  </h2>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="p-4 rounded-lg border border-blue-500/20 bg-blue-500/5">
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Your data is stored locally in your browser. Use these controls to manage your demo data.
+                    </p>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => {
+                          trigger(30);
+                          handleResetDemo();
+                        }}
+                      >
+                        <RotateCcw className="h-4 w-4 mr-2" />
+                        Reset Demo
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 text-destructive hover:text-destructive"
+                        onClick={() => {
+                          trigger(50);
+                          handleClearData();
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Clear Data
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </section>
