@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { startOfWeek } from 'date-fns';
 import { useCalendarStore } from '@/lib/calendar/store';
 import { CalendarToolbar } from '@/components/calendar/CalendarToolbar';
@@ -35,16 +35,18 @@ export default function CalendarPage() {
     }
   }, [isMobile, view, setView]);
 
+  const handleDateClick = useCallback((date: Date) => {
+    setDate(date);
+    setView('day');
+  }, [setDate, setView]);
+
   const renderView = () => {
     switch (view) {
       case 'year':
         return (
           <YearView
             currentYear={currentDate.getFullYear()}
-            onDateClick={(date) => {
-              setDate(date);
-              setView('day');
-            }}
+            onDateClick={handleDateClick}
           />
         );
 
@@ -99,10 +101,7 @@ export default function CalendarPage() {
           <MonthView
             currentDate={currentDate}
             events={events}
-            onDateClick={(date) => {
-              setDate(date);
-              setView('day');
-            }}
+            onDateClick={handleDateClick}
           />
         );
     }

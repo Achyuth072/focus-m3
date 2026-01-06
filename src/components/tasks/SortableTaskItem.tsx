@@ -1,5 +1,6 @@
 "use client";
 
+import React, { memo } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import TaskItem from "./TaskItem";
@@ -7,11 +8,11 @@ import type { Task } from "@/lib/types/task";
 
 interface SortableTaskItemProps {
   task: Task;
-  onClick?: () => void;
+  onSelect?: (task: Task) => void;
   isKeyboardSelected?: boolean;
 }
 
-export default function SortableTaskItem({ task, onClick, isKeyboardSelected }: SortableTaskItemProps) {
+function SortableTaskItem({ task, onSelect, isKeyboardSelected }: SortableTaskItemProps) {
   const {
     attributes,
     listeners,
@@ -31,7 +32,7 @@ export default function SortableTaskItem({ task, onClick, isKeyboardSelected }: 
     <div ref={setNodeRef} style={style}>
       <TaskItem 
         task={task} 
-        onClick={onClick} 
+        onSelect={onSelect} 
         dragListeners={listeners}
         dragAttributes={attributes}
         isDragging={isDragging}
@@ -40,3 +41,5 @@ export default function SortableTaskItem({ task, onClick, isKeyboardSelected }: 
     </div>
   );
 }
+
+export default memo(SortableTaskItem);

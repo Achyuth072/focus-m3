@@ -1,7 +1,7 @@
 'use client';
 /* eslint-disable react-hooks/set-state-in-effect */
 
-  import { useState, useMemo, useRef, useEffect } from 'react';
+  import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 
 import {
   DndContext,
@@ -170,6 +170,10 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId,
     }
     setLocalTasks(processedTasks.active);
   }, [processedTasks.active]);
+  
+  const handleTaskClick = useCallback((task: Task) => {
+    setSelectedTask(task);
+  }, []);
 
   const handleDragStart = () => {
     trigger(50);
@@ -316,7 +320,7 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId,
                   <TaskItem
                     key={task.id}
                     task={task}
-                    onClick={() => setSelectedTask(task)}
+                    onSelect={handleTaskClick}
                     isKeyboardSelected={task.id === keyboardSelectedId}
                   />
                 ))}
@@ -333,7 +337,7 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId,
                   <SortableTaskItem
                     key={task.id}
                     task={task}
-                    onClick={() => setSelectedTask(task)}
+                    onSelect={handleTaskClick}
                     isKeyboardSelected={task.id === keyboardSelectedId}
                   />
                 ))}
@@ -353,7 +357,7 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId,
                   <TaskItem
                     key={task.id}
                     task={task}
-                    onClick={() => setSelectedTask(task)}
+                    onSelect={handleTaskClick}
                     isKeyboardSelected={task.id === keyboardSelectedId}
                   />
                 ))}
@@ -372,7 +376,7 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId,
                   <TaskItem
                     key={task.id}
                     task={task}
-                    onClick={() => setSelectedTask(task)}
+                    onSelect={handleTaskClick}
                     isKeyboardSelected={task.id === keyboardSelectedId}
                   />
                 ))}

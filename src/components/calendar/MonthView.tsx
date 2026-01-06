@@ -21,7 +21,67 @@ interface MonthViewProps {
   className?: string;
 }
 
-export function MonthView({ currentDate, events, onDateClick, className }: MonthViewProps) {
+interface MonthDayCellProps {
+  day: Date;
+  dayEvents: CalendarEvent[];
+  isCurrentMonth: boolean;
+  isCurrentDay: boolean;
+  onDateClick?: (date: Date) => void;
+}
+
+const MonthDayCell = memo(({ day, dayEvents, isCurrentMonth, isCurrentDay, onDateClick }: MonthDayCellProps) => {
+  const maxVisible = 3;
+  const visibleEvents = dayEvents.slice(0, maxVisible);
+  const remainingCount = dayEvents.length - maxVisible;
+
+  return (
+    <div
+      onClick={() => onDateClick?.(day)}
+      className={cn(
+        'relative p-1 md:p-2 border-r border-b border-border/40 flex flex-col',
+        'hover:bg-accent/50 cursor-pointer transition-colors',
+        !isCurrentMonth && 'bg-muted/5'
+      )}
+    >
+      {/* Date number */}
+      <div className="flex items-center justify-between mb-0.5 md:mb-1 shrink-0">
+        <span
+          className={cn(
+            'text-xs md:text-sm font-medium',
+            isCurrentDay && 'flex items-center justify-center w-5 h-5 md:w-6 md:h-6 rounded-md bg-primary text-primary-foreground',
+            !isCurrentMonth && 'text-muted-foreground/30'
+          )}
+        >
+          {format(day, 'd')}
+        </span>
+      </div>
+
+      {/* Events */}
+      <div className="flex-1 min-h-0 space-y-0.5 md:space-y-1 overflow-hidden">
+        {visibleEvents.map((event) => (
+          <div
+            key={event.id}
+            className="text-[10px] md:text-xs px-1 md:px-2 py-0.5 rounded border truncate bg-(--event-color)/15 border-(--event-color)/30 text-foreground font-medium"
+            style={{ '--event-color': event.color || 'hsl(var(--primary))' } as React.CSSProperties}
+            title={event.title}
+          >
+            <span className="hidden md:inline">{format(event.start, 'h:mm a')} </span>
+            {event.title}
+          </div>
+        ))}
+        {remainingCount > 0 && (
+          <div className="text-[10px] md:text-xs text-muted-foreground px-1 md:px-2">
+            +{remainingCount} more
+          </div>
+        )}
+      </div>
+    </div>
+  );
+});
+
+MonthDayCell.displayName = 'MonthDayCell';
+
+const MonthView = memo(({ currentDate, events, onDateClick, className }: MonthViewProps) => {
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
   const calendarStart = startOfWeek(monthStart);
@@ -67,63 +127,21 @@ export function MonthView({ currentDate, events, onDateClick, className }: Month
           numWeeks === 5 ? 'grid-rows-5' : 'grid-rows-6'
         )}
       >
-        {days.map((day) => {
-          const dayKey = format(day, 'yyyy-MM-dd');
-          const dayEvents = eventsByDay.get(dayKey) || [];
-          const isCurrentMonth = isSameMonth(day, currentDate);
-          const isCurrentDay = isToday(day);
-          const maxVisible = 3;
-          const visibleEvents = dayEvents.slice(0, maxVisible);
-          const remainingCount = dayEvents.length - maxVisible;
-
-          return (
-            <div
-              key={dayKey}
-              onClick={() => onDateClick?.(day)}
-              className={cn(
-                'relative p-1 md:p-2 border-r border-b border-border/40 flex flex-col',
-                'hover:bg-accent/50 cursor-pointer transition-colors',
-                !isCurrentMonth && 'bg-muted/5'
-              )}
-            >
-              {/* Date number */}
-              <div className="flex items-center justify-between mb-0.5 md:mb-1 shrink-0">
-                <span
-                  className={cn(
-                    'text-xs md:text-sm font-medium',
-                    isCurrentDay && 'flex items-center justify-center w-5 h-5 md:w-6 md:h-6 rounded-md bg-primary text-primary-foreground',
-                    !isCurrentMonth && 'text-muted-foreground/30'
-                  )}
-                >
-                  {format(day, 'd')}
-                </span>
-              </div>
-
-              {/* Events */}
-              <div className="flex-1 min-h-0 space-y-0.5 md:space-y-1 overflow-hidden">
-                {visibleEvents.map((event) => (
-                  <div
-                    key={event.id}
-                    className="text-[10px] md:text-xs px-1 md:px-2 py-0.5 rounded border truncate bg-(--event-color)/15 border-(--event-color)/30 text-foreground font-medium"
-                    style={{ '--event-color': event.color || 'hsl(var(--primary))' } as React.CSSProperties}
-                    title={event.title}
-                  >
-                    <span className="hidden md:inline">{format(event.start, 'h:mm a')} </span>
-                    {event.title}
-                  </div>
-                ))}
-                {remainingCount > 0 && (
-                  <div className="text-[10px] md:text-xs text-muted-foreground px-1 md:px-2">
-                    +{remainingCount} more
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-        })}
+        {days.map((day) => (
+          <MonthDayCell
+            key={format(day, 'yyyy-MM-dd')}
+            day={day}
+            dayEvents={eventsByDay.get(format(day, 'yyyy-MM-dd')) || []}
+            isCurrentMonth={isSameMonth(day, currentDate)}
+            isCurrentDay={isToday(day)}
+            onDateClick={onDateClick}
+          />
+        ))}
       </div>
     </div>
   );
-}
+});
 
-export default memo(MonthView);
+MonthView.displayName = 'MonthView';
+
+export { MonthView };

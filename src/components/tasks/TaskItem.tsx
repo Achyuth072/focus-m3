@@ -31,7 +31,7 @@ import { useHaptic } from "@/lib/hooks/useHaptic";
 
 interface TaskItemProps {
   task: Task;
-  onClick?: () => void;
+  onSelect?: (task: Task) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dragListeners?: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -58,7 +58,7 @@ function formatDueDate(dateString: string): string {
   return format(date, "MMM d");
 }
 
-function TaskItem({ task, onClick, dragListeners, dragAttributes, isDragging = false, isKeyboardSelected = false }: TaskItemProps) {
+function TaskItem({ task, onSelect, dragListeners, dragAttributes, isDragging = false, isKeyboardSelected = false }: TaskItemProps) {
   const [isChecking, setIsChecking] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(false);
@@ -116,8 +116,8 @@ function TaskItem({ task, onClick, dragListeners, dragAttributes, isDragging = f
     } else if (info.offset.x > SCHEDULE_SWIPE_THRESHOLD) {
       // Right swipe: Edit
       trigger(50);
-      if (onClick) {
-        onClick();
+      if (onSelect) {
+        onSelect(task);
       }
     }
     // Snap back is handled by dragSnapToOrigin
@@ -193,9 +193,9 @@ function TaskItem({ task, onClick, dragListeners, dragAttributes, isDragging = f
             isKeyboardSelected && "ring-2 ring-primary bg-secondary/40 z-10"
           )}
           onClick={() => {
-            // Only trigger onClick if we're not dragging
-            if (!isSwipeDragging && onClick) {
-              onClick();
+            // Only trigger onSelect if we're not dragging
+            if (!isSwipeDragging && onSelect) {
+              onSelect(task);
             }
           }}
         >

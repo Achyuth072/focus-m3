@@ -1,6 +1,7 @@
 'use client';
 
-import { format, isSameDay, startOfDay, addDays } from 'date-fns';
+import { format, startOfDay, addDays } from 'date-fns';
+import { useMemo, memo } from 'react';
 import { cn } from '@/lib/utils';
 import type { CalendarEvent } from '@/lib/calendar/types';
 
@@ -11,27 +12,33 @@ interface ScheduleViewProps {
   className?: string;
 }
 
-export function ScheduleView({ events, startDate, daysToShow = 30, className }: ScheduleViewProps) {
+const ScheduleView = memo(({ events, startDate, daysToShow = 30, className }: ScheduleViewProps) => {
   const startOfToday = startOfDay(startDate);
   
-  // Generate array of dates for the next N days
-  const dateRange = Array.from({ length: daysToShow }).map((_, i) => 
-    addDays(startOfToday, i)
-  );
+  // Memoize date range generation
+  const dateRange = useMemo(() => 
+    Array.from({ length: daysToShow }).map((_, i) => 
+      addDays(startOfToday, i)
+    ), [startOfToday, daysToShow]);
   
-  // Group events by day for quick lookup
-  const eventsByDay = new Map<string, CalendarEvent[]>();
-  
-  events
-    .filter((event) => startOfDay(event.start) >= startOfToday)
-    .sort((a, b) => a.start.getTime() - b.start.getTime())
-    .forEach((event) => {
-      const dayKey = format(startOfDay(event.start), 'yyyy-MM-dd');
-      if (!eventsByDay.has(dayKey)) {
-        eventsByDay.set(dayKey, []);
-      }
-      eventsByDay.get(dayKey)!.push(event);
-    });
+  // Memoize event grouping by day
+  const eventsByDay = useMemo(() => {
+    const map = new Map<string, CalendarEvent[]>();
+    
+    events
+      .filter((event) => startOfDay(event.start) >= startOfToday)
+      .sort((a, b) => a.start.getTime() - b.start.getTime())
+      .forEach((event) => {
+        const dayKey = format(startOfDay(event.start), 'yyyy-MM-dd');
+        if (!map.has(dayKey)) {
+          map.set(dayKey, []);
+        }
+        map.get(dayKey)!.push(event);
+      });
+    return map;
+  }, [events, startOfToday]);
+
+  const todayStr = format(new Date(), 'yyyy-MM-dd');
 
   return (
     <div className={cn('h-full overflow-auto p-6', className)}>
@@ -39,7 +46,7 @@ export function ScheduleView({ events, startDate, daysToShow = 30, className }: 
         {dateRange.map((date) => {
           const dayKey = format(date, 'yyyy-MM-dd');
           const dayEvents = eventsByDay.get(dayKey) || [];
-          const isToday = isSameDay(date, new Date());
+          const isToday = dayKey === todayStr;
 
           return (
             <div key={dayKey} className="space-y-2">
@@ -115,4 +122,9 @@ export function ScheduleView({ events, startDate, daysToShow = 30, className }: 
       </div>
     </div>
   );
-}
+});
+
+ScheduleView.displayName = 'ScheduleView';
+
+
+export { ScheduleView };
