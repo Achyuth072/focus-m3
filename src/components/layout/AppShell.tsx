@@ -69,8 +69,7 @@ function AppShellContent({ children }: AppShellProps) {
             !hideMobileNav && "pt-16"
           )}>
             {children}
-            {/* Mobile Bottom Spacer - ensures content scrolls above nav/FAB */}
-            {!hideMobileNav && <div className="h-32 w-full flex-none" aria-hidden="true" />}
+            {!hideMobileNav && pathname !== '/calendar' && <div className="h-32 w-full flex-none" aria-hidden="true" />}
           </div>
         </SidebarInset>
 
