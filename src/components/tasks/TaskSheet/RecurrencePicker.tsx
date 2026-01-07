@@ -61,9 +61,9 @@ export default function RecurrencePicker({
             variant="ghost"
             size="sm"
             className={cn(
-              "h-10 w-10 p-0 transition-all shadow-sm dark:bg-white/[0.03] dark:border dark:border-white/10 group relative",
+              "h-10 w-10 p-0 transition-all group relative border border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-none",
               hasRecurrence
-                ? "text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary"
+                ? "text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary border-transparent"
                 : "text-muted-foreground hover:text-foreground hover:bg-accent"
             )}
             onClick={() => {

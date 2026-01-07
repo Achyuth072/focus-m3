@@ -149,7 +149,7 @@ function TaskItem({ task, onSelect, dragListeners, dragAttributes, isDragging = 
   return (
     <div className={cn(
       "group/item",
-      isDesktop && "hover:shadow-md dark:hover:ring-1 dark:hover:ring-white/10 transition-shadow rounded-sm",
+      isDesktop && "hover:ring-1 hover:ring-border transition-all rounded-sm",
       isDesktop && isExpanded && "pb-4"
     )}>
         <motion.div
@@ -187,7 +187,7 @@ function TaskItem({ task, onSelect, dragListeners, dragAttributes, isDragging = 
           className={cn(
             "relative flex group items-center bg-background cursor-pointer",
             isDesktop
-              ? "gap-2 px-2 py-1 h-8 rounded-sm hover:bg-secondary/40 dark:hover:bg-secondary/60 transition-seijaku"
+              ? "gap-2 px-2 py-1 h-8 rounded-sm hover:bg-secondary/50 transition-seijaku"
               : "items-center gap-3 py-3 px-4 active:bg-secondary/20 transition-seijaku-fast",
             isKeyboardSelected && "ring-2 ring-primary bg-secondary/40 z-10"
           )}

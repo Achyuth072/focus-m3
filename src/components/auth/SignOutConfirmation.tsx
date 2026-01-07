@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
+import { useHaptic } from '@/lib/hooks/useHaptic';
 
 interface SignOutConfirmationProps {
   isOpen: boolean;
@@ -36,6 +37,7 @@ export function SignOutConfirmation({
   onConfirm,
 }: SignOutConfirmationProps) {
   const isDesktop = useMediaQuery('(min-width: 768px)');
+  const { trigger } = useHaptic();
 
   if (isDesktop) {
     return (
@@ -51,9 +53,12 @@ export function SignOutConfirmation({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="hover:bg-accent/60 transition-colors">Cancel</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => trigger(10)} className="hover:bg-accent/60 transition-colors">Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={onConfirm}
+              onClick={() => {
+                trigger(50);
+                onConfirm();
+              }}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors"
             >
               Sign Out
@@ -78,14 +83,17 @@ export function SignOutConfirmation({
         </DrawerHeader>
         <DrawerFooter className="pt-2">
           <Button
-            onClick={onConfirm}
+            onClick={() => {
+              trigger(50);
+              onConfirm();
+            }}
             variant="destructive"
             className="w-full active:scale-95 transition-transform"
           >
             Sign Out
           </Button>
           <DrawerClose asChild>
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full" onClick={() => trigger(10)}>
               Cancel
             </Button>
           </DrawerClose>

@@ -59,42 +59,44 @@ interface ShortcutsHelpProps {
 export function ShortcutsHelp({ open, onOpenChange }: ShortcutsHelpProps) {
   return (
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
-      <ResponsiveDialogContent className="sm:max-w-[600px]">
-        <ResponsiveDialogHeader>
-          <ResponsiveDialogTitle className="flex items-center gap-2">
-            <Keyboard className="h-5 w-5" />
+      <ResponsiveDialogContent className="sm:max-w-[550px] border-border/60 shadow-2xl p-0">
+        <ResponsiveDialogHeader className="p-6 pb-2 border-b border-border/40">
+          <ResponsiveDialogTitle className="flex items-center gap-2.5 text-[22px] font-semibold tracking-tight text-foreground">
+            <Keyboard className="h-5 w-5 text-muted-foreground/70" />
             Keyboard Shortcuts
           </ResponsiveDialogTitle>
-          <ResponsiveDialogDescription>
-            Master Kanso with these efficient shortcuts.
+          <ResponsiveDialogDescription className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium pt-1">
+            Refine your workflow with Kanso
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
-          {SHORTCUTS.map((group) => (
-            <div key={group.title} className="space-y-3">
-              <h3 className="text-sm font-semibold text-muted-foreground">
-                {group.title}
-              </h3>
-              <div className="space-y-2">
-                {group.shortcuts.map((shortcut, i) => (
-                  <div key={i} className="flex items-center justify-between text-sm">
-                    <span className="text-foreground/80">{shortcut.description}</span>
-                    <div className="flex items-center gap-1">
-                      {shortcut.keys.map((key) => (
-                        <kbd
-                          key={key}
-                          className="pointer-events-none h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100 flex"
-                        >
-                          {key}
-                        </kbd>
-                      ))}
+        <div className="max-h-[60vh] overflow-y-auto scrollbar-hide p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+            {SHORTCUTS.map((group) => (
+              <div key={group.title} className="space-y-4">
+                <h3 className="text-[15px] font-bold tracking-tight text-foreground pb-2 border-b border-border">
+                  {group.title}
+                </h3>
+                <div className="space-y-3.5">
+                  {group.shortcuts.map((shortcut, i) => (
+                    <div key={i} className="flex items-center justify-between text-[14px]">
+                      <span className="text-foreground/80 font-medium">{shortcut.description}</span>
+                      <div className="flex items-center gap-2">
+                        {shortcut.keys.map((key) => (
+                          <kbd
+                            key={key}
+                            className="pointer-events-none h-5.5 min-w-[24px] select-none items-center justify-center rounded border border-border bg-sidebar px-1.5 font-mono text-[10px] font-bold text-foreground shadow-none flex"
+                          >
+                            {key}
+                          </kbd>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </ResponsiveDialogContent>
     </ResponsiveDialog>

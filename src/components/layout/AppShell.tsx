@@ -5,6 +5,8 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
 import { CompletedTasksProvider } from '@/components/CompletedTasksProvider';
 import { TaskActionsProvider, useTaskActions } from '@/components/TaskActionsProvider';
+import { ProjectActionsProvider, useProjectActions } from '@/components/ProjectActionsProvider';
+import { CreateProjectDialog } from '@/components/projects/CreateProjectDialog';
 import { useRealtimeSync } from '@/lib/hooks/useRealtimeSync';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/layout/AppSidebar';
@@ -18,6 +20,7 @@ import { ShortcutsHelp } from '@/components/ui/ShortcutsHelp';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FloatingTimer } from '@/components/FloatingTimer';
+import { useUiStore } from '@/lib/store/uiStore';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -29,9 +32,10 @@ function AppShellContent({ children }: AppShellProps) {
   const hideMobileNav = pathname === '/focus' || pathname === '/settings';
   const isTasksPage = pathname === '/';
   const { isAddTaskOpen, openAddTask, closeAddTask } = useTaskActions();
+  const { isCreateProjectOpen, closeCreateProject } = useProjectActions();
+  const { isShortcutsHelpOpen, setShortcutsHelpOpen } = useUiStore();
   
   const [commandOpen, setCommandOpen] = useState(false);
-  const [helpOpen, setHelpOpen] = useState(false);
 
   // Global realtime sync - stays alive during navigation
   useRealtimeSync();
@@ -55,7 +59,7 @@ function AppShellContent({ children }: AppShellProps) {
       <SidebarProvider defaultOpen={true}>
         <GlobalHotkeys 
           setCommandOpen={setCommandOpen}
-          setHelpOpen={setHelpOpen}
+          setHelpOpen={setShortcutsHelpOpen}
         />
         {/* Mobile Top Bar - hidden on Focus and Settings pages */}
         {!hideMobileNav && <MobileHeader />}
@@ -121,10 +125,14 @@ function AppShellContent({ children }: AppShellProps) {
           open={isAddTaskOpen}
           onClose={closeAddTask}
         />
+        <CreateProjectDialog 
+          open={isCreateProjectOpen} 
+          onOpenChange={closeCreateProject} 
+        />
         
         {/* Global Command Menu */}
         <CommandMenu open={commandOpen} onOpenChange={setCommandOpen} />
-        <ShortcutsHelp open={helpOpen} onOpenChange={setHelpOpen} />
+        <ShortcutsHelp open={isShortcutsHelpOpen} onOpenChange={setShortcutsHelpOpen} />
         
         {/* Floating Timer - shows when timer is active and not on focus page */}
         <FloatingTimer />
@@ -139,12 +147,14 @@ export default function AppShell({ children }: AppShellProps) {
   const isLoginPage = pathname === '/login';
 
   return (
-    <TaskActionsProvider>
-      {(loading || !user || isLoginPage) ? (
-        <>{children}</>
-      ) : (
-        <AppShellContent>{children}</AppShellContent>
-      )}
-    </TaskActionsProvider>
+    <ProjectActionsProvider>
+      <TaskActionsProvider>
+        {(loading || !user || isLoginPage) ? (
+          <>{children}</>
+        ) : (
+          <AppShellContent>{children}</AppShellContent>
+        )}
+      </TaskActionsProvider>
+    </ProjectActionsProvider>
   );
 }

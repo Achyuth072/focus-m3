@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import {
   Sidebar,
   SidebarContent,
@@ -31,7 +31,7 @@ import {
 } from 'lucide-react';
 import { useCompletedTasks } from '@/components/CompletedTasksProvider';
 import { useProjects } from '@/lib/hooks/useProjects';
-import { CreateProjectDialog } from '@/components/projects/CreateProjectDialog';
+import { useProjectActions } from '@/components/ProjectActionsProvider';
 import { useUiStore } from '@/lib/store/uiStore';
 import { useHaptic } from '@/lib/hooks/useHaptic';
 
@@ -53,7 +53,7 @@ export function AppSidebar() {
   const { isMobile, setOpenMobile } = useSidebar();
   const { openSheet } = useCompletedTasks();
   const { data: projects } = useProjects();
-  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const { openCreateProject } = useProjectActions();
   const { isProjectsOpen, toggleProjectsOpen } = useUiStore();
   const { trigger } = useHaptic();
 
@@ -149,7 +149,7 @@ export function AppSidebar() {
                 </SidebarGroupLabel>
                 <SidebarGroupAction title="Add Project" onClick={() => {
                   trigger(20);
-                  setCreateDialogOpen(true);
+                  openCreateProject();
                 }}>
                   <Plus className="h-4 w-4" />
                 </SidebarGroupAction>
@@ -255,8 +255,6 @@ export function AppSidebar() {
           </div>
         </SidebarFooter>
       </Sidebar>
-
-      <CreateProjectDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
     </>
   );
 }

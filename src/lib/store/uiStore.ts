@@ -17,6 +17,10 @@ interface UiState {
   // Global Settings
   hapticsEnabled: boolean;
   setHapticsEnabled: (enabled: boolean) => void;
+
+  // Shortcuts Help Dialog
+  isShortcutsHelpOpen: boolean;
+  setShortcutsHelpOpen: (open: boolean | ((prev: boolean) => boolean)) => void;
 }
 
 export const useUiStore = create<UiState>()(
@@ -36,6 +40,16 @@ export const useUiStore = create<UiState>()(
       // Global Settings defaults
       hapticsEnabled: true,
       setHapticsEnabled: (enabled) => set({ hapticsEnabled: enabled }),
+
+      // Shortcuts Help defaults
+      isShortcutsHelpOpen: false,
+      setShortcutsHelpOpen: (open) =>
+        set((state) => ({
+          isShortcutsHelpOpen:
+            typeof open === "function"
+              ? (open as (prev: boolean) => boolean)(state.isShortcutsHelpOpen)
+              : open,
+        })),
     }),
     {
       name: "kanso-ui-state",

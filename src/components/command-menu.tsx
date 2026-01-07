@@ -16,9 +16,16 @@ import {
   CheckCircle2,
   Columns,
   LogOut,
+  Inbox,
+  FolderPlus,
+  Keyboard,
+  Monitor,
+  Copy,
+  Check,
+  ListFilter,
+  Layers,
   Clock,
   Filter,
-  Inbox,
 } from "lucide-react"
 
 import {
@@ -32,10 +39,13 @@ import {
 } from "@/components/ui/command"
 import { useProjects } from "@/lib/hooks/useProjects"
 import { useTaskActions } from "@/components/TaskActionsProvider"
+import { useProjectActions } from "@/components/ProjectActionsProvider"
 import { useCompletedTasks } from "@/components/CompletedTasksProvider"
 import { useAuth } from "@/components/AuthProvider"
 import { useSidebar } from "@/components/ui/sidebar"
 import { SignOutConfirmation } from "@/components/auth/SignOutConfirmation"
+import { useDocumentPiP } from "@/lib/hooks/useDocumentPiP"
+import { useUiStore } from "@/lib/store/uiStore"
 
 interface CommandMenuProps {
   open: boolean;
@@ -49,9 +59,13 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
   const { setTheme } = useTheme()
   const { data: projects } = useProjects()
   const { openAddTask } = useTaskActions()
+  const { openCreateProject } = useProjectActions()
   const { openSheet: openCompletedSheet } = useCompletedTasks()
-  const { signOut } = useAuth()
+  const { user, signOut } = useAuth()
   const { toggleSidebar } = useSidebar()
+  const { openPiP, closePiP, isPiPActive } = useDocumentPiP()
+  const { setShortcutsHelpOpen, setSortBy, setGroupBy } = useUiStore()
+  const [copied, setCopied] = React.useState(false)
   
   // Internal shortcut listener removed in favor of GlobalHotkeys
 
@@ -73,9 +87,20 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
               <PlusIcon className="mr-2 h-4 w-4" />
               <span>New Task</span>
             </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => openCreateProject())}>
+              <FolderPlus className="mr-2 h-4 w-4" />
+              <span>New Project</span>
+            </CommandItem>
             <CommandItem onSelect={() => runCommand(() => openCompletedSheet())}>
               <CheckCircle2 className="mr-2 h-4 w-4" />
               <span>Show Completed Tasks</span>
+            </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => {
+              if (isPiPActive) closePiP();
+              else openPiP();
+            })}>
+              <Monitor className="mr-2 h-4 w-4" />
+              <span>{isPiPActive ? "Close PiP Window" : "Open PiP Window"}</span>
             </CommandItem>
             <CommandItem onSelect={() => runCommand(() => toggleSidebar())}>
               <Columns className="mr-2 h-4 w-4" />
@@ -93,6 +118,27 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
             <CommandItem onSelect={() => runCommand(() => router.push("/focus?duration=50"))}>
               <Clock className="mr-2 h-4 w-4" />
               <span>Deep Work (50m)</span>
+            </CommandItem>
+          </CommandGroup>
+
+          <CommandSeparator />
+
+          <CommandGroup heading="View Options">
+            <CommandItem onSelect={() => runCommand(() => { setSortBy("date"); router.push("/"); })}>
+              <ListFilter className="mr-2 h-4 w-4" />
+              <span>Sort by Date</span>
+            </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => { setSortBy("priority"); router.push("/"); })}>
+              <ListFilter className="mr-2 h-4 w-4" />
+              <span>Sort by Priority</span>
+            </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => { setGroupBy("project"); router.push("/"); })}>
+              <Layers className="mr-2 h-4 w-4" />
+              <span>Group by Project</span>
+            </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => { setGroupBy("none"); router.push("/"); })}>
+              <Layers className="mr-2 h-4 w-4" />
+              <span>Ungroup Tasks</span>
             </CommandItem>
           </CommandGroup>
 
@@ -177,6 +223,20 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
               <SettingsIcon className="mr-2 h-4 w-4" />
               <span>Settings</span>
             </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => setShortcutsHelpOpen(true))}>
+              <Keyboard className="mr-2 h-4 w-4" />
+              <span>Keyboard Shortcuts</span>
+            </CommandItem>
+            {user && (
+              <CommandItem onSelect={() => runCommand(() => {
+                navigator.clipboard.writeText(user.id);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+              })}>
+                {copied ? <Check className="mr-2 h-4 w-4 text-green-500" /> : <Copy className="mr-2 h-4 w-4" />}
+                <span>Copy My User ID</span>
+              </CommandItem>
+            )}
             <CommandItem onSelect={() => runCommand(() => setShowSignOutConfirm(true))}>
               <LogOut className="mr-2 h-4 w-4" />
               <span>Sign Out</span>

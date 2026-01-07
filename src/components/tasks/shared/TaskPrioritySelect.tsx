@@ -40,19 +40,23 @@ export function TaskPrioritySelect({
       }}
     >
       <SelectTrigger
+        onPointerDown={() => trigger(15)}
         className={cn(
-          "h-10 border border-transparent transition-all shrink-0 focus:ring-0 [&>svg]:hidden group dark:bg-white/[0.03] dark:border-white/10",
+          "h-10 border transition-all shrink-0 focus:ring-0 [&>svg]:hidden group shadow-none",
+          "border-input bg-background hover:bg-accent hover:text-accent-foreground",
           isCompact
             ? cn(
                 "px-0",
                 priority !== 4 ? "w-auto px-2.5 min-w-16" : "w-10 justify-center",
                 priority === 4 && "text-muted-foreground hover:text-foreground hover:bg-secondary/50",
-                priorities.find((p) => p.value === priority)?.color
+                priorities.find((p) => p.value === priority)?.color,
+                // For colored priorities (P1-P3), remove border to avoid clash with solid background
+                priority !== 4 && "border-transparent"
               )
             : cn(
-                "min-w-10 items-center justify-center shadow-sm",
+                "min-w-10 items-center justify-center",
                 priority !== 4 
-                  ? "text-primary bg-primary/10 px-3 w-auto" 
+                  ? "text-primary bg-primary/10 px-3 w-auto border-transparent hover:bg-primary/20 hover:text-primary" 
                   : "px-0 w-10 text-muted-foreground hover:text-foreground hover:bg-accent"
               )
         )}

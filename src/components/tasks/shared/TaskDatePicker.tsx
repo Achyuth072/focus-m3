@@ -97,15 +97,15 @@ export function TaskDatePicker({
             onOpenChange(true);
           }}
           className={cn(
-            "h-10 transition-all shrink-0 group [&_svg]:!size-5 dark:bg-white/[0.03] dark:border dark:border-white/10",
+            "h-10 transition-all shrink-0 group [&_svg]:!size-5 border border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-none",
             isCompact
               ? cn(
                   "w-10 px-0 text-muted-foreground hover:text-foreground",
-                  date && cn("w-auto px-2.5", activeClassName)
+                  date && cn("w-auto px-2.5 border-transparent", activeClassName)
                 )
               : cn(
-                  "min-w-10 px-0 shadow-sm text-muted-foreground hover:text-foreground hover:bg-accent",
-                  date && cn("px-3 w-auto hover:bg-transparent", activeClassName)
+                  "min-w-10 px-0 text-muted-foreground hover:text-foreground hover:bg-accent",
+                  date && cn("px-3 w-auto hover:bg-transparent border-transparent", activeClassName)
                 )
           )}
           title={`Set ${title.toLowerCase()}`}
@@ -138,15 +138,15 @@ export function TaskDatePicker({
           variant="ghost"
           size="sm"
           className={cn(
-            "h-10 transition-all shrink-0 group [&_svg]:!size-5 dark:bg-white/[0.03] dark:border dark:border-white/10",
+            "h-10 transition-all shrink-0 group [&_svg]:!size-5 border border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-none",
             isCompact
               ? cn(
                   "w-10 px-0 text-muted-foreground hover:text-foreground",
-                  date && cn("w-auto px-2.5", activeClassName)
+                  date && cn("w-auto px-2.5 border-transparent", activeClassName)
                 )
               : cn(
-                  "min-w-10 px-0 shadow-sm text-muted-foreground hover:text-foreground hover:bg-accent",
-                  date && cn("px-3 w-auto hover:bg-transparent", activeClassName)
+                  "min-w-10 px-0 text-muted-foreground hover:text-foreground hover:bg-accent",
+                  date && cn("px-3 w-auto hover:bg-transparent border-transparent", activeClassName)
                 )
           )}
           title={`Set ${title.toLowerCase()}`}

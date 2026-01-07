@@ -40,7 +40,7 @@ export function TasksPageHeader({
           <Button 
             variant="outline" 
             size="sm" 
-            className="h-8 w-8 p-0 dark:bg-white/[0.03] dark:border-white/10 dark:hover:bg-white/10"
+            className="h-8 w-8 p-0"
             onClick={() => trigger(20)}
           >
             <ListFilter className="h-4 w-4" />
@@ -85,7 +85,7 @@ export function TasksPageHeader({
         variant="outline"
         size="sm"
         onClick={openSheet}
-        className="hidden md:flex items-center gap-2 dark:bg-white/[0.03] dark:border-white/10 dark:hover:bg-white/10"
+        className="hidden md:flex items-center gap-2"
       >
         <CheckCircle2 className="h-4 w-4" />
         Completed
@@ -97,7 +97,7 @@ export function TasksPageHeader({
         variant="outline"
         size="sm"
         onClick={onNewTask}
-        className="hidden md:flex items-center gap-2 dark:bg-white/[0.03] dark:border-white/10 dark:hover:bg-white/10"
+        className="hidden md:flex items-center gap-2"
       >
         <Plus className="h-4 w-4" />
         New Task

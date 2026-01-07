@@ -22,8 +22,10 @@ interface CompletedTasksSheetProps {
 
 function CompletedTaskItem({ task }: { task: Task }) {
   const updateMutation = useUpdateTask();
+  const { trigger } = useHaptic();
 
   const handleUncomplete = () => {
+    trigger(20);
     updateMutation.mutate({ id: task.id, is_completed: false });
   };
 

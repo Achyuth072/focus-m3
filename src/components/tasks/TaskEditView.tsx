@@ -129,7 +129,7 @@ export function TaskEditView({
               Description
             </span>
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               className="h-7 px-2 text-[10px] uppercase tracking-wider font-bold text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
               onClick={() => {
@@ -165,7 +165,7 @@ export function TaskEditView({
               Subtasks
             </span>
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               onClick={() => {
                 trigger(25);
@@ -223,7 +223,7 @@ export function TaskEditView({
             variant="outline"
             size="sm"
             className={cn(
-              "h-10 px-3 text-xs border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground shrink-0 dark:bg-white/[0.03] dark:border-white/10 gap-1.5",
+              "h-10 px-3 text-xs border border-input bg-background hover:bg-accent hover:text-accent-foreground shrink-0 gap-1.5",
               isEvening && "border-purple-500/50 text-purple-600 dark:text-purple-400 bg-purple-500/10"
             )}
             onClick={() => {
@@ -267,8 +267,9 @@ export function TaskEditView({
             }}
           >
             <SelectTrigger
+              onPointerDown={() => trigger(15)}
               className={cn(
-                "h-10 w-[110px] md:w-[130px] text-xs border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground shrink-0 focus:ring-0 dark:bg-white/[0.03] dark:border-white/10",
+                "h-10 w-[110px] md:w-[130px] text-xs border border-input bg-background hover:bg-accent hover:text-accent-foreground shrink-0 focus:ring-0",
                 selectedProjectId ? "min-w-16" : "min-w-10"
               )}
             >

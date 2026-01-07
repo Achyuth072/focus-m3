@@ -138,10 +138,10 @@ export function TaskCreateView({
 
           {/* This Evening Toggle */}
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
             className={cn(
-              "h-10 px-3 transition-all text-muted-foreground hover:text-foreground hover:bg-accent shadow-sm dark:bg-white/[0.03] dark:border dark:border-white/10 gap-1.5 shrink-0",
+              "h-10 px-3 transition-all text-muted-foreground hover:text-foreground hover:bg-accent gap-1.5 shrink-0",
               isEvening && "text-purple-600 dark:text-purple-400 border-purple-500/50 bg-purple-500/10 hover:bg-purple-500/20"
             )}
             onClick={() => {
@@ -160,14 +160,14 @@ export function TaskCreateView({
 
           {/* Subtask Toggle */}
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
             onClick={() => {
               trigger(25);
               setShowSubtasks(!showSubtasks);
             }}
             className={cn(
-              "h-10 w-10 p-0 transition-all text-muted-foreground hover:text-foreground hover:bg-accent shadow-sm dark:bg-white/[0.03] dark:border dark:border-white/10 group [&_svg]:!size-5 shrink-0",
+              "h-10 w-10 p-0 transition-all text-muted-foreground hover:text-foreground hover:bg-accent group [&_svg]:!size-5 shrink-0",
               showSubtasks && "text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary"
             )}
             title="Toggle subtasks"
@@ -217,7 +217,10 @@ export function TaskCreateView({
             setSelectedProjectId(v === "inbox" ? null : v);
           }}
         >
-          <SelectTrigger className="h-10 w-[140px] text-xs border border-transparent dark:border-white/10 bg-secondary/20 dark:bg-white/[0.05] hover:bg-secondary/30 focus:ring-0 transition-colors">
+          <SelectTrigger 
+            onPointerDown={() => trigger(15)}
+            className="h-10 w-[140px] text-xs border border-transparent dark:border-white/10 bg-secondary/20 dark:bg-white/[0.05] hover:bg-secondary/30 focus:ring-0 transition-colors"
+          >
             <SelectValue placeholder="Inbox" />
           </SelectTrigger>
           <SelectContent>
