@@ -59,7 +59,7 @@ function formatDueDate(dateString: string): string {
 }
 
 function TaskItem({ task, onSelect, dragListeners, dragAttributes, isDragging = false, isKeyboardSelected = false }: TaskItemProps) {
-  const [isChecking, setIsChecking] = useState(false);
+  const [_isChecking, setIsChecking] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(false);
   const [isSwipeDragging, setIsSwipeDragging] = useState(false);
