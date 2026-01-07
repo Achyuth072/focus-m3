@@ -17,6 +17,7 @@ import { GlobalHotkeys } from '@/components/layout/GlobalHotkeys';
 import { ShortcutsHelp } from '@/components/ui/ShortcutsHelp';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
+import { FloatingTimer } from '@/components/FloatingTimer';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -124,6 +125,9 @@ function AppShellContent({ children }: AppShellProps) {
         {/* Global Command Menu */}
         <CommandMenu open={commandOpen} onOpenChange={setCommandOpen} />
         <ShortcutsHelp open={helpOpen} onOpenChange={setHelpOpen} />
+        
+        {/* Floating Timer - shows when timer is active and not on focus page */}
+        <FloatingTimer />
       </SidebarProvider>
     </CompletedTasksProvider>
   );

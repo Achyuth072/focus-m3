@@ -9,6 +9,8 @@ export interface TimerSettings {
   shortBreakDuration: number; // in minutes
   longBreakDuration: number; // in minutes
   sessionsBeforeLongBreak: number;
+  autoStartBreak: boolean; // Auto-start break after focus session
+  autoStartFocus: boolean; // Auto-start focus after break
 }
 
 export interface TimerState {
@@ -24,6 +26,8 @@ export const DEFAULT_TIMER_SETTINGS: TimerSettings = {
   shortBreakDuration: 5,
   longBreakDuration: 15,
   sessionsBeforeLongBreak: 4,
+  autoStartBreak: false,
+  autoStartFocus: false,
 };
 
 export const TIMER_STATE_KEY = "kanso-timer-state";

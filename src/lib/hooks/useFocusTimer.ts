@@ -13,6 +13,7 @@ import {
 import { useFocusHistoryStore } from "@/lib/store/focusHistoryStore";
 import { useAuth } from "@/components/AuthProvider";
 import { mockStore } from "@/lib/mock/mock-store";
+import { useFocusSounds } from "@/lib/hooks/useFocusSounds";
 
 function loadSettings(): TimerSettings {
   if (typeof window === "undefined") return DEFAULT_TIMER_SETTINGS;
@@ -84,6 +85,7 @@ export function useFocusTimer() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const supabase = createClient();
   const { isGuestMode } = useAuth();
+  const { play } = useFocusSounds();
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -171,24 +173,30 @@ export function useFocusTimer() {
           completedAt: new Date().toISOString(),
         });
 
+        // Play success sound
+        play("sessionComplete");
+
         return {
           ...prev,
           mode: nextMode,
-          isRunning: false,
+          isRunning: settings.autoStartBreak, // Auto-start break if enabled
           remainingSeconds: getDurationForMode(nextMode, settings),
           completedSessions: isLongBreakTime ? 0 : newCompletedSessions,
         };
       }
 
       // After a break, go back to focus
+      // Play break end sound
+      play("breakEnd");
+
       return {
         ...prev,
         mode: "focus",
-        isRunning: false,
+        isRunning: settings.autoStartFocus, // Auto-start if enabled
         remainingSeconds: getDurationForMode("focus", settings),
       };
     },
-    [settings, logFocusSession]
+    [settings, logFocusSession, play]
   );
 
   // Timer tick
@@ -200,6 +208,16 @@ export function useFocusTimer() {
             // Timer finished, handle transition
             return handleTimerComplete(prev);
           }
+
+          // Warning sounds at 1 minute remaining
+          if (prev.remainingSeconds === 60) {
+            if (prev.mode === "focus") {
+              play("sessionWarning");
+            } else {
+              play("breakWarning");
+            }
+          }
+
           return { ...prev, remainingSeconds: prev.remainingSeconds - 1 };
         });
       }, 1000);
@@ -211,16 +229,20 @@ export function useFocusTimer() {
         intervalRef.current = null;
       }
     };
-  }, [state.isRunning, handleTimerComplete]);
+  }, [state.isRunning, handleTimerComplete, play]);
 
   // Controls
-  const start = useCallback((taskId?: string) => {
-    setState((prev) => ({
-      ...prev,
-      isRunning: true,
-      activeTaskId: taskId ?? prev.activeTaskId,
-    }));
-  }, []);
+  const start = useCallback(
+    (taskId?: string) => {
+      play("focusStart");
+      setState((prev) => ({
+        ...prev,
+        isRunning: true,
+        activeTaskId: taskId ?? prev.activeTaskId,
+      }));
+    },
+    [play]
+  );
 
   const pause = useCallback(() => {
     setState((prev) => ({ ...prev, isRunning: false }));

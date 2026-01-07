@@ -13,6 +13,10 @@ import { useQuery } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
 import type { Task } from '@/lib/types/task';
 import { useHaptic } from "@/lib/hooks/useHaptic";
+import { useDocumentPiP } from "@/lib/hooks/useDocumentPiP";
+import { PiPTimer } from "@/components/PiPTimer";
+import { Minimize2 } from "lucide-react";
+import { createPortal } from "react-dom";
 
 const MODE_LABELS: Record<TimerMode, string> = {
   focus: 'Focus',
@@ -31,6 +35,7 @@ export default function FocusPage() {
   const { state, settings, start, pause, stop, skip } = useTimer();
   const supabase = createClient();
   const { trigger, isPhone } = useHaptic();
+  const { isPiPSupported, isPiPActive, pipWindow, openPiP, closePiP } = useDocumentPiP();
 
   // Fetch active task if one is set
   const { data: activeTask } = useQuery({
@@ -64,6 +69,15 @@ export default function FocusPage() {
     }
   };
 
+  const handlePiP = async () => {
+    trigger(30);
+    if (isPiPActive) {
+      closePiP();
+    } else {
+      await openPiP(320, 280);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -82,6 +96,22 @@ export default function FocusPage() {
       >
         <X className="h-6 w-6" />
       </motion.button>
+
+      {/* PiP Button - Only show if supported and NOT on phone */}
+      {isPiPSupported && !isPhone && (
+        <motion.button
+          onClick={handlePiP}
+          onTapStart={() => trigger(50)}
+          whileTap={isPhone ? { scale: 0.95 } : {}}
+          className={cn(
+            buttonVariants({ variant: "ghost", size: "icon" }),
+            "absolute top-4 right-4 h-14 w-14 rounded-full hover:bg-secondary/50 active:scale-95 active:bg-secondary/30 transition-seijaku cursor-pointer"
+          )}
+          title={isPiPActive ? "Close Picture-in-Picture" : "Open Picture-in-Picture"}
+        >
+          <Minimize2 className="h-6 w-6" />
+        </motion.button>
+      )}
 
       {/* Mode Badge */}
       <div className="type-ui font-medium uppercase">
@@ -160,6 +190,12 @@ export default function FocusPage() {
       <div className="mt-16">
         <FocusSettingsDialog />
       </div>
+
+      {/* Render PiP Timer into external window using Portal */}
+      {pipWindow && createPortal(
+        <PiPTimer onClose={closePiP} />,
+        pipWindow.document.body
+      )}
     </motion.div>
   );
 }

@@ -28,6 +28,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 import { useTimer } from '@/components/TimerProvider';
 
 // Extracted settings form component to prevent recreation on every render
@@ -39,7 +40,11 @@ function SettingsForm({
   longBreak,
   setLongBreak,
   sessions,
-  setSessions
+  setSessions,
+  autoStartBreak,
+  setAutoStartBreak,
+  autoStartFocus,
+  setAutoStartFocus
 }: {
   focusDuration: number;
   setFocusDuration: (value: number) => void;
@@ -49,6 +54,10 @@ function SettingsForm({
   setLongBreak: (value: number) => void;
   sessions: number;
   setSessions: (value: number) => void;
+  autoStartBreak: boolean;
+  setAutoStartBreak: (value: boolean) => void;
+  autoStartFocus: boolean;
+  setAutoStartFocus: (value: boolean) => void;
 }) {
   return (
     <div className="space-y-6 py-4">
@@ -152,6 +161,30 @@ function SettingsForm({
           className="w-full"
         />
       </div>
+
+      {/* Auto-start Settings */}
+      <div className="space-y-4 pt-2 border-t">
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <Label className="text-sm font-medium">Auto-start Breaks</Label>
+            <p className="text-xs text-muted-foreground">Automatically start break timer after focus session</p>
+          </div>
+          <Switch
+            checked={autoStartBreak}
+            onCheckedChange={setAutoStartBreak}
+          />
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <Label className="text-sm font-medium">Auto-start Focus</Label>
+            <p className="text-xs text-muted-foreground">Automatically start focus timer after break</p>
+          </div>
+          <Switch
+            checked={autoStartFocus}
+            onCheckedChange={setAutoStartFocus}
+          />
+        </div>
+      </div>
     </div>
   );
 }
@@ -167,6 +200,8 @@ export function FocusSettingsDialog() {
   const [shortBreak, setShortBreak] = useState(settings.shortBreakDuration);
   const [longBreak, setLongBreak] = useState(settings.longBreakDuration);
   const [sessions, setSessions] = useState(settings.sessionsBeforeLongBreak);
+  const [autoStartBreak, setAutoStartBreak] = useState(settings.autoStartBreak);
+  const [autoStartFocus, setAutoStartFocus] = useState(settings.autoStartFocus);
 
 
 
@@ -177,6 +212,8 @@ export function FocusSettingsDialog() {
       shortBreakDuration: shortBreak,
       longBreakDuration: longBreak,
       sessionsBeforeLongBreak: sessions,
+      autoStartBreak,
+      autoStartFocus,
     });
     setOpen(false);
   };
@@ -220,6 +257,10 @@ export function FocusSettingsDialog() {
             setLongBreak={setLongBreak}
             sessions={sessions}
             setSessions={setSessions}
+            autoStartBreak={autoStartBreak}
+            setAutoStartBreak={setAutoStartBreak}
+            autoStartFocus={autoStartFocus}
+            setAutoStartFocus={setAutoStartFocus}
           />
           <div className="flex justify-end gap-3 pt-4">
             <Button variant="outline" onClick={handleCancel}>
@@ -264,6 +305,10 @@ export function FocusSettingsDialog() {
             setLongBreak={setLongBreak}
             sessions={sessions}
             setSessions={setSessions}
+            autoStartBreak={autoStartBreak}
+            setAutoStartBreak={setAutoStartBreak}
+            autoStartFocus={autoStartFocus}
+            setAutoStartFocus={setAutoStartFocus}
           />
         </div>
         <DrawerFooter className="pt-2">
