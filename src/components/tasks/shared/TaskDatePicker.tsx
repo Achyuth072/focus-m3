@@ -92,7 +92,10 @@ export function TaskDatePicker({
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => onOpenChange(true)}
+          onClick={() => {
+            trigger(25);
+            onOpenChange(true);
+          }}
           className={cn(
             "h-10 transition-all shrink-0 group [&_svg]:!size-5 dark:bg-white/[0.03] dark:border dark:border-white/10",
             isCompact

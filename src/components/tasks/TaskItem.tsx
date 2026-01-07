@@ -185,11 +185,10 @@ function TaskItem({ task, onSelect, dragListeners, dragAttributes, isDragging = 
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
           className={cn(
-            "relative flex group items-center transition-colors bg-background cursor-pointer",
+            "relative flex group items-center bg-background cursor-pointer",
             isDesktop
-              ? "gap-2 px-2 py-1 h-8 rounded-sm hover:bg-secondary/40 dark:hover:bg-secondary/60 transition-all"
-              : "items-center gap-3 py-3 px-4 active:bg-secondary/20", // Mobile: Sleeker padding, no bulky border-b
-            isChecking && "opacity-50",
+              ? "gap-2 px-2 py-1 h-8 rounded-sm hover:bg-secondary/40 dark:hover:bg-secondary/60 transition-seijaku"
+              : "items-center gap-3 py-3 px-4 active:bg-secondary/20 transition-seijaku-fast",
             isKeyboardSelected && "ring-2 ring-primary bg-secondary/40 z-10"
           )}
           onClick={() => {
@@ -249,8 +248,7 @@ function TaskItem({ task, onSelect, dragListeners, dragAttributes, isDragging = 
             <div className="flex items-center gap-2 flex-1">
               <p
                 className={cn(
-                  "font-medium leading-tight truncate",
-                  isDesktop ? "text-sm" : "text-sm",
+                  "type-body font-medium leading-tight truncate",
                   task.is_completed && "line-through text-muted-foreground"
                 )}
               >
@@ -286,7 +284,7 @@ function TaskItem({ task, onSelect, dragListeners, dragAttributes, isDragging = 
                   {task.due_date && (
                     <span
                       className={cn(
-                        "flex items-center gap-1 text-xs",
+                        "type-ui flex items-center gap-1",
                         isOverdue ? "text-destructive" : "text-muted-foreground"
                       )}
                     >
@@ -295,13 +293,13 @@ function TaskItem({ task, onSelect, dragListeners, dragAttributes, isDragging = 
                     </span>
                   )}
                   {task.do_date && (
-                    <span className="flex items-center gap-1 text-[10px] sm:text-xs text-green-600 dark:text-green-400 font-medium">
+                    <span className="type-ui flex items-center gap-1 text-green-600 dark:text-green-400 font-medium">
                       <CalendarClock className="h-3 w-3" />
                       {isToday(parseISO(task.do_date)) ? "Today" : format(parseISO(task.do_date), "MMM d")}
                     </span>
                   )}
                   {task.is_evening && (
-                    <span className="flex items-center gap-1 text-[10px] sm:text-xs text-purple-600 dark:text-purple-400 font-medium">
+                    <span className="type-ui flex items-center gap-1 text-purple-600 dark:text-purple-400 font-medium">
                       <Moon className="h-3 w-3 fill-current" />
                       Evening
                     </span>
@@ -309,7 +307,7 @@ function TaskItem({ task, onSelect, dragListeners, dragAttributes, isDragging = 
                   {task.priority < 4 && (
                     <span
                       className={cn(
-                        "flex items-center gap-1 text-xs",
+                        "type-ui flex items-center gap-1",
                         priorityColors[task.priority]
                       )}
                     >
@@ -318,7 +316,7 @@ function TaskItem({ task, onSelect, dragListeners, dragAttributes, isDragging = 
                     </span>
                   )}
                   {project && (
-                    <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <span className="type-ui flex items-center gap-1.5 text-muted-foreground">
                       <div
                         className="h-2 w-2 rounded-full shrink-0"
                         style={{ backgroundColor: project.color }}

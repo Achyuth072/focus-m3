@@ -2,6 +2,7 @@
 
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { useHaptic } from "@/lib/hooks/useHaptic";
 import {
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
@@ -85,6 +86,8 @@ export function TaskCreateView({
   onSubmit,
   onKeyDown,
 }: TaskCreateViewProps) {
+  const { trigger } = useHaptic();
+
   return (
     <>
       <ResponsiveDialogHeader className="pb-4">
@@ -143,6 +146,7 @@ export function TaskCreateView({
             )}
             onClick={() => {
               const nextValue = !isEvening;
+              trigger(nextValue ? 35 : 25);
               setIsEvening(nextValue);
               if (nextValue && !doDate) {
                 setDoDate(new Date());
@@ -158,7 +162,10 @@ export function TaskCreateView({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setShowSubtasks(!showSubtasks)}
+            onClick={() => {
+              trigger(25);
+              setShowSubtasks(!showSubtasks);
+            }}
             className={cn(
               "h-10 w-10 p-0 transition-all text-muted-foreground hover:text-foreground hover:bg-accent shadow-sm dark:bg-white/[0.03] dark:border dark:border-white/10 group [&_svg]:!size-5 shrink-0",
               showSubtasks && "text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary"
@@ -205,7 +212,10 @@ export function TaskCreateView({
         {/* Project Selector */}
         <Select
           value={selectedProjectId || "inbox"}
-          onValueChange={(v) => setSelectedProjectId(v === "inbox" ? null : v)}
+          onValueChange={(v) => {
+            trigger(20);
+            setSelectedProjectId(v === "inbox" ? null : v);
+          }}
         >
           <SelectTrigger className="h-10 w-[140px] text-xs border border-transparent dark:border-white/10 bg-secondary/20 dark:bg-white/[0.05] hover:bg-secondary/30 focus:ring-0 transition-colors">
             <SelectValue placeholder="Inbox" />
@@ -237,7 +247,10 @@ export function TaskCreateView({
         <Button
           size="sm"
           className="h-10 w-10 p-0 rounded-md [&_svg]:size-5"
-          onClick={onSubmit}
+          onClick={() => {
+            trigger([10, 30]);
+            onSubmit();
+          }}
           disabled={!hasContent || isPending}
           title="Create task"
         >

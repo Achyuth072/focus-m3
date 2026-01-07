@@ -2,6 +2,7 @@
 
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { useHaptic } from "@/lib/hooks/useHaptic";
 import {
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
@@ -101,6 +102,7 @@ export function TaskEditView({
   onKeyDown,
 }: TaskEditViewProps) {
   const scrollRef = useHorizontalScroll();
+  const { trigger } = useHaptic();
 
   return (
     <div className="flex flex-col h-full max-h-[85vh] w-full max-w-full overflow-hidden">
@@ -130,7 +132,10 @@ export function TaskEditView({
               variant="ghost"
               size="sm"
               className="h-7 px-2 text-[10px] uppercase tracking-wider font-bold text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
-              onClick={() => setIsPreviewMode(!isPreviewMode)}
+              onClick={() => {
+                trigger(20);
+                setIsPreviewMode(!isPreviewMode);
+              }}
               disabled={!description.trim() && !isPreviewMode}
             >
               {isPreviewMode ? "Edit" : "Preview"}
@@ -162,7 +167,10 @@ export function TaskEditView({
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setShowSubtasks(!showSubtasks)}
+              onClick={() => {
+                trigger(25);
+                setShowSubtasks(!showSubtasks);
+              }}
               className={cn(
                 "h-6 w-6 p-0 text-muted-foreground hover:text-foreground transition-all [&_svg]:!size-4",
                 showSubtasks && "text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary"
@@ -220,6 +228,7 @@ export function TaskEditView({
             )}
             onClick={() => {
               const nextValue = !isEvening;
+              trigger(nextValue ? 35 : 25);
               setIsEvening(nextValue);
               if (nextValue && !doDate) {
                 setDoDate(new Date());
@@ -252,7 +261,10 @@ export function TaskEditView({
           {/* Project Selector */}
           <Select
             value={selectedProjectId || "inbox"}
-            onValueChange={(v) => setSelectedProjectId(v === "inbox" ? null : v)}
+            onValueChange={(v) => {
+              trigger(20);
+              setSelectedProjectId(v === "inbox" ? null : v);
+            }}
           >
             <SelectTrigger
               className={cn(
@@ -292,7 +304,10 @@ export function TaskEditView({
             variant="ghost"
             size="sm"
             className="h-10 w-10 p-0 text-muted-foreground/80 hover:text-red-500 hover:bg-red-500/10 transition-colors [&_svg]:!size-5"
-            onClick={onDelete}
+            onClick={() => {
+              trigger(30);
+              onDelete();
+            }}
             title="Delete task"
           >
             <Trash2 strokeWidth={1.5} />
@@ -303,7 +318,10 @@ export function TaskEditView({
             size="sm"
             variant={isPending ? "ghost" : "default"}
             className="h-10 w-10 p-0 rounded-md [&_svg]:!size-5"
-            onClick={onSubmit}
+            onClick={() => {
+              trigger([10, 30]);
+              onSubmit();
+            }}
             disabled={!hasContent || isPending}
             title="Save changes"
           >

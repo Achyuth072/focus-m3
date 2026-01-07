@@ -70,7 +70,7 @@ function AppShellContent({ children }: AppShellProps) {
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.2, ease: 'easeOut' }}
+                transition={{ type: "spring", mass: 1, stiffness: 280, damping: 60 }}
                 className={cn(
                   "fixed z-30 pointer-events-none flex justify-center",
                   "left-0 right-0 px-4 top-[72px]", // Mobile: Floating comfortably below header
@@ -87,7 +87,7 @@ function AppShellContent({ children }: AppShellProps) {
                   </div>
                   <button
                     onClick={dismissBanner}
-                    className="p-1.5 hover:bg-accent rounded-lg transition-colors flex-shrink-0 cursor-pointer text-muted-foreground hover:text-foreground"
+                    className="p-1.5 hover:bg-accent rounded-lg transition-seijaku-fast flex-shrink-0 cursor-pointer text-muted-foreground hover:text-foreground"
                     aria-label="Dismiss banner"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

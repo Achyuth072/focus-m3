@@ -71,7 +71,7 @@ function HomeContent() {
               </span>
             )}
           </p>
-          <h1 className="text-[28px] md:text-[32px] font-semibold tracking-tight mt-1 text-primary">
+          <h1 className="type-h1 mt-1 text-primary">
             {greeting}
           </h1>
         </div>

@@ -80,7 +80,7 @@ export function AppSidebar() {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-semibold shrink-0">
                 K
               </div>
-              <span className="font-semibold text-lg group-data-[collapsible=icon]:hidden">
+              <span className="type-h2 group-data-[collapsible=icon]:hidden">
                 Kanso
               </span>
             </div>

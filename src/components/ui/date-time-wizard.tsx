@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
+import { useHaptic } from '@/lib/hooks/useHaptic';
 import { Calendar } from '@/components/ui/calendar';
 import { LargeTimePicker } from '@/components/ui/large-time-picker';
 import { Button } from '@/components/ui/button';
@@ -16,6 +17,7 @@ interface DateTimeWizardProps {
 }
 
 export function DateTimeWizard({ date, setDate, onClose }: DateTimeWizardProps) {
+  const { trigger } = useHaptic();
   const [step, setStep] = useState<'date' | 'time'>('date');
   const [tempDate, setTempDate] = useState<Date | undefined>(date);
 
@@ -49,6 +51,7 @@ export function DateTimeWizard({ date, setDate, onClose }: DateTimeWizardProps) 
   };
 
   const onSave = () => {
+    trigger(30);
     setDate(tempDate);
     onClose();
   };
@@ -59,7 +62,10 @@ export function DateTimeWizard({ date, setDate, onClose }: DateTimeWizardProps) 
       <div className="flex items-center justify-between p-2 border-b bg-muted/40">
         <Tabs 
           value={step} 
-          onValueChange={(v) => setStep(v as 'date' | 'time')} 
+          onValueChange={(v) => {
+            trigger(25);
+            setStep(v as 'date' | 'time');
+          }} 
           className="w-full"
         >
           <TabsList className="grid w-full grid-cols-2 h-9 p-0.5 bg-muted/50">
@@ -113,6 +119,7 @@ export function DateTimeWizard({ date, setDate, onClose }: DateTimeWizardProps) 
                 size="sm"
                 className="h-8 text-[10px] sm:text-xs font-semibold hover:bg-background hover:shadow-sm"
                 onClick={() => {
+                  trigger(20);
                   const today = new Date();
                   today.setHours(12, 0, 0, 0); // Default Noon
                   handleDateSelect(today);
@@ -125,6 +132,7 @@ export function DateTimeWizard({ date, setDate, onClose }: DateTimeWizardProps) 
                 size="sm"
                 className="h-8 text-[10px] sm:text-xs font-semibold hover:bg-background hover:shadow-sm"
                 onClick={() => {
+                  trigger(20);
                   const tomorrow = new Date();
                   tomorrow.setDate(tomorrow.getDate() + 1);
                   tomorrow.setHours(12, 0, 0, 0); // Default Noon
@@ -138,6 +146,7 @@ export function DateTimeWizard({ date, setDate, onClose }: DateTimeWizardProps) 
                 size="sm"
                 className="h-8 text-[10px] sm:text-xs font-bold text-purple-600 dark:text-purple-400 hover:bg-purple-500/10 hover:text-purple-700 dark:hover:text-purple-300"
                 onClick={() => {
+                  trigger(20);
                   const evening = new Date();
                   evening.setHours(18, 0, 0, 0); // 6 PM
                   setTempDate(evening);

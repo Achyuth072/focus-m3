@@ -77,20 +77,20 @@ export default function FocusPage() {
         whileTap={isPhone ? { scale: 0.95 } : {}}
         className={cn(
           buttonVariants({ variant: "ghost", size: "icon" }),
-          "absolute top-4 left-4 h-14 w-14 rounded-full hover:bg-secondary/50 active:scale-95 active:bg-secondary/30 transition-all cursor-pointer"
+          "absolute top-4 left-4 h-14 w-14 rounded-full hover:bg-secondary/50 active:scale-95 active:bg-secondary/30 transition-seijaku cursor-pointer"
         )}
       >
         <X className="h-6 w-6" />
       </motion.button>
 
       {/* Mode Badge */}
-      <div className="text-sm font-medium text-muted-foreground uppercase tracking-widest">
+      <div className="type-ui font-medium uppercase">
         {MODE_LABELS[state.mode]}
       </div>
 
       {/* Active Task Name */}
       {activeTask && (
-        <div className="text-lg font-medium text-foreground mt-4 max-w-md text-center px-4">
+        <div className="type-body font-medium text-foreground mt-4 max-w-md text-center px-4">
           {activeTask.content}
         </div>
       )}
@@ -116,7 +116,7 @@ export default function FocusPage() {
         <motion.button
           className={cn(
             buttonVariants({ variant: "ghost", size: "icon" }),
-            "h-14 w-14 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-all cursor-pointer"
+            "h-14 w-14 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-seijaku cursor-pointer"
           )}
           onTapStart={() => trigger(50)}
           whileTap={isPhone ? { scale: 0.95 } : {}}
@@ -129,7 +129,7 @@ export default function FocusPage() {
         <motion.button
           className={cn(
             buttonVariants({ variant: "default", size: "icon" }),
-            "h-20 w-20 rounded-full transition-all hover:scale-105 active:scale-95 active:opacity-90 cursor-pointer"
+            "h-20 w-20 rounded-full transition-seijaku hover:scale-105 active:scale-95 active:opacity-90 cursor-pointer"
           )}
           onTapStart={() => trigger(50)}
           whileTap={isPhone ? { scale: 0.95 } : {}}
@@ -146,7 +146,7 @@ export default function FocusPage() {
         <motion.button
           className={cn(
             buttonVariants({ variant: "ghost", size: "icon" }),
-            "h-14 w-14 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-all cursor-pointer"
+            "h-14 w-14 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-seijaku cursor-pointer"
           )}
           onTapStart={() => trigger(50)}
           whileTap={isPhone ? { scale: 0.95 } : {}}

@@ -81,7 +81,7 @@ export default function SettingsPage() {
               <ArrowLeft className="h-5 w-5" />
               <span className="sr-only">Back</span>
             </Button>
-            <h1 className="text-3xl font-semibold tracking-tight">Settings</h1>
+            <h1 className="type-h1">Settings</h1>
           </div>
           <p className="text-sm text-muted-foreground mt-1">
             Manage your account and preferences
@@ -93,7 +93,7 @@ export default function SettingsPage() {
           {/* Sidebar Navigation (Desktop Only) */}
           <aside className="hidden md:block">
             <div className="sticky top-6 space-y-1">
-              <h1 className="text-3xl font-semibold tracking-tight mb-2">Settings</h1>
+              <h1 className="type-h1 mb-2">Settings</h1>
               <p className="text-sm text-muted-foreground mb-6">
                 Manage your account and preferences
               </p>
@@ -101,7 +101,7 @@ export default function SettingsPage() {
                 <button
                   onClick={() => setActiveTab('appearance')}
                   className={cn(
-                    "block w-full text-left px-3 py-2 text-sm rounded-md transition-colors",
+                    "block w-full text-left px-3 py-2 text-sm rounded-md transition-seijaku-fast",
                     activeTab === 'appearance'
                       ? 'bg-secondary text-foreground font-medium'
                       : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'
@@ -112,7 +112,7 @@ export default function SettingsPage() {
                 <button
                   onClick={() => setActiveTab('account')}
                   className={cn(
-                    "block w-full text-left px-3 py-2 text-sm rounded-md transition-colors",
+                    "block w-full text-left px-3 py-2 text-sm rounded-md transition-seijaku-fast",
                     activeTab === 'account'
                       ? 'bg-secondary text-foreground font-medium'
                       : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'
@@ -130,7 +130,7 @@ export default function SettingsPage() {
             {(!isDesktop || activeTab === 'appearance') && (
               <section className="space-y-4">
                 <div>
-                  <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <h2 className="type-micro font-medium uppercase">
                     Appearance
                   </h2>
                 </div>
@@ -150,7 +150,7 @@ export default function SettingsPage() {
                              setTheme(option.value);
                            }}
                            className={cn(
-                             'flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-colors',
+                             'flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-seijaku-fast',
                              isActive
                                ? 'border-foreground bg-secondary/30'
                                : 'border-border/50 hover:border-border bg-background'
@@ -175,7 +175,7 @@ export default function SettingsPage() {
             {!isDesktop && (
               <section className="space-y-4">
                 <div>
-                  <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <h2 className="type-micro font-medium uppercase">
                     Preferences
                   </h2>
                 </div>
@@ -206,7 +206,7 @@ export default function SettingsPage() {
             {isGuestMode && (!isDesktop || activeTab === 'account') && (
               <section className="space-y-4">
                 <div>
-                  <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <h2 className="type-micro font-medium uppercase">
                     Guest Mode
                   </h2>
                 </div>
@@ -251,7 +251,7 @@ export default function SettingsPage() {
             {(!isDesktop || activeTab === 'account') && (
               <section className="space-y-4">
                 <div>
-                  <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <h2 className="type-micro font-medium uppercase">
                     Account
                   </h2>
                 </div>

@@ -39,7 +39,7 @@ export default function StatsPage() {
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight">Statistics</h1>
+          <h1 className="type-h1">Statistics</h1>
           <p className="text-sm text-muted-foreground mt-1">
             Track your productivity and progress
           </p>
@@ -52,13 +52,13 @@ export default function StatsPage() {
             title="Total Focus"
             value={`${stats?.totalFocusHours || 0}h`}
             icon={Clock}
-            trend={{ value: 15, isPositive: true }}
+            trend={stats?.trends?.focus}
           />
           <MetricCard
             title="Tasks Completed"
             value={stats?.tasksCompleted.toString() || "0"}
             icon={CheckCircle2}
-            trend={{ value: 8, isPositive: true }}
+            trend={stats?.trends?.tasks}
           />
           <MetricCard
             title="Current Streak"
@@ -69,7 +69,7 @@ export default function StatsPage() {
             title="Completion Rate"
             value={`${stats?.completionRate || 0}%`}
             icon={Target}
-            trend={{ value: 3, isPositive: false }}
+            trend={stats?.trends?.rate}
           />
         </div>
 

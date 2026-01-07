@@ -91,7 +91,7 @@ function TaskGroup({ title, tasks }: { title: string; tasks: Task[] }) {
 
   return (
     <div className="space-y-0">
-      <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground/60 px-6 py-3 border-b border-border/40">
+      <h3 className="type-micro font-semibold uppercase px-6 py-3 border-b border-border/40">
         {title}
       </h3>
       <div className="space-y-0">
@@ -171,7 +171,7 @@ export function CompletedTasksSheet({ open, onOpenChange }: CompletedTasksSheetP
           <DialogHeader className="flex-row items-center justify-between space-y-0 px-6 py-4 border-b border-border/50">
             <DialogTitle className="flex items-center gap-2 cursor-default">
               <CheckCircle2 className="h-4 w-4 text-green-500" />
-              <span className="text-lg font-semibold tracking-tight">Logbook</span>
+              <span className="type-h2">Logbook</span>
             </DialogTitle>
             <div className="flex items-center gap-2 pr-8">
               {completedTasks.length > 0 && (
@@ -182,7 +182,7 @@ export function CompletedTasksSheet({ open, onOpenChange }: CompletedTasksSheetP
                     trigger(50);
                     setShowClearDialog(true);
                   }}
-                  className="h-8 gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all rounded-sm"
+                  className="h-8 gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-seijaku-fast rounded-sm"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                   <span className="text-xs">Clear History</span>
@@ -225,16 +225,16 @@ export function CompletedTasksSheet({ open, onOpenChange }: CompletedTasksSheetP
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerContent className="max-h-[90vh] flex flex-col">
           <div className="flex flex-row items-center justify-between border-b border-border px-6 py-4">
-            <DrawerTitle className="flex items-center gap-2 text-base font-semibold">
+            <DrawerTitle className="flex items-center gap-2">
               <CheckCircle2 className="h-5 w-5 text-green-500" />
-              Logbook
+              <span className="type-h2">Logbook</span>
             </DrawerTitle>
             <div className="flex items-center gap-2">
               {completedTasks.length > 0 && (
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-10 w-10 text-muted-foreground active:bg-destructive/10 active:text-destructive active:scale-95 transition-all rounded-md"
+                  className="h-10 w-10 text-muted-foreground active:bg-destructive/10 active:text-destructive active:scale-95 transition-seijaku-fast rounded-md"
                   onClick={() => {
                     trigger(50);
                     setShowClearDialog(true);

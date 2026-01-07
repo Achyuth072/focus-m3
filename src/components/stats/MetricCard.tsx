@@ -20,10 +20,10 @@ export function MetricCard({ title, value, icon: Icon, trend, className }: Metri
     <Card className={cn('p-6 border-border/50', className)}>
       <div className="flex items-start justify-between">
         <div className="space-y-2">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          <p className="type-ui uppercase">
             {title}
           </p>
-          <p className="text-4xl font-semibold tracking-tight">
+          <p className="text-4xl font-semibold tracking-[-0.02em]">
             {value}
           </p>
           {trend && (

@@ -66,6 +66,9 @@ export default function RecurrencePicker({
                 ? "text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary"
                 : "text-muted-foreground hover:text-foreground hover:bg-accent"
             )}
+            onClick={() => {
+              trigger(25);
+            }}
             title={formatRecurrenceRule(value)}
           >
             <Repeat className="h-5 w-5 transition-all" strokeWidth={2} />

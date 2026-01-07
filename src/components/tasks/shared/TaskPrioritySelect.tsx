@@ -41,7 +41,7 @@ export function TaskPrioritySelect({
     >
       <SelectTrigger
         className={cn(
-          "h-10 border-none transition-all shrink-0 focus:ring-0 [&>svg]:hidden group dark:bg-white/[0.03] dark:border dark:border-white/10",
+          "h-10 border border-transparent transition-all shrink-0 focus:ring-0 [&>svg]:hidden group dark:bg-white/[0.03] dark:border-white/10",
           isCompact
             ? cn(
                 "px-0",

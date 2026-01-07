@@ -71,16 +71,16 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
     <div className={cn('flex items-center justify-between gap-2 p-2 md:gap-4 md:p-4 border-b border-l bg-sidebar', className)}>
       {/* Left: Date Navigation */}
       <div className="flex items-center gap-1 md:gap-2">
-        <Button variant="outline" size={isMobile ? "icon" : "sm"} onClick={() => { trigger(30); goToToday(); }} className={cn(isMobile && "h-8 w-8", "dark:bg-white/[0.03] dark:border-white/10")}>
+        <Button variant="outline" size={isMobile ? "icon" : "sm"} onClick={() => { trigger(30); goToToday(); }} className={cn(isMobile && "h-8 w-8", "dark:bg-white/[0.03] dark:border-white/10 dark:hover:bg-white/10")}>
           <CalendarIcon className="h-4 w-4 md:mr-2" />
           <span className="hidden md:inline">Today</span>
         </Button>
         
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" onClick={() => { trigger(30); prev(); }}>
+          <Button variant="ghost" size="icon" onClick={() => { trigger(30); prev(); }} className="dark:hover:bg-white/10">
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => { trigger(30); next(); }}>
+          <Button variant="ghost" size="icon" onClick={() => { trigger(30); next(); }} className="dark:hover:bg-white/10">
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
@@ -95,7 +95,7 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
         trigger(25);
         setView(v as CalendarView);
       }}>
-        <SelectTrigger className="w-[105px] md:w-[140px] h-8 md:h-9 text-xs md:text-sm px-3 font-medium bg-background hover:bg-accent hover:text-accent-foreground transition-colors dark:bg-white/[0.03] dark:border-white/10">
+        <SelectTrigger className="w-[105px] md:w-[140px] h-8 md:h-9 text-xs md:text-sm px-3 font-medium bg-background hover:bg-accent hover:text-accent-foreground transition-colors dark:bg-white/[0.03] dark:border-white/10 dark:hover:bg-white/10">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
