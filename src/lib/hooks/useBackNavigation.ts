@@ -74,7 +74,11 @@ export function useBackNavigation(isOpen: boolean, onClose: () => void) {
         const idx = modalStack.indexOf(modalIdRef.current!);
         if (idx !== -1) modalStack.splice(idx, 1);
 
-        window.history.back();
+        // Only go back if we are still on the entry we pushed
+        // This prevents cancelling a concurrent forward navigation
+        if (window.history.state?.modalId === modalIdRef.current) {
+          window.history.back();
+        }
       }
     }
   }, [isOpen, handlePopState]);

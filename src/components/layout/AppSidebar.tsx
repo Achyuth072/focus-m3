@@ -1,6 +1,7 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { useEffect } from 'react';
 import {
   Sidebar,
@@ -232,16 +233,19 @@ export function AppSidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  onClick={() => {
-                    trigger(20);
-                    router.push('/settings');
-                    setOpenMobile(false);
-                  }}
+                  asChild
                   isActive={pathname === '/settings'}
                   tooltip="Settings"
                 >
-                  <Settings className="h-5 w-5" />
-                  <span>Settings</span>
+                  <Link 
+                    href="/settings"
+                    onClick={() => {
+                      trigger(20);
+                    }}
+                  >
+                    <Settings className="h-5 w-5" />
+                    <span>Settings</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

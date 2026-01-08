@@ -4,6 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { PanelLeft } from "lucide-react"
 
 import { useIsMobile } from "@/lib/hooks/useIsMobile"
+import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -74,7 +75,14 @@ const SidebarProvider = React.forwardRef<
     ref
   ) => {
     const isMobile = useIsMobile()
+    const pathname = usePathname()
     const [openMobile, setOpenMobile] = React.useState(false)
+
+    React.useEffect(() => {
+      if (isMobile) {
+        setOpenMobile(false);
+      }
+    }, [pathname, isMobile]);
 
 
     const [_open, _setOpen] = React.useState(defaultOpen)
@@ -180,8 +188,9 @@ const Sidebar = React.forwardRef<
     ref
   ) => {
     const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
-
-    useBackNavigation(isMobile && openMobile, () => setOpenMobile(false))
+    useBackNavigation(isMobile && openMobile, () => {
+      setOpenMobile(false);
+    });
 
     if (isMobile) {
       return (
