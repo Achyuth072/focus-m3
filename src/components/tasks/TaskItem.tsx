@@ -32,10 +32,8 @@ import { useHaptic } from "@/lib/hooks/useHaptic";
 interface TaskItemProps {
   task: Task;
   onSelect?: (task: Task) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dragListeners?: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dragAttributes?: any;
+  dragListeners?: Record<string, Function>;
+  dragAttributes?: Record<string, unknown>;
   isDragging?: boolean;
   isKeyboardSelected?: boolean;
 }

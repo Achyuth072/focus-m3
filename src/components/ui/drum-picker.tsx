@@ -232,8 +232,7 @@ function DrumItem({
         opacity,
         scale,
         color,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        fontWeight: fontWeight as any, // Cast to any to avoid type complaints with numeric font weights in framer
+        fontWeight,
       }}
       className="w-full flex items-center justify-center tabular-nums backface-invisible text-lg" // Default base styles
     >

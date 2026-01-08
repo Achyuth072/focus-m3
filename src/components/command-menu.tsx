@@ -26,6 +26,7 @@ import {
   Layers,
   Clock,
   Filter,
+  Command as CommandIcon,
 } from "lucide-react"
 
 import {
@@ -83,6 +84,17 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
   return (
     <>
       <CommandDialog open={open} onOpenChange={onOpenChange}>
+        <div className="p-6 pb-3 border-b border-border/40 bg-muted/20">
+          <div className="flex items-center gap-2.5">
+            <CommandIcon className="h-5 w-5 text-muted-foreground/70" />
+            <h2 className="text-[22px] font-semibold tracking-tight text-foreground">
+              Command Menu
+            </h2>
+          </div>
+          <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium pt-1">
+            Quick Actions & Navigation
+          </p>
+        </div>
         <CommandInput placeholder="Type a command or search..." />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>

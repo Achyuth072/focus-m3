@@ -248,22 +248,11 @@ export function useToggleTask() {
         }
       }
 
-      console.log("[Recurring Task Debug]", {
-        is_completed,
-        recurrenceRule,
-        hasRecurrence: !!recurrenceRule,
-      });
-
       if (is_completed && recurrenceRule) {
         const { calculateNextDueDate } = await import("@/lib/utils/recurrence");
 
         const completedDate = new Date();
         const nextDueDate = calculateNextDueDate(completedDate, recurrenceRule);
-
-        console.log("[Recurring Task Debug] Creating next instance:", {
-          nextDueDate: nextDueDate.toISOString(),
-          content: currentTask.content,
-        });
 
         // Create new task instance
         const { data: newTask, error: createError } = await supabase
@@ -286,7 +275,6 @@ export function useToggleTask() {
         if (createError) {
           console.error("Failed to create recurring task:", createError);
         } else {
-          console.log("[Recurring Task Debug] New task created:", newTask);
           newRecurringTask = newTask as Task;
         }
       }

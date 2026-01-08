@@ -74,13 +74,13 @@ export function ShortcutsHelp({ open, onOpenChange }: ShortcutsHelpProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
             {SHORTCUTS.map((group) => (
               <div key={group.title} className="space-y-4">
-                <h3 className="text-[15px] font-bold tracking-tight text-foreground pb-2 border-b border-border">
+                <h3 className="text-[15px] font-bold tracking-tight text-foreground pb-2 border-b border-border/40">
                   {group.title}
                 </h3>
                 <div className="space-y-3.5">
                   {group.shortcuts.map((shortcut, i) => (
                     <div key={i} className="flex items-center justify-between text-[14px]">
-                      <span className="text-foreground/80 font-medium">{shortcut.description}</span>
+                      <span className="text-foreground/90 font-medium">{shortcut.description}</span>
                       <div className="flex items-center gap-2">
                         {shortcut.keys.map((key) => (
                           <kbd
