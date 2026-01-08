@@ -43,6 +43,7 @@ export default function TaskSheet({
   // Update preserved task only when dialog opens with a new task
   useEffect(() => {
     if (open && initialTask !== undefined) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPreservedTask(initialTask);
     }
   }, [open, initialTask]);
@@ -75,10 +76,11 @@ export default function TaskSheet({
   const isMobile = useMediaQuery("(max-width: 768px)");
   const { trigger } = useHaptic();
 
-  // Reset form when dialog opens
+  // Reset form when dialog opens - intentional sync on open
   useEffect(() => {
     if (open) {
       if (initialTask) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional form reset
         setContent(initialTask.content);
         setDescription(initialTask.description || "");
         setDueDate(initialTask.due_date ? new Date(initialTask.due_date) : undefined);

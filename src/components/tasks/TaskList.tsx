@@ -162,12 +162,13 @@ export default function TaskList({ sortBy = 'date', groupBy = 'none', projectId,
 
   }, [tasks, sortBy, groupBy]);
 
-  // Sync local tasks with processed tasks (skip if just dragged)
+  // Sync local tasks with processed tasks (skip if just dragged for optimistic UI)
   useEffect(() => {
     if (justDragged.current) {
       justDragged.current = false;
       return; // Skip sync - keep optimistic order
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLocalTasks(processedTasks.active);
   }, [processedTasks.active]);
   

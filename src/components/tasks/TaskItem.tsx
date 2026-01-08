@@ -32,7 +32,7 @@ import { useHaptic } from "@/lib/hooks/useHaptic";
 interface TaskItemProps {
   task: Task;
   onSelect?: (task: Task) => void;
-  dragListeners?: Record<string, Function>;
+  dragListeners?: Record<string, (event: unknown) => void>;
   dragAttributes?: Record<string, unknown>;
   isDragging?: boolean;
   isKeyboardSelected?: boolean;

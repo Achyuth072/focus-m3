@@ -1,7 +1,7 @@
 'use client';
 
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import TaskSheet from '@/components/tasks/TaskSheet';
 
@@ -9,9 +9,10 @@ function SharePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
-  const [sharedContent, setSharedContent] = useState('');
+  const hasRedirected = useRef(false);
 
-  useEffect(() => {
+  // Derive shared content from URL params - no setState needed
+  const sharedContent = useMemo(() => {
     const title = searchParams.get('title') || '';
     const text = searchParams.get('text') || '';
     const url = searchParams.get('url') || '';
@@ -29,14 +30,20 @@ function SharePageContent() {
       content = content ? `${content}\n${url}` : url;
     }
 
-    if (content) {
-      setSharedContent(content);
+    return content;
+  }, [searchParams]);
+
+  // Handle opening/redirecting based on content - one-time effect on mount
+  useEffect(() => {
+    if (sharedContent) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsOpen(true);
-    } else {
+    } else if (!hasRedirected.current) {
       // No content shared, redirect to home
+      hasRedirected.current = true;
       router.push('/');
     }
-  }, [searchParams, router]);
+  }, [sharedContent, router]);
 
   const handleClose = () => {
     setIsOpen(false);

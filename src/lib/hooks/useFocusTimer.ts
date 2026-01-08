@@ -69,39 +69,35 @@ function getDurationForMode(mode: TimerMode, settings: TimerSettings): number {
  */
 export function useFocusTimer() {
   const queryClient = useQueryClient();
-  const [settings, setSettingsState] = useState<TimerSettings>(
-    DEFAULT_TIMER_SETTINGS
+
+  // Lazy initialization: runs once on mount, SSR-safe
+  const [settings, setSettingsState] = useState<TimerSettings>(() =>
+    loadSettings()
   );
-  const [state, setState] = useState<TimerState>({
-    mode: "focus",
-    isRunning: false,
-    remainingSeconds: DEFAULT_TIMER_SETTINGS.focusDuration * 60,
-    completedSessions: 0,
-    activeTaskId: null,
+
+  const [state, setState] = useState<TimerState>(() => {
+    const storedState = loadState();
+    if (storedState) {
+      return storedState;
+    }
+    // Use loaded settings for initial remaining seconds
+    const initialSettings = loadSettings();
+    return {
+      mode: "focus" as TimerMode,
+      isRunning: false,
+      remainingSeconds: initialSettings.focusDuration * 60,
+      completedSessions: 0,
+      activeTaskId: null,
+    };
   });
-  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Track if hydration is complete (for UI purposes)
+  const isLoaded = typeof window !== "undefined";
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const supabase = createClient();
   const { isGuestMode } = useAuth();
   const { play } = useFocusSounds();
-
-  // Load from localStorage on mount
-  useEffect(() => {
-    const storedSettings = loadSettings();
-    setSettingsState(storedSettings);
-
-    const storedState = loadState();
-    if (storedState) {
-      setState(storedState);
-    } else {
-      setState((prev) => ({
-        ...prev,
-        remainingSeconds: storedSettings.focusDuration * 60,
-      }));
-    }
-    setIsLoaded(true);
-  }, []);
 
   // Persist state changes
   useEffect(() => {
