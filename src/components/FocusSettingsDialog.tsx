@@ -292,14 +292,14 @@ export function FocusSettingsDialog() {
           Adjust Settings
         </motion.button>
       </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader className="text-left">
+      <DrawerContent className="max-h-[92dvh] flex flex-col">
+        <DrawerHeader className="text-left shrink-0">
           <DrawerTitle>Timer Settings</DrawerTitle>
           <DrawerDescription>
             Customize your focus and break durations
           </DrawerDescription>
         </DrawerHeader>
-        <div className="px-4">
+        <div className="px-4 overflow-y-auto flex-1">
           <SettingsForm 
             focusDuration={focusDuration}
             setFocusDuration={setFocusDuration}
@@ -315,7 +315,7 @@ export function FocusSettingsDialog() {
             setAutoStartFocus={setAutoStartFocus}
           />
         </div>
-        <DrawerFooter className="pt-2">
+        <DrawerFooter className="pt-2 shrink-0 pb-[calc(1rem+env(safe-area-inset-bottom))]">
           <Button onClick={handleSave}>Save Changes</Button>
           <DrawerClose asChild>
             <Button variant="outline" onClick={handleCancel}>Cancel</Button>

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { useHaptic } from "@/lib/hooks/useHaptic"
+import { useBackNavigation } from "@/lib/hooks/useBackNavigation"
 import {
   Sheet,
   SheetContent,
@@ -179,6 +180,8 @@ const Sidebar = React.forwardRef<
     ref
   ) => {
     const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+
+    useBackNavigation(isMobile && openMobile, () => setOpenMobile(false))
 
     if (isMobile) {
       return (

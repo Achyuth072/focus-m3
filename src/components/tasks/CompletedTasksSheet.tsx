@@ -230,7 +230,7 @@ export function CompletedTasksSheet({ open, onOpenChange }: CompletedTasksSheetP
   return (
     <>
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="max-h-[90vh] flex flex-col">
+        <DrawerContent className="max-h-[92dvh] flex flex-col">
           <div className="flex flex-row items-center justify-between border-b border-border px-6 py-4">
             <DrawerTitle className="flex items-center gap-2">
               <CheckCircle2 className="h-5 w-5 text-green-500" />

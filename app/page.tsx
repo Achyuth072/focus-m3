@@ -11,6 +11,7 @@ import { TasksPageHeader } from '@/components/tasks/TasksPageHeader';
 import { useUiStore } from '@/lib/store/uiStore';
 import { useTaskActions } from '@/components/TaskActionsProvider';
 import { PlusIcon } from 'lucide-react';
+import { useHaptic } from '@/lib/hooks/useHaptic';
 
 const fadeIn = {
   initial: { opacity: 0, y: 10 },
@@ -24,6 +25,7 @@ function HomeContent() {
   const searchParams = useSearchParams();
   const { sortBy, groupBy, setSortBy, setGroupBy } = useUiStore();
   const { openAddTask } = useTaskActions();
+  const { trigger } = useHaptic();
 
   const currentProjectId = searchParams.get('project') || 'all';
   const filter = searchParams.get('filter') || undefined;
@@ -62,7 +64,10 @@ function HomeContent() {
                   {filter === 'p1' ? 'High Priority' : filter}
                 </span>
                 <button 
-                  onClick={() => router.push('/')}
+                  onClick={() => {
+                    trigger(15);
+                    router.push('/');
+                  }}
                   className="hover:bg-accent/60 p-0.5 rounded-full transition-colors"
                   title="Clear filter"
                 >

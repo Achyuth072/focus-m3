@@ -53,16 +53,16 @@ export function CreateProjectDialog({ open, onOpenChange }: CreateProjectDialogP
 
   return (
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
-      <ResponsiveDialogContent className="sm:max-w-[400px]">
-        <form onSubmit={handleSubmit}>
-          <ResponsiveDialogHeader>
+      <ResponsiveDialogContent className="sm:max-w-[400px] p-0 overflow-hidden">
+        <form onSubmit={handleSubmit} className="flex flex-col h-full max-h-[90dvh]">
+          <ResponsiveDialogHeader className="px-4 pt-6 shrink-0">
             <ResponsiveDialogTitle>Create Project</ResponsiveDialogTitle>
             <ResponsiveDialogDescription>
               Organize your tasks into a new project.
             </ResponsiveDialogDescription>
           </ResponsiveDialogHeader>
 
-          <div className="grid gap-4 py-4 px-4 sm:px-0">
+          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
             <div className="grid gap-2">
               <Label htmlFor="name">Name</Label>
               <Input
@@ -71,7 +71,7 @@ export function CreateProjectDialog({ open, onOpenChange }: CreateProjectDialogP
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Work, Personal, School..."
                 autoFocus
-                className="h-12 sm:h-10"
+                className="h-12 sm:h-10 text-base"
               />
             </div>
 
@@ -103,7 +103,7 @@ export function CreateProjectDialog({ open, onOpenChange }: CreateProjectDialogP
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t px-4 sm:px-0 pb-[calc(0.5rem+env(safe-area-inset-bottom))]">
+          <div className="shrink-0 flex justify-end gap-3 p-4 border-t pb-[calc(1rem+env(safe-area-inset-bottom))] bg-background">
             <Button type="button" variant="ghost" onClick={() => {
               trigger(10);
               onOpenChange(false);

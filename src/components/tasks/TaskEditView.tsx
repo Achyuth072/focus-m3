@@ -105,7 +105,7 @@ export function TaskEditView({
   const { trigger } = useHaptic();
 
   return (
-    <div className="flex flex-col h-full max-h-[85vh] w-full max-w-full overflow-hidden">
+    <div className="flex flex-col h-full max-h-[90dvh] w-full max-w-full overflow-hidden">
       <ResponsiveDialogHeader className="pb-4 shrink-0">
         <ResponsiveDialogTitle>Edit Task</ResponsiveDialogTitle>
       </ResponsiveDialogHeader>

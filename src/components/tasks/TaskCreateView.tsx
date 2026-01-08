@@ -89,12 +89,12 @@ export function TaskCreateView({
   const { trigger } = useHaptic();
 
   return (
-    <>
-      <ResponsiveDialogHeader className="pb-4">
+    <div className="flex flex-col h-full max-h-[90dvh] w-full overflow-hidden">
+      <ResponsiveDialogHeader className="pb-4 shrink-0">
         <ResponsiveDialogTitle>New Task</ResponsiveDialogTitle>
       </ResponsiveDialogHeader>
 
-      <div className="px-4 sm:px-0">
+      <div className="flex-1 overflow-y-auto px-4 sm:px-0 space-y-2 scrollbar-thin">
         {/* Task Name Input */}
         <Textarea
           autoFocus
@@ -102,12 +102,11 @@ export function TaskCreateView({
           value={content}
           onChange={(e) => setContent(e.target.value)}
           onKeyDown={onKeyDown}
-          className="min-h-[60px] text-lg font-medium resize-none border-none shadow-none focus-visible:ring-0 p-0 placeholder:text-muted-foreground/70"
+          className="min-h-[80px] text-lg font-medium resize-none border-none shadow-none focus-visible:ring-0 p-0 placeholder:text-muted-foreground/70"
         />
 
         {/* Icon Row - Metadata Controls */}
-        <div className="flex items-center gap-2 pt-4 pb-3 overflow-x-auto scrollbar-hide flex-wrap">
-          {/* Date Picker */}
+        <div className="flex items-center gap-2 pt-2 pb-3 overflow-x-auto scrollbar-hide flex-wrap">
           <TaskDatePicker
             date={dueDate}
             setDate={setDueDate}
@@ -120,7 +119,6 @@ export function TaskCreateView({
             sideOffset={15}
           />
 
-          {/* Start Date (Do Date) */}
           <TaskDatePicker
             date={doDate}
             setDate={setDoDate}
@@ -136,7 +134,6 @@ export function TaskCreateView({
             activeClassName="text-green-600 dark:text-green-400 border-green-500/50 bg-green-500/10"
           />
 
-          {/* This Evening Toggle */}
           <Button
             variant="outline"
             size="sm"
@@ -158,7 +155,6 @@ export function TaskCreateView({
             {!isMobile && <span className="text-xs font-medium">Evening</span>}
           </Button>
 
-          {/* Subtask Toggle */}
           <Button
             variant="outline"
             size="sm"
@@ -175,7 +171,6 @@ export function TaskCreateView({
             <ListChecks strokeWidth={2} className="transition-all" />
           </Button>
 
-          {/* Priority Selector */}
           <div className="shrink-0">
             <TaskPrioritySelect
               priority={priority}
@@ -184,7 +179,6 @@ export function TaskCreateView({
             />
           </div>
 
-          {/* Recurrence Picker */}
           <div className="shrink-0">
             <RecurrencePicker
               value={recurrence}
@@ -208,8 +202,7 @@ export function TaskCreateView({
       </div>
 
       {/* Footer Row - Project & Send */}
-      <div className="flex items-center justify-between pt-4 border-t mt-3 px-4 sm:px-0 pb-[calc(0.5rem+env(safe-area-inset-bottom))]">
-        {/* Project Selector */}
+      <div className="shrink-0 flex items-center justify-between pt-4 border-t mt-3 px-4 sm:px-0 pb-[calc(0.5rem+env(safe-area-inset-bottom))] bg-background">
         <Select
           value={selectedProjectId || "inbox"}
           onValueChange={(v) => {
@@ -246,7 +239,6 @@ export function TaskCreateView({
           </SelectContent>
         </Select>
 
-        {/* Send Button */}
         <Button
           size="sm"
           className="h-10 w-10 p-0 rounded-md [&_svg]:size-5"
@@ -260,6 +252,6 @@ export function TaskCreateView({
           <Send className="stroke-[1.5px]" />
         </Button>
       </div>
-    </>
+    </div>
   );
 }

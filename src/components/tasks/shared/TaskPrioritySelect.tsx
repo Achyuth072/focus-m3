@@ -38,6 +38,9 @@ export function TaskPrioritySelect({
         trigger(25);
         setPriority(parseInt(v) as 1 | 2 | 3 | 4);
       }}
+      onOpenChange={(open) => {
+        if (!open) trigger(10);
+      }}
     >
       <SelectTrigger
         onPointerDown={() => trigger(15)}
