@@ -5,6 +5,7 @@ import { motion, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DeleteConfirmationDialog } from "@/components/ui/DeleteConfirmationDialog";
 import { useDeleteTask, useToggleTask } from "@/lib/hooks/useTaskMutations";
+import { DraggableAttributes, DraggableSyntheticListeners } from "@dnd-kit/core";
 import { format, isToday, isTomorrow, isPast, parseISO } from "date-fns";
 import {
   Calendar,
@@ -32,8 +33,8 @@ import { useHaptic } from "@/lib/hooks/useHaptic";
 interface TaskItemProps {
   task: Task;
   onSelect?: (task: Task) => void;
-  dragListeners?: Record<string, (event: unknown) => void>;
-  dragAttributes?: Record<string, unknown>;
+  dragListeners?: DraggableSyntheticListeners;
+  dragAttributes?: DraggableAttributes;
   isDragging?: boolean;
   isKeyboardSelected?: boolean;
 }
