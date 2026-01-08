@@ -80,7 +80,7 @@ export function DeleteConfirmationDialog({
   }
 
   return (
-    <Drawer open={isOpen} onOpenChange={onClose}>
+    <Drawer open={isOpen} onOpenChange={onClose} repositionInputs={false}>
       <DrawerContent>
         <DrawerHeader className="text-left">
           <DrawerTitle>{title}</DrawerTitle>

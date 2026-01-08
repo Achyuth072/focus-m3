@@ -278,7 +278,7 @@ export function FocusSettingsDialog() {
   }
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer open={open} onOpenChange={setOpen} repositionInputs={false}>
       <DrawerTrigger asChild>
         <motion.button
           className={cn(

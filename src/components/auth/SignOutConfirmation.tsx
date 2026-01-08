@@ -74,7 +74,7 @@ export function SignOutConfirmation({
   }
 
   return (
-    <Drawer open={isOpen} onOpenChange={onClose}>
+    <Drawer open={isOpen} onOpenChange={onClose} repositionInputs={false}>
       <DrawerContent>
         <DrawerHeader className="text-left">
           <DrawerTitle className="flex items-center gap-2">

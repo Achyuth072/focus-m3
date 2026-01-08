@@ -229,7 +229,7 @@ export function CompletedTasksSheet({ open, onOpenChange }: CompletedTasksSheetP
 
   return (
     <>
-      <Drawer open={open} onOpenChange={onOpenChange}>
+      <Drawer open={open} onOpenChange={onOpenChange} repositionInputs={false}>
         <DrawerContent className="max-h-[92dvh] flex flex-col">
           <div className="flex flex-row items-center justify-between border-b border-border px-6 py-4">
             <DrawerTitle className="flex items-center gap-2">
