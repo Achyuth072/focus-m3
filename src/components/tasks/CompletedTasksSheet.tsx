@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { DeleteConfirmationDialog } from '@/components/ui/DeleteConfirmationDialog';
 import { Input } from '@/components/ui/input';
 import { useHaptic } from '@/lib/hooks/useHaptic';
+import { useBackNavigation } from '@/lib/hooks/useBackNavigation';
 
 interface CompletedTasksSheetProps {
   open: boolean;
@@ -112,6 +113,10 @@ export function CompletedTasksSheet({ open, onOpenChange }: CompletedTasksSheetP
   const [showClearDialog, setShowClearDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { trigger } = useHaptic();
+
+  // Handle back navigation on mobile to close drawer instead of navigating away
+  // Handle back navigation on mobile to close drawer instead of navigating away
+  useBackNavigation(open && !isDesktop, () => onOpenChange(false));
 
   const completedTasks = tasks.filter((task) => task.is_completed);
   

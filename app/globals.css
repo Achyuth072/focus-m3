@@ -58,12 +58,12 @@
   /* Seijaku Physics - Energized Calm */
   /* The "Settled" Spring: Quick response, no bounce, immediate damping */
   --ease-seijaku: cubic-bezier(0.32, 0.72, 0, 1);
-  
+
   /* Legacy Springs (kept for compatibility) */
   --ease-spring-s: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-spring-m: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-spring-bouncy: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  
+
   /* Framer Motion Constants (for JS animations) */
   /* Use these in motion components:
      transition={{ type: "spring", mass: 1, stiffness: 280, damping: 60 }}
@@ -185,6 +185,14 @@ input[type="radio"] {
   user-select: none;
 }
 
+/* Vaul Drawer - Faster close animation for responsive back navigation */
+[vaul-drawer] {
+  transition: transform 120ms cubic-bezier(0.32, 0.72, 0, 1) !important;
+}
+[vaul-drawer][vaul-drawer-direction="bottom"] {
+  transition: transform 120ms cubic-bezier(0.32, 0.72, 0, 1) !important;
+}
+
 input,
 textarea,
 select {
@@ -200,7 +208,7 @@ select {
     letter-spacing: -0.03em;
     line-height: 1.1;
   }
-  
+
   @media (min-width: 768px) {
     .type-h1 {
       font-size: 32px;
@@ -214,7 +222,7 @@ select {
     letter-spacing: -0.02em;
     line-height: 1.2;
   }
-  
+
   @media (min-width: 768px) {
     .type-h2 {
       font-size: 24px;
@@ -236,7 +244,7 @@ select {
     letter-spacing: normal;
     line-height: 1.5;
   }
-  
+
   @media (min-width: 768px) {
     .type-body {
       font-size: 15px;
@@ -248,7 +256,7 @@ select {
     font-size: 13px;
     font-weight: 500;
     letter-spacing: 0.01em;
-    line-height: 1.0;
+    line-height: 1;
   }
 
   /* Micro - Helpers, Footers */
@@ -256,7 +264,7 @@ select {
     font-size: 11px;
     font-weight: 400;
     letter-spacing: 0.02em;
-    line-height: 1.0;
+    line-height: 1;
   }
 
   /* Touch - Explicit 16px for inputs (mobile) */
@@ -269,13 +277,13 @@ select {
     transition-timing-function: var(--ease-seijaku);
     transition-duration: 300ms;
   }
-  
+
   /* Seijaku variants for different durations */
   .transition-seijaku-fast {
     transition-timing-function: cubic-bezier(0.1, 1, 0.2, 1);
     transition-duration: 150ms;
   }
-  
+
   .transition-seijaku-slow {
     transition-timing-function: var(--ease-seijaku);
     transition-duration: 500ms;

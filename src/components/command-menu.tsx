@@ -46,6 +46,7 @@ import { useSidebar } from "@/components/ui/sidebar"
 import { SignOutConfirmation } from "@/components/auth/SignOutConfirmation"
 import { useDocumentPiP } from "@/lib/hooks/useDocumentPiP"
 import { useUiStore } from "@/lib/store/uiStore"
+import { useBackNavigation } from "@/lib/hooks/useBackNavigation"
 
 interface CommandMenuProps {
   open: boolean;
@@ -66,6 +67,10 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
   const { openPiP, closePiP, isPiPActive } = useDocumentPiP()
   const { setShortcutsHelpOpen, setSortBy, setGroupBy } = useUiStore()
   const [copied, setCopied] = React.useState(false)
+  
+  // Handle back navigation to close command menu instead of navigating away
+  // Handle back navigation to close command menu instead of navigating away
+  useBackNavigation(open, () => onOpenChange(false));
   
   // Internal shortcut listener removed in favor of GlobalHotkeys
 

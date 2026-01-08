@@ -24,6 +24,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
 import { useHaptic } from '@/lib/hooks/useHaptic';
+import { useBackNavigation } from '@/lib/hooks/useBackNavigation';
 
 interface SignOutConfirmationProps {
   isOpen: boolean;
@@ -38,6 +39,9 @@ export function SignOutConfirmation({
 }: SignOutConfirmationProps) {
   const isDesktop = useMediaQuery('(min-width: 768px)');
   const { trigger } = useHaptic();
+
+  // Handle back navigation on mobile to close drawer instead of navigating away
+  useBackNavigation(isOpen && !isDesktop, onClose);
 
   if (isDesktop) {
     return (

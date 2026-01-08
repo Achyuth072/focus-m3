@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
+import { useBackNavigation } from "@/lib/hooks/useBackNavigation";
 import {
   Dialog,
   DialogContent,
@@ -53,6 +54,9 @@ export function ResponsiveDialog({
   children,
 }: ResponsiveDialogProps) {
   const isMobile = useMediaQuery("(max-width: 640px)");
+
+  // Handle back navigation on mobile to close drawer instead of navigating away
+  useBackNavigation(isMobile && open, () => onOpenChange(false));
 
   if (isMobile) {
     return (

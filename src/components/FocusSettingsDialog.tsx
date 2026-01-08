@@ -30,6 +30,7 @@ import { Slider } from '@/components/ui/slider';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { useTimer } from '@/components/TimerProvider';
+import { useBackNavigation } from '@/lib/hooks/useBackNavigation';
 
 // Extracted settings form component to prevent recreation on every render
 function SettingsForm({
@@ -202,6 +203,9 @@ export function FocusSettingsDialog() {
   const [sessions, setSessions] = useState(settings.sessionsBeforeLongBreak);
   const [autoStartBreak, setAutoStartBreak] = useState(settings.autoStartBreak);
   const [autoStartFocus, setAutoStartFocus] = useState(settings.autoStartFocus);
+
+  // Handle back navigation on mobile to close drawer instead of navigating away
+  useBackNavigation(open && !isDesktop, () => setOpen(false));
 
 
 
