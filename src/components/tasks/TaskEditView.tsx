@@ -105,13 +105,13 @@ export function TaskEditView({
   const { trigger } = useHaptic();
 
   return (
-    <div className="flex flex-col h-full max-h-[90dvh] w-full max-w-full overflow-hidden">
+    <div className="flex flex-col h-auto max-h-[90dvh] w-full max-w-full overflow-hidden">
       <ResponsiveDialogHeader className="pb-4 shrink-0">
         <ResponsiveDialogTitle>Edit Task</ResponsiveDialogTitle>
       </ResponsiveDialogHeader>
 
       {/* Scrollable Content Area */}
-      <div className="flex-1 overflow-y-auto px-4 sm:pl-0 sm:pr-4 space-y-4 scrollbar-thin w-full">
+      <div className="flex-1 overflow-y-auto min-h-0 px-4 sm:pl-0 sm:pr-4 space-y-4 scrollbar-thin w-full">
         {/* Content Input */}
         <Textarea
           autoFocus

@@ -54,7 +54,7 @@ export function CreateProjectDialog({ open, onOpenChange }: CreateProjectDialogP
   return (
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
       <ResponsiveDialogContent className="sm:max-w-[400px] p-0 overflow-hidden">
-        <form onSubmit={handleSubmit} className="flex flex-col h-full max-h-[90dvh]">
+        <form onSubmit={handleSubmit} className="flex flex-col h-auto max-h-[90dvh]">
           <ResponsiveDialogHeader className="px-4 pt-6 shrink-0">
             <ResponsiveDialogTitle>Create Project</ResponsiveDialogTitle>
             <ResponsiveDialogDescription>
@@ -62,7 +62,7 @@ export function CreateProjectDialog({ open, onOpenChange }: CreateProjectDialogP
             </ResponsiveDialogDescription>
           </ResponsiveDialogHeader>
 
-          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+          <div className="flex-1 overflow-y-auto min-h-0 px-4 py-4 space-y-4">
             <div className="grid gap-2">
               <Label htmlFor="name">Name</Label>
               <Input
