@@ -7,13 +7,13 @@ const eslintConfig = defineConfig([
   ...nextTs,
   // Override default ignores of eslint-config-next.
   globalIgnores([
+    // Default ignores of eslint-config-next:
     ".next/**",
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Ignore generated service worker
     "public/sw.js",
-    "src/test/**",
-    "e2e/**",
   ]),
   // Custom rule overrides
   {
