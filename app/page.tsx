@@ -1,38 +1,32 @@
-'use client';
+"use client";
 
-import { Suspense } from 'react';
-import { motion } from 'framer-motion';
-import { useAuth } from '@/components/AuthProvider';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
-import TaskList from '@/components/tasks/TaskList';
-import { format } from 'date-fns';
-import { TasksPageHeader } from '@/components/tasks/TasksPageHeader';
-import { useUiStore } from '@/lib/store/uiStore';
-import { useTaskActions } from '@/components/TaskActionsProvider';
-import { PlusIcon } from 'lucide-react';
-import { useHaptic } from '@/lib/hooks/useHaptic';
-
-const fadeIn = {
-  initial: { opacity: 0, y: 10 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.3 },
-};
+import { Suspense } from "react";
+import { useAuth } from "@/components/AuthProvider";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import TaskList from "@/components/tasks/TaskList";
+import { format } from "date-fns";
+import { TasksPageHeader } from "@/components/tasks/TasksPageHeader";
+import { useUiStore } from "@/lib/store/uiStore";
+import { useTaskActions } from "@/components/TaskActionsProvider";
+import { PlusIcon } from "lucide-react";
+import { useHaptic } from "@/lib/hooks/useHaptic";
 
 function HomeContent() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { sortBy, groupBy, setSortBy, setGroupBy } = useUiStore();
+  const { sortBy, groupBy, viewMode, setSortBy, setGroupBy, setViewMode } =
+    useUiStore();
   const { openAddTask } = useTaskActions();
   const { trigger } = useHaptic();
 
-  const currentProjectId = searchParams.get('project') || 'all';
-  const filter = searchParams.get('filter') || undefined;
+  const currentProjectId = searchParams.get("project") || "all";
+  const filter = searchParams.get("filter") || undefined;
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push('/login');
+      router.push("/login");
     }
   }, [user, loading, router]);
 
@@ -52,21 +46,20 @@ function HomeContent() {
   const greeting = getGreeting();
 
   return (
-    <motion.div {...fadeIn}>
-      {/* Header */}
+    <div className="flex flex-col h-[calc(100dvh-124px)] md:h-dvh">
       <div className="px-6 pt-4 pb-4 flex items-start justify-between">
         <div>
           <p className="text-sm text-muted-foreground flex items-center gap-2">
-            {format(today, 'EEEE, MMMM d')}
+            {format(today, "EEEE, MMMM d")}
             {filter && (
               <span className="flex items-center gap-1.5 before:content-['•'] before:text-muted-foreground/40">
                 <span className="capitalize text-primary font-medium">
-                  {filter === 'p1' ? 'High Priority' : filter}
+                  {filter === "p1" ? "High Priority" : filter}
                 </span>
-                <button 
+                <button
                   onClick={() => {
                     trigger(15);
-                    router.push('/');
+                    router.push("/");
                   }}
                   className="hover:bg-accent/60 p-0.5 rounded-full transition-colors"
                   title="Clear filter"
@@ -76,40 +69,41 @@ function HomeContent() {
               </span>
             )}
           </p>
-          <h1 className="type-h1 mt-1 text-primary">
-            {greeting}
-          </h1>
+          <h1 className="type-h1 mt-1 text-primary">{greeting}</h1>
         </div>
-        
-        {/* Completed Tasks Button - Desktop Only */}
-        <TasksPageHeader 
+
+        <TasksPageHeader
           currentSort={sortBy}
           currentGroup={groupBy}
+          viewMode={viewMode}
           onSortChange={setSortBy}
           onGroupChange={setGroupBy}
+          onViewModeChange={setViewMode}
           onNewTask={openAddTask}
         />
       </div>
 
-      {/* Task List */}
-      {/* Task List */}
-      <TaskList 
-        sortBy={sortBy} 
-        groupBy={groupBy} 
-        projectId={currentProjectId} 
-        filter={filter}
-      />
-    </motion.div>
+      <div className="flex-1 min-h-0">
+        <TaskList
+          sortBy={sortBy}
+          groupBy={groupBy}
+          projectId={currentProjectId}
+          filter={filter}
+        />
+      </div>
+    </div>
   );
 }
 
 export default function Home() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-muted-foreground">Loading...</p>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      }
+    >
       <HomeContent />
     </Suspense>
   );
@@ -117,7 +111,7 @@ export default function Home() {
 
 function getGreeting(): string {
   const hour = new Date().getHours();
-  if (hour < 12) return 'Good morning';
-  if (hour < 17) return 'Good afternoon';
-  return 'Good evening';
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  return "Good evening";
 }

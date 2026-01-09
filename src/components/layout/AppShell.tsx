@@ -152,7 +152,7 @@ function AppShellContent({ children }: AppShellProps) {
 
           <div
             className={cn(
-              "flex-1 overflow-y-auto overflow-x-hidden scrollbar-hide md:pt-0 md:pb-0",
+              "flex-1 overflow-y-auto overflow-x-hidden md:pt-0 md:pb-0",
               !hideMobileNav && "pt-16"
             )}
           >

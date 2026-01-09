@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   ResponsiveDialog,
@@ -6,8 +6,8 @@ import {
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
   ResponsiveDialogDescription,
-} from '@/components/ui/responsive-dialog';
-import { Keyboard } from 'lucide-react';
+} from "@/components/ui/responsive-dialog";
+import { Keyboard } from "lucide-react";
 
 interface ShortcutGroup {
   title: string;
@@ -16,37 +16,45 @@ interface ShortcutGroup {
 
 const SHORTCUTS: ShortcutGroup[] = [
   {
-    title: 'Navigation',
+    title: "Navigation",
     shortcuts: [
-      { keys: ['1'], description: 'Go to Tasks' },
-      { keys: ['2'], description: 'Go to Calendar' },
-      { keys: ['3'], description: 'Go to Stats' },
-      { keys: ['4'], description: 'Go to Focus' },
-      { keys: ['5'], description: 'Go to Settings' },
-      { keys: ['b'], description: 'Toggle Sidebar' },
-      { keys: ['Esc'], description: 'Close Focus/Dialogs' },
+      { keys: ["1"], description: "Go to Tasks" },
+      { keys: ["2"], description: "Go to Calendar" },
+      { keys: ["3"], description: "Go to Stats" },
+      { keys: ["4"], description: "Go to Focus" },
+      { keys: ["5"], description: "Go to Settings" },
+      { keys: ["b"], description: "Toggle Sidebar" },
+      { keys: ["Esc"], description: "Close Focus/Dialogs" },
     ],
   },
   {
-    title: 'Actions',
+    title: "Actions",
     shortcuts: [
-      { keys: ['n'], description: 'New Task' },
-      { keys: ['c'], description: 'Toggle Logbook' },
-      { keys: ['s'], description: 'Search / Command Menu' },
-      { keys: ['Ctrl', 'k'], description: 'Search / Command Menu' },
-      { keys: ['t'], description: 'Switch Theme' },
-      { keys: ['f'], description: 'Focus Mode' },
-      { keys: ['Shift', 'h'], description: 'Show Shortcuts' },
+      { keys: ["n"], description: "New Task" },
+      { keys: ["c"], description: "Toggle Logbook" },
+      { keys: ["s"], description: "Search / Command Menu" },
+      { keys: ["Ctrl", "k"], description: "Search / Command Menu" },
+      { keys: ["t"], description: "Switch Theme" },
+      { keys: ["f"], description: "Focus Mode" },
+      { keys: ["Shift", "h"], description: "Show Shortcuts" },
     ],
   },
   {
-    title: 'Task List (Vim)',
+    title: "View",
     shortcuts: [
-      { keys: ['j'], description: 'Select Next Task' },
-      { keys: ['k'], description: 'Select Previous Task' },
-      { keys: ['d'], description: 'Delete Selected' },
-      { keys: ['e'], description: 'Edit Selected' },
-      { keys: ['Space'], description: 'Toggle Completion' },
+      { keys: ["Shift", "1"], description: "List View" },
+      { keys: ["Shift", "2"], description: "Grid View" },
+      { keys: ["Shift", "3"], description: "Board View" },
+    ],
+  },
+  {
+    title: "Task List (Vim)",
+    shortcuts: [
+      { keys: ["j"], description: "Select Next Task" },
+      { keys: ["k"], description: "Select Previous Task" },
+      { keys: ["d"], description: "Delete Selected" },
+      { keys: ["e"], description: "Edit Selected" },
+      { keys: ["Space"], description: "Toggle Completion" },
     ],
   },
 ];
@@ -79,8 +87,13 @@ export function ShortcutsHelp({ open, onOpenChange }: ShortcutsHelpProps) {
                 </h3>
                 <div className="space-y-3.5">
                   {group.shortcuts.map((shortcut, i) => (
-                    <div key={i} className="flex items-center justify-between text-[14px]">
-                      <span className="text-foreground/90 font-medium">{shortcut.description}</span>
+                    <div
+                      key={i}
+                      className="flex items-center justify-between text-[14px]"
+                    >
+                      <span className="text-foreground/90 font-medium">
+                        {shortcut.description}
+                      </span>
                       <div className="flex items-center gap-2">
                         {shortcut.keys.map((key) => (
                           <kbd

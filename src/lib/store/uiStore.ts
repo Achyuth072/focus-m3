@@ -12,8 +12,10 @@ interface UiState {
   // Task List State
   sortBy: SortOption;
   groupBy: GroupOption;
+  viewMode: "list" | "grid" | "board";
   setSortBy: (sort: SortOption) => void;
   setGroupBy: (group: GroupOption) => void;
+  setViewMode: (mode: "list" | "grid" | "board") => void;
   // Global Settings
   hapticsEnabled: boolean;
   setHapticsEnabled: (enabled: boolean) => void;
@@ -34,8 +36,10 @@ export const useUiStore = create<UiState>()(
       // Task List defaults
       sortBy: "date",
       groupBy: "none",
+      viewMode: "list",
       setSortBy: (sort) => set({ sortBy: sort }),
       setGroupBy: (group) => set({ groupBy: group }),
+      setViewMode: (mode) => set({ viewMode: mode }),
 
       // Global Settings defaults
       hapticsEnabled: true,

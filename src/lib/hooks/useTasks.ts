@@ -99,6 +99,7 @@ export function useTasks(options: UseTasksOptions = {}) {
 
       return data as Task[];
     },
+    placeholderData: (previousData) => previousData,
   });
 }
 
