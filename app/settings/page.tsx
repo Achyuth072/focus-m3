@@ -1,23 +1,41 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useTheme } from 'next-themes';
-import { useAuth } from '@/components/AuthProvider';
-import { Button } from '@/components/ui/button';
-import { LoaderOverlay } from '@/components/ui/loader-overlay';
-import { Moon, Sun, Monitor, LogOut, User, Loader2, ArrowLeft, RotateCcw, Trash2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useState } from "react";
+import { useTheme } from "next-themes";
+import { useAuth } from "@/components/AuthProvider";
+import { Button } from "@/components/ui/button";
+import { LoaderOverlay } from "@/components/ui/loader-overlay";
+import {
+  Moon,
+  Sun,
+  Monitor,
+  LogOut,
+  User,
+  Loader2,
+  ArrowLeft,
+  RotateCcw,
+  Trash2,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
-import { useRouter } from 'next/navigation';
-import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
-import { SignOutConfirmation } from '@/components/auth/SignOutConfirmation';
-import { useUiStore } from '@/lib/store/uiStore';
-import { Switch } from '@/components/ui/switch';
-import { Vibrate } from 'lucide-react';
-import { useHaptic } from '@/lib/hooks/useHaptic';
-import { useQueryClient } from '@tanstack/react-query';
-import { mockStore } from '@/lib/mock/mock-store';
-import { toast } from 'sonner';
+import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
+import { useUiStore } from "@/lib/store/uiStore";
+import { Switch } from "@/components/ui/switch";
+import { Vibrate } from "lucide-react";
+import { useHaptic } from "@/lib/hooks/useHaptic";
+import { useQueryClient } from "@tanstack/react-query";
+import { mockStore } from "@/lib/mock/mock-store";
+import { toast } from "sonner";
+
+const SignOutConfirmation = dynamic(
+  () =>
+    import("@/components/auth/SignOutConfirmation").then(
+      (mod) => mod.SignOutConfirmation
+    ),
+  { ssr: false }
+);
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
@@ -28,7 +46,9 @@ export default function SettingsPage() {
 
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
-  const [activeTab, setActiveTab] = useState<'appearance' | 'account'>('appearance');
+  const [activeTab, setActiveTab] = useState<"appearance" | "account">(
+    "appearance"
+  );
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const { trigger } = useHaptic();
 
@@ -41,29 +61,29 @@ export default function SettingsPage() {
     setShowSignOutConfirm(false);
     setIsSigningOut(true);
     await signOut();
-    router.push('/login');
+    router.push("/login");
   };
 
   const handleResetDemo = () => {
     mockStore.reset();
-    queryClient.invalidateQueries({ queryKey: ['tasks'] });
-    queryClient.invalidateQueries({ queryKey: ['projects'] });
-    queryClient.invalidateQueries({ queryKey: ['stats-dashboard'] });
-    toast.success('Demo data reset successfully');
+    queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    queryClient.invalidateQueries({ queryKey: ["projects"] });
+    queryClient.invalidateQueries({ queryKey: ["stats-dashboard"] });
+    toast.success("Demo data reset successfully");
   };
 
   const handleClearData = () => {
     mockStore.clearData();
-    queryClient.invalidateQueries({ queryKey: ['tasks'] });
-    queryClient.invalidateQueries({ queryKey: ['projects'] });
-    queryClient.invalidateQueries({ queryKey: ['stats-dashboard'] });
-    toast.success('All data cleared');
+    queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    queryClient.invalidateQueries({ queryKey: ["projects"] });
+    queryClient.invalidateQueries({ queryKey: ["stats-dashboard"] });
+    toast.success("All data cleared");
   };
 
   const themeOptions = [
-    { value: 'light', label: 'Light', icon: Sun },
-    { value: 'dark', label: 'Dark', icon: Moon },
-    { value: 'system', label: 'System', icon: Monitor },
+    { value: "light", label: "Light", icon: Sun },
+    { value: "dark", label: "Dark", icon: Moon },
+    { value: "system", label: "System", icon: Monitor },
   ];
 
   return (
@@ -99,23 +119,23 @@ export default function SettingsPage() {
               </p>
               <nav className="space-y-1">
                 <button
-                  onClick={() => setActiveTab('appearance')}
+                  onClick={() => setActiveTab("appearance")}
                   className={cn(
                     "block w-full text-left px-3 py-2 text-sm rounded-md transition-seijaku-fast",
-                    activeTab === 'appearance'
-                      ? 'bg-secondary text-foreground font-medium'
-                      : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'
+                    activeTab === "appearance"
+                      ? "bg-secondary text-foreground font-medium"
+                      : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
                   )}
                 >
                   Appearance
                 </button>
                 <button
-                  onClick={() => setActiveTab('account')}
+                  onClick={() => setActiveTab("account")}
                   className={cn(
                     "block w-full text-left px-3 py-2 text-sm rounded-md transition-seijaku-fast",
-                    activeTab === 'account'
-                      ? 'bg-secondary text-foreground font-medium'
-                      : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'
+                    activeTab === "account"
+                      ? "bg-secondary text-foreground font-medium"
+                      : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
                   )}
                 >
                   Account
@@ -127,44 +147,48 @@ export default function SettingsPage() {
           {/* Main Content */}
           <main className="md:pt-[88px] space-y-12">
             {/* Appearance Section */}
-            {(!isDesktop || activeTab === 'appearance') && (
+            {(!isDesktop || activeTab === "appearance") && (
               <section className="space-y-4">
                 <div>
                   <h2 className="type-micro font-medium uppercase">
                     Appearance
                   </h2>
                 </div>
-                
+
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Theme</label>
                   <div className="grid grid-cols-3 gap-3">
                     {themeOptions.map((option) => {
-                       const Icon = option.icon;
-                       const isActive = theme === option.value;
-                       
-                       return (
-                         <button
-                           key={option.value}
-                           onClick={() => {
-                             trigger(25);
-                             setTheme(option.value);
-                           }}
-                           className={cn(
-                             'flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-seijaku-fast',
-                             isActive
-                               ? 'border-foreground bg-secondary/30'
-                               : 'border-border/50 hover:border-border bg-background'
-                           )}
-                         >
-                           <Icon className="h-5 w-5 text-muted-foreground" />
-                           <span className={cn(
-                             'text-sm font-medium',
-                             isActive ? 'text-foreground' : 'text-muted-foreground'
-                           )}>
-                             {option.label}
-                           </span>
-                         </button>
-                       );
+                      const Icon = option.icon;
+                      const isActive = theme === option.value;
+
+                      return (
+                        <button
+                          key={option.value}
+                          onClick={() => {
+                            trigger(25);
+                            setTheme(option.value);
+                          }}
+                          className={cn(
+                            "flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-seijaku-fast",
+                            isActive
+                              ? "border-foreground bg-secondary/30"
+                              : "border-border/50 hover:border-border bg-background"
+                          )}
+                        >
+                          <Icon className="h-5 w-5 text-muted-foreground" />
+                          <span
+                            className={cn(
+                              "text-sm font-medium",
+                              isActive
+                                ? "text-foreground"
+                                : "text-muted-foreground"
+                            )}
+                          >
+                            {option.label}
+                          </span>
+                        </button>
+                      );
                     })}
                   </div>
                 </div>
@@ -179,7 +203,7 @@ export default function SettingsPage() {
                     Preferences
                   </h2>
                 </div>
-                
+
                 <div className="space-y-3">
                   <div className="flex items-center justify-between p-4 rounded-lg border border-border/50 bg-background">
                     <div className="flex items-center gap-3">
@@ -193,7 +217,7 @@ export default function SettingsPage() {
                         </p>
                       </div>
                     </div>
-                    <Switch 
+                    <Switch
                       checked={hapticsEnabled}
                       onCheckedChange={setHapticsEnabled}
                     />
@@ -203,18 +227,19 @@ export default function SettingsPage() {
             )}
 
             {/* Guest Mode Section */}
-            {isGuestMode && (!isDesktop || activeTab === 'account') && (
+            {isGuestMode && (!isDesktop || activeTab === "account") && (
               <section className="space-y-4">
                 <div>
                   <h2 className="type-micro font-medium uppercase">
                     Guest Mode
                   </h2>
                 </div>
-                
+
                 <div className="space-y-3">
                   <div className="p-4 rounded-lg border border-blue-500/20 bg-blue-500/5">
                     <p className="text-xs text-muted-foreground mb-3">
-                      Your data is stored locally in your browser. Use these controls to manage your demo data.
+                      Your data is stored locally in your browser. Use these
+                      controls to manage your demo data.
                     </p>
                     <div className="flex gap-2">
                       <Button
@@ -248,14 +273,12 @@ export default function SettingsPage() {
             )}
 
             {/* Account Section */}
-            {(!isDesktop || activeTab === 'account') && (
+            {(!isDesktop || activeTab === "account") && (
               <section className="space-y-4">
                 <div>
-                  <h2 className="type-micro font-medium uppercase">
-                    Account
-                  </h2>
+                  <h2 className="type-micro font-medium uppercase">Account</h2>
                 </div>
-                
+
                 <div className="space-y-3">
                   <div className="flex items-center justify-between p-4 rounded-lg border border-border/50">
                     <div className="flex items-center gap-3">
@@ -265,7 +288,7 @@ export default function SettingsPage() {
                       <div>
                         <p className="text-sm font-medium">Email</p>
                         <p className="text-xs text-muted-foreground">
-                          {user?.email || 'Not signed in'}
+                          {user?.email || "Not signed in"}
                         </p>
                       </div>
                     </div>
@@ -306,7 +329,7 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <SignOutConfirmation 
+      <SignOutConfirmation
         isOpen={showSignOutConfirm}
         onClose={() => setShowSignOutConfirm(false)}
         onConfirm={handleSignOut}
@@ -317,4 +340,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-

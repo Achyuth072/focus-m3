@@ -14,11 +14,12 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
-  /* Typography - System Native */
-  --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    "Inter", "Roberta", sans-serif;
+  /* Typography - Zen-Modernist */
+  --font-sans: var(--font-inter), ui-sans-serif, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", "Inter", "Roberta", sans-serif;
   --font-serif: "Lyon-Text", "Georgia", serif;
-  --font-mono: "SFMono-Regular", "Menlo", "JetBrains Mono", monospace;
+  --font-mono: var(--font-jetbrains), "SFMono-Regular", "Menlo",
+    "JetBrains Mono", monospace;
 
   /* Color tokens - mapped to CSS variables */
   --color-background: hsl(var(--background));

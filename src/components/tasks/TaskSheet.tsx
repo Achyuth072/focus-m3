@@ -29,7 +29,7 @@ interface TaskSheetProps {
   initialContent?: string;
 }
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateTaskSchema, type CreateTaskInput } from "@/lib/schemas/task";
 
@@ -48,6 +48,7 @@ export default function TaskSheet({
   // Update preserved task only when dialog opens with a new task
   useEffect(() => {
     if (open && initialTask !== undefined) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPreservedTask(initialTask);
     }
   }, [open, initialTask]);
@@ -63,7 +64,7 @@ export default function TaskSheet({
   const {
     handleSubmit,
     setValue,
-    watch,
+    control,
     reset,
     formState: { errors, isValid },
   } = useForm<TaskFormValues>({
@@ -85,18 +86,26 @@ export default function TaskSheet({
   const [draftSubtasks, setDraftSubtasks] = useState<string[]>([]);
   const [showSubtasks, setShowSubtasks] = useState(false);
 
-  // Form values (for components that need them)
-  const content = watch("content");
-  const dueDate = watch("due_date")
-    ? new Date(watch("due_date") as string)
+  // Form values (for components that need them) via useWatch to satisfy React Compiler
+  const content = useWatch({ control, name: "content" });
+  const watchedDueDate = useWatch({ control, name: "due_date" });
+  const dueDate = watchedDueDate
+    ? new Date(watchedDueDate as string)
     : undefined;
-  const doDate = watch("do_date")
-    ? new Date(watch("do_date") as string)
-    : undefined;
-  const isEvening = watch("is_evening") ?? false;
-  const priority = (watch("priority") ?? 4) as 1 | 2 | 3 | 4;
-  const recurrence = watch("recurrence") as RecurrenceRule | null;
-  const selectedProjectId = watch("project_id") ?? null;
+  const watchedDoDate = useWatch({ control, name: "do_date" });
+  const doDate = watchedDoDate ? new Date(watchedDoDate as string) : undefined;
+  const isEvening = useWatch({ control, name: "is_evening" }) ?? false;
+  const priority = (useWatch({ control, name: "priority" }) ?? 4) as
+    | 1
+    | 2
+    | 3
+    | 4;
+  const recurrence = useWatch({
+    control,
+    name: "recurrence",
+  }) as RecurrenceRule | null;
+  const selectedProjectId = useWatch({ control, name: "project_id" }) ?? null;
+  const description = useWatch({ control, name: "description" }) || "";
 
   // Hooks
   const createMutation = useCreateTask();
@@ -120,6 +129,7 @@ export default function TaskSheet({
           priority: initialTask.priority,
           project_id: initialTask.project_id ?? undefined,
         });
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setDraftSubtasks([]);
         setIsPreviewMode(!!initialTask.description);
       } else {
@@ -276,7 +286,7 @@ export default function TaskSheet({
             initialTask={initialTask!}
             content={content}
             setContent={(v) => setValue("content", v, { shouldValidate: true })}
-            description={watch("description") || ""}
+            description={description}
             setDescription={(v) =>
               setValue("description", v, { shouldValidate: true })
             }

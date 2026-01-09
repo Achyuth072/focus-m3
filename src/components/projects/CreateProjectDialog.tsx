@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   CreateProjectSchema,
@@ -45,7 +45,7 @@ export function CreateProjectDialog({
     register,
     handleSubmit,
     setValue,
-    watch,
+    control,
     reset,
     formState: { errors, isValid },
   } = useForm<CreateProjectInput>({
@@ -58,7 +58,11 @@ export function CreateProjectDialog({
     },
   });
 
-  const color = watch("color");
+  const color = useWatch({
+    control,
+    name: "color",
+    defaultValue: PROJECT_COLORS[6].value,
+  });
   const createProject = useCreateProject();
   const { trigger } = useHaptic();
 
