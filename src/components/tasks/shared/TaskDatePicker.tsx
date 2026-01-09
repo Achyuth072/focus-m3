@@ -67,10 +67,12 @@ export function TaskDatePicker({
           </span>
           <span
             role="button"
-            title={`Clear ${title.toLowerCase()}`}
+            title={!isMobile ? `Clear ${title.toLowerCase()}` : undefined}
             className={cn(
               "ml-1 p-0.5 rounded",
-              isCompact ? "hover:bg-destructive/20" : "rounded-full hover:bg-current/10"
+              isCompact
+                ? "hover:bg-destructive/20"
+                : "rounded-full hover:bg-current/10"
             )}
             onClick={(e) => {
               e.preventDefault();
@@ -79,7 +81,9 @@ export function TaskDatePicker({
               setDate(undefined);
             }}
           >
-            <X className={cn("h-3 w-3", isCompact && "hover:text-destructive")} />
+            <X
+              className={cn("h-3 w-3", isCompact && "hover:text-destructive")}
+            />
           </span>
         </>
       )}
@@ -101,21 +105,27 @@ export function TaskDatePicker({
             isCompact
               ? cn(
                   "w-10 px-0 text-muted-foreground hover:text-foreground",
-                  date && cn("w-auto px-2.5 border-transparent", activeClassName)
+                  date &&
+                    cn("w-auto px-2.5 border-transparent", activeClassName)
                 )
               : cn(
                   "min-w-10 px-0 text-muted-foreground hover:text-foreground hover:bg-accent",
-                  date && cn("px-3 w-auto hover:bg-transparent border-transparent", activeClassName)
+                  date &&
+                    cn(
+                      "px-3 w-auto hover:bg-transparent border-transparent",
+                      activeClassName
+                    )
                 )
           )}
-          title={`Set ${title.toLowerCase()}`}
+          title={!isMobile ? `Set ${title.toLowerCase()}` : undefined}
         >
           {buttonContent}
         </Button>
         <ResponsiveDialogContent
           className={cn(
             "w-full p-0",
-            !isCompact && "max-w-[320px] mx-auto h-auto rounded-[10px] mb-4 bg-popover [&>div.h-2]:hidden"
+            !isCompact &&
+              "max-w-[320px] mx-auto h-auto rounded-[10px] mb-4 bg-popover [&>div.h-2]:hidden"
           )}
         >
           <ResponsiveDialogHeader className="sr-only">
@@ -142,20 +152,25 @@ export function TaskDatePicker({
             isCompact
               ? cn(
                   "w-10 px-0 text-muted-foreground hover:text-foreground",
-                  date && cn("w-auto px-2.5 border-transparent", activeClassName)
+                  date &&
+                    cn("w-auto px-2.5 border-transparent", activeClassName)
                 )
               : cn(
                   "min-w-10 px-0 text-muted-foreground hover:text-foreground hover:bg-accent",
-                  date && cn("px-3 w-auto hover:bg-transparent border-transparent", activeClassName)
+                  date &&
+                    cn(
+                      "px-3 w-auto hover:bg-transparent border-transparent",
+                      activeClassName
+                    )
                 )
           )}
-          title={`Set ${title.toLowerCase()}`}
+          title={!isMobile ? `Set ${title.toLowerCase()}` : undefined}
         >
           {buttonContent}
         </Button>
       </PopoverTrigger>
-      <PopoverContent 
-        className="w-auto p-0 border-none shadow-xl" 
+      <PopoverContent
+        className="w-auto p-0 border-none shadow-xl"
         align={align}
         side={side}
         sideOffset={sideOffset}

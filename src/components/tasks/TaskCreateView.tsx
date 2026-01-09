@@ -103,7 +103,9 @@ export function TaskCreateView({
 
       <div className="flex-1 overflow-y-auto min-h-0 px-4 sm:pl-0 sm:pr-4 space-y-4 scrollbar-thin w-full">
         {/* Task Name Input */}
-        <Label htmlFor="task-content" className="sr-only">Task Content</Label>
+        <Label htmlFor="task-content" className="sr-only">
+          Task Content
+        </Label>
         <Textarea
           id="task-content"
           placeholder="What needs to be done?"
@@ -113,13 +115,17 @@ export function TaskCreateView({
           autoFocus
           className={cn(
             "text-lg sm:text-xl p-0 min-h-[40px] h-auto bg-transparent border-0 focus-visible:ring-0 resize-none placeholder:text-muted-foreground/50",
-            errors?.content && "text-destructive placeholder:text-destructive/50"
+            errors?.content &&
+              "text-destructive placeholder:text-destructive/50"
           )}
           aria-invalid={!!errors?.content}
           aria-describedby={errors?.content ? "task-content-error" : undefined}
         />
         {errors?.content && (
-          <p id="task-content-error" className="text-xs font-medium text-destructive mt-1">
+          <p
+            id="task-content-error"
+            className="text-xs font-medium text-destructive mt-1"
+          >
             {errors.content.message}
           </p>
         )}
@@ -145,7 +151,7 @@ export function TaskCreateView({
             open={doDatePickerOpen}
             onOpenChange={setDoDatePickerOpen}
             variant="icon"
-            title="Start Date"
+            title={!isMobile ? "Start Date" : undefined}
             icon={CalendarClock}
             side="right"
             align="center"
@@ -158,7 +164,8 @@ export function TaskCreateView({
             size="sm"
             className={cn(
               "h-10 px-3 transition-all text-muted-foreground hover:text-foreground hover:bg-accent gap-1.5 shrink-0",
-              isEvening && "text-purple-600 dark:text-purple-400 border-purple-500/50 bg-purple-500/10 hover:bg-purple-500/20"
+              isEvening &&
+                "text-purple-600 dark:text-purple-400 border-purple-500/50 bg-purple-500/10 hover:bg-purple-500/20"
             )}
             onClick={() => {
               const nextValue = !isEvening;
@@ -168,7 +175,8 @@ export function TaskCreateView({
                 setDoDate(new Date());
               }
             }}
-            title="This Evening"
+            title={!isMobile ? "This Evening" : undefined}
+            aria-label="This Evening"
           >
             <Moon strokeWidth={2} className="h-4 w-4" />
             {!isMobile && <span className="text-xs font-medium">Evening</span>}
@@ -183,9 +191,11 @@ export function TaskCreateView({
             }}
             className={cn(
               "h-10 w-10 p-0 transition-all text-muted-foreground hover:text-foreground hover:bg-accent group [&_svg]:!size-5 shrink-0",
-              showSubtasks && "text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary"
+              showSubtasks &&
+                "text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary"
             )}
-            title="Toggle subtasks"
+            title={!isMobile ? "Toggle subtasks" : undefined}
+            aria-label="Toggle subtasks"
           >
             <ListChecks strokeWidth={2} className="transition-all" />
           </Button>
@@ -195,6 +205,7 @@ export function TaskCreateView({
               priority={priority}
               setPriority={setPriority}
               variant="icon"
+              isMobile={isMobile}
             />
           </div>
 
@@ -203,6 +214,7 @@ export function TaskCreateView({
               value={recurrence}
               onChange={setRecurrence}
               variant="icon"
+              isMobile={isMobile}
             />
           </div>
         </div>
@@ -229,7 +241,7 @@ export function TaskCreateView({
             setSelectedProjectId(v === "inbox" ? null : v);
           }}
         >
-          <SelectTrigger 
+          <SelectTrigger
             onPointerDown={() => trigger(15)}
             className="h-10 w-[140px] text-xs border border-transparent dark:border-white/10 bg-secondary/20 dark:bg-white/[0.05] hover:bg-secondary/30 focus:ring-0 transition-colors"
           >
@@ -266,7 +278,8 @@ export function TaskCreateView({
             onSubmit();
           }}
           disabled={!hasContent || isPending}
-          title="Create task"
+          title={!isMobile ? "Create task" : undefined}
+          aria-label="Create task"
         >
           <Send className="stroke-[1.5px]" />
         </Button>

@@ -17,6 +17,7 @@ interface RecurrencePickerProps {
   value: RecurrenceRule | null;
   onChange: (value: RecurrenceRule | null) => void;
   variant?: "default" | "icon";
+  isMobile?: boolean;
 }
 
 const PRESET_RULES: { label: string; value: RecurrenceRule | null }[] = [
@@ -30,13 +31,17 @@ const PRESET_RULES: { label: string; value: RecurrenceRule | null }[] = [
 // Helper to get the letter code for the badge
 function getRecurrenceBadge(value: RecurrenceRule | null) {
   if (!value) return null;
-  
+
   if (value.interval === 1) {
     switch (value.freq) {
-      case "DAILY": return "D";
-      case "WEEKLY": return "W";
-      case "MONTHLY": return "M";
-      case "YEARLY": return "Y";
+      case "DAILY":
+        return "D";
+      case "WEEKLY":
+        return "W";
+      case "MONTHLY":
+        return "M";
+      case "YEARLY":
+        return "Y";
     }
   }
   return "C"; // Custom
@@ -46,6 +51,7 @@ export default function RecurrencePicker({
   value,
   onChange,
   variant = "default",
+  isMobile = false,
 }: RecurrencePickerProps) {
   const [open, setOpen] = useState(false);
   const isIconVariant = variant === "icon";
@@ -69,7 +75,7 @@ export default function RecurrencePicker({
             onClick={() => {
               trigger(25);
             }}
-            title={formatRecurrenceRule(value)}
+            title={!isMobile ? formatRecurrenceRule(value) : undefined}
           >
             <Repeat className="h-5 w-5 transition-all" strokeWidth={2} />
             {hasRecurrence && badgeLetter && (

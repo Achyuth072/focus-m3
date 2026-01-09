@@ -33,6 +33,7 @@ import {
 import { useHaptic } from "@/lib/hooks/useHaptic";
 import { cn } from "@/lib/utils";
 import { useHotkeys } from "react-hotkeys-hook";
+import { useIsMobile } from "@/lib/hooks/useIsMobile";
 
 interface TasksPageHeaderProps {
   currentSort: SortOption;
@@ -55,6 +56,7 @@ export function TasksPageHeader({
 }: TasksPageHeaderProps) {
   const { openSheet } = useCompletedTasks();
   const { trigger } = useHaptic();
+  const isMobile = useIsMobile();
 
   useHotkeys("shift+1", () => onViewModeChange("list"), {
     preventDefault: true,
@@ -88,7 +90,7 @@ export function TasksPageHeader({
               <List className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent side="bottom" sideOffset={8}>
+          <TooltipContent side="bottom" sideOffset={8} hidden={isMobile}>
             List View (Shift+1)
           </TooltipContent>
         </Tooltip>
@@ -111,7 +113,7 @@ export function TasksPageHeader({
               <LayoutGrid className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent side="bottom" sideOffset={8}>
+          <TooltipContent side="bottom" sideOffset={8} hidden={isMobile}>
             Grid View (Shift+2)
           </TooltipContent>
         </Tooltip>
@@ -134,7 +136,7 @@ export function TasksPageHeader({
               <KanbanSquare className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent side="bottom" sideOffset={8}>
+          <TooltipContent side="bottom" sideOffset={8} hidden={isMobile}>
             Board View (Shift+3)
           </TooltipContent>
         </Tooltip>
