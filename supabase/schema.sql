@@ -241,5 +241,21 @@ CREATE POLICY "Users can update own focus_logs" ON focus_logs
       OR EXISTS (SELECT 1 FROM tasks WHERE tasks.id = task_id AND tasks.user_id = auth.uid())
     )
   );
-CREATE POLICY "Users can delete own focus_logs" ON focus_logs
-  FOR DELETE USING (auth.uid() = user_id);
+
+-- =============================================================================
+-- 10. MIGRATION: 20260109_rls_hardening (Validation Constraints)
+-- =============================================================================
+
+-- 1. Projects Table Constraints
+ALTER TABLE public.projects
+  ADD CONSTRAINT projects_name_length_check CHECK (char_length(name) <= 50);
+
+ALTER TABLE public.projects
+  ADD CONSTRAINT projects_color_check CHECK (color ~* '^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$');
+
+-- 2. Tasks Table Constraints
+ALTER TABLE public.tasks
+  ADD CONSTRAINT tasks_content_length_check CHECK (char_length(content) <= 500);
+
+ALTER TABLE public.tasks
+  ADD CONSTRAINT tasks_description_length_check CHECK (char_length(description) <= 5000);

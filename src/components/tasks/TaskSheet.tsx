@@ -1,6 +1,5 @@
 "use client";
 
-
 import { useState, useEffect } from "react";
 import {
   ResponsiveDialog,
@@ -30,6 +29,10 @@ interface TaskSheetProps {
   initialContent?: string;
 }
 
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CreateTaskSchema, type CreateTaskInput } from "@/lib/schemas/task";
+
 export default function TaskSheet({
   open,
   onClose,
@@ -38,12 +41,13 @@ export default function TaskSheet({
   initialContent,
 }: TaskSheetProps) {
   // Preserve initialTask during close animation to prevent flicker to Create mode
-  const [preservedTask, setPreservedTask] = useState<Task | null | undefined>(initialTask);
-  
+  const [preservedTask, setPreservedTask] = useState<Task | null | undefined>(
+    initialTask
+  );
+
   // Update preserved task only when dialog opens with a new task
   useEffect(() => {
     if (open && initialTask !== undefined) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPreservedTask(initialTask);
     }
   }, [open, initialTask]);
@@ -51,21 +55,48 @@ export default function TaskSheet({
   // Use the preserved task for rendering during close animation
   const effectiveTask = open ? initialTask : preservedTask;
 
-  // Form State
-  const [content, setContent] = useState("");
-  const [description, setDescription] = useState("");
+  // React Hook Form
+  type TaskFormValues = CreateTaskInput & {
+    recurrence?: RecurrenceRule | null;
+  };
+
+  const {
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { errors, isValid },
+  } = useForm<TaskFormValues>({
+    resolver: zodResolver(CreateTaskSchema),
+    mode: "onChange",
+    defaultValues: {
+      content: "",
+      description: "",
+      priority: 4,
+      is_evening: false,
+    },
+  });
+
+  // Individual UI-only states (not part of task data structure itself)
   const [isPreviewMode, setIsPreviewMode] = useState(false);
-  const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
-  const [doDate, setDoDate] = useState<Date | undefined>(undefined);
-  const [isEvening, setIsEvening] = useState(false);
-  const [priority, setPriority] = useState<1 | 2 | 3 | 4>(4);
-  const [recurrence, setRecurrence] = useState<RecurrenceRule | null>(null);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [doDatePickerOpen, setDoDatePickerOpen] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [draftSubtasks, setDraftSubtasks] = useState<string[]>([]);
   const [showSubtasks, setShowSubtasks] = useState(false);
+
+  // Form values (for components that need them)
+  const content = watch("content");
+  const dueDate = watch("due_date")
+    ? new Date(watch("due_date") as string)
+    : undefined;
+  const doDate = watch("do_date")
+    ? new Date(watch("do_date") as string)
+    : undefined;
+  const isEvening = watch("is_evening") ?? false;
+  const priority = (watch("priority") ?? 4) as 1 | 2 | 3 | 4;
+  const recurrence = watch("recurrence") as RecurrenceRule | null;
+  const selectedProjectId = watch("project_id") ?? null;
 
   // Hooks
   const createMutation = useCreateTask();
@@ -80,78 +111,88 @@ export default function TaskSheet({
   useEffect(() => {
     if (open) {
       if (initialTask) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional form reset
-        setContent(initialTask.content);
-        setDescription(initialTask.description || "");
-        setDueDate(initialTask.due_date ? new Date(initialTask.due_date) : undefined);
-        setDoDate(initialTask.do_date ? new Date(initialTask.do_date) : undefined);
-        setIsEvening(initialTask.is_evening || false);
-        setPriority(initialTask.priority);
-        setRecurrence(initialTask.recurrence || null);
+        reset({
+          content: initialTask.content,
+          description: initialTask.description || "",
+          due_date: initialTask.due_date ?? undefined,
+          do_date: initialTask.do_date ?? undefined,
+          is_evening: initialTask.is_evening || false,
+          priority: initialTask.priority,
+          project_id: initialTask.project_id ?? undefined,
+        });
         setDraftSubtasks([]);
-        setSelectedProjectId(initialTask.project_id);
         setIsPreviewMode(!!initialTask.description);
       } else {
-        setContent(initialContent || "");
-        setDescription("");
-        setDueDate(initialDate ?? undefined);
-        setDoDate(undefined);
-        setIsEvening(false);
-        setPriority(4);
-        setRecurrence(null);
+        reset({
+          content: initialContent || "",
+          description: "",
+          due_date: initialDate?.toISOString() ?? undefined,
+          do_date: undefined,
+          is_evening: false,
+          priority: 4,
+          project_id: undefined,
+        });
         setDraftSubtasks([]);
-        setSelectedProjectId(null);
         setIsPreviewMode(false);
         setShowSubtasks(false);
       }
     }
-  }, [open, initialTask, initialDate, initialContent]);
+  }, [open, initialTask, initialDate, initialContent, reset]);
 
   // Handlers
-  const handleSubmit = () => {
-    const trimmedContent = content.trim();
-    if (!trimmedContent) return;
-
+  const onFormSubmit = (data: CreateTaskInput) => {
     trigger(50); // Haptic feedback on save
 
     if (initialTask) {
       updateMutation.mutate({
+        ...data,
         id: initialTask.id,
-        content: trimmedContent,
-        description: description.trim() || undefined,
-        due_date: dueDate?.toISOString() ?? null,
-        do_date: doDate?.toISOString() ?? null,
-        is_evening: isEvening,
-        priority,
-        project_id: selectedProjectId,
-        recurrence: recurrence,
+        due_date:
+          data.due_date instanceof Date
+            ? data.due_date.toISOString()
+            : data.due_date || null,
+        do_date:
+          data.do_date instanceof Date
+            ? data.do_date.toISOString()
+            : data.do_date || null,
       });
     } else {
-      createMutation.mutate(
-        {
-          content: trimmedContent,
-          description: description.trim() || undefined,
-          project_id: selectedProjectId || undefined,
-          due_date: dueDate?.toISOString() ?? undefined,
-          do_date: doDate?.toISOString() ?? undefined,
-          is_evening: isEvening,
-          priority,
-          recurrence: recurrence,
-        },
-        {
-          onSuccess: (parentTask) => {
-            draftSubtasks.forEach((sContent) => {
-              createMutation.mutate({
-                content: sContent,
-                project_id: parentTask.project_id || undefined,
-                parent_id: parentTask.id,
-                priority: 4,
-              });
+      // Build the create input with correct types
+      const createInput = {
+        content: data.content,
+        description: data.description,
+        priority: data.priority,
+        due_date:
+          data.due_date instanceof Date
+            ? data.due_date.toISOString()
+            : typeof data.due_date === "string"
+            ? data.due_date
+            : undefined,
+        do_date:
+          data.do_date instanceof Date
+            ? data.do_date.toISOString()
+            : typeof data.do_date === "string"
+            ? data.do_date
+            : undefined,
+        is_evening: data.is_evening,
+        project_id: data.project_id ?? undefined,
+        parent_id: data.parent_id,
+        recurrence: recurrence,
+      };
+
+      createMutation.mutate(createInput, {
+        onSuccess: (parentTask) => {
+          draftSubtasks.forEach((sContent) => {
+            createMutation.mutate({
+              content: sContent,
+              project_id: parentTask.project_id || undefined,
+              parent_id: parentTask.id,
+              priority: 4,
             });
-            setDraftSubtasks([]);
-          },
-        }
-      );
+          });
+          setDraftSubtasks([]);
+        },
+      });
     }
 
     onClose();
@@ -172,13 +213,12 @@ export default function TaskSheet({
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
-      handleSubmit();
+      handleSubmit(onFormSubmit)();
     }
     if (e.key === "Escape") onClose();
   };
 
   // Derived State
-  const hasContent = content.trim().length > 0;
   const isPending = createMutation.isPending || updateMutation.isPending;
   const isCreationMode = !effectiveTask;
 
@@ -186,23 +226,34 @@ export default function TaskSheet({
     <ResponsiveDialog open={open} onOpenChange={onClose}>
       <ResponsiveDialogContent
         className="w-full sm:max-w-lg gap-0 rounded-lg"
+        aria-describedby={undefined}
       >
         {isCreationMode ? (
           <TaskCreateView
             content={content}
-            setContent={setContent}
+            setContent={(v) => setValue("content", v, { shouldValidate: true })}
             dueDate={dueDate}
-            setDueDate={setDueDate}
+            setDueDate={(v) =>
+              setValue("due_date", v, { shouldValidate: true })
+            }
             doDate={doDate}
-            setDoDate={setDoDate}
+            setDoDate={(v) => setValue("do_date", v, { shouldValidate: true })}
             isEvening={isEvening}
-            setIsEvening={setIsEvening}
+            setIsEvening={(v) =>
+              setValue("is_evening", v, { shouldValidate: true })
+            }
             priority={priority}
-            setPriority={setPriority}
+            setPriority={(v) =>
+              setValue("priority", v, { shouldValidate: true })
+            }
             recurrence={recurrence}
-            setRecurrence={setRecurrence}
+            setRecurrence={(v) =>
+              setValue("recurrence", v, { shouldValidate: true })
+            }
             selectedProjectId={selectedProjectId}
-            setSelectedProjectId={setSelectedProjectId}
+            setSelectedProjectId={(v) =>
+              setValue("project_id", v, { shouldValidate: true })
+            }
             datePickerOpen={datePickerOpen}
             setDatePickerOpen={setDatePickerOpen}
             doDatePickerOpen={doDatePickerOpen}
@@ -214,32 +265,45 @@ export default function TaskSheet({
             inboxProjectId={inboxProject?.id || null}
             projects={projects}
             isMobile={isMobile}
-            hasContent={hasContent}
+            hasContent={isValid}
             isPending={isPending}
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onFormSubmit)}
             onKeyDown={handleKeyDown}
+            errors={errors}
           />
         ) : (
           <TaskEditView
             initialTask={initialTask!}
             content={content}
-            setContent={setContent}
-            description={description}
-            setDescription={setDescription}
+            setContent={(v) => setValue("content", v, { shouldValidate: true })}
+            description={watch("description") || ""}
+            setDescription={(v) =>
+              setValue("description", v, { shouldValidate: true })
+            }
             isPreviewMode={isPreviewMode}
             setIsPreviewMode={setIsPreviewMode}
             dueDate={dueDate}
-            setDueDate={setDueDate}
+            setDueDate={(v) =>
+              setValue("due_date", v, { shouldValidate: true })
+            }
             doDate={doDate}
-            setDoDate={setDoDate}
+            setDoDate={(v) => setValue("do_date", v, { shouldValidate: true })}
             isEvening={isEvening}
-            setIsEvening={setIsEvening}
+            setIsEvening={(v) =>
+              setValue("is_evening", v, { shouldValidate: true })
+            }
             priority={priority}
-            setPriority={setPriority}
+            setPriority={(v) =>
+              setValue("priority", v, { shouldValidate: true })
+            }
             recurrence={recurrence}
-            setRecurrence={setRecurrence}
+            setRecurrence={(v) =>
+              setValue("recurrence", v, { shouldValidate: true })
+            }
             selectedProjectId={selectedProjectId}
-            setSelectedProjectId={setSelectedProjectId}
+            setSelectedProjectId={(v) =>
+              setValue("project_id", v, { shouldValidate: true })
+            }
             datePickerOpen={datePickerOpen}
             setDatePickerOpen={setDatePickerOpen}
             doDatePickerOpen={doDatePickerOpen}
@@ -251,11 +315,12 @@ export default function TaskSheet({
             inboxProjectId={inboxProject?.id || null}
             projects={projects}
             isMobile={isMobile}
-            hasContent={hasContent}
+            hasContent={isValid}
             isPending={isPending}
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onFormSubmit)}
             onDelete={handleDelete}
             onKeyDown={handleKeyDown}
+            errors={errors}
           />
         )}
       </ResponsiveDialogContent>

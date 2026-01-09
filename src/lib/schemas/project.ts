@@ -18,9 +18,8 @@ export const CreateProjectSchema = z.object({
   name: z.string().min(1, "Project name is required").max(50),
   color: z
     .string()
-    .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Invalid hex color")
-    .default("#808080"),
-  view_style: z.enum(["list", "board"]).default("list"),
+    .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Invalid hex color"),
+  view_style: z.enum(["list", "board"]),
 });
 
 export const UpdateProjectSchema = z.object({

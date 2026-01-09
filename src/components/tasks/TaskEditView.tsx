@@ -2,6 +2,8 @@
 
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+
 import { useHaptic } from "@/lib/hooks/useHaptic";
 import {
   ResponsiveDialogHeader,
@@ -25,6 +27,9 @@ import { TaskPrioritySelect } from "./shared/TaskPrioritySelect";
 import RecurrencePicker from "./TaskSheet/RecurrencePicker";
 import type { Task, Project } from "@/lib/types/task";
 import type { RecurrenceRule } from "@/lib/utils/recurrence";
+
+import { FieldErrors } from "react-hook-form";
+import type { CreateTaskInput } from "@/lib/schemas/task";
 
 interface TaskEditViewProps {
   initialTask: Task;
@@ -62,6 +67,7 @@ interface TaskEditViewProps {
   onSubmit: () => void;
   onDelete: () => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
+  errors?: FieldErrors<CreateTaskInput>;
 }
 
 export function TaskEditView({
@@ -100,6 +106,7 @@ export function TaskEditView({
   onSubmit,
   onDelete,
   onKeyDown,
+  errors,
 }: TaskEditViewProps) {
   const scrollRef = useHorizontalScroll();
   const { trigger } = useHaptic();
@@ -113,14 +120,25 @@ export function TaskEditView({
       {/* Scrollable Content Area */}
       <div className="flex-1 overflow-y-auto min-h-0 px-4 sm:pl-0 sm:pr-4 space-y-4 scrollbar-thin w-full">
         {/* Content Input */}
+        <Label htmlFor="task-content-edit" className="sr-only">Task Content</Label>
         <Textarea
-          autoFocus
+          id="task-content-edit"
           placeholder="What needs to be done?"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           onKeyDown={onKeyDown}
-          className="min-h-[60px] text-lg font-medium resize-none border-none shadow-none focus-visible:ring-0 p-0 placeholder:text-muted-foreground/70"
+          className={cn(
+            "text-lg sm:text-xl p-0 min-h-[40px] h-auto bg-transparent border-0 focus-visible:ring-0 resize-none placeholder:text-muted-foreground/50",
+            errors?.content && "text-destructive placeholder:text-destructive/50"
+          )}
+          aria-invalid={!!errors?.content}
+          aria-describedby={errors?.content ? "task-content-edit-error" : undefined}
         />
+        {errors?.content && (
+          <p id="task-content-edit-error" className="text-xs font-medium text-destructive mt-1">
+            {errors.content.message}
+          </p>
+        )}
 
         {/* Description Input (Markdown) */}
         <div className="px-0 pt-2 pb-2">

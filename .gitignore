@@ -12,6 +12,7 @@
 
 # testing
 /coverage
+/src/test
 
 # next.js
 /.next/
@@ -24,7 +25,6 @@
 .DS_Store
 *.pem
 .shared
-.agent
 
 # debug
 npm-debug.log*

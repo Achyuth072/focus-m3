@@ -24,7 +24,7 @@ interface ResponsiveDialogProps {
   children: React.ReactNode;
 }
 
-interface ResponsiveDialogContentProps {
+interface ResponsiveDialogContentProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
   children: React.ReactNode;
 }
@@ -80,14 +80,23 @@ export function ResponsiveDialog({
 export function ResponsiveDialogContent({
   className,
   children,
+  ...props
 }: ResponsiveDialogContentProps) {
   const { isMobile } = React.useContext(ResponsiveDialogContext);
 
   if (isMobile) {
-    return <DrawerContent className={className}>{children}</DrawerContent>;
+    return (
+      <DrawerContent className={className} {...props}>
+        {children}
+      </DrawerContent>
+    );
   }
 
-  return <DialogContent className={className}>{children}</DialogContent>;
+  return (
+    <DialogContent className={className} {...props}>
+      {children}
+    </DialogContent>
+  );
 }
 
 export function ResponsiveDialogHeader({
@@ -106,29 +115,43 @@ export function ResponsiveDialogHeader({
 export function ResponsiveDialogTitle({
   className,
   children,
-}: ResponsiveDialogTitleProps) {
+  ...props
+}: ResponsiveDialogTitleProps & React.HTMLAttributes<HTMLHeadingElement>) {
   const { isMobile } = React.useContext(ResponsiveDialogContext);
 
   if (isMobile) {
-    return <DrawerTitle className={className}>{children}</DrawerTitle>;
+    return (
+      <DrawerTitle className={className} {...props}>
+        {children}
+      </DrawerTitle>
+    );
   }
 
-  return <DialogTitle className={className}>{children}</DialogTitle>;
+  return (
+    <DialogTitle className={className} {...props}>
+      {children}
+    </DialogTitle>
+  );
 }
 
 export function ResponsiveDialogDescription({
   className,
   children,
-}: ResponsiveDialogDescriptionProps) {
+  ...props
+}: ResponsiveDialogDescriptionProps & React.HTMLAttributes<HTMLParagraphElement>) {
   const { isMobile } = React.useContext(ResponsiveDialogContext);
 
   if (isMobile) {
     return (
-      <DrawerDescription className={className}>{children}</DrawerDescription>
+      <DrawerDescription className={className} {...props}>
+        {children}
+      </DrawerDescription>
     );
   }
 
   return (
-    <DialogDescription className={className}>{children}</DialogDescription>
+    <DialogDescription className={className} {...props}>
+      {children}
+    </DialogDescription>
   );
 }

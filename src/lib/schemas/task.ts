@@ -19,7 +19,14 @@ export const TaskSchema = z.object({
   is_completed: z.boolean().default(false),
   completed_at: z.string().datetime().nullable().optional(),
   day_order: z.number().int().default(0),
-  recurrence: z.string().max(100).nullable().optional(),
+  recurrence: z
+    .object({
+      freq: z.enum(["DAILY", "WEEKLY", "MONTHLY", "YEARLY"]),
+      interval: z.number(),
+      days: z.array(z.number()).optional(),
+    })
+    .nullable()
+    .optional(),
   google_event_id: z.string().max(255).nullable().optional(),
   google_etag: z.string().max(255).nullable().optional(),
   created_at: z.string().datetime(),
@@ -30,9 +37,19 @@ export const CreateTaskSchema = z.object({
   content: z.string().min(1, "Task content is required").max(500),
   description: z.string().max(5000).optional(),
   priority: PrioritySchema.optional(),
-  due_date: z.string().datetime().optional(),
-  project_id: z.string().uuid().optional(),
+  due_date: z.union([z.date(), z.string().datetime()]).nullable().optional(),
+  do_date: z.union([z.date(), z.string().datetime()]).nullable().optional(),
+  is_evening: z.boolean().default(false).optional(),
+  project_id: z.string().uuid().nullable().optional(),
   parent_id: z.string().uuid().optional(),
+  recurrence: z
+    .object({
+      freq: z.enum(["DAILY", "WEEKLY", "MONTHLY", "YEARLY"]),
+      interval: z.number(),
+      days: z.array(z.number()).optional(),
+    })
+    .nullable()
+    .optional(),
 });
 
 export const UpdateTaskSchema = z.object({
