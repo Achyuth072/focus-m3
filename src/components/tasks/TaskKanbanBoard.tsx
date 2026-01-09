@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, memo } from "react";
 import {
   DndContext,
   DragEndEvent,
@@ -106,7 +106,7 @@ export function TaskKanbanBoard({
   );
 }
 
-function KanbanColumn({
+const KanbanColumn = memo(function KanbanColumn({
   group,
   onSelect,
 }: {
@@ -136,4 +136,4 @@ function KanbanColumn({
       </SortableContext>
     </div>
   );
-}
+});

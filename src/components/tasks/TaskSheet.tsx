@@ -40,7 +40,7 @@ export default function TaskSheet({
   initialDate,
   initialContent,
 }: TaskSheetProps) {
-  // Preserve initialTask during close animation to prevent flicker to Create mode
+  // NOTE: uncertain intent — logic preserved to prevent flickering between Create/Edit modes during close animation.
   const [preservedTask, setPreservedTask] = useState<Task | null | undefined>(
     initialTask
   );

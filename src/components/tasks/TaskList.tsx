@@ -55,6 +55,7 @@ export default function TaskList({
   const toggleMutation = useToggleTask();
   const { setSortBy, viewMode } = useUiStore();
   const { trigger } = useHaptic();
+  // NOTE: uncertain intent — optimistic UI sync logic using ref to prevent sync loop after drag-and-drop.
   const justDragged = useRef(false);
 
   // Configure sensors with activation constraints to avoid conflicts with swipe

@@ -70,7 +70,7 @@ function getDurationForMode(mode: TimerMode, settings: TimerSettings): number {
 export function useFocusTimer() {
   const queryClient = useQueryClient();
 
-  // Lazy initialization: runs once on mount, SSR-safe
+  // NOTE: uncertain intent — lazy initialization to ensure SSR safety and state persistence on mount.
   const [settings, setSettingsState] = useState<TimerSettings>(() =>
     loadSettings()
   );

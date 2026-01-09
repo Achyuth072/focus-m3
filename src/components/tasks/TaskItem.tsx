@@ -1,11 +1,17 @@
 "use client";
 
+// NOTE: This component is approaching the 500 LOC soft limit (SPARC Architecture).
+// If adding significant new features, consider refactoring or extracting sub-components.
+
 import React, { useState } from "react";
 import { motion, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DeleteConfirmationDialog } from "@/components/ui/DeleteConfirmationDialog";
 import { useDeleteTask, useToggleTask } from "@/lib/hooks/useTaskMutations";
-import { DraggableAttributes, DraggableSyntheticListeners } from "@dnd-kit/core";
+import {
+  DraggableAttributes,
+  DraggableSyntheticListeners,
+} from "@dnd-kit/core";
 import { format, isToday, isTomorrow, isPast, parseISO } from "date-fns";
 import {
   Calendar,
@@ -26,7 +32,7 @@ import { Button } from "@/components/ui/button";
 import { useProject } from "@/lib/hooks/useProjects";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import { useTimer } from "@/components/TimerProvider";
 import { useHaptic } from "@/lib/hooks/useHaptic";
 
@@ -57,13 +63,19 @@ function formatDueDate(dateString: string): string {
   return format(date, "MMM d");
 }
 
-function TaskItem({ task, onSelect, dragListeners, dragAttributes, isDragging = false, isKeyboardSelected = false }: TaskItemProps) {
+function TaskItem({
+  task,
+  onSelect,
+  dragListeners,
+  dragAttributes,
+  isDragging = false,
+  isKeyboardSelected = false,
+}: TaskItemProps) {
   const [_isChecking, setIsChecking] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(false);
   const [isSwipeDragging, setIsSwipeDragging] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-
 
   const deleteMutation = useDeleteTask();
   const toggleMutation = useToggleTask();
@@ -77,14 +89,20 @@ function TaskItem({ task, onSelect, dragListeners, dragAttributes, isDragging = 
     e.stopPropagation();
     trigger(30);
     start(task.id);
-    router.push('/focus');
+    router.push("/focus");
   };
 
   const x = useMotionValue(0);
   const background = useTransform(
     x,
     [-SWIPE_THRESHOLD, -50, 0, 50, SCHEDULE_SWIPE_THRESHOLD],
-    ["hsl(0 84.2% 60.2%)", "hsl(0 84.2% 60.2% / 0.3)", "transparent", "hsl(142 76% 36% / 0.3)", "hsl(142 76% 36%)"]
+    [
+      "hsl(0 84.2% 60.2%)",
+      "hsl(0 84.2% 60.2% / 0.3)",
+      "transparent",
+      "hsl(142 76% 36% / 0.3)",
+      "hsl(142 76% 36%)",
+    ]
   );
 
   const handleComplete = (checked: boolean) => {
@@ -146,18 +164,20 @@ function TaskItem({ task, onSelect, dragListeners, dragAttributes, isDragging = 
     !isToday(parseISO(task.due_date));
 
   return (
-    <div className={cn(
-      "group/item",
-      isDesktop && "hover:ring-1 hover:ring-border transition-all rounded-sm",
-      isDesktop && isExpanded && "pb-4"
-    )}>
-        <motion.div
-          style={{ background }}
-          className={cn(
-            "relative",
-            isDesktop ? "rounded-sm" : "overflow-hidden" // Mobile: removed rounded-xl/mx-2/mb-2 for separator look
-          )}
-        >
+    <div
+      className={cn(
+        "group/item",
+        isDesktop && "hover:ring-1 hover:ring-border transition-all rounded-sm",
+        isDesktop && isExpanded && "pb-4"
+      )}
+    >
+      <motion.div
+        style={{ background }}
+        className={cn(
+          "relative",
+          isDesktop ? "rounded-sm" : "overflow-hidden" // Mobile: removed rounded-xl/mx-2/mb-2 for separator look
+        )}
+      >
         {/* Swipe indicators - only visible during drag */}
         {isSwipeDragging && (
           <>
@@ -177,7 +197,10 @@ function TaskItem({ task, onSelect, dragListeners, dragAttributes, isDragging = 
           style={{ x }}
           drag={isDesktop || isDragging ? false : "x"} // Disable swipe during drag
           dragDirectionLock
-          dragConstraints={{ left: -SWIPE_THRESHOLD * 1.2, right: SCHEDULE_SWIPE_THRESHOLD * 1.2 }}
+          dragConstraints={{
+            left: -SWIPE_THRESHOLD * 1.2,
+            right: SCHEDULE_SWIPE_THRESHOLD * 1.2,
+          }}
           dragElastic={{ left: 0.2, right: 0.2 }}
           dragMomentum={false}
           dragSnapToOrigin={true}
@@ -199,7 +222,7 @@ function TaskItem({ task, onSelect, dragListeners, dragAttributes, isDragging = 
         >
           {/* Drag Handle */}
           {isDesktop ? (
-            <div 
+            <div
               {...dragListeners}
               {...dragAttributes}
               onPointerDown={(e) => {
@@ -211,15 +234,15 @@ function TaskItem({ task, onSelect, dragListeners, dragAttributes, isDragging = 
               <GripVertical className="h-4 w-4" />
             </div>
           ) : (
-            <div 
-              {...dragListeners} 
+            <div
+              {...dragListeners}
               {...dragAttributes}
               onPointerDown={(e) => {
                 e.stopPropagation();
                 dragListeners?.onPointerDown?.(e);
               }}
               className="cursor-grab active:cursor-grabbing text-muted-foreground/50 shrink-0"
-              style={{ touchAction: 'none' }}
+              style={{ touchAction: "none" }}
             >
               <GripVertical className="h-5 w-5" />
             </div>
@@ -240,10 +263,14 @@ function TaskItem({ task, onSelect, dragListeners, dragAttributes, isDragging = 
           </div>
 
           {/* Content */}
-          <div className={cn(
-            "flex-1 min-w-0",
-            isDesktop ? "flex items-center justify-between gap-2" : "flex flex-col gap-0"
-          )}>
+          <div
+            className={cn(
+              "flex-1 min-w-0",
+              isDesktop
+                ? "flex items-center justify-between gap-2"
+                : "flex flex-col gap-0"
+            )}
+          >
             <div className="flex items-center gap-2 flex-1">
               <p
                 className={cn(
@@ -253,9 +280,8 @@ function TaskItem({ task, onSelect, dragListeners, dragAttributes, isDragging = 
               >
                 {task.content}
               </p>
-
             </div>
-            
+
             {/* Metadata row */}
             {(task.due_date || task.priority < 4 || project) && (
               <div
@@ -264,133 +290,134 @@ function TaskItem({ task, onSelect, dragListeners, dragAttributes, isDragging = 
                   isDesktop ? "shrink-0" : "mt-1 ml-0"
                 )}
               >
-                  {/* Expand Toggle */}
-                  {isDesktop ? (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={toggleExpand}
-                      className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors opacity-0 group-hover:opacity-100"
-                    >
-                      {isExpanded ? (
-                        <ChevronDown className="h-4 w-4" />
-                      ) : (
-                        <ChevronRight className="h-4 w-4" />
-                      )}
-                    </Button>
-                  ) : null}
+                {/* Expand Toggle */}
+                {isDesktop ? (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={toggleExpand}
+                    className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors opacity-0 group-hover:opacity-100"
+                  >
+                    {isExpanded ? (
+                      <ChevronDown className="h-4 w-4" />
+                    ) : (
+                      <ChevronRight className="h-4 w-4" />
+                    )}
+                  </Button>
+                ) : null}
 
-                  {task.due_date && (
-                    <span
-                      className={cn(
-                        "type-ui flex items-center gap-1",
-                        isOverdue ? "text-destructive" : "text-muted-foreground"
-                      )}
-                    >
-                      {!isDesktop && <Calendar className="h-3 w-3" />}
-                      {formatDueDate(task.due_date)}
-                    </span>
-                  )}
-                  {task.do_date && (
-                    <span className="type-ui flex items-center gap-1 text-green-600 dark:text-green-400 font-medium">
-                      <CalendarClock className="h-3 w-3" />
-                      {isToday(parseISO(task.do_date)) ? "Today" : format(parseISO(task.do_date), "MMM d")}
-                    </span>
-                  )}
-                  {task.is_evening && (
-                    <span className="type-ui flex items-center gap-1 text-purple-600 dark:text-purple-400 font-medium">
-                      <Moon className="h-3 w-3 fill-current" />
-                      Evening
-                    </span>
-                  )}
-                  {task.priority < 4 && (
-                    <span
-                      className={cn(
-                        "type-ui flex items-center gap-1",
-                        priorityColors[task.priority]
-                      )}
-                    >
-                      {!isDesktop && <Flag className="h-3 w-3" />}P
-                      {task.priority}
-                    </span>
-                  )}
-                  {project && (
-                    <span className="type-ui flex items-center gap-1.5 text-muted-foreground">
-                      <div
-                        className="h-2 w-2 rounded-full shrink-0"
-                        style={{ backgroundColor: project.color }}
-                      />
-                      <span className="truncate max-w-[80px]">
-                        {project.name}
-                      </span>
-                    </span>
-                  )}
-
-                  {/* Desktop Play Action */}
-                  {isDesktop && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={handlePlayFocus}
-                      className="h-6 w-6 text-muted-foreground hover:text-green-600 opacity-0 group-hover:opacity-100 transition-opacity"
-                      title="Start focus timer"
-                    >
-                      <Play className="h-3.5 w-3.5" />
-                    </Button>
-                  )}
-
-                  {/* Desktop Delete Action */}
-                  {isDesktop && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowDeleteDialog(true);
-                      }}
-                      className="h-6 w-6 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Mobile Play Action */}
-            {!isDesktop && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handlePlayFocus}
-                className="h-8 w-8 text-muted-foreground hover:text-green-600 transition-colors"
-              >
-                <Play className="h-4 w-4" />
-              </Button>
-            )}
-
-            {/* Mobile Expand Toggle - Outside metadata */}
-            {!isDesktop && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleExpand}
-                className="h-5 w-5 -mt-0.5 text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {isExpanded ? (
-                  <ChevronDown className="h-4 w-4" />
-                ) : (
-                  <ChevronRight className="h-4 w-4" />
+                {task.due_date && (
+                  <span
+                    className={cn(
+                      "type-ui flex items-center gap-1",
+                      isOverdue ? "text-destructive" : "text-muted-foreground"
+                    )}
+                  >
+                    {!isDesktop && <Calendar className="h-3 w-3" />}
+                    {formatDueDate(task.due_date)}
+                  </span>
                 )}
-              </Button>
-            )}
-          </motion.div>
+                {task.do_date && (
+                  <span className="type-ui flex items-center gap-1 text-green-600 dark:text-green-400 font-medium">
+                    <CalendarClock className="h-3 w-3" />
+                    {isToday(parseISO(task.do_date))
+                      ? "Today"
+                      : format(parseISO(task.do_date), "MMM d")}
+                  </span>
+                )}
+                {task.is_evening && (
+                  <span className="type-ui flex items-center gap-1 text-purple-600 dark:text-purple-400 font-medium">
+                    <Moon className="h-3 w-3 fill-current" />
+                    Evening
+                  </span>
+                )}
+                {task.priority < 4 && (
+                  <span
+                    className={cn(
+                      "type-ui flex items-center gap-1",
+                      priorityColors[task.priority]
+                    )}
+                  >
+                    {!isDesktop && <Flag className="h-3 w-3" />}P{task.priority}
+                  </span>
+                )}
+                {project && (
+                  <span className="type-ui flex items-center gap-1.5 text-muted-foreground">
+                    <div
+                      className="h-2 w-2 rounded-full shrink-0"
+                      style={{ backgroundColor: project.color }}
+                    />
+                    <span className="truncate max-w-[80px]">
+                      {project.name}
+                    </span>
+                  </span>
+                )}
 
-          {/* Indented Separator (Mobile only) */}
+                {/* Desktop Play Action */}
+                {isDesktop && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handlePlayFocus}
+                    className="h-6 w-6 text-muted-foreground hover:text-green-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                    title="Start focus timer"
+                  >
+                    <Play className="h-3.5 w-3.5" />
+                  </Button>
+                )}
+
+                {/* Desktop Delete Action */}
+                {isDesktop && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowDeleteDialog(true);
+                    }}
+                    className="h-6 w-6 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Play Action */}
           {!isDesktop && (
-            <div className="absolute bottom-0 left-[44px] right-0 h-[1px] bg-border" />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handlePlayFocus}
+              className="h-8 w-8 text-muted-foreground hover:text-green-600 transition-colors"
+            >
+              <Play className="h-4 w-4" />
+            </Button>
+          )}
+
+          {/* Mobile Expand Toggle - Outside metadata */}
+          {!isDesktop && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleExpand}
+              className="h-5 w-5 -mt-0.5 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {isExpanded ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </Button>
           )}
         </motion.div>
+
+        {/* Indented Separator (Mobile only) */}
+        {!isDesktop && (
+          <div className="absolute bottom-0 left-[44px] right-0 h-[1px] bg-border" />
+        )}
+      </motion.div>
 
       {/* Expanded Subtasks */}
       {isExpanded && (

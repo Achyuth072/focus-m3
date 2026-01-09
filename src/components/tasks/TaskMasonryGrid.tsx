@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, memo } from "react";
 import type { Task, Project } from "@/lib/types/task";
 import type { ProcessedTasks } from "@/lib/hooks/useTaskViewData";
 import { cn } from "@/lib/utils";
@@ -95,7 +95,7 @@ export function TaskMasonryGrid({
   );
 }
 
-function TaskCard({
+const TaskCard = memo(function TaskCard({
   task,
   projects,
   onSelect,
@@ -164,4 +164,4 @@ function TaskCard({
       </div>
     </div>
   );
-}
+});
