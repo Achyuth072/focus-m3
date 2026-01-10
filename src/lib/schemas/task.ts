@@ -8,10 +8,10 @@ export const PrioritySchema = z.union([
 ]);
 
 export const TaskSchema = z.object({
-  id: z.string().uuid(),
-  user_id: z.string().uuid(),
-  project_id: z.string().uuid().nullable().optional(),
-  parent_id: z.string().uuid().nullable().optional(),
+  id: z.string(),
+  user_id: z.string(),
+  project_id: z.string().nullable().optional(),
+  parent_id: z.string().nullable().optional(),
   content: z.string().min(1, "Task content is required").max(500),
   description: z.string().max(5000).nullable().optional(),
   priority: PrioritySchema.default(4),
@@ -40,8 +40,8 @@ export const CreateTaskSchema = z.object({
   due_date: z.union([z.date(), z.string().datetime()]).nullable().optional(),
   do_date: z.union([z.date(), z.string().datetime()]).nullable().optional(),
   is_evening: z.boolean().default(false).optional(),
-  project_id: z.string().uuid().nullable().optional(),
-  parent_id: z.string().uuid().optional(),
+  project_id: z.string().nullable().optional(),
+  parent_id: z.string().optional(),
   recurrence: z
     .object({
       freq: z.enum(["DAILY", "WEEKLY", "MONTHLY", "YEARLY"]),
@@ -53,14 +53,14 @@ export const CreateTaskSchema = z.object({
 });
 
 export const UpdateTaskSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string(),
   content: z.string().min(1).max(500).optional(),
   description: z.string().max(5000).optional(),
   priority: PrioritySchema.optional(),
   due_date: z.string().datetime().nullable().optional(),
   is_completed: z.boolean().optional(),
   day_order: z.number().int().optional(),
-  project_id: z.string().uuid().nullable().optional(),
+  project_id: z.string().nullable().optional(),
 });
 
 export type Task = z.infer<typeof TaskSchema>;

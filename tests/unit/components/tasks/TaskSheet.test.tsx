@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import TaskSheet from "@/components/tasks/TaskSheet";
 import type { Task } from "@/lib/types/task";
@@ -76,5 +76,41 @@ describe("TaskSheet", () => {
     // Wait for the async validation and UI update
     const error = await screen.findByText(/500/i);
     expect(error).toBeInTheDocument();
+  });
+
+  it("calls updateTask mutation when saving edits", async () => {
+    const mockTask = {
+      id: "1",
+      content: "Original Task",
+      priority: 4,
+      is_completed: false,
+    } as unknown as Task;
+
+    render(<TaskSheet open={true} onClose={() => {}} initialTask={mockTask} />);
+
+    // Verify we're in edit mode
+    expect(screen.getByText("Edit Task")).toBeInTheDocument();
+
+    // Change content
+    const input = screen.getByPlaceholderText("What needs to be done?");
+    fireEvent.change(input, { target: { value: "Updated Task Content" } });
+
+    // Find the save button and wait for it to become enabled (validation is async)
+    const saveButton = screen.getByRole("button", { name: /save/i });
+    await waitFor(() => {
+      expect(saveButton).not.toBeDisabled();
+    });
+
+    // Submit form (Save)
+    fireEvent.click(saveButton);
+
+    await waitFor(() => {
+      expect(mockUpdateMutate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: "1",
+          content: "Updated Task Content",
+        })
+      );
+    });
   });
 });

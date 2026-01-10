@@ -66,6 +66,7 @@ export default function TaskSheet({
     setValue,
     control,
     reset,
+    trigger: triggerValidation,
     formState: { errors, isValid },
   } = useForm<TaskFormValues>({
     resolver: zodResolver(CreateTaskSchema),
@@ -129,6 +130,8 @@ export default function TaskSheet({
           priority: initialTask.priority,
           project_id: initialTask.project_id ?? undefined,
         });
+        // Trigger validation after reset to ensure isValid reflects the form state
+        void triggerValidation();
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setDraftSubtasks([]);
         setIsPreviewMode(!!initialTask.description);
@@ -147,7 +150,14 @@ export default function TaskSheet({
         setShowSubtasks(false);
       }
     }
-  }, [open, initialTask, initialDate, initialContent, reset]);
+  }, [
+    open,
+    initialTask,
+    initialDate,
+    initialContent,
+    reset,
+    triggerValidation,
+  ]);
 
   // Handlers
   const onFormSubmit = (data: CreateTaskInput) => {
