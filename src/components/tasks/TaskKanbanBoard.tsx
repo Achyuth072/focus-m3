@@ -79,7 +79,7 @@ export function TaskKanbanBoard({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex h-full overflow-x-auto pb-6 px-4 md:px-6 gap-4 md:gap-6 snap-x snap-mandatory">
+      <div className="flex h-full overflow-x-auto pb-24 md:pb-6 px-4 md:px-6 gap-4 md:gap-6 snap-x snap-mandatory">
         {boardColumns.map((group) => (
           <KanbanColumn key={group.title} group={group} onSelect={onSelect} />
         ))}
