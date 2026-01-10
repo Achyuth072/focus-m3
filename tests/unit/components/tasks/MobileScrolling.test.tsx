@@ -3,10 +3,12 @@ import { vi, describe, it, expect } from "vitest";
 import { TaskMasonryGrid } from "@/components/tasks/TaskMasonryGrid";
 import { TaskKanbanBoard } from "@/components/tasks/TaskKanbanBoard";
 import { TaskListView } from "@/components/tasks/TaskListView";
+import type { ReactNode } from "react";
+import type { Task } from "@/lib/types/task";
 
 // Mock DnD Kit Core
 vi.mock("@dnd-kit/core", () => ({
-  DndContext: ({ children }: any) => (
+  DndContext: ({ children }: { children: ReactNode }) => (
     <div data-testid="dnd-context">{children}</div>
   ),
   closestCorners: vi.fn(),
@@ -14,13 +16,13 @@ vi.mock("@dnd-kit/core", () => ({
   useSensor: vi.fn(() => ({})),
   useSensors: vi.fn(() => []),
   PointerSensor: vi.fn(),
-  DragOverlay: ({ children }: any) => <div>{children}</div>,
+  DragOverlay: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   defaultDropAnimationSideEffects: vi.fn(() => ({})),
 }));
 
 // Mock DnD Kit Sortable
 vi.mock("@dnd-kit/sortable", () => ({
-  SortableContext: ({ children }: any) => <div>{children}</div>,
+  SortableContext: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   verticalListSortingStrategy: vi.fn(),
   useSortable: vi.fn(() => ({
     attributes: {},
@@ -58,7 +60,7 @@ vi.mock("@/components/tasks/SortableTaskItem", () => ({
 
 describe("Mobile Scrolling Padding", () => {
   const mockProcessedTasks = {
-    active: [{ id: "1", content: "Test Task" } as any],
+    active: [{ id: "1", content: "Test Task" } as Task],
     evening: [],
     completed: [],
     groups: null,

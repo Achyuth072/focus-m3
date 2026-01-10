@@ -1,6 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { mockStore } from "@/lib/mock/mock-store";
-import { Task } from "@/lib/types/task";
 
 describe("MockStore (Guest Mode Data)", () => {
   beforeEach(() => {
