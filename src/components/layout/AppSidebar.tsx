@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
-import { useEffect } from 'react';
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { useEffect } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -18,7 +18,7 @@ import {
   SidebarSeparator,
   SidebarTrigger,
   useSidebar,
-} from '@/components/ui/sidebar';
+} from "@/components/ui/sidebar";
 import {
   CheckSquare,
   Calendar,
@@ -29,22 +29,22 @@ import {
   Inbox,
   FolderKanban,
   ChevronDown,
-} from 'lucide-react';
-import { useCompletedTasks } from '@/components/CompletedTasksProvider';
-import { useProjects } from '@/lib/hooks/useProjects';
-import { useProjectActions } from '@/components/ProjectActionsProvider';
-import { useUiStore } from '@/lib/store/uiStore';
-import { useHaptic } from '@/lib/hooks/useHaptic';
+} from "lucide-react";
+import { useCompletedTasks } from "@/components/CompletedTasksProvider";
+import { useProjects } from "@/lib/hooks/useProjects";
+import { useProjectActions } from "@/components/ProjectActionsProvider";
+import { useUiStore } from "@/lib/store/uiStore";
+import { useHaptic } from "@/lib/hooks/useHaptic";
 
 const mainNavItems = [
-  { label: 'All Tasks', icon: CheckSquare, path: '/', isAction: false },
-  { label: 'Calendar', icon: Calendar, path: '/calendar', isAction: false },
-  { label: 'Stats', icon: BarChart3, path: '/stats', isAction: false },
+  { label: "All Tasks", icon: CheckSquare, path: "/", isAction: false },
+  { label: "Calendar", icon: Calendar, path: "/calendar", isAction: false },
+  { label: "Stats", icon: BarChart3, path: "/stats", isAction: false },
 ];
 
 const secondaryNavItems = [
-  { label: 'Focus', icon: Timer, path: '/focus', isAction: false },
-  { label: 'Settings', icon: Settings, path: '/settings', isAction: false },
+  { label: "Focus", icon: Timer, path: "/focus", isAction: false },
+  { label: "Settings", icon: Settings, path: "/settings", isAction: false },
 ];
 
 export function AppSidebar() {
@@ -58,15 +58,17 @@ export function AppSidebar() {
   const { isProjectsOpen, toggleProjectsOpen } = useUiStore();
   const { trigger } = useHaptic();
 
-  const currentProjectId = searchParams.get('project');
+  const currentProjectId = searchParams.get("project");
 
   // Prefetch all routes on mount for instant navigation
   useEffect(() => {
-    const allRoutes = [...mainNavItems, ...secondaryNavItems].map((item) => item.path);
+    const allRoutes = [...mainNavItems, ...secondaryNavItems].map(
+      (item) => item.path
+    );
     allRoutes.forEach((path) => router.prefetch(path));
   }, [router]);
 
-  const handleProjectClick = (projectId: string | 'inbox') => {
+  const handleProjectClick = (projectId: string | "inbox") => {
     trigger(25);
     router.push(`/?project=${projectId}`);
     if (isMobile) setOpenMobile(false);
@@ -74,7 +76,11 @@ export function AppSidebar() {
 
   return (
     <>
-      <Sidebar variant="sidebar" collapsible="icon" className="h-screen border-r">
+      <Sidebar
+        variant="sidebar"
+        collapsible="icon"
+        className="h-screen border-r"
+      >
         <SidebarHeader className="border-b border-border">
           <div className="flex items-center justify-between px-2 py-4">
             <div className="flex items-center gap-2 group-data-[collapsible=icon]:w-full group-data-[collapsible=icon]:justify-center">
@@ -96,15 +102,19 @@ export function AppSidebar() {
                 {mainNavItems
                   .filter((item) => {
                     if (isMobile) {
-                      return item.label !== 'Stats' && item.label !== 'Calendar';
+                      return (
+                        item.label !== "Stats" && item.label !== "Calendar"
+                      );
                     }
                     return true;
                   })
                   .map((item) => {
                     const Icon = item.icon;
-                    const isActive = item.label === 'All Tasks' 
-                      ? pathname === item.path && (!currentProjectId || currentProjectId === 'all')
-                      : pathname === item.path && !item.isAction;
+                    const isActive =
+                      item.label === "All Tasks"
+                        ? pathname === item.path &&
+                          (!currentProjectId || currentProjectId === "all")
+                        : pathname === item.path && !item.isAction;
                     return (
                       <SidebarMenuItem key={item.label}>
                         <SidebarMenuButton
@@ -113,8 +123,8 @@ export function AppSidebar() {
                             if (item.isAction) {
                               openSheet();
                             } else {
-                              if (item.label === 'All Tasks') {
-                                router.push('/?project=all');
+                              if (item.label === "All Tasks") {
+                                router.push("/?project=all");
                               } else {
                                 router.push(item.path);
                               }
@@ -134,69 +144,75 @@ export function AppSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
 
-              <SidebarSeparator />
+          <SidebarSeparator />
 
-              {/* Projects Section */}
-              <SidebarGroup>
-                <SidebarGroupLabel className="cursor-pointer pr-10" onClick={() => {
-                  trigger(15);
-                  toggleProjectsOpen();
-                }}>
-                  <FolderKanban />
-                  <span className="flex-1">Projects</span>
-                  <ChevronDown 
-                    className={`h-4 w-4 shrink-0 translate-y-px transition-transform ${isProjectsOpen ? '' : '-rotate-90'}`} 
-                  />
-                </SidebarGroupLabel>
-                <SidebarGroupAction title="Add Project" onClick={() => {
-                  trigger(20);
-                  openCreateProject();
-                }}>
-                  <Plus className="h-4 w-4" />
-                </SidebarGroupAction>
-                {isProjectsOpen && (
-                  <SidebarGroupContent>
-                    <SidebarMenu className="pl-2 group-data-[collapsible=icon]:pl-0">
-                      {/* Inbox */}
-                      <SidebarMenuItem>
+          {/* Projects Section */}
+          <SidebarGroup>
+            <SidebarGroupLabel
+              className="cursor-pointer pr-10"
+              onClick={() => {
+                trigger(15);
+                toggleProjectsOpen();
+              }}
+            >
+              <FolderKanban />
+              <span className="flex-1">Projects</span>
+              <ChevronDown
+                className={`h-4 w-4 shrink-0 translate-y-px transition-transform ${
+                  isProjectsOpen ? "" : "-rotate-90"
+                }`}
+              />
+            </SidebarGroupLabel>
+            <SidebarGroupAction
+              title="Add Project"
+              onClick={() => {
+                trigger(20);
+                openCreateProject();
+              }}
+            >
+              <Plus className="h-4 w-4" />
+            </SidebarGroupAction>
+            {isProjectsOpen && (
+              <SidebarGroupContent>
+                <SidebarMenu className="pl-2 group-data-[collapsible=icon]:pl-0">
+                  {/* Inbox */}
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      onClick={() => handleProjectClick("inbox")}
+                      isActive={currentProjectId === "inbox"}
+                      tooltip="Inbox"
+                    >
+                      <div className="flex items-center justify-center w-5 h-5 shrink-0">
+                        <Inbox className="h-4 w-4" />
+                      </div>
+                      <span>Inbox</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+
+                  {/* User Projects */}
+                  {projects
+                    ?.filter((p) => !p.is_inbox)
+                    .map((project) => (
+                      <SidebarMenuItem key={project.id}>
                         <SidebarMenuButton
-                          onClick={() => handleProjectClick('inbox')}
-                          isActive={currentProjectId === 'inbox'}
-                          tooltip="Inbox"
+                          onClick={() => handleProjectClick(project.id)}
+                          isActive={currentProjectId === project.id}
+                          tooltip={project.name}
                         >
                           <div className="flex items-center justify-center w-5 h-5 shrink-0">
-                            <Inbox className="h-4 w-4" />
+                            <div
+                              className="h-3 w-3 rounded-full"
+                              style={{ backgroundColor: project.color }}
+                            />
                           </div>
-                          <span>Inbox</span>
+                          <span className="truncate">{project.name}</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
-
-                      {/* User Projects */}
-                      {projects
-                        ?.filter((p) => !p.is_inbox)
-                        .map((project) => (
-                          <SidebarMenuItem key={project.id}>
-                            <SidebarMenuButton
-                              onClick={() => handleProjectClick(project.id)}
-                              isActive={currentProjectId === project.id}
-                              tooltip={project.name}
-                            >
-                              <div className="flex items-center justify-center w-5 h-5 shrink-0">
-                                <div
-                                  className="h-3 w-3 rounded-full"
-                                  style={{ backgroundColor: project.color }}
-                                />
-                              </div>
-                              <span className="truncate">{project.name}</span>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                        ))}
-                    </SidebarMenu>
-                  </SidebarGroupContent>
-                )}
-              </SidebarGroup>
-
-
+                    ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            )}
+          </SidebarGroup>
 
           {!isMobile && (
             <SidebarGroup>
@@ -234,10 +250,10 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={pathname === '/settings'}
+                  isActive={pathname === "/settings"}
                   tooltip="Settings"
                 >
-                  <Link 
+                  <Link
                     href="/settings"
                     onClick={() => {
                       trigger(20);

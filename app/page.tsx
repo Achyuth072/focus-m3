@@ -47,7 +47,7 @@ function HomeContent() {
 
   return (
     <div className="flex flex-col h-[calc(100dvh-124px)] md:h-dvh">
-      <div className="px-6 pt-4 pb-4 flex items-start justify-between">
+      <div className="px-6 pt-4 pb-4 flex flex-col md:flex-row md:items-start justify-between gap-4 md:gap-0">
         <div>
           <p className="text-sm text-muted-foreground flex items-center gap-2">
             {format(today, "EEEE, MMMM d")}
@@ -72,15 +72,17 @@ function HomeContent() {
           <h1 className="type-h1 mt-1 text-primary">{greeting}</h1>
         </div>
 
-        <TasksPageHeader
-          currentSort={sortBy}
-          currentGroup={groupBy}
-          viewMode={viewMode}
-          onSortChange={setSortBy}
-          onGroupChange={setGroupBy}
-          onViewModeChange={setViewMode}
-          onNewTask={openAddTask}
-        />
+        <div className="flex justify-end w-full md:w-auto">
+          <TasksPageHeader
+            currentSort={sortBy}
+            currentGroup={groupBy}
+            viewMode={viewMode}
+            onSortChange={setSortBy}
+            onGroupChange={setGroupBy}
+            onViewModeChange={setViewMode}
+            onNewTask={openAddTask}
+          />
+        </div>
       </div>
 
       <div className="flex-1 min-h-0">

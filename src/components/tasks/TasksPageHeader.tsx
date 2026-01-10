@@ -9,11 +9,6 @@ import {
   List,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { useCompletedTasks } from "@/components/CompletedTasksProvider";
 import {
   DropdownMenu,
@@ -33,7 +28,6 @@ import {
 import { useHaptic } from "@/lib/hooks/useHaptic";
 import { cn } from "@/lib/utils";
 import { useHotkeys } from "react-hotkeys-hook";
-import { useIsMobile } from "@/lib/hooks/useIsMobile";
 
 interface TasksPageHeaderProps {
   currentSort: SortOption;
@@ -56,7 +50,6 @@ export function TasksPageHeader({
 }: TasksPageHeaderProps) {
   const { openSheet } = useCompletedTasks();
   const { trigger } = useHaptic();
-  const isMobile = useIsMobile();
 
   useHotkeys("shift+1", () => onViewModeChange("list"), {
     preventDefault: true,
@@ -71,75 +64,54 @@ export function TasksPageHeader({
   return (
     <div className="flex items-center gap-2">
       <div className="flex items-center rounded-md border border-input h-8 overflow-hidden bg-muted/20">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className={cn(
-                "h-full w-8 p-0 rounded-none transition-all duration-200 border-r border-input/50 last:border-r-0",
-                viewMode === "list"
-                  ? "bg-background text-primary shadow-sm"
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-              )}
-              onClick={() => {
-                trigger(15);
-                onViewModeChange("list");
-              }}
-            >
-              <List className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom" sideOffset={8} hidden={isMobile}>
-            List View (Shift+1)
-          </TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className={cn(
-                "h-full w-8 p-0 rounded-none transition-all duration-200 border-r border-input/50 last:border-r-0",
-                viewMode === "grid"
-                  ? "bg-background text-primary shadow-sm"
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-              )}
-              onClick={() => {
-                trigger(15);
-                onViewModeChange("grid");
-              }}
-            >
-              <LayoutGrid className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom" sideOffset={8} hidden={isMobile}>
-            Grid View (Shift+2)
-          </TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className={cn(
-                "h-full w-8 p-0 rounded-none transition-all duration-200 border-r border-input/50 last:border-r-0",
-                viewMode === "board"
-                  ? "bg-background text-primary shadow-sm"
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-              )}
-              onClick={() => {
-                trigger(15);
-                onViewModeChange("board");
-              }}
-            >
-              <KanbanSquare className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom" sideOffset={8} hidden={isMobile}>
-            Board View (Shift+3)
-          </TooltipContent>
-        </Tooltip>
+        <Button
+          variant="ghost"
+          size="sm"
+          className={cn(
+            "h-full w-8 p-0 rounded-none transition-all duration-200 border-r border-input/50 last:border-r-0",
+            viewMode === "list"
+              ? "bg-background text-primary shadow-sm"
+              : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+          )}
+          onClick={() => {
+            trigger(20);
+            onViewModeChange("list");
+          }}
+        >
+          <List className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          className={cn(
+            "h-full w-8 p-0 rounded-none transition-all duration-200 border-r border-input/50 last:border-r-0",
+            viewMode === "grid"
+              ? "bg-background text-primary shadow-sm"
+              : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+          )}
+          onClick={() => {
+            trigger(20);
+            onViewModeChange("grid");
+          }}
+        >
+          <LayoutGrid className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          className={cn(
+            "h-full w-8 p-0 rounded-none transition-all duration-200 border-r border-input/50 last:border-r-0",
+            viewMode === "board"
+              ? "bg-background text-primary shadow-sm"
+              : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+          )}
+          onClick={() => {
+            trigger(20);
+            onViewModeChange("board");
+          }}
+        >
+          <KanbanSquare className="h-4 w-4" />
+        </Button>
       </div>
 
       <DropdownMenu>
@@ -197,8 +169,6 @@ export function TasksPageHeader({
         <CheckCircle2 className="h-4 w-4" />
         Completed
       </Button>
-
-      {/* New Task Button - Desktop Only */}
 
       <Button
         variant="outline"

@@ -16,7 +16,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ListChecks, Save, Trash2, Inbox, Moon, CalendarClock } from "lucide-react";
+import {
+  ListChecks,
+  Save,
+  Trash2,
+  Inbox,
+  Moon,
+  CalendarClock,
+} from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { cn } from "@/lib/utils";
@@ -120,7 +127,9 @@ export function TaskEditView({
       {/* Scrollable Content Area */}
       <div className="flex-1 overflow-y-auto min-h-0 px-4 sm:pl-0 sm:pr-4 space-y-4 scrollbar-thin w-full">
         {/* Content Input */}
-        <Label htmlFor="task-content-edit" className="sr-only">Task Content</Label>
+        <Label htmlFor="task-content-edit" className="sr-only">
+          Task Content
+        </Label>
         <Textarea
           id="task-content-edit"
           placeholder="What needs to be done?"
@@ -129,13 +138,19 @@ export function TaskEditView({
           onKeyDown={onKeyDown}
           className={cn(
             "text-lg sm:text-xl p-0 min-h-[40px] h-auto bg-transparent border-0 focus-visible:ring-0 resize-none placeholder:text-muted-foreground/50",
-            errors?.content && "text-destructive placeholder:text-destructive/50"
+            errors?.content &&
+              "text-destructive placeholder:text-destructive/50"
           )}
           aria-invalid={!!errors?.content}
-          aria-describedby={errors?.content ? "task-content-edit-error" : undefined}
+          aria-describedby={
+            errors?.content ? "task-content-edit-error" : undefined
+          }
         />
         {errors?.content && (
-          <p id="task-content-edit-error" className="text-xs font-medium text-destructive mt-1">
+          <p
+            id="task-content-edit-error"
+            className="text-xs font-medium text-destructive mt-1"
+          >
             {errors.content.message}
           </p>
         )}
@@ -191,7 +206,8 @@ export function TaskEditView({
               }}
               className={cn(
                 "h-6 w-6 p-0 text-muted-foreground hover:text-foreground transition-all [&_svg]:!size-4",
-                showSubtasks && "text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary"
+                showSubtasks &&
+                  "text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary"
               )}
               title="Toggle subtasks"
             >
@@ -212,7 +228,10 @@ export function TaskEditView({
 
       {/* Fixed Footer - Actions Row */}
       <div className="shrink-0 grid grid-cols-[1fr_auto] gap-2 pt-4 border-t mt-4 px-4 sm:px-0 pb-[calc(0.5rem+env(safe-area-inset-bottom))] bg-background w-full max-w-full">
-        <div ref={scrollRef} className="flex items-center gap-3 overflow-x-auto scrollbar-hide pr-8 py-1 min-w-0 mask-linear-horizontal">
+        <div
+          ref={scrollRef}
+          className="flex items-center gap-3 overflow-x-auto scrollbar-hide pr-8 py-1 min-w-0 mask-linear-horizontal"
+        >
           {/* Date & Time Picker (Due Date) */}
           <TaskDatePicker
             date={dueDate}
@@ -242,7 +261,8 @@ export function TaskEditView({
             size="sm"
             className={cn(
               "h-10 px-3 text-xs border border-input bg-background hover:bg-accent hover:text-accent-foreground shrink-0 gap-1.5",
-              isEvening && "border-purple-500/50 text-purple-600 dark:text-purple-400 bg-purple-500/10"
+              isEvening &&
+                "border-purple-500/50 text-purple-600 dark:text-purple-400 bg-purple-500/10"
             )}
             onClick={() => {
               const nextValue = !isEvening;

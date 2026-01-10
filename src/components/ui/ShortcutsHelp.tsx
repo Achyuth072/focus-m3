@@ -31,7 +31,8 @@ const SHORTCUTS: ShortcutGroup[] = [
     title: "Actions",
     shortcuts: [
       { keys: ["n"], description: "New Task" },
-      { keys: ["c"], description: "Toggle Logbook" },
+      { keys: ["c"], description: "Toggle Completed Tasks" },
+      { keys: ["Cmd", "Enter"], description: "Save Task" },
       { keys: ["s"], description: "Search / Command Menu" },
       { keys: ["Ctrl", "k"], description: "Search / Command Menu" },
       { keys: ["t"], description: "Switch Theme" },
