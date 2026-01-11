@@ -79,19 +79,19 @@ export function AppSidebar() {
       <Sidebar
         variant="sidebar"
         collapsible="icon"
-        className="h-screen border-r"
+        className="h-screen border-r md:border-none"
       >
         <SidebarHeader className="border-b border-border">
-          <div className="flex items-center justify-between px-2 py-4">
-            <div className="flex items-center gap-2 group-data-[collapsible=icon]:w-full group-data-[collapsible=icon]:justify-center">
+          <div className="flex items-center justify-between px-2 group-data-[collapsible=icon]:px-0 py-4 transition-all duration-300">
+            <div className="flex items-center gap-2 overflow-hidden shrink-0">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-semibold shrink-0">
                 K
               </div>
-              <span className="type-h2 group-data-[collapsible=icon]:hidden">
+              <span className="type-h2 whitespace-nowrap transition-all duration-300 ease-in-out group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:w-0 overflow-hidden">
                 Kanso
               </span>
             </div>
-            <SidebarTrigger className="h-8 w-8 group-data-[collapsible=icon]:hidden" />
+            <SidebarTrigger className="h-8 w-8 transition-all duration-300 ease-in-out group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:w-0 overflow-hidden shrink-0" />
           </div>
         </SidebarHeader>
 

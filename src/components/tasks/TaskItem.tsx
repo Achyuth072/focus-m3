@@ -207,11 +207,11 @@ function TaskItem({
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
           className={cn(
-            "relative flex group items-center bg-background cursor-pointer",
+            "relative flex group items-center bg-background cursor-pointer border-l-2 border-transparent transition-seijaku",
             isDesktop
-              ? "gap-2 px-2 py-1 h-8 rounded-sm hover:bg-secondary/50 transition-seijaku"
-              : "items-center gap-3 py-3 px-4 active:bg-secondary/20 transition-seijaku-fast",
-            isKeyboardSelected && "ring-2 ring-primary bg-secondary/40 z-10"
+              ? "gap-3 px-2 py-3 h-auto rounded-sm hover:border-primary"
+              : "items-center gap-3 py-4 px-4 active:bg-secondary/20 transition-seijaku-fast",
+            isKeyboardSelected && "border-primary bg-secondary/20 z-10"
           )}
           onClick={() => {
             // Only trigger onSelect if we're not dragging
