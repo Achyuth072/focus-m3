@@ -60,8 +60,7 @@ export function FocusTrendChart({ data, className }: FocusTrendChartProps) {
               <Tooltip
                 contentStyle={{
                   backgroundColor: "hsl(var(--background))",
-                  border: "1px solid currentColor",
-                  className: "text-foreground/20",
+                  borderColor: "hsl(var(--border))",
                   borderRadius: "0px",
                   boxShadow: "none",
                   padding: "12px",

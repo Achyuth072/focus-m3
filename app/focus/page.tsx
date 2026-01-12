@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { useTimer } from '@/components/TimerProvider';
-import { buttonVariants } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Play, Pause, Square, SkipForward, X } from 'lucide-react';
-import { FocusSettingsDialog } from '@/components/FocusSettingsDialog';
-import type { TimerMode } from '@/lib/types/timer';
-import { cn } from '@/lib/utils';
-import { useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
-import { createClient } from '@/lib/supabase/client';
-import type { Task } from '@/lib/types/task';
+import { motion } from "framer-motion";
+import { useTimer } from "@/components/TimerProvider";
+import { buttonVariants } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Play, Pause, Square, SkipForward, X } from "lucide-react";
+import { FocusSettingsDialog } from "@/components/FocusSettingsDialog";
+import type { TimerMode } from "@/lib/types/timer";
+import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { createClient } from "@/lib/supabase/client";
+import type { Task } from "@/lib/types/task";
 import { useHaptic } from "@/lib/hooks/useHaptic";
 import { useDocumentPiP } from "@/lib/hooks/useDocumentPiP";
 import { PiPTimer } from "@/components/PiPTimer";
@@ -19,15 +19,17 @@ import { Minimize2 } from "lucide-react";
 import { createPortal } from "react-dom";
 
 const MODE_LABELS: Record<TimerMode, string> = {
-  focus: 'Focus',
-  shortBreak: 'Short Break',
-  longBreak: 'Long Break',
+  focus: "Focus",
+  shortBreak: "Short Break",
+  longBreak: "Long Break",
 };
 
 function formatTime(seconds: number): string {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
-  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  return `${mins.toString().padStart(2, "0")}:${secs
+    .toString()
+    .padStart(2, "0")}`;
 }
 
 export default function FocusPage() {
@@ -35,17 +37,18 @@ export default function FocusPage() {
   const { state, settings, start, pause, stop, skip } = useTimer();
   const supabase = createClient();
   const { trigger, isPhone } = useHaptic();
-  const { isPiPSupported, isPiPActive, pipWindow, openPiP, closePiP } = useDocumentPiP();
+  const { isPiPSupported, isPiPActive, pipWindow, openPiP, closePiP } =
+    useDocumentPiP();
 
   // Fetch active task if one is set
   const { data: activeTask } = useQuery({
-    queryKey: ['task', state.activeTaskId],
+    queryKey: ["task", state.activeTaskId],
     queryFn: async () => {
       if (!state.activeTaskId) return null;
       const { data } = await supabase
-        .from('tasks')
-        .select('*')
-        .eq('id', state.activeTaskId)
+        .from("tasks")
+        .select("*")
+        .eq("id", state.activeTaskId)
         .single();
       return data as Task | null;
     },
@@ -53,13 +56,14 @@ export default function FocusPage() {
   });
 
   const totalSeconds =
-    state.mode === 'focus'
+    state.mode === "focus"
       ? settings.focusDuration * 60
-      : state.mode === 'shortBreak'
-        ? settings.shortBreakDuration * 60
-        : settings.longBreakDuration * 60;
+      : state.mode === "shortBreak"
+      ? settings.shortBreakDuration * 60
+      : settings.longBreakDuration * 60;
 
-  const progress = ((totalSeconds - state.remainingSeconds) / totalSeconds) * 100;
+  const progress =
+    ((totalSeconds - state.remainingSeconds) / totalSeconds) * 100;
 
   const handlePlayPause = () => {
     if (state.isRunning) {
@@ -107,7 +111,9 @@ export default function FocusPage() {
             buttonVariants({ variant: "ghost", size: "icon" }),
             "absolute top-4 right-4 h-14 w-14 rounded-full hover:bg-secondary/50 active:scale-95 active:bg-secondary/30 transition-seijaku cursor-pointer"
           )}
-          title={isPiPActive ? "Close Picture-in-Picture" : "Open Picture-in-Picture"}
+          title={
+            isPiPActive ? "Close Picture-in-Picture" : "Open Picture-in-Picture"
+          }
         >
           <Minimize2 className="h-6 w-6" />
         </motion.button>
@@ -120,7 +126,7 @@ export default function FocusPage() {
       {/* Active Task Name */}
       {activeTask && (
         <div className="font-serif text-lg md:text-xl font-medium text-foreground/90 mt-4 max-w-md text-center px-4 italic leading-tight">
-          "{activeTask.content}"
+          &quot;{activeTask.content}&quot;
         </div>
       )}
 
@@ -136,7 +142,8 @@ export default function FocusPage() {
 
       {/* Session Counter */}
       <p className="text-sm text-muted-foreground mb-8">
-        Session {state.completedSessions + 1} of {settings.sessionsBeforeLongBreak}
+        Session {state.completedSessions + 1} of{" "}
+        {settings.sessionsBeforeLongBreak}
       </p>
 
       {/* Controls */}
@@ -191,10 +198,8 @@ export default function FocusPage() {
       </div>
 
       {/* Render PiP Timer into external window using Portal */}
-      {pipWindow && createPortal(
-        <PiPTimer onClose={closePiP} />,
-        pipWindow.document.body
-      )}
+      {pipWindow &&
+        createPortal(<PiPTimer onClose={closePiP} />, pipWindow.document.body)}
     </motion.div>
   );
 }

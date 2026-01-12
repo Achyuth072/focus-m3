@@ -28,7 +28,7 @@ type CommandDialogProps = DialogProps;
 const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
   return (
     <Dialog {...props}>
-      <DialogContent className="overflow-hidden p-0 shadow-2xl border-border/60 bg-background/95 backdrop-blur-xl sm:max-w-[480px] sm:rounded-lg">
+      <DialogContent className="overflow-hidden p-0 shadow-2xl border-border/60 bg-background sm:max-w-[480px] sm:rounded-lg">
         <DialogTitle className="sr-only">Command Menu</DialogTitle>
         <Command
           loop
@@ -50,7 +50,7 @@ const CommandInput = React.forwardRef<
     cmdk-input-wrapper=""
   >
     <Search
-      className="mr-3 h-5 w-5 shrink-0 text-foreground/70"
+      className="mr-3 h-5 w-5 shrink-0 text-foreground/90"
       strokeWidth={2.25}
     />
     <CommandPrimitive.Input
@@ -102,7 +102,7 @@ const CommandGroup = React.forwardRef<
   <CommandPrimitive.Group
     ref={ref}
     className={cn(
-      "overflow-hidden p-1.5 text-foreground [&_[cmdk-group-heading]]:px-4 [&_[cmdk-group-heading]]:py-2.5 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-serif [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:text-muted-foreground/50 [&_[cmdk-group-heading]]:tracking-[0.15em] [&_[cmdk-group-heading]]:lowercase",
+      "overflow-hidden p-1.5 text-foreground [&_[cmdk-group-heading]]:px-4 [&_[cmdk-group-heading]]:py-2.5 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-serif [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:text-white/90 [&_[cmdk-group-heading]]:tracking-[0.15em] [&_[cmdk-group-heading]]:lowercase",
       className
     )}
     {...props}
@@ -131,16 +131,16 @@ const CommandItem = React.forwardRef<
     ref={ref}
     className={cn(
       "relative flex cursor-pointer select-none items-center rounded-md px-3 py-2.5 text-sm transition-all duration-200 outline-none",
-      // Unselected state: Deeply dim text for maximum contrast delta
-      "text-muted-foreground/60 font-medium",
+      // Unselected state: Zen Max Contrast (Matches ShortcutsHelp)
+      "text-foreground/90 font-medium",
       // Selected state: Ink for Light Mode, Kanso Blue for Dark Mode
       // Selected state: Ink for Light Mode, Kanso Blue (Brand) for Dark Mode
       "data-[selected=true]:bg-foreground/10 data-[selected=true]:!text-foreground aria-selected:bg-foreground/10 aria-selected:!text-foreground",
-      "dark:data-[selected=true]:bg-brand/20 dark:data-[selected=true]:!text-primary-foreground dark:aria-selected:bg-brand/20 dark:aria-selected:!text-primary-foreground",
+      "dark:data-[selected=true]:bg-brand/20 dark:data-[selected=true]:!text-white dark:aria-selected:bg-brand/20 dark:aria-selected:!text-white",
       // Force font weight and icon colors
       "data-[selected=true]:!font-bold aria-selected:!font-bold",
       "data-[selected=true]:[&_svg]:!text-foreground aria-selected:[&_svg]:!text-foreground",
-      "dark:data-[selected=true]:[&_svg]:!text-primary-foreground dark:aria-selected:[&_svg]:!text-primary-foreground",
+      "dark:data-[selected=true]:[&_svg]:!text-white dark:aria-selected:[&_svg]:!text-white",
       "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
@@ -157,7 +157,7 @@ const CommandShortcut = ({
   return (
     <span
       className={cn(
-        "ml-auto text-xs tracking-widest text-muted-foreground/60",
+        "ml-auto text-xs tracking-widest text-foreground/60",
         className
       )}
       {...props}

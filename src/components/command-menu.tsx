@@ -89,10 +89,10 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
         <div className="p-6 pb-2">
           <div className="flex items-center gap-2.5">
             <CommandIcon
-              className="h-5 w-5 text-foreground/70"
+              className="h-5 w-5 text-foreground/90"
               strokeWidth={2.25}
             />
-            <h2 className="font-serif text-xl tracking-tight text-foreground lowercase">
+            <h2 className="font-serif text-xl tracking-tight !text-white font-semibold lowercase">
               command menu
             </h2>
           </div>
