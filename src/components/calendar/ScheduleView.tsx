@@ -5,7 +5,7 @@ import { useMemo, memo } from "react";
 import { cn } from "@/lib/utils";
 import type { CalendarEvent } from "@/lib/calendar/types";
 
-interface ScheduleViewProps {
+interface ScheduleViewProps extends React.HTMLAttributes<HTMLDivElement> {
   events: CalendarEvent[];
   startDate: Date;
   daysToShow?: number; // How many days ahead to show
@@ -13,7 +13,13 @@ interface ScheduleViewProps {
 }
 
 const ScheduleView = memo(
-  ({ events, startDate, daysToShow = 30, className }: ScheduleViewProps) => {
+  ({
+    events,
+    startDate,
+    daysToShow = 30,
+    className,
+    ...props
+  }: ScheduleViewProps) => {
     const startOfToday = startOfDay(startDate);
 
     // Memoize date range generation
@@ -45,7 +51,10 @@ const ScheduleView = memo(
     const todayStr = format(new Date(), "yyyy-MM-dd");
 
     return (
-      <div className={cn("h-full overflow-auto p-6", className)}>
+      <div
+        className={cn("h-full overflow-auto p-6 relative isolate", className)}
+        {...props}
+      >
         <div className="max-w-3xl mx-auto space-y-6">
           {dateRange.map((date) => {
             const dayKey = format(date, "yyyy-MM-dd");
@@ -57,7 +66,7 @@ const ScheduleView = memo(
                 {/* Date Header */}
                 <div
                   className={cn(
-                    "sticky top-0 z-10 bg-background",
+                    "sticky top-0 z-30 bg-background",
                     "py-2 border-b border-border/40"
                   )}
                 >

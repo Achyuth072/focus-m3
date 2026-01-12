@@ -8,7 +8,7 @@ import type { CalendarEvent } from "@/lib/calendar/types";
 
 const HOUR_HEIGHT = 120; // 60 minutes * 2 pixels
 
-interface TimeGridProps {
+interface TimeGridProps extends React.HTMLAttributes<HTMLDivElement> {
   startDate: Date;
   daysToShow: number; // 1 for Day, 3 for Mobile, 4 for Desktop, 7 for Week
   events: CalendarEvent[];
@@ -20,6 +20,7 @@ export function TimeGrid({
   daysToShow,
   events,
   className,
+  ...props
 }: TimeGridProps) {
   const dates = getDayRange(startDate, daysToShow);
 
@@ -28,10 +29,16 @@ export function TimeGrid({
   const hours = Array.from({ length: 24 }).map((_, i) => i);
 
   return (
-    <div className={cn("flex h-full bg-background", className)}>
+    <div
+      className={cn(
+        "flex h-full bg-background overflow-y-auto relative isolate",
+        className
+      )}
+      {...props}
+    >
       {/* Time Labels Column */}
-      <div className="w-16 flex-shrink-0 border-r border-border/10">
-        <div className="h-24 border-b border-border/10" />{" "}
+      <div className="w-16 flex-shrink-0 border-r border-border/10 bg-background z-20">
+        <div className="sticky top-0 z-30 h-24 border-b border-border/10 bg-background" />{" "}
         {/* Spacer for header */}
         {hours.map((hour) => (
           <div
@@ -61,7 +68,7 @@ export function TimeGrid({
               )}
             >
               {/* Header for the Day */}
-              <div className="sticky top-0 z-10 bg-background border-b border-border/10 h-24 flex flex-col items-center justify-center">
+              <div className="sticky top-0 z-30 bg-background border-b border-border/10 h-24 flex flex-col items-center justify-center shadow-xs">
                 <div
                   className={cn(
                     "font-serif text-[11px] uppercase tracking-[0.2em]",
