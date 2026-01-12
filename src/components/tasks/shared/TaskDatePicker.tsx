@@ -54,7 +54,7 @@ export function TaskDatePicker({
   const buttonContent = (
     <div className="flex items-center gap-1.5">
       <Icon
-        strokeWidth={1.5}
+        strokeWidth={2.25}
         className={cn(
           isCompact ? "h-5 w-5" : "h-5 w-5 transition-all",
           date && (isCompact ? "mr-1.5 h-4 w-4" : "text-primary")
@@ -83,6 +83,7 @@ export function TaskDatePicker({
           >
             <X
               className={cn("h-3 w-3", isCompact && "hover:text-destructive")}
+              strokeWidth={2.25}
             />
           </span>
         </>

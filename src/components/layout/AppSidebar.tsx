@@ -82,16 +82,16 @@ export function AppSidebar() {
         className="h-screen border-r md:border-none"
       >
         <SidebarHeader className="border-b border-border">
-          <div className="flex items-center justify-between px-2 group-data-[collapsible=icon]:px-0 py-4 transition-all duration-300">
-            <div className="flex items-center gap-2 overflow-hidden shrink-0">
+          <div className="flex items-center justify-between px-4 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:justify-center py-4 transition-all duration-300">
+            <div className="flex items-center gap-2 group-data-[collapsible=icon]:gap-0 overflow-hidden shrink-0">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-semibold shrink-0">
                 K
               </div>
-              <span className="type-h2 whitespace-nowrap transition-all duration-300 ease-in-out group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:w-0 overflow-hidden">
+              <span className="type-h2 whitespace-nowrap transition-all duration-300 ease-in-out group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:w-0 group-data-[collapsible=icon]:hidden overflow-hidden">
                 Kanso
               </span>
             </div>
-            <SidebarTrigger className="h-8 w-8 transition-all duration-300 ease-in-out group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:w-0 overflow-hidden shrink-0" />
+            <SidebarTrigger className="h-8 w-8 transition-all duration-300 ease-in-out group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:w-0 group-data-[collapsible=icon]:hidden overflow-hidden shrink-0" />
           </div>
         </SidebarHeader>
 
@@ -134,7 +134,7 @@ export function AppSidebar() {
                           isActive={isActive}
                           tooltip={item.label}
                         >
-                          <Icon className="h-5 w-5" />
+                          <Icon className="h-5 w-5" strokeWidth={2.25} />
                           <span>{item.label}</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -149,15 +149,16 @@ export function AppSidebar() {
           {/* Projects Section */}
           <SidebarGroup>
             <SidebarGroupLabel
-              className="cursor-pointer pr-10"
+              className="cursor-pointer font-serif text-[11px] font-semibold uppercase tracking-widest text-foreground/70 pr-8 hover:text-foreground transition-colors"
               onClick={() => {
                 trigger(15);
                 toggleProjectsOpen();
               }}
             >
-              <FolderKanban />
+              <FolderKanban strokeWidth={2.25} />
               <span className="flex-1">Projects</span>
               <ChevronDown
+                strokeWidth={2.25}
                 className={`h-4 w-4 shrink-0 translate-y-px transition-transform ${
                   isProjectsOpen ? "" : "-rotate-90"
                 }`}
@@ -170,7 +171,7 @@ export function AppSidebar() {
                 openCreateProject();
               }}
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="h-4 w-4" strokeWidth={2.25} />
             </SidebarGroupAction>
             {isProjectsOpen && (
               <SidebarGroupContent>
@@ -183,7 +184,7 @@ export function AppSidebar() {
                       tooltip="Inbox"
                     >
                       <div className="flex items-center justify-center w-5 h-5 shrink-0">
-                        <Inbox className="h-4 w-4" />
+                        <Inbox className="h-4 w-4" strokeWidth={2.25} />
                       </div>
                       <span>Inbox</span>
                     </SidebarMenuButton>
@@ -232,7 +233,7 @@ export function AppSidebar() {
                           isActive={isActive}
                           tooltip={item.label}
                         >
-                          <Icon className="h-5 w-5" />
+                          <Icon className="h-5 w-5" strokeWidth={2.25} />
                           <span>{item.label}</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -252,6 +253,7 @@ export function AppSidebar() {
                   asChild
                   isActive={pathname === "/settings"}
                   tooltip="Settings"
+                  className="group-data-[collapsible=icon]:mx-auto"
                 >
                   <Link
                     href="/settings"
@@ -259,7 +261,7 @@ export function AppSidebar() {
                       trigger(20);
                     }}
                   >
-                    <Settings className="h-5 w-5" />
+                    <Settings className="h-5 w-5" strokeWidth={2.25} />
                     <span>Settings</span>
                   </Link>
                 </SidebarMenuButton>
@@ -267,10 +269,10 @@ export function AppSidebar() {
             </SidebarMenu>
           )}
           {/* Expand trigger - visible only when collapsed */}
-          <div className="hidden group-data-[collapsible=icon]:flex justify-center py-2">
+          <div className="hidden group-data-[collapsible=icon]:flex justify-center pt-2 pb-4">
             <SidebarTrigger className="h-8 w-8" />
           </div>
-          <div className="px-2 py-2 text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">
+          <div className="px-2 py-2 text-[10px] font-mono text-foreground/40 group-data-[collapsible=icon]:!hidden">
             v1.5.0
           </div>
         </SidebarFooter>

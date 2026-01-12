@@ -97,11 +97,11 @@ function TaskItem({
     x,
     [-SWIPE_THRESHOLD, -50, 0, 50, SCHEDULE_SWIPE_THRESHOLD],
     [
-      "hsl(0 84.2% 60.2%)",
-      "hsl(0 84.2% 60.2% / 0.3)",
+      "#1A1A1A", // Ink (Delete)
+      "rgba(26, 26, 26, 0.3)",
       "transparent",
-      "hsl(142 76% 36% / 0.3)",
-      "hsl(142 76% 36%)",
+      "rgba(75, 108, 183, 0.3)",
+      "#4B6CB7", // Kanso Blue (Edit)
     ]
   );
 
@@ -183,11 +183,11 @@ function TaskItem({
           <>
             {/* Delete indicator (left swipe) */}
             <div className="absolute inset-y-0 right-0 flex items-center justify-end pr-4 text-white">
-              <Trash2 className="h-5 w-5" />
+              <Trash2 className="h-5 w-5" strokeWidth={2.25} />
             </div>
             {/* Edit indicator (right swipe) */}
             <div className="absolute inset-y-0 left-0 flex items-center justify-start pl-4 text-white">
-              <Pencil className="h-5 w-5" />
+              <Pencil className="h-5 w-5" strokeWidth={2.25} />
             </div>
           </>
         )}
@@ -231,7 +231,7 @@ function TaskItem({
               }}
               className="opacity-0 group-hover:opacity-100 cursor-grab active:cursor-grabbing text-muted-foreground/50 hover:text-foreground transition-opacity"
             >
-              <GripVertical className="h-4 w-4" />
+              <GripVertical className="h-4 w-4" strokeWidth={2.25} />
             </div>
           ) : (
             <div
@@ -244,7 +244,7 @@ function TaskItem({
               className="cursor-grab active:cursor-grabbing text-muted-foreground/50 shrink-0"
               style={{ touchAction: "none" }}
             >
-              <GripVertical className="h-5 w-5" />
+              <GripVertical className="h-5 w-5" strokeWidth={2.25} />
             </div>
           )}
           {/* Checkbox */}
@@ -257,7 +257,9 @@ function TaskItem({
               onCheckedChange={handleComplete}
               className={cn(
                 priorityColors[task.priority],
-                isDesktop ? "h-4 w-4 !rounded-sm" : "h-5 w-5 !rounded-md" // Mobile=8px(40%), Desktop=6px(37%)
+                isDesktop
+                  ? "h-4 w-4 !rounded-sm"
+                  : "h-5 w-5 !rounded-md after:absolute after:-inset-4 after:md:hidden" // Mobile tap area increase (44px+)
               )}
             />
           </div>
@@ -274,7 +276,7 @@ function TaskItem({
             <div className="flex items-center gap-2 flex-1">
               <p
                 className={cn(
-                  "type-body font-medium leading-tight truncate",
+                  "type-body font-serif font-medium leading-tight truncate text-[16px]",
                   task.is_completed && "line-through text-muted-foreground"
                 )}
               >
@@ -299,9 +301,9 @@ function TaskItem({
                     className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors opacity-0 group-hover:opacity-100"
                   >
                     {isExpanded ? (
-                      <ChevronDown className="h-4 w-4" />
+                      <ChevronDown className="h-4 w-4" strokeWidth={2.25} />
                     ) : (
-                      <ChevronRight className="h-4 w-4" />
+                      <ChevronRight className="h-4 w-4" strokeWidth={2.25} />
                     )}
                   </Button>
                 ) : null}
@@ -313,13 +315,15 @@ function TaskItem({
                       isOverdue ? "text-destructive" : "text-muted-foreground"
                     )}
                   >
-                    {!isDesktop && <Calendar className="h-3 w-3" />}
+                    {!isDesktop && (
+                      <Calendar className="h-3 w-3" strokeWidth={2.25} />
+                    )}
                     {formatDueDate(task.due_date)}
                   </span>
                 )}
                 {task.do_date && (
                   <span className="type-ui flex items-center gap-1 text-green-600 dark:text-green-400 font-medium">
-                    <CalendarClock className="h-3 w-3" />
+                    <CalendarClock className="h-3 w-3" strokeWidth={2.25} />
                     {isToday(parseISO(task.do_date))
                       ? "Today"
                       : format(parseISO(task.do_date), "MMM d")}
@@ -327,7 +331,7 @@ function TaskItem({
                 )}
                 {task.is_evening && (
                   <span className="type-ui flex items-center gap-1 text-purple-600 dark:text-purple-400 font-medium">
-                    <Moon className="h-3 w-3 fill-current" />
+                    <Moon className="h-3 w-3 fill-current" strokeWidth={2.25} />
                     Evening
                   </span>
                 )}
@@ -338,7 +342,10 @@ function TaskItem({
                       priorityColors[task.priority]
                     )}
                   >
-                    {!isDesktop && <Flag className="h-3 w-3" />}P{task.priority}
+                    {!isDesktop && (
+                      <Flag className="h-3 w-3" strokeWidth={2.25} />
+                    )}
+                    P{task.priority}
                   </span>
                 )}
                 {project && (
@@ -362,7 +369,7 @@ function TaskItem({
                     className="h-6 w-6 text-muted-foreground hover:text-green-600 opacity-0 group-hover:opacity-100 transition-opacity"
                     title="Start focus timer"
                   >
-                    <Play className="h-3.5 w-3.5" />
+                    <Play className="h-3.5 w-3.5" strokeWidth={2.25} />
                   </Button>
                 )}
 
@@ -377,7 +384,7 @@ function TaskItem({
                     }}
                     className="h-6 w-6 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
+                    <Trash2 className="h-3.5 w-3.5" strokeWidth={2.25} />
                   </Button>
                 )}
               </div>
@@ -390,9 +397,9 @@ function TaskItem({
               variant="ghost"
               size="icon"
               onClick={handlePlayFocus}
-              className="h-8 w-8 text-muted-foreground hover:text-green-600 transition-colors"
+              className="h-11 w-11 text-muted-foreground hover:text-green-600 transition-colors"
             >
-              <Play className="h-4 w-4" />
+              <Play className="h-5 w-5" strokeWidth={2.25} />
             </Button>
           )}
 
@@ -402,12 +409,12 @@ function TaskItem({
               variant="ghost"
               size="icon"
               onClick={toggleExpand}
-              className="h-5 w-5 -mt-0.5 text-muted-foreground hover:text-foreground transition-colors"
+              className="h-11 w-11 -mt-0.5 text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center"
             >
               {isExpanded ? (
-                <ChevronDown className="h-4 w-4" />
+                <ChevronDown className="h-5 w-5" strokeWidth={2.25} />
               ) : (
-                <ChevronRight className="h-4 w-4" />
+                <ChevronRight className="h-5 w-5" strokeWidth={2.25} />
               )}
             </Button>
           )}

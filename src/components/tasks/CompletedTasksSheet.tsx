@@ -1,20 +1,35 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useTasks } from '@/lib/hooks/useTasks';
-import { format, isToday, isYesterday, parseISO, startOfWeek, isAfter } from 'date-fns';
-import { CheckCircle2, Clock, Trash2, Search } from 'lucide-react';
+import React, { useState } from "react";
+import { useTasks } from "@/lib/hooks/useTasks";
+import {
+  format,
+  isToday,
+  isYesterday,
+  parseISO,
+  startOfWeek,
+  isAfter,
+} from "date-fns";
+import { CheckCircle2, Clock, Trash2, Search } from "lucide-react";
 
-import type { Task } from '@/lib/types/task';
-import { useUpdateTask, useClearCompletedTasks } from '@/lib/hooks/useTaskMutations';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Drawer, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
-import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
-import { Button } from '@/components/ui/button';
-import { DeleteConfirmationDialog } from '@/components/ui/DeleteConfirmationDialog';
-import { Input } from '@/components/ui/input';
-import { useHaptic } from '@/lib/hooks/useHaptic';
-import { useBackNavigation } from '@/lib/hooks/useBackNavigation';
+import type { Task } from "@/lib/types/task";
+import {
+  useUpdateTask,
+  useClearCompletedTasks,
+} from "@/lib/hooks/useTaskMutations";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Drawer, DrawerContent, DrawerTitle } from "@/components/ui/drawer";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
+import { Button } from "@/components/ui/button";
+import { DeleteConfirmationDialog } from "@/components/ui/DeleteConfirmationDialog";
+import { Input } from "@/components/ui/input";
+import { useHaptic } from "@/lib/hooks/useHaptic";
+import { useBackNavigation } from "@/lib/hooks/useBackNavigation";
 
 interface CompletedTasksSheetProps {
   open: boolean;
@@ -31,25 +46,25 @@ function CompletedTaskItem({ task }: { task: Task }) {
   };
 
   const completedDate = task.completed_at ? parseISO(task.completed_at) : null;
-  const formattedDate = completedDate ? format(completedDate, 'h:mm a') : '';
+  const formattedDate = completedDate ? format(completedDate, "h:mm a") : "";
 
   return (
-    <div className="flex items-start gap-3 py-2 md:py-2 px-4 border-b border-border/40 hover:bg-secondary/30 transition-colors group min-h-[44px]">
+    <div className="flex items-start gap-3 py-3 px-6 hover:bg-foreground/[0.03] transition-seijaku group min-h-[44px]">
       <button
         onClick={handleUncomplete}
-        className="pt-0.5 text-green-500 hover:text-green-600 transition-colors"
+        className="pt-0.5 text-green-500/80 hover:text-green-600 transition-colors"
         title="Mark as incomplete"
       >
-        <CheckCircle2 className="h-5 w-5" />
+        <CheckCircle2 className="h-5 w-5" strokeWidth={2.25} />
       </button>
 
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium leading-tight line-through text-muted-foreground">
+        <p className="font-serif text-[15px] leading-tight line-through text-muted-foreground/60">
           {task.content}
         </p>
         {completedDate && (
-          <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
-            <Clock className="h-3 w-3" />
+          <div className="flex items-center gap-1 mt-1 text-[10px] font-mono uppercase tracking-wider text-muted-foreground/40">
+            <Clock className="h-3 w-3" strokeWidth={2.25} />
             {formattedDate}
           </div>
         )}
@@ -94,10 +109,10 @@ function TaskGroup({ title, tasks }: { title: string; tasks: Task[] }) {
 
   return (
     <div className="space-y-0">
-      <h3 className="type-micro font-semibold uppercase px-6 py-3 border-b border-border/40">
+      <h3 className="type-micro font-bold uppercase px-6 py-4 text-muted-foreground/40 tracking-[0.2em]">
         {title}
       </h3>
-      <div className="space-y-0">
+      <div className="space-y-0 pb-2">
         {tasks.map((task) => (
           <CompletedTaskItem key={task.id} task={task} />
         ))}
@@ -106,12 +121,15 @@ function TaskGroup({ title, tasks }: { title: string; tasks: Task[] }) {
   );
 }
 
-export function CompletedTasksSheet({ open, onOpenChange }: CompletedTasksSheetProps) {
+export function CompletedTasksSheet({
+  open,
+  onOpenChange,
+}: CompletedTasksSheetProps) {
   const { data: tasks = [], isLoading } = useTasks({ showCompleted: true });
-  const isDesktop = useMediaQuery('(min-width: 768px)');
+  const isDesktop = useMediaQuery("(min-width: 768px)");
   const clearMutation = useClearCompletedTasks();
   const [showClearDialog, setShowClearDialog] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const { trigger } = useHaptic();
 
   // Handle back navigation on mobile to close drawer instead of navigating away
@@ -119,12 +137,14 @@ export function CompletedTasksSheet({ open, onOpenChange }: CompletedTasksSheetP
   useBackNavigation(open && !isDesktop, () => onOpenChange(false));
 
   const completedTasks = tasks.filter((task) => task.is_completed);
-  
-  const filteredCompletedTasks = completedTasks.filter((task) => 
+
+  const filteredCompletedTasks = completedTasks.filter((task) =>
     task.content.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const { today, yesterday, thisWeek, older } = groupTasksByDate(filteredCompletedTasks);
+  const { today, yesterday, thisWeek, older } = groupTasksByDate(
+    filteredCompletedTasks
+  );
 
   const isSearching = searchQuery.length > 0;
   const hasResults = filteredCompletedTasks.length > 0;
@@ -133,7 +153,7 @@ export function CompletedTasksSheet({ open, onOpenChange }: CompletedTasksSheetP
     // Close dialogs immediately for instant feedback
     setShowClearDialog(false);
     onOpenChange(false);
-    
+
     // Execute the mutation (optimistic update handled in the hook)
     clearMutation.mutate();
   };
@@ -145,11 +165,17 @@ export function CompletedTasksSheet({ open, onOpenChange }: CompletedTasksSheetP
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
         </div>
       ) : completedTasks.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-12 text-center px-4">
-          <CheckCircle2 className="h-16 w-16 text-muted-foreground/50 mb-4" />
-          <h2 className="text-xl font-semibold mb-2">No Completed Tasks</h2>
-          <p className="text-muted-foreground max-w-md">
-            Tasks you complete will appear here. Start checking off items from your task list!
+        <div className="flex flex-col items-center justify-center py-20 text-center px-4">
+          <CheckCircle2
+            className="h-16 w-16 text-muted-foreground/20 mb-6"
+            strokeWidth={1}
+          />
+          <h2 className="font-serif text-2xl font-medium mb-2 tracking-tight">
+            No Completed Tasks
+          </h2>
+          <p className="text-muted-foreground/60 max-w-xs text-sm leading-relaxed">
+            Tasks you complete will appear here. Start checking off items from
+            your task list!
           </p>
         </div>
       ) : !hasResults && isSearching ? (
@@ -197,7 +223,7 @@ export function CompletedTasksSheet({ open, onOpenChange }: CompletedTasksSheetP
               )}
             </div>
           </DialogHeader>
-          
+
           {completedTasks.length > 0 && (
             <div className="px-6 py-3 border-b border-border/40 bg-secondary/5">
               <div className="relative group">
@@ -211,9 +237,7 @@ export function CompletedTasksSheet({ open, onOpenChange }: CompletedTasksSheetP
               </div>
             </div>
           )}
-          <div className="overflow-y-auto flex-1">
-            {content}
-          </div>
+          <div className="overflow-y-auto flex-1">{content}</div>
         </DialogContent>
 
         <DeleteConfirmationDialog
@@ -266,9 +290,7 @@ export function CompletedTasksSheet({ open, onOpenChange }: CompletedTasksSheetP
               </div>
             </div>
           )}
-          <div className="overflow-y-auto flex-1">
-            {content}
-          </div>
+          <div className="overflow-y-auto flex-1">{content}</div>
         </DrawerContent>
       </Drawer>
 

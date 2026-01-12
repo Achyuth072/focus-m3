@@ -84,7 +84,7 @@ export function TaskPrioritySelect({
       >
         <div className="flex items-center gap-1.5 justify-center">
           <Flag
-            strokeWidth={1.5}
+            strokeWidth={2.25}
             className={cn(
               isCompact ? "h-5 w-5" : "h-5 w-5 transition-all",
               priority === 1

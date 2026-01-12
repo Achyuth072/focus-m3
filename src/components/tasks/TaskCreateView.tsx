@@ -114,7 +114,7 @@ export function TaskCreateView({
           onKeyDown={onKeyDown}
           autoFocus
           className={cn(
-            "text-lg sm:text-xl p-0 min-h-[40px] h-auto bg-transparent border-0 focus-visible:ring-0 resize-none placeholder:text-muted-foreground/50",
+            "text-lg sm:text-xl p-0 min-h-[40px] h-auto bg-transparent border-0 focus-visible:ring-0 resize-none placeholder:text-muted-foreground/50 font-serif",
             errors?.content &&
               "text-destructive placeholder:text-destructive/50"
           )}
@@ -178,7 +178,7 @@ export function TaskCreateView({
             title={!isMobile ? "This Evening" : undefined}
             aria-label="This Evening"
           >
-            <Moon strokeWidth={2} className="h-4 w-4" />
+            <Moon strokeWidth={2.25} className="h-4 w-4" />
             {!isMobile && <span className="text-xs font-medium">Evening</span>}
           </Button>
 
@@ -197,7 +197,7 @@ export function TaskCreateView({
             title={!isMobile ? "Toggle subtasks" : undefined}
             aria-label="Toggle subtasks"
           >
-            <ListChecks strokeWidth={2} className="transition-all" />
+            <ListChecks strokeWidth={2.25} className="transition-all" />
           </Button>
 
           <div className="shrink-0">
@@ -250,7 +250,7 @@ export function TaskCreateView({
           <SelectContent>
             <SelectItem value="inbox">
               <div className="flex items-center gap-2">
-                <Inbox strokeWidth={2} className="h-3 w-3" />
+                <Inbox strokeWidth={2.25} className="h-3 w-3" />
                 <span>Inbox</span>
               </div>
             </SelectItem>
@@ -281,7 +281,7 @@ export function TaskCreateView({
           title={!isMobile ? "Create task" : undefined}
           aria-label="Create task"
         >
-          <Send className="stroke-[1.5px]" />
+          <Send strokeWidth={2.25} />
         </Button>
       </div>
     </div>

@@ -137,7 +137,7 @@ export function TaskEditView({
           onChange={(e) => setContent(e.target.value)}
           onKeyDown={onKeyDown}
           className={cn(
-            "text-lg sm:text-xl p-0 min-h-[40px] h-auto bg-transparent border-0 focus-visible:ring-0 resize-none placeholder:text-muted-foreground/50",
+            "text-lg sm:text-xl p-0 min-h-[40px] h-auto bg-transparent border-0 focus-visible:ring-0 resize-none placeholder:text-muted-foreground/50 font-serif",
             errors?.content &&
               "text-destructive placeholder:text-destructive/50"
           )}
@@ -186,7 +186,7 @@ export function TaskEditView({
               placeholder="Add details... (Markdown supported)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="h-[200px] text-sm resize-none border-none shadow-none focus-visible:ring-0 p-3 bg-transparent hover:bg-secondary/20 focus:bg-secondary/30 rounded-md placeholder:text-muted-foreground/60 overflow-y-auto transition-colors"
+              className="h-[200px] text-sm resize-none border-none shadow-none focus-visible:ring-0 p-3 bg-transparent hover:bg-secondary/20 focus:bg-secondary/30 rounded-md placeholder:text-muted-foreground/60 overflow-y-auto transition-colors font-serif"
             />
           )}
         </div>
@@ -211,7 +211,7 @@ export function TaskEditView({
               )}
               title="Toggle subtasks"
             >
-              <ListChecks strokeWidth={2} />
+              <ListChecks strokeWidth={2.25} />
             </Button>
           </div>
 
@@ -274,7 +274,7 @@ export function TaskEditView({
             }}
             title="This Evening"
           >
-            <Moon className="h-3.5 w-3.5" />
+            <Moon strokeWidth={2.25} className="h-3.5 w-3.5" />
             {!isMobile && "Evening"}
           </Button>
 
@@ -316,7 +316,7 @@ export function TaskEditView({
             <SelectContent>
               <SelectItem value="inbox">
                 <div className="flex items-center gap-2">
-                  <Inbox className="h-3 w-3" />
+                  <Inbox strokeWidth={2.25} className="h-3 w-3" />
                   <span>Inbox</span>
                 </div>
               </SelectItem>
@@ -349,7 +349,7 @@ export function TaskEditView({
             }}
             title="Delete task"
           >
-            <Trash2 strokeWidth={1.5} />
+            <Trash2 strokeWidth={2.25} />
           </Button>
 
           {/* Submit Button */}
@@ -364,7 +364,10 @@ export function TaskEditView({
             disabled={!hasContent || isPending}
             title="Save changes"
           >
-            <Save strokeWidth={1.5} className={cn(isPending && "opacity-50")} />
+            <Save
+              strokeWidth={2.25}
+              className={cn(isPending && "opacity-50")}
+            />
           </Button>
         </div>
       </div>

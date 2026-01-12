@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
+import React from "react";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,7 +11,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from "@/components/ui/alert-dialog";
 import {
   Drawer,
   DrawerClose,
@@ -20,10 +20,10 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from '@/components/ui/drawer';
-import { Button } from '@/components/ui/button';
-import { useHaptic } from '@/lib/hooks/useHaptic';
-import { useBackNavigation } from '@/lib/hooks/useBackNavigation';
+} from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
+import { useHaptic } from "@/lib/hooks/useHaptic";
+import { useBackNavigation } from "@/lib/hooks/useBackNavigation";
 
 interface DeleteConfirmationDialogProps {
   isOpen: boolean;
@@ -37,10 +37,10 @@ export function DeleteConfirmationDialog({
   isOpen,
   onClose,
   onConfirm,
-  title = 'Delete Task',
-  description = 'Are you sure you want to delete this task? This action cannot be undone.',
+  title = "Delete Task",
+  description = "Are you sure you want to delete this task? This action cannot be undone.",
 }: DeleteConfirmationDialogProps) {
-  const isDesktop = useMediaQuery('(min-width: 768px)');
+  const isDesktop = useMediaQuery("(min-width: 768px)");
   const { trigger } = useHaptic();
 
   // Handle back navigation on mobile to close drawer instead of navigating away
@@ -62,14 +62,16 @@ export function DeleteConfirmationDialog({
       <AlertDialog open={isOpen} onOpenChange={onClose}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{title}</AlertDialogTitle>
+            <AlertDialogTitle className="type-h2 lowercase">
+              {title}
+            </AlertDialogTitle>
             <AlertDialogDescription>{description}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={handleCancel}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirm}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white border border-red-500/20 transition-seijaku font-bold uppercase tracking-wider text-[10px] h-9"
             >
               Delete
             </AlertDialogAction>
@@ -83,14 +85,14 @@ export function DeleteConfirmationDialog({
     <Drawer open={isOpen} onOpenChange={onClose} repositionInputs={false}>
       <DrawerContent>
         <DrawerHeader className="text-left">
-          <DrawerTitle>{title}</DrawerTitle>
+          <DrawerTitle className="type-h2 lowercase">{title}</DrawerTitle>
           <DrawerDescription>{description}</DrawerDescription>
         </DrawerHeader>
         <DrawerFooter className="pt-2">
           <Button
             onClick={handleConfirm}
             variant="destructive"
-            className="w-full"
+            className="w-full bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white border border-red-500/20 transition-seijaku font-bold uppercase tracking-wider text-xs h-12"
           >
             Delete
           </Button>

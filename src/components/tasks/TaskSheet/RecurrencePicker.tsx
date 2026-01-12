@@ -77,7 +77,7 @@ export default function RecurrencePicker({
             }}
             title={!isMobile ? formatRecurrenceRule(value) : undefined}
           >
-            <Repeat className="h-5 w-5 transition-all" strokeWidth={2} />
+            <Repeat className="h-5 w-5 transition-all" strokeWidth={2.25} />
             {hasRecurrence && badgeLetter && (
               <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 text-[10px] font-bold bg-primary text-primary-foreground rounded-full flex items-center justify-center">
                 {badgeLetter}

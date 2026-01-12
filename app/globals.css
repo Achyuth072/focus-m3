@@ -41,6 +41,7 @@
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
+  --color-brand: hsl(var(--brand));
 
   /* Sidebar colors */
   --color-sidebar: hsl(var(--sidebar));
@@ -112,7 +113,7 @@
   --destructive-foreground: 0 0% 98%;
   --border: 0 0% 92%; /* #EBEBEB - Pencil Line */
   --input: 0 0% 92%;
-  --ring: 0 0% 18%;
+  --ring: 220 44% 50%; /* Kanso Blue for Focus Rings */
   --brand: 220 44% 50%; /* #4B6CB7 - Kanso Blue */
   --sidebar: 60 9% 96%;
   --sidebar-foreground: 0 0% 18%;
@@ -152,7 +153,7 @@
   --destructive-foreground: 0 0% 98%;
   --border: 0 0% 20%; /* #333333 - Pencil Line */
   --input: 0 0% 20%;
-  --ring: 0 0% 90%;
+  --ring: 220 44% 50%;
   --brand: 220 44% 50%; /* #4B6CB7 - Kanso Blue */
   --sidebar: 0 0% 13%;
   --sidebar-foreground: 0 0% 90%;

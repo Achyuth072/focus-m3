@@ -28,9 +28,9 @@ import {
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
-const SIDEBAR_WIDTH = "12rem";
+const SIDEBAR_WIDTH = "14rem";
 const SIDEBAR_WIDTH_MOBILE = "60vw";
-const SIDEBAR_WIDTH_ICON = "3rem";
+const SIDEBAR_WIDTH_ICON = "4rem";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
 
 type SidebarContextProps = {
@@ -189,6 +189,12 @@ const Sidebar = React.forwardRef<
       setOpenMobile(false);
     });
 
+    const [isMounted, setIsMounted] = React.useState(false);
+
+    React.useEffect(() => {
+      setIsMounted(true);
+    }, []);
+
     if (isMobile) {
       return (
         <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
@@ -237,23 +243,24 @@ const Sidebar = React.forwardRef<
         data-variant={variant}
         data-side={side}
       >
-        {/* This is what handles the sidebar gap on desktop */}
         <div
           className={cn(
-            "relative w-[calc(var(--sidebar-width)+2rem)] bg-transparent transition-[width] duration-300 ease-in-out",
+            "relative w-[var(--sidebar-width)] bg-transparent transition-[width] duration-300 ease-in-out",
+            !isMounted && "duration-0 transition-none",
             "group-data-[collapsible=offcanvas]:w-0",
             "group-data-[side=right]:rotate-180",
-            "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+2rem)]"
+            "group-data-[collapsible=icon]:!w-[var(--sidebar-width-icon)]"
           )}
           style={{ transitionTimingFunction: "var(--ease-seijaku)" }}
         />
         <div
           className={cn(
-            "fixed inset-y-0 z-10 hidden h-svh w-[calc(var(--sidebar-width)+2rem)] transition-[left,right,width] duration-300 md:flex",
+            "fixed inset-y-0 z-10 hidden h-svh w-[var(--sidebar-width)] transition-[left,right,width] duration-300 md:flex",
+            !isMounted && "duration-0 transition-none",
             side === "left"
-              ? "left-0 group-data-[collapsible=offcanvas]:left-[calc((var(--sidebar-width)+2rem)*-1)]"
-              : "right-0 group-data-[collapsible=offcanvas]:right-[calc((var(--sidebar-width)+2rem)*-1)]",
-            "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+2rem)]",
+              ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
+              : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
+            "group-data-[collapsible=icon]:!w-[var(--sidebar-width-icon)]",
             className
           )}
           style={{ transitionTimingFunction: "var(--ease-seijaku)" }}
@@ -285,7 +292,11 @@ const SidebarTrigger = React.forwardRef<
       data-sidebar="trigger"
       variant="ghost"
       size="icon"
-      className={cn("h-7 w-7 transition-seijaku-fast", className)}
+      className={cn(
+        "h-7 w-7 transition-seijaku-fast",
+        "after:absolute after:-inset-4 after:md:hidden", // Touch target expansion
+        className
+      )}
       onClick={(event) => {
         trigger(20);
         onClick?.(event);
@@ -293,7 +304,7 @@ const SidebarTrigger = React.forwardRef<
       }}
       {...props}
     >
-      <PanelLeft />
+      <PanelLeft strokeWidth={2.25} />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );
@@ -373,7 +384,10 @@ const SidebarHeader = React.forwardRef<
     <div
       ref={ref}
       data-sidebar="header"
-      className={cn("flex flex-col gap-2 p-2", className)}
+      className={cn(
+        "flex flex-col gap-2 p-2 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:items-center",
+        className
+      )}
       {...props}
     />
   );
@@ -388,7 +402,10 @@ const SidebarFooter = React.forwardRef<
     <div
       ref={ref}
       data-sidebar="footer"
-      className={cn("flex flex-col gap-2 p-2", className)}
+      className={cn(
+        "flex flex-col gap-2 p-2 group-data-[collapsible=icon]:p-0",
+        className
+      )}
       {...props}
     />
   );
@@ -419,7 +436,7 @@ const SidebarContent = React.forwardRef<
       ref={ref}
       data-sidebar="content"
       className={cn(
-        "flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden group-data-[collapsible=icon]:overflow-hidden",
+        "flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden group-data-[collapsible=icon]:overflow-hidden group-data-[collapsible=icon]:px-0",
         className
       )}
       {...props}
@@ -436,7 +453,10 @@ const SidebarGroup = React.forwardRef<
     <div
       ref={ref}
       data-sidebar="group"
-      className={cn("relative flex w-full min-w-0 flex-col p-2", className)}
+      className={cn(
+        "relative flex w-full min-w-0 flex-col p-2 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:my-2",
+        className
+      )}
       {...props}
     />
   );
@@ -482,8 +502,8 @@ const SidebarGroupAction = React.forwardRef<
       className={cn(
         "absolute right-3 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground outline-none ring-sidebar-ring transition-transform hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
         isMobile ? "top-5.5" : "top-3.5",
-        // Increases the hit area of the button on mobile.
-        "after:absolute after:-inset-2 after:md:hidden",
+        // Increases the hit area of the button on mobile (min 44px).
+        "after:absolute after:-inset-3 after:md:hidden",
         "group-data-[collapsible=icon]:hidden",
         className
       )}
@@ -533,11 +553,11 @@ const SidebarMenuItem = React.forwardRef<
 SidebarMenuItem.displayName = "SidebarMenuItem";
 
 const sidebarMenuButtonVariants = cva(
-  "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left outline-none ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:truncate [&>svg]:shrink-0",
+  "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left outline-none ring-sidebar-ring transition-all duration-300 ease-seijaku hover:translate-x-0.5 hover:text-foreground active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-primary data-[active=true]:font-bold data-[active=true]:text-sidebar-primary-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!p-2 group-data-[collapsible=icon]:mx-auto [&>span:last-child]:truncate [&>svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+        default: "hover:bg-sidebar-accent/50",
         outline:
           "bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]",
       },

@@ -1,14 +1,17 @@
-'use client';
+"use client";
 
-import dynamic from 'next/dynamic';
-import { Target, CheckCircle2, Flame, Clock } from 'lucide-react';
-import { MetricCard } from '@/components/stats/MetricCard';
-import { useStats } from '@/lib/hooks/useStats';
-import { Skeleton } from '@/components/ui/skeleton';
+import dynamic from "next/dynamic";
+import { Target, CheckCircle2, Flame, Clock } from "lucide-react";
+import { MetricCard } from "@/components/stats/MetricCard";
+import { useStats } from "@/lib/hooks/useStats";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Lazy load the chart component (Recharts is ~80KB+)
 const FocusTrendChart = dynamic(
-  () => import('@/components/stats/FocusTrendChart').then(mod => ({ default: mod.FocusTrendChart })),
+  () =>
+    import("@/components/stats/FocusTrendChart").then((mod) => ({
+      default: mod.FocusTrendChart,
+    })),
   { loading: () => <Skeleton className="h-64 w-full rounded-xl" />, ssr: false }
 );
 
@@ -40,7 +43,7 @@ export default function StatsPage() {
         {/* Header */}
         <div>
           <h1 className="type-h1">Statistics</h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="font-serif text-sm text-muted-foreground mt-1">
             Track your productivity and progress
           </p>
         </div>
@@ -75,10 +78,7 @@ export default function StatsPage() {
 
         {/* Chart */}
         <div>
-          <FocusTrendChart 
-            data={focusTrendData}
-          />
-
+          <FocusTrendChart data={focusTrendData} />
         </div>
       </div>
     </div>

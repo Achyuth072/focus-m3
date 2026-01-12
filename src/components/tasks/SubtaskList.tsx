@@ -4,7 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Trash2, Plus } from "lucide-react";
 import { useSubtasks } from "@/lib/hooks/useSubtasks";
-import { useCreateTask, useToggleTask, useDeleteTask } from "@/lib/hooks/useTaskMutations";
+import {
+  useCreateTask,
+  useToggleTask,
+  useDeleteTask,
+} from "@/lib/hooks/useTaskMutations";
 import { cn } from "@/lib/utils";
 import { useHaptic } from "@/lib/hooks/useHaptic";
 
@@ -15,11 +19,11 @@ interface SubtaskListProps {
   onDraftSubtasksChange?: (subtasks: string[]) => void;
 }
 
-export default function SubtaskList({ 
-  taskId, 
+export default function SubtaskList({
+  taskId,
   projectId,
   draftSubtasks = [],
-  onDraftSubtasksChange
+  onDraftSubtasksChange,
 }: SubtaskListProps) {
   const [newSubtaskContent, setNewSubtaskContent] = useState("");
   const { data: subtasks } = useSubtasks(taskId || null);
@@ -71,8 +75,6 @@ export default function SubtaskList({
     }
   };
 
-
-
   const items = isDraftMode ? draftSubtasks : subtasks || [];
 
   return (
@@ -80,9 +82,10 @@ export default function SubtaskList({
       {/* Existing Subtasks */}
       <div className="space-y-1">
         {items.map((item, index) => {
-          const id = typeof item === 'string' ? `draft-${index}` : item.id;
-          const content = typeof item === 'string' ? item : item.content;
-          const isCompleted = typeof item === 'string' ? false : item.is_completed;
+          const id = typeof item === "string" ? `draft-${index}` : item.id;
+          const content = typeof item === "string" ? item : item.content;
+          const isCompleted =
+            typeof item === "string" ? false : item.is_completed;
 
           return (
             <div
@@ -92,9 +95,12 @@ export default function SubtaskList({
               <Checkbox
                 checked={isCompleted}
                 onCheckedChange={(checked) => {
-                  if (!isDraftMode && typeof item !== 'string') {
+                  if (!isDraftMode && typeof item !== "string") {
                     trigger(20);
-                    toggleMutation.mutate({ id: item.id, is_completed: checked as boolean });
+                    toggleMutation.mutate({
+                      id: item.id,
+                      is_completed: checked as boolean,
+                    });
                   }
                 }}
                 disabled={isDraftMode}
@@ -103,7 +109,8 @@ export default function SubtaskList({
               <span
                 className={cn(
                   "flex-1 text-sm transition-all break-all",
-                  isCompleted && "text-muted-foreground line-through decoration-muted-foreground/50"
+                  isCompleted &&
+                    "text-muted-foreground line-through decoration-muted-foreground/50"
                 )}
               >
                 {content}
@@ -112,9 +119,13 @@ export default function SubtaskList({
                 variant="ghost"
                 size="icon"
                 className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-                onClick={() => handleDeleteSubtask(isDraftMode ? index : (item as { id: string }).id)}
+                onClick={() =>
+                  handleDeleteSubtask(
+                    isDraftMode ? index : (item as { id: string }).id
+                  )
+                }
               >
-                <Trash2 className="h-3.5 w-3.5" />
+                <Trash2 className="h-3.5 w-3.5" strokeWidth={2.25} />
               </Button>
             </div>
           );
@@ -124,14 +135,17 @@ export default function SubtaskList({
       {/* Add New Subtask Input */}
       <div className="flex items-center gap-2 px-2">
         <div className="flex-1 relative">
-           <Plus className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/70" />
-           <Input
+          <Plus
+            className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/70"
+            strokeWidth={2.25}
+          />
+          <Input
             value={newSubtaskContent}
             onChange={(e) => setNewSubtaskContent(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Add a step..."
-            className="h-9 pl-8 text-sm bg-transparent border-transparent hover:bg-secondary/20 focus-visible:bg-secondary/20 focus-visible:ring-0 placeholder:text-muted-foreground/60 transition-colors"
-           />
+            className="h-9 pl-8 text-sm bg-transparent border-transparent hover:bg-secondary/20 focus-visible:bg-secondary/20 focus-visible:ring-0 placeholder:text-muted-foreground/60 transition-colors font-serif"
+          />
         </div>
       </div>
     </div>

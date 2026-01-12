@@ -114,7 +114,7 @@ const TaskCard = memo(function TaskCard({
   return (
     <div
       className={cn(
-        "group relative bg-background border border-border/40 hover:border-border transition-all rounded-xl p-4 cursor-pointer",
+        "group relative bg-background border border-border/40 hover:border-border transition-all rounded-sm p-4 cursor-pointer",
         "hover:shadow-sm"
       )}
       onClick={() => onSelect?.(task)}
@@ -123,7 +123,7 @@ const TaskCard = memo(function TaskCard({
         <div className="flex items-start justify-between gap-4">
           <h4
             className={cn(
-              "text-sm font-medium leading-normal",
+              "text-[15px] font-serif font-medium leading-normal",
               task.is_completed && "line-through text-muted-foreground"
             )}
           >
@@ -131,7 +131,7 @@ const TaskCard = memo(function TaskCard({
           </h4>
           <div
             className={cn(
-              "shrink-0 h-4 w-4 rounded-sm border",
+              "shrink-0 h-4 w-4 rounded-sm border-[1.5px]",
               task.priority === 1
                 ? "border-red-500"
                 : task.priority === 2
@@ -144,19 +144,19 @@ const TaskCard = memo(function TaskCard({
         </div>
 
         {task.description && (
-          <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">
+          <p className="text-xs text-muted-foreground/80 line-clamp-3 leading-relaxed">
             {task.description}
           </p>
         )}
 
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap mt-auto pt-2">
           {task.is_evening && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-medium uppercase tracking-wider">
+            <span className="text-[10px] px-2 py-0.5 rounded-sm bg-purple-500/10 text-purple-600 dark:text-purple-400 font-bold uppercase tracking-wider">
               Evening
             </span>
           )}
           {projectName && (
-            <span className="text-[10px] text-muted-foreground/60 uppercase tracking-widest font-bold">
+            <span className="text-[10px] text-muted-foreground/40 uppercase tracking-widest font-bold">
               #{projectName}
             </span>
           )}

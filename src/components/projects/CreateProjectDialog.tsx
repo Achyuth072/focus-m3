@@ -138,14 +138,13 @@ export function CreateProjectDialog({
                       setValue("color", c.value, { shouldValidate: true });
                     }}
                     className={cn(
-                      "h-10 w-10 sm:h-8 sm:w-8 rounded-xl transition-all border-2",
+                      "h-10 w-10 sm:h-8 sm:w-8 rounded-full transition-all duration-300",
                       color === c.value
-                        ? "border-current opacity-100"
-                        : "border-transparent opacity-70 hover:opacity-90"
+                        ? "ring-2 ring-inset ring-background/30 scale-110 shadow-sm"
+                        : "opacity-80 hover:opacity-100 hover:scale-105"
                     )}
                     style={{
                       backgroundColor: c.value,
-                      borderColor: color === c.value ? c.value : "transparent",
                     }}
                   />
                 ))}

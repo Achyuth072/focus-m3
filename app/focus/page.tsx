@@ -113,20 +113,19 @@ export default function FocusPage() {
         </motion.button>
       )}
 
-      {/* Mode Badge */}
-      <div className="type-ui font-medium uppercase">
+      <div className="font-serif text-[11px] font-bold tracking-[0.2em] uppercase text-muted-foreground/60">
         {MODE_LABELS[state.mode]}
       </div>
 
       {/* Active Task Name */}
       {activeTask && (
-        <div className="type-body font-medium text-foreground mt-4 max-w-md text-center px-4">
-          {activeTask.content}
+        <div className="font-serif text-lg md:text-xl font-medium text-foreground/90 mt-4 max-w-md text-center px-4 italic leading-tight">
+          "{activeTask.content}"
         </div>
       )}
 
       {/* Timer Display */}
-      <div className="text-7xl sm:text-8xl md:text-9xl font-light font-mono tracking-tight text-foreground tabular-nums mt-6">
+      <div className="text-8xl sm:text-9xl md:text-[10rem] font-serif font-bold tracking-tighter text-foreground tabular-nums mt-6">
         {formatTime(state.remainingSeconds)}
       </div>
 

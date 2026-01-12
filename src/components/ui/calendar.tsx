@@ -1,20 +1,25 @@
-import * as React from "react"
+import * as React from "react";
 import {
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-} from "lucide-react"
-import { DayButton, DayPicker, getDefaultClassNames, type DropdownProps } from "react-day-picker"
+} from "lucide-react";
+import {
+  DayButton,
+  DayPicker,
+  getDefaultClassNames,
+  type DropdownProps,
+} from "react-day-picker";
 
-import { cn } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 
 function Calendar({
   className,
@@ -26,9 +31,9 @@ function Calendar({
   components,
   ...props
 }: React.ComponentProps<typeof DayPicker> & {
-  buttonVariant?: React.ComponentProps<typeof Button>["variant"]
+  buttonVariant?: React.ComponentProps<typeof Button>["variant"];
 }) {
-  const defaultClassNames = getDefaultClassNames()
+  const defaultClassNames = getDefaultClassNames();
 
   return (
     <DayPicker
@@ -83,16 +88,16 @@ function Calendar({
           defaultClassNames.dropdown
         ),
         caption_label: cn(
-          "select-none font-medium",
+          "select-none font-serif font-bold tracking-tight text-foreground/90 lowercase",
           captionLayout === "label"
-            ? "text-sm"
+            ? "text-[15px]"
             : "[&>svg]:text-muted-foreground flex h-8 items-center gap-1 rounded-md pl-2 pr-1 text-sm [&>svg]:size-3.5",
           defaultClassNames.caption_label
         ),
         table: "w-full border-collapse",
         weekdays: cn("flex", defaultClassNames.weekdays),
         weekday: cn(
-          "text-muted-foreground flex-1 select-none rounded-md text-[0.8rem] font-normal",
+          "text-muted-foreground flex-1 select-none font-serif text-[11px] font-medium italic opacity-60 lowercase",
           defaultClassNames.weekday
         ),
         week: cn("mt-2 flex w-full", defaultClassNames.week),
@@ -105,7 +110,7 @@ function Calendar({
           defaultClassNames.week_number
         ),
         day: cn(
-          "group/day relative aspect-square h-full w-full select-none p-0 text-center [&:first-child[data-selected=true]_button]:rounded-l-md [&:last-child[data-selected=true]_button]:rounded-r-md",
+          "group/day relative aspect-square h-full w-full select-none p-0 text-center font-mono text-[13px] tracking-tight",
           defaultClassNames.day
         ),
         range_start: cn(
@@ -115,7 +120,7 @@ function Calendar({
         range_middle: cn("rounded-none", defaultClassNames.range_middle),
         range_end: cn("bg-accent rounded-r-md", defaultClassNames.range_end),
         today: cn(
-          "bg-accent text-accent-foreground rounded-md data-[selected=true]:rounded-none",
+          "text-foreground underline decoration-primary decoration-2 underline-offset-4 rounded-none font-bold",
           defaultClassNames.today
         ),
         outside: cn(
@@ -138,13 +143,13 @@ function Calendar({
               className={cn(className)}
               {...props}
             />
-          )
+          );
         },
         Chevron: ({ className, orientation, ...props }) => {
           if (orientation === "left") {
             return (
               <ChevronLeftIcon className={cn("size-4", className)} {...props} />
-            )
+            );
           }
 
           if (orientation === "right") {
@@ -153,12 +158,12 @@ function Calendar({
                 className={cn("size-4", className)}
                 {...props}
               />
-            )
+            );
           }
 
           return (
             <ChevronDownIcon className={cn("size-4", className)} {...props} />
-          )
+          );
         },
         DayButton: CalendarDayButton,
         WeekNumber: ({ children, ...props }) => {
@@ -168,28 +173,27 @@ function Calendar({
                 {children}
               </div>
             </td>
-          )
+          );
         },
         Dropdown: ({ value, onChange, options }: DropdownProps) => {
-          const selected = options?.find((opt) => opt.value?.toString() === value?.toString())
+          const selected = options?.find(
+            (opt) => opt.value?.toString() === value?.toString()
+          );
           const handleChange = (newValue: string) => {
             const changeEvent = {
               target: { value: newValue },
-            } as React.ChangeEvent<HTMLSelectElement>
-            onChange?.(changeEvent)
-          }
+            } as React.ChangeEvent<HTMLSelectElement>;
+            onChange?.(changeEvent);
+          };
           return (
-            <Select
-              value={value?.toString()}
-              onValueChange={handleChange}
-            >
+            <Select value={value?.toString()} onValueChange={handleChange}>
               <SelectTrigger className="pr-1.5 focus:ring-0 h-7 w-fit gap-1 text-sm font-medium border-0 shadow-none bg-transparent hover:bg-accent/50 px-2">
                 <SelectValue>{selected?.label ?? value}</SelectValue>
               </SelectTrigger>
               <SelectContent position="popper">
                 {options?.map((opt, id: number) => (
-                  <SelectItem 
-                    key={`${opt.value}-${id}`} 
+                  <SelectItem
+                    key={`${opt.value}-${id}`}
                     value={opt.value?.toString() ?? ""}
                     disabled={opt.disabled}
                   >
@@ -198,13 +202,13 @@ function Calendar({
                 ))}
               </SelectContent>
             </Select>
-          )
+          );
         },
         ...components,
       }}
       {...props}
     />
-  )
+  );
 }
 
 function CalendarDayButton({
@@ -213,12 +217,12 @@ function CalendarDayButton({
   modifiers,
   ...props
 }: React.ComponentProps<typeof DayButton>) {
-  const defaultClassNames = getDefaultClassNames()
+  const defaultClassNames = getDefaultClassNames();
 
-  const ref = React.useRef<HTMLButtonElement>(null)
+  const ref = React.useRef<HTMLButtonElement>(null);
   React.useEffect(() => {
-    if (modifiers.focused) ref.current?.focus()
-  }, [modifiers.focused])
+    if (modifiers.focused) ref.current?.focus();
+  }, [modifiers.focused]);
 
   return (
     <Button
@@ -236,13 +240,13 @@ function CalendarDayButton({
       data-range-end={modifiers.range_end}
       data-range-middle={modifiers.range_middle}
       className={cn(
-        "data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground data-[range-middle=true]:bg-accent data-[range-middle=true]:text-accent-foreground data-[range-start=true]:bg-primary data-[range-start=true]:text-primary-foreground data-[range-end=true]:bg-primary data-[range-end=true]:text-primary-foreground group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-ring/50 flex aspect-square h-auto w-full min-w-[--cell-size] flex-col gap-1 font-normal leading-none data-[range-end=true]:rounded-md data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-md group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:ring-[3px] [&>span]:text-xs [&>span]:opacity-70",
+        "data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground data-[range-middle=true]:bg-accent data-[range-middle=true]:text-accent-foreground data-[range-start=true]:bg-primary data-[range-start=true]:text-primary-foreground data-[range-end=true]:bg-primary data-[range-end=true]:text-primary-foreground group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-ring/50 flex aspect-square h-auto w-full min-w-[--cell-size] flex-col gap-1 font-mono leading-none rounded-none group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:ring-[3px] [&>span]:text-xs [&>span]:opacity-70 border-border/10 border-r border-b last:border-r-0",
         defaultClassNames.day,
         className
       )}
       {...props}
     />
-  )
+  );
 }
 
-export { Calendar, CalendarDayButton }
+export { Calendar, CalendarDayButton };

@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { useEffect, useState, useCallback } from 'react';
-import { startOfWeek } from 'date-fns';
-import { useCalendarStore } from '@/lib/calendar/store';
-import { CalendarToolbar } from '@/components/calendar/CalendarToolbar';
-import { TimeGrid } from '@/components/calendar/TimeGrid';
-import { YearView } from '@/components/calendar/YearView';
-import { MonthView } from '@/components/calendar/MonthView';
-import { ScheduleView } from '@/components/calendar/ScheduleView';
+import { useEffect, useState, useCallback } from "react";
+import { startOfWeek } from "date-fns";
+import { useCalendarStore } from "@/lib/calendar/store";
+import { CalendarToolbar } from "@/components/calendar/CalendarToolbar";
+import { TimeGrid } from "@/components/calendar/TimeGrid";
+import { YearView } from "@/components/calendar/YearView";
+import { MonthView } from "@/components/calendar/MonthView";
+import { ScheduleView } from "@/components/calendar/ScheduleView";
 
-import { useCalendarEvents } from '@/lib/hooks/useCalendarEvents';
+import { useCalendarEvents } from "@/lib/hooks/useCalendarEvents";
 
 export default function CalendarPage() {
   const { currentDate, view, events, setView, setDate } = useCalendarStore();
   const [isMobile, setIsMobile] = useState(false);
-  
+
   // Fetch real events from Supabase
   useCalendarEvents();
 
@@ -22,27 +22,30 @@ export default function CalendarPage() {
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   // Adjust view if mobile/desktop changes
   useEffect(() => {
-    if (isMobile && view === '4day') {
-      setView('3day');
-    } else if (!isMobile && view === '3day') {
-      setView('4day');
+    if (isMobile && view === "4day") {
+      setView("3day");
+    } else if (!isMobile && view === "3day") {
+      setView("4day");
     }
   }, [isMobile, view, setView]);
 
-  const handleDateClick = useCallback((date: Date) => {
-    setDate(date);
-    setView('day');
-  }, [setDate, setView]);
+  const handleDateClick = useCallback(
+    (date: Date) => {
+      setDate(date);
+      setView("day");
+    },
+    [setDate, setView]
+  );
 
   const renderView = () => {
     switch (view) {
-      case 'year':
+      case "year":
         return (
           <YearView
             currentYear={currentDate.getFullYear()}
@@ -50,34 +53,22 @@ export default function CalendarPage() {
           />
         );
 
-      case 'day':
+      case "day":
         return (
-          <TimeGrid
-            startDate={currentDate}
-            daysToShow={1}
-            events={events}
-          />
+          <TimeGrid startDate={currentDate} daysToShow={1} events={events} />
         );
 
-      case '3day':
+      case "3day":
         return (
-          <TimeGrid
-            startDate={currentDate}
-            daysToShow={3}
-            events={events}
-          />
+          <TimeGrid startDate={currentDate} daysToShow={3} events={events} />
         );
 
-      case '4day':
+      case "4day":
         return (
-          <TimeGrid
-            startDate={currentDate}
-            daysToShow={4}
-            events={events}
-          />
+          <TimeGrid startDate={currentDate} daysToShow={4} events={events} />
         );
 
-      case 'week':
+      case "week":
         return (
           <TimeGrid
             startDate={startOfWeek(currentDate)}
@@ -86,7 +77,7 @@ export default function CalendarPage() {
           />
         );
 
-      case 'schedule':
+      case "schedule":
         return (
           <ScheduleView
             events={events}
@@ -95,7 +86,7 @@ export default function CalendarPage() {
           />
         );
 
-      case 'month':
+      case "month":
       default:
         return (
           <MonthView
@@ -108,11 +99,9 @@ export default function CalendarPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-124px)] md:h-dvh">
+    <div className="flex flex-col h-full">
       <CalendarToolbar isMobile={isMobile} />
-      <div className="flex-1 min-h-0">
-        {renderView()}
-      </div>
+      <div className="flex-1 min-h-0">{renderView()}</div>
     </div>
   );
 }
