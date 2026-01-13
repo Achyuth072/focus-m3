@@ -114,7 +114,7 @@ const KanbanColumn = memo(function KanbanColumn({
   onSelect?: (task: Task) => void;
 }) {
   return (
-    <div className="flex-shrink-0 w-[85vw] md:w-[320px] snap-center flex flex-col h-full bg-secondary/20 rounded-2xl border border-border/40 p-3">
+    <div className="flex-shrink-0 w-[85vw] md:w-[320px] snap-center flex flex-col h-full bg-secondary/10 rounded-2xl border border-border p-3">
       <div className="flex items-center justify-between mb-4 px-1">
         <h3 className="type-ui font-bold text-foreground/80 lowercase tracking-tight">
           {group.title}

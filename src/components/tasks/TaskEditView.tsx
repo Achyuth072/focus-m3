@@ -207,7 +207,7 @@ export function TaskEditView({
               className={cn(
                 "h-6 w-6 p-0 text-muted-foreground hover:text-foreground transition-all [&_svg]:!size-4",
                 showSubtasks &&
-                  "text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary"
+                  "text-brand bg-brand/10 hover:bg-brand/20 hover:text-brand"
               )}
               title="Toggle subtasks"
             >
@@ -252,7 +252,6 @@ export function TaskEditView({
             variant="icon"
             title="Start Date"
             icon={CalendarClock}
-            activeClassName="text-green-600 dark:text-green-400 border-green-500/50 bg-green-500/10"
           />
 
           {/* This Evening Toggle */}
@@ -261,8 +260,7 @@ export function TaskEditView({
             size="sm"
             className={cn(
               "h-10 px-3 text-xs border border-input bg-background hover:bg-accent hover:text-accent-foreground shrink-0 gap-1.5",
-              isEvening &&
-                "border-purple-500/50 text-purple-600 dark:text-purple-400 bg-purple-500/10"
+              isEvening && "text-brand bg-brand/10 hover:bg-brand/20"
             )}
             onClick={() => {
               const nextValue = !isEvening;
@@ -356,7 +354,11 @@ export function TaskEditView({
           <Button
             size="sm"
             variant={isPending ? "ghost" : "default"}
-            className="h-10 w-10 p-0 rounded-md [&_svg]:!size-5"
+            className={cn(
+              "h-10 w-10 p-0 rounded-md [&_svg]:!size-5",
+              !isPending &&
+                "bg-brand hover:bg-brand/90 text-brand-foreground shadow-sm"
+            )}
             onClick={() => {
               trigger([10, 30]);
               onSubmit();

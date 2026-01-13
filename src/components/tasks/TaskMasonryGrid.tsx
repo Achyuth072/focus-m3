@@ -114,8 +114,7 @@ const TaskCard = memo(function TaskCard({
   return (
     <div
       className={cn(
-        "group relative bg-background border border-border/40 hover:border-border transition-all rounded-xl p-4 cursor-pointer",
-        "hover:shadow-sm"
+        "group relative bg-background border border-border/80 hover:border-muted-foreground/50 hover:bg-secondary/5 transition-all rounded-xl p-4 cursor-pointer"
       )}
       onClick={() => onSelect?.(task)}
     >

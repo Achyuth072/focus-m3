@@ -69,7 +69,7 @@ export default function RecurrencePicker({
             className={cn(
               "h-10 w-10 p-0 transition-all group relative border border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-none",
               hasRecurrence
-                ? "text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary border-transparent"
+                ? "text-brand bg-brand/10 hover:bg-brand/20 hover:text-brand border-transparent"
                 : "text-muted-foreground hover:text-foreground hover:bg-accent"
             )}
             onClick={() => {
@@ -79,7 +79,7 @@ export default function RecurrencePicker({
           >
             <Repeat className="h-5 w-5 transition-all" strokeWidth={2} />
             {hasRecurrence && badgeLetter && (
-              <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 text-[10px] font-bold bg-primary text-primary-foreground rounded-full flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 text-[10px] font-bold bg-brand text-brand-foreground rounded-full flex items-center justify-center">
                 {badgeLetter}
               </span>
             )}

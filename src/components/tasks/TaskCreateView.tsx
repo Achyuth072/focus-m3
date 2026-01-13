@@ -156,7 +156,6 @@ export function TaskCreateView({
             side="right"
             align="center"
             sideOffset={15}
-            activeClassName="text-green-600 dark:text-green-400 border-green-500/50 bg-green-500/10"
           />
 
           <Button
@@ -164,8 +163,7 @@ export function TaskCreateView({
             size="sm"
             className={cn(
               "h-10 px-3 transition-all text-muted-foreground hover:text-foreground hover:bg-accent gap-1.5 shrink-0",
-              isEvening &&
-                "text-purple-600 dark:text-purple-400 border-purple-500/50 bg-purple-500/10 hover:bg-purple-500/20"
+              isEvening && "text-brand bg-brand/10 hover:bg-brand/20"
             )}
             onClick={() => {
               const nextValue = !isEvening;
@@ -192,7 +190,7 @@ export function TaskCreateView({
             className={cn(
               "h-10 w-10 p-0 transition-all text-muted-foreground hover:text-foreground hover:bg-accent group [&_svg]:!size-5 shrink-0",
               showSubtasks &&
-                "text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary"
+                "text-brand bg-brand/10 hover:bg-brand/20 hover:text-brand"
             )}
             title={!isMobile ? "Toggle subtasks" : undefined}
             aria-label="Toggle subtasks"
@@ -272,7 +270,7 @@ export function TaskCreateView({
 
         <Button
           size="sm"
-          className="h-10 w-10 p-0 rounded-md [&_svg]:size-5"
+          className="h-10 w-10 p-0 rounded-md [&_svg]:size-5 bg-brand hover:bg-brand/90 text-brand-foreground shadow-sm"
           onClick={() => {
             trigger([10, 30]);
             onSubmit();

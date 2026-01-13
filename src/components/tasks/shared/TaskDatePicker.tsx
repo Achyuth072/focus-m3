@@ -42,7 +42,7 @@ export function TaskDatePicker({
   onOpenChange,
   variant = "icon",
   title = "Due Date",
-  activeClassName = "text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary",
+  activeClassName = "text-brand bg-brand/10 hover:bg-brand/20 hover:text-brand",
   icon: Icon = CalendarIcon,
   side = "bottom",
   sideOffset = 4,
