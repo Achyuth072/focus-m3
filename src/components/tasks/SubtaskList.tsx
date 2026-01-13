@@ -125,7 +125,7 @@ export default function SubtaskList({
                   )
                 }
               >
-                <Trash2 className="h-3.5 w-3.5" strokeWidth={2.25} />
+                <Trash2 className="h-3.5 w-3.5" />
               </Button>
             </div>
           );
@@ -135,16 +135,13 @@ export default function SubtaskList({
       {/* Add New Subtask Input */}
       <div className="flex items-center gap-2 px-2">
         <div className="flex-1 relative">
-          <Plus
-            className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/70"
-            strokeWidth={2.25}
-          />
+          <Plus className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/70" />
           <Input
             value={newSubtaskContent}
             onChange={(e) => setNewSubtaskContent(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Add a step..."
-            className="h-9 pl-8 text-sm bg-transparent border-transparent hover:bg-secondary/20 focus-visible:bg-secondary/20 focus-visible:ring-0 placeholder:text-muted-foreground/60 transition-colors font-serif"
+            className="h-9 pl-8 text-sm bg-transparent border-transparent hover:bg-secondary/20 focus-visible:bg-secondary/20 focus-visible:ring-0 placeholder:text-muted-foreground/60 transition-colors"
           />
         </div>
       </div>

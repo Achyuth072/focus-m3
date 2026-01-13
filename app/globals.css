@@ -17,7 +17,7 @@
   /* Typography - Zen-Modernist */
   --font-sans: var(--font-inter), ui-sans-serif, -apple-system,
     BlinkMacSystemFont, "Segoe UI", "Inter", "Roberta", sans-serif;
-  --font-serif: var(--font-baskerville), "Lyon-Text", "Georgia", serif;
+  --font-serif: "Lyon-Text", "Georgia", serif;
   --font-mono: var(--font-jetbrains), "SFMono-Regular", "Menlo",
     "JetBrains Mono", monospace;
 
@@ -41,7 +41,6 @@
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
-  --color-brand: hsl(var(--brand));
 
   /* Sidebar colors */
   --color-sidebar: hsl(var(--sidebar));
@@ -113,7 +112,7 @@
   --destructive-foreground: 0 0% 98%;
   --border: 0 0% 92%; /* #EBEBEB - Pencil Line */
   --input: 0 0% 92%;
-  --ring: 220 44% 50%; /* Kanso Blue for Focus Rings */
+  --ring: 0 0% 18%;
   --brand: 220 44% 50%; /* #4B6CB7 - Kanso Blue */
   --sidebar: 60 9% 96%;
   --sidebar-foreground: 0 0% 18%;
@@ -123,14 +122,6 @@
   --sidebar-accent-foreground: 0 0% 18%;
   --sidebar-border: 60 5% 91%;
   --sidebar-ring: 0 0% 18%;
-}
-
-/* Floating Sidebar (Desktop) */
-@media (min-width: 768px) {
-  [data-sidebar="sidebar"] {
-    @apply m-4 rounded-xl border shadow-sm transition-all duration-300;
-    height: calc(100vh - 2rem) !important;
-  }
 }
 
 /* Dark mode variables - Zen-Modernist (Sumi Ink) */
@@ -153,7 +144,7 @@
   --destructive-foreground: 0 0% 98%;
   --border: 0 0% 20%; /* #333333 - Pencil Line */
   --input: 0 0% 20%;
-  --ring: 220 44% 50%;
+  --ring: 0 0% 90%;
   --brand: 220 44% 50%; /* #4B6CB7 - Kanso Blue */
   --sidebar: 0 0% 13%;
   --sidebar-foreground: 0 0% 90%;
@@ -171,20 +162,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground relative;
-  }
-
-  body::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0.03;
-    pointer-events: none;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3%3Cfilter id='noiseFilter'%3%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3%3C/filter%3%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3%3C/svg%3");
-    z-index: 50;
+    @apply bg-background text-foreground;
   }
 }
 
@@ -226,10 +204,9 @@ select {
 @layer utilities {
   /* H1 - Page Titles */
   .type-h1 {
-    @apply font-serif;
     font-size: 28px;
     font-weight: 600;
-    letter-spacing: -0.01em; /* Reduced for serif */
+    letter-spacing: -0.03em;
     line-height: 1.1;
   }
 
@@ -241,10 +218,9 @@ select {
 
   /* H2 - Section Headers */
   .type-h2 {
-    @apply font-serif;
     font-size: 22px;
     font-weight: 600;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
     line-height: 1.2;
   }
 
@@ -256,7 +232,6 @@ select {
 
   /* H3 - Card Headers */
   .type-h3 {
-    @apply font-serif;
     font-size: 18px;
     font-weight: 500;
     letter-spacing: -0.01em;

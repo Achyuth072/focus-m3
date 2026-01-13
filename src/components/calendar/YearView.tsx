@@ -32,20 +32,20 @@ const YearMonth = memo(
             months: "flex flex-col",
             month: "space-y-3",
             nav: "hidden",
-            caption_label:
-              "font-serif text-[15px] font-bold tracking-tight text-primary lowercase",
-            weekdays: "flex gap-1",
-            weekday:
-              "text-muted-foreground/40 w-[28px] font-serif text-[10px] font-bold italic lowercase",
-            week: "flex w-full mt-1 gap-1",
+            caption:
+              "flex justify-center pt-1 relative items-center text-sm font-semibold text-primary",
+            head_row: "flex gap-1",
+            head_cell:
+              "text-muted-foreground/60 w-[28px] font-medium text-[0.7rem]",
+            row: "flex w-full mt-1 gap-1",
+            cell: "relative p-0 text-center text-xs focus-within:relative focus-within:z-20",
             day: cn(
-              "group/day relative h-[28px] w-[28px] p-0 font-mono text-[11px] select-none text-center",
-              "hover:bg-primary/10 hover:text-primary transition-colors text-muted-foreground/80"
+              "h-[28px] w-[28px] p-0 font-normal rounded-md aria-selected:opacity-100",
+              "hover:bg-primary/10 hover:text-primary transition-colors text-muted-foreground"
             ),
-            today:
-              "bg-primary text-primary-foreground font-bold rounded-none !opacity-100 shadow-sm",
             selected:
-              "bg-primary text-primary-foreground rounded-none hover:bg-primary hover:text-primary-foreground",
+              "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground",
+            today: "bg-primary text-primary-foreground font-bold !opacity-100",
             outside: "invisible",
             disabled: "text-muted-foreground opacity-20",
           }}

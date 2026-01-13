@@ -49,8 +49,8 @@ function HomeContent() {
     <div className="flex flex-col h-[calc(100dvh-124px)] md:h-dvh">
       <div className="px-6 pt-4 pb-4 flex flex-col md:flex-row md:items-start justify-between gap-4 md:gap-0">
         <div>
-          <p className="font-serif text-[13px] font-medium text-muted-foreground/80 flex items-center gap-2">
-            {format(today, "eeee, MMMM d")}
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
+            {format(today, "EEEE, MMMM d")}
             {filter && (
               <span className="flex items-center gap-1.5 before:content-['•'] before:text-muted-foreground/40">
                 <span className="capitalize text-primary font-medium">
@@ -69,9 +69,7 @@ function HomeContent() {
               </span>
             )}
           </p>
-          <h1 className="font-serif text-3xl font-bold tracking-tight text-primary lowercase">
-            {greeting}
-          </h1>
+          <h1 className="type-h1 mt-1 text-primary">{greeting}</h1>
         </div>
 
         <div className="flex justify-end w-full md:w-auto">

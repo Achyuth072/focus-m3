@@ -78,7 +78,7 @@ export function TasksPageHeader({
             onViewModeChange("list");
           }}
         >
-          <List className="h-4 w-4" strokeWidth={2.25} />
+          <List className="h-4 w-4" />
         </Button>
         <Button
           variant="ghost"
@@ -94,7 +94,7 @@ export function TasksPageHeader({
             onViewModeChange("grid");
           }}
         >
-          <LayoutGrid className="h-4 w-4" strokeWidth={2.25} />
+          <LayoutGrid className="h-4 w-4" />
         </Button>
         <Button
           variant="ghost"
@@ -110,7 +110,7 @@ export function TasksPageHeader({
             onViewModeChange("board");
           }}
         >
-          <KanbanSquare className="h-4 w-4" strokeWidth={2.25} />
+          <KanbanSquare className="h-4 w-4" />
         </Button>
       </div>
 
@@ -122,7 +122,7 @@ export function TasksPageHeader({
             className="h-8 w-8 p-0"
             onClick={() => trigger(20)}
           >
-            <ListFilter className="h-4 w-4" strokeWidth={2.25} />
+            <ListFilter className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
@@ -164,9 +164,9 @@ export function TasksPageHeader({
         variant="outline"
         size="sm"
         onClick={openSheet}
-        className="hidden md:flex items-center gap-2 transition-seijaku active:scale-[0.98]"
+        className="hidden md:flex items-center gap-2"
       >
-        <CheckCircle2 className="h-4 w-4" strokeWidth={2.25} />
+        <CheckCircle2 className="h-4 w-4" />
         Completed
       </Button>
 
@@ -174,9 +174,9 @@ export function TasksPageHeader({
         variant="outline"
         size="sm"
         onClick={onNewTask}
-        className="hidden md:flex items-center gap-2 transition-seijaku active:scale-[0.98]"
+        className="hidden md:flex items-center gap-2"
       >
-        <Plus className="h-4 w-4" strokeWidth={2.25} />
+        <Plus className="h-4 w-4" />
         New Task
       </Button>
     </div>

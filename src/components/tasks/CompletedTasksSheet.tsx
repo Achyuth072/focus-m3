@@ -49,22 +49,22 @@ function CompletedTaskItem({ task }: { task: Task }) {
   const formattedDate = completedDate ? format(completedDate, "h:mm a") : "";
 
   return (
-    <div className="flex items-start gap-3 py-3 px-6 hover:bg-foreground/[0.03] transition-seijaku group min-h-[44px]">
+    <div className="flex items-start gap-3 py-2 md:py-2 px-4 border-b border-border/40 hover:bg-secondary/30 transition-colors group min-h-[44px]">
       <button
         onClick={handleUncomplete}
-        className="pt-0.5 text-green-500/80 hover:text-green-600 transition-colors"
+        className="pt-0.5 text-green-500 hover:text-green-600 transition-colors"
         title="Mark as incomplete"
       >
-        <CheckCircle2 className="h-5 w-5" strokeWidth={2.25} />
+        <CheckCircle2 className="h-5 w-5" />
       </button>
 
       <div className="flex-1 min-w-0">
-        <p className="font-serif text-[15px] leading-tight line-through text-muted-foreground/60">
+        <p className="text-sm font-medium leading-tight line-through text-muted-foreground">
           {task.content}
         </p>
         {completedDate && (
-          <div className="flex items-center gap-1 mt-1 text-[10px] font-mono uppercase tracking-wider text-muted-foreground/40">
-            <Clock className="h-3 w-3" strokeWidth={2.25} />
+          <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
+            <Clock className="h-3 w-3" />
             {formattedDate}
           </div>
         )}
@@ -109,10 +109,10 @@ function TaskGroup({ title, tasks }: { title: string; tasks: Task[] }) {
 
   return (
     <div className="space-y-0">
-      <h3 className="type-micro font-bold uppercase px-6 py-4 text-muted-foreground/40 tracking-[0.2em]">
+      <h3 className="type-micro font-semibold uppercase px-6 py-3 border-b border-border/40">
         {title}
       </h3>
-      <div className="space-y-0 pb-2">
+      <div className="space-y-0">
         {tasks.map((task) => (
           <CompletedTaskItem key={task.id} task={task} />
         ))}
@@ -165,15 +165,10 @@ export function CompletedTasksSheet({
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
         </div>
       ) : completedTasks.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center px-4">
-          <CheckCircle2
-            className="h-16 w-16 text-muted-foreground/20 mb-6"
-            strokeWidth={1}
-          />
-          <h2 className="font-serif text-2xl font-medium mb-2 tracking-tight">
-            No Completed Tasks
-          </h2>
-          <p className="text-muted-foreground/60 max-w-xs text-sm leading-relaxed">
+        <div className="flex flex-col items-center justify-center py-12 text-center px-4">
+          <CheckCircle2 className="h-16 w-16 text-muted-foreground/50 mb-4" />
+          <h2 className="text-xl font-semibold mb-2">No Completed Tasks</h2>
+          <p className="text-muted-foreground max-w-md">
             Tasks you complete will appear here. Start checking off items from
             your task list!
           </p>

@@ -86,16 +86,16 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
   return (
     <>
       <CommandDialog open={open} onOpenChange={onOpenChange}>
-        <div className="p-6 pb-2">
+        <div className="p-6 pb-3 border-b border-border/40 bg-muted/20">
           <div className="flex items-center gap-2.5">
-            <CommandIcon
-              className="h-5 w-5 text-foreground/90"
-              strokeWidth={2.25}
-            />
-            <h2 className="font-serif text-xl tracking-tight !text-white font-semibold lowercase">
-              command menu
+            <CommandIcon className="h-5 w-5 text-muted-foreground/70" />
+            <h2 className="text-[22px] font-semibold tracking-tight text-foreground">
+              Command Menu
             </h2>
           </div>
+          <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium pt-1">
+            Quick Actions & Navigation
+          </p>
         </div>
         <CommandInput placeholder="Type a command or search..." />
         <CommandList>
@@ -103,17 +103,17 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
 
           <CommandGroup heading="Actions">
             <CommandItem onSelect={() => runCommand(() => openAddTask())}>
-              <PlusIcon className="mr-2 h-4 w-4" strokeWidth={2.25} />
+              <PlusIcon className="mr-2 h-4 w-4" />
               <span>New Task</span>
             </CommandItem>
             <CommandItem onSelect={() => runCommand(() => openCreateProject())}>
-              <FolderPlus className="mr-2 h-4 w-4" strokeWidth={2.25} />
+              <FolderPlus className="mr-2 h-4 w-4" />
               <span>New Project</span>
             </CommandItem>
             <CommandItem
               onSelect={() => runCommand(() => openCompletedSheet())}
             >
-              <CheckCircle2 className="mr-2 h-4 w-4" strokeWidth={2.25} />
+              <CheckCircle2 className="mr-2 h-4 w-4" />
               <span>Show Completed Tasks</span>
             </CommandItem>
             <CommandItem
@@ -124,13 +124,13 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
                 })
               }
             >
-              <Monitor className="mr-2 h-4 w-4" strokeWidth={2.25} />
+              <Monitor className="mr-2 h-4 w-4" />
               <span>
                 {isPiPActive ? "Close PiP Window" : "Open PiP Window"}
               </span>
             </CommandItem>
             <CommandItem onSelect={() => runCommand(() => toggleSidebar())}>
-              <Columns className="mr-2 h-4 w-4" strokeWidth={2.25} />
+              <Columns className="mr-2 h-4 w-4" />
               <span>Toggle Sidebar</span>
             </CommandItem>
           </CommandGroup>
@@ -143,7 +143,7 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
                 runCommand(() => router.push("/focus?duration=25"))
               }
             >
-              <Clock className="mr-2 h-4 w-4" strokeWidth={2.25} />
+              <Clock className="mr-2 h-4 w-4" />
               <span>Pomodoro (25m)</span>
             </CommandItem>
             <CommandItem
@@ -151,7 +151,7 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
                 runCommand(() => router.push("/focus?duration=50"))
               }
             >
-              <Clock className="mr-2 h-4 w-4" strokeWidth={2.25} />
+              <Clock className="mr-2 h-4 w-4" />
               <span>Deep Work (50m)</span>
             </CommandItem>
           </CommandGroup>
@@ -167,7 +167,7 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
                 })
               }
             >
-              <ListFilter className="mr-2 h-4 w-4" strokeWidth={2.25} />
+              <ListFilter className="mr-2 h-4 w-4" />
               <span>Sort by Date</span>
             </CommandItem>
             <CommandItem
@@ -178,7 +178,7 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
                 })
               }
             >
-              <ListFilter className="mr-2 h-4 w-4" strokeWidth={2.25} />
+              <ListFilter className="mr-2 h-4 w-4" />
               <span>Sort by Priority</span>
             </CommandItem>
             <CommandItem
@@ -189,7 +189,7 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
                 })
               }
             >
-              <Layers className="mr-2 h-4 w-4" strokeWidth={2.25} />
+              <Layers className="mr-2 h-4 w-4" />
               <span>Group by Project</span>
             </CommandItem>
             <CommandItem
@@ -200,7 +200,7 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
                 })
               }
             >
-              <Layers className="mr-2 h-4 w-4" strokeWidth={2.25} />
+              <Layers className="mr-2 h-4 w-4" />
               <span>Ungroup Tasks</span>
             </CommandItem>
           </CommandGroup>
@@ -209,20 +209,20 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
 
           <CommandGroup heading="Navigation">
             <CommandItem onSelect={() => runCommand(() => router.push("/"))}>
-              <HomeIcon className="mr-2 h-4 w-4" strokeWidth={2.25} />
+              <HomeIcon className="mr-2 h-4 w-4" />
               <span>Home</span>
             </CommandItem>
             {/* Inbox moved to projects */}
             <CommandItem
               onSelect={() => runCommand(() => router.push("/calendar"))}
             >
-              <CalendarIcon className="mr-2 h-4 w-4" strokeWidth={2.25} />
+              <CalendarIcon className="mr-2 h-4 w-4" />
               <span>Calendar</span>
             </CommandItem>
             <CommandItem
               onSelect={() => runCommand(() => router.push("/stats"))}
             >
-              <LayoutGridIcon className="mr-2 h-4 w-4" strokeWidth={2.25} />
+              <LayoutGridIcon className="mr-2 h-4 w-4" />
               <span>Statistics</span>
             </CommandItem>
           </CommandGroup>
@@ -233,17 +233,17 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
             <CommandItem
               onSelect={() => runCommand(() => router.push("/?filter=today"))}
             >
-              <Filter className="mr-2 h-4 w-4" strokeWidth={2.25} />
+              <Filter className="mr-2 h-4 w-4" />
               <span>Due Today</span>
             </CommandItem>
             <CommandItem
               onSelect={() => runCommand(() => router.push("/?filter=p1"))}
             >
-              <Filter className="mr-2 h-4 w-4" strokeWidth={2.25} />
+              <Filter className="mr-2 h-4 w-4" />
               <span>High Priority</span>
             </CommandItem>
             <CommandItem onSelect={() => runCommand(() => router.push("/"))}>
-              <PlusIcon className="mr-2 h-4 w-4 rotate-45" strokeWidth={2.25} />
+              <PlusIcon className="mr-2 h-4 w-4 rotate-45" />
               <span>Clear all filters</span>
             </CommandItem>
           </CommandGroup>
@@ -252,15 +252,15 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
 
           <CommandGroup heading="Theme">
             <CommandItem onSelect={() => runCommand(() => setTheme("light"))}>
-              <SunIcon className="mr-2 h-4 w-4" strokeWidth={2.25} />
+              <SunIcon className="mr-2 h-4 w-4" />
               <span>Light</span>
             </CommandItem>
             <CommandItem onSelect={() => runCommand(() => setTheme("dark"))}>
-              <MoonIcon className="mr-2 h-4 w-4" strokeWidth={2.25} />
+              <MoonIcon className="mr-2 h-4 w-4" />
               <span>Dark</span>
             </CommandItem>
             <CommandItem onSelect={() => runCommand(() => setTheme("system"))}>
-              <LaptopIcon className="mr-2 h-4 w-4" strokeWidth={2.25} />
+              <LaptopIcon className="mr-2 h-4 w-4" />
               <span>System</span>
             </CommandItem>
           </CommandGroup>
@@ -271,7 +271,7 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
             <CommandItem
               onSelect={() => runCommand(() => router.push("/?project=inbox"))}
             >
-              <Inbox className="mr-2 h-4 w-4" strokeWidth={2.25} />
+              <Inbox className="mr-2 h-4 w-4" />
               <span>Inbox</span>
             </CommandItem>
             {projects
@@ -283,7 +283,7 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
                     runCommand(() => router.push(`/?project=${project.id}`));
                   }}
                 >
-                  <HashIcon className="mr-2 h-4 w-4" strokeWidth={2.25} />
+                  <HashIcon className="mr-2 h-4 w-4" />
                   <span>{project.name}</span>
                 </CommandItem>
               ))}
@@ -295,13 +295,13 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
             <CommandItem
               onSelect={() => runCommand(() => router.push("/settings"))}
             >
-              <SettingsIcon className="mr-2 h-4 w-4" strokeWidth={2.25} />
+              <SettingsIcon className="mr-2 h-4 w-4" />
               <span>Settings</span>
             </CommandItem>
             <CommandItem
               onSelect={() => runCommand(() => setShortcutsHelpOpen(true))}
             >
-              <Keyboard className="mr-2 h-4 w-4" strokeWidth={2.25} />
+              <Keyboard className="mr-2 h-4 w-4" />
               <span>Keyboard Shortcuts</span>
             </CommandItem>
             {user && (
@@ -315,12 +315,9 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
                 }
               >
                 {copied ? (
-                  <Check
-                    className="mr-2 h-4 w-4 text-green-500"
-                    strokeWidth={2.25}
-                  />
+                  <Check className="mr-2 h-4 w-4 text-green-500" />
                 ) : (
-                  <Copy className="mr-2 h-4 w-4" strokeWidth={2.25} />
+                  <Copy className="mr-2 h-4 w-4" />
                 )}
                 <span>Copy My User ID</span>
               </CommandItem>
@@ -328,7 +325,7 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
             <CommandItem
               onSelect={() => runCommand(() => setShowSignOutConfirm(true))}
             >
-              <LogOut className="mr-2 h-4 w-4" strokeWidth={2.25} />
+              <LogOut className="mr-2 h-4 w-4" />
               <span>Sign Out</span>
             </CommandItem>
           </CommandGroup>

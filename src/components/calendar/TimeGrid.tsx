@@ -8,7 +8,7 @@ import type { CalendarEvent } from "@/lib/calendar/types";
 
 const HOUR_HEIGHT = 120; // 60 minutes * 2 pixels
 
-interface TimeGridProps extends React.HTMLAttributes<HTMLDivElement> {
+interface TimeGridProps {
   startDate: Date;
   daysToShow: number; // 1 for Day, 3 for Mobile, 4 for Desktop, 7 for Week
   events: CalendarEvent[];
@@ -20,7 +20,6 @@ export function TimeGrid({
   daysToShow,
   events,
   className,
-  ...props
 }: TimeGridProps) {
   const dates = getDayRange(startDate, daysToShow);
 
@@ -29,31 +28,25 @@ export function TimeGrid({
   const hours = Array.from({ length: 24 }).map((_, i) => i);
 
   return (
-    <div
-      className={cn(
-        "flex h-full bg-background overflow-y-auto relative isolate",
-        className
-      )}
-      {...props}
-    >
+    <div className={cn("flex h-full overflow-auto bg-background", className)}>
       {/* Time Labels Column */}
-      <div className="w-16 flex-shrink-0 border-r border-border/10 bg-background z-20">
-        <div className="sticky top-0 z-30 h-24 border-b border-border/10 bg-background" />{" "}
+      <div className="w-16 flex-shrink-0 border-r border-border/40">
+        <div className="h-24 border-b border-border/40" />{" "}
         {/* Spacer for header */}
         {hours.map((hour) => (
           <div
             key={hour}
-            className="text-[10px] font-mono text-muted-foreground/60 text-right pr-2 pt-2 border-t border-border/10"
+            className="text-xs text-muted-foreground text-right pr-2 pt-2 border-t border-border/40"
             style={{ height: `${HOUR_HEIGHT}px` }}
           >
-            {format(new Date().setHours(hour, 0), "ha")}
+            {format(new Date().setHours(hour, 0), "h a")}
           </div>
         ))}
       </div>
 
       {/* Days Columns */}
       <div
-        className="flex-1 grid divide-x divide-border/10"
+        className="flex-1 grid divide-x divide-border/40"
         style={{ gridTemplateColumns: `repeat(${daysToShow}, 1fr)` }}
       >
         {columns.map((column) => {
@@ -68,23 +61,22 @@ export function TimeGrid({
               )}
             >
               {/* Header for the Day */}
-              <div className="sticky top-0 z-30 bg-background border-b border-border/10 h-24 flex flex-col items-center justify-center shadow-xs">
+              <div className="sticky top-0 z-10 bg-background border-b border-border/40 h-24 flex flex-col items-center justify-center">
                 <div
                   className={cn(
-                    "font-serif text-[11px] uppercase tracking-[0.2em]",
+                    "text-xs",
                     isToday
-                      ? "text-primary font-bold"
-                      : "text-muted-foreground/60"
+                      ? "text-primary font-semibold"
+                      : "text-muted-foreground"
                   )}
                 >
-                  {format(column.date, "eee")}
+                  {format(column.date, "EEE")}
                 </div>
                 <div
                   className={cn(
-                    "text-lg font-mono tracking-tight flex items-center justify-center",
-                    isToday
-                      ? "w-10 h-10 rounded-none bg-primary text-primary-foreground font-bold"
-                      : "text-foreground/80"
+                    "text-lg font-semibold inline-flex items-center justify-center",
+                    isToday &&
+                      "w-10 h-10 rounded-md bg-primary text-primary-foreground"
                   )}
                 >
                   {format(column.date, "d")}
@@ -95,7 +87,7 @@ export function TimeGrid({
               {hours.map((hour) => (
                 <div
                   key={hour}
-                  className="border-t border-border/10"
+                  className="border-t border-border/40"
                   style={{ height: `${HOUR_HEIGHT}px` }}
                 />
               ))}
@@ -125,12 +117,12 @@ export function TimeGrid({
                     }
                   >
                     {/* Time - Only show if enough width/height, but for pill style we try to show inline */}
-                    <div className="font-mono text-[9px] text-muted-foreground/80 leading-tight font-medium shrink-0">
-                      {format(event.start, "HH:mm")}
+                    <div className="text-muted-foreground text-[10px] leading-tight font-medium shrink-0">
+                      {format(event.start, "h:mm a")}
                     </div>
 
                     {/* Title */}
-                    <div className="font-serif font-bold truncate text-[12px] leading-tight flex-1 lowercase tracking-tight">
+                    <div className="font-semibold truncate text-[11px] leading-tight flex-1">
                       {event.title}
                     </div>
                   </div>

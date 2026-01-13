@@ -43,7 +43,7 @@ export default function StatsPage() {
         {/* Header */}
         <div>
           <h1 className="type-h1">Statistics</h1>
-          <p className="font-serif text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Track your productivity and progress
           </p>
         </div>

@@ -58,10 +58,7 @@ function SettingsForm() {
       {/* Focus Duration */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <Label
-            className="type-ui font-serif font-bold tracking-wide text-muted-foreground/60 lowercase"
-            htmlFor="focus-duration-input"
-          >
+          <Label className="text-sm font-medium" htmlFor="focus-duration-input">
             Focus Duration
           </Label>
           <div className="flex items-center gap-2">
@@ -104,10 +101,7 @@ function SettingsForm() {
       {/* Short Break */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <Label
-            className="type-ui font-serif font-bold tracking-wide text-muted-foreground/60 lowercase"
-            htmlFor="short-break-input"
-          >
+          <Label className="text-sm font-medium" htmlFor="short-break-input">
             Short Break
           </Label>
           <div className="flex items-center gap-2">
@@ -151,10 +145,7 @@ function SettingsForm() {
       {/* Long Break */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <Label
-            className="type-ui font-serif font-bold tracking-wide text-muted-foreground/60 lowercase"
-            htmlFor="long-break-input"
-          >
+          <Label className="text-sm font-medium" htmlFor="long-break-input">
             Long Break
           </Label>
           <div className="flex items-center gap-2">
@@ -198,10 +189,7 @@ function SettingsForm() {
       {/* Sessions Before Long Break */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <Label
-            className="type-ui font-serif font-bold tracking-wide text-muted-foreground/60 lowercase"
-            htmlFor="sessions-input"
-          >
+          <Label className="text-sm font-medium" htmlFor="sessions-input">
             Sessions Until Long Break
           </Label>
           <Input
@@ -244,7 +232,7 @@ function SettingsForm() {
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
             <Label
-              className="type-ui font-serif font-bold tracking-wide text-muted-foreground/60 lowercase"
+              className="text-sm font-medium"
               htmlFor="auto-start-break-switch"
             >
               Auto-start Breaks
@@ -264,7 +252,7 @@ function SettingsForm() {
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
             <Label
-              className="type-ui font-serif font-bold tracking-wide text-muted-foreground/60 lowercase"
+              className="text-sm font-medium"
               htmlFor="auto-start-focus-switch"
             >
               Auto-start Focus
@@ -346,9 +334,7 @@ export function FocusSettingsDialog() {
         <DialogTrigger asChild>{triggerButton}</DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle className="type-h2 lowercase">
-              Timer Settings
-            </DialogTitle>
+            <DialogTitle>Timer Settings</DialogTitle>
             <DialogDescription>
               Customize your focus and break durations
               <span id="settings-desc" className="sr-only">
@@ -379,9 +365,7 @@ export function FocusSettingsDialog() {
       <DrawerTrigger asChild>{triggerButton}</DrawerTrigger>
       <DrawerContent className="max-h-[92dvh] flex flex-col">
         <DrawerHeader className="text-left shrink-0">
-          <DrawerTitle className="type-h2 lowercase">
-            Timer Settings
-          </DrawerTitle>
+          <DrawerTitle>Timer Settings</DrawerTitle>
           <DrawerDescription>
             Customize your focus and break durations
           </DrawerDescription>

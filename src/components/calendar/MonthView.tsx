@@ -45,7 +45,7 @@ const MonthDayCell = memo(
       <div
         onClick={() => onDateClick?.(day)}
         className={cn(
-          "relative p-1 md:p-2 border-r border-b border-border/10 flex flex-col",
+          "relative p-1 md:p-2 border-r border-b border-border/40 flex flex-col",
           "hover:bg-accent/50 cursor-pointer transition-colors",
           !isCurrentMonth && "bg-muted/5"
         )}
@@ -54,9 +54,9 @@ const MonthDayCell = memo(
         <div className="flex items-center justify-between mb-0.5 md:mb-1 shrink-0">
           <span
             className={cn(
-              "text-xs md:text-sm font-mono tracking-tight",
+              "text-xs md:text-sm font-medium",
               isCurrentDay &&
-                "flex items-center justify-center w-5 h-5 md:w-6 md:h-6 rounded-none bg-primary text-primary-foreground font-bold shadow-sm",
+                "flex items-center justify-center w-5 h-5 md:w-6 md:h-6 rounded-md bg-primary text-primary-foreground",
               !isCurrentMonth && "text-muted-foreground/30"
             )}
           >
@@ -129,7 +129,7 @@ const MonthView = memo(
           {weekDays.map((day) => (
             <div
               key={day}
-              className="p-2 text-center font-serif text-[11px] font-bold text-muted-foreground/60 uppercase tracking-[0.2em]"
+              className="p-2 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider"
             >
               {day}
             </div>

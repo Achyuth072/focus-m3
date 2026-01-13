@@ -49,9 +49,7 @@ export function TaskListView({
         {groups ? (
           groups.map((group) => (
             <div key={group.title} className="space-y-0 md:space-y-0.5">
-              <h3 className="font-serif text-[13px] font-bold text-muted-foreground/50 lowercase tracking-[0.1em] px-1 mb-2">
-                {group.title}
-              </h3>
+              <h3 className="type-h3 px-1">{group.title}</h3>
               {group.tasks.map((task) => (
                 <TaskItem
                   key={task.id}
@@ -83,9 +81,10 @@ export function TaskListView({
 
         {/* This Evening Section */}
         {evening.length > 0 && (
-          <div className="pt-6">
-            <p className="font-serif text-[13px] font-bold text-muted-foreground/30 px-1 mb-2 flex items-center gap-1.5 lowercase tracking-[0.1em]">
-              this evening ({evening.length})
+          <div className="pt-4">
+            <p className="text-xs font-medium text-muted-foreground px-1 mb-2 flex items-center gap-1.5">
+              <span className="text-sm">🌙</span>
+              This Evening ({evening.length})
             </p>
             <div className="space-y-0 md:space-y-0.5">
               {evening.map((task) => (
@@ -102,9 +101,9 @@ export function TaskListView({
 
         {/* Completed Section */}
         {completed.length > 0 && (
-          <div className="pt-6">
-            <p className="font-serif text-[13px] font-bold text-muted-foreground/30 px-1 mb-2 lowercase tracking-[0.1em]">
-              completed ({completed.length})
+          <div className="pt-4">
+            <p className="text-xs font-medium text-muted-foreground px-1 mb-2">
+              Completed ({completed.length})
             </p>
             <div className="space-y-0 md:space-y-0.5 opacity-60">
               {completed.map((task) => (

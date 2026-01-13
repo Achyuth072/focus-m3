@@ -25,30 +25,26 @@ export function MetricCard({
   return (
     <Card className={cn("p-6 border-border/50", className)}>
       <div className="flex items-start justify-between">
-        <div className="space-y-1">
-          <p className="font-serif text-sm font-medium text-foreground/60 italic lowercase">
-            {title}
-          </p>
-          <p className="text-4xl font-serif font-bold tracking-tight text-foreground">
-            {value}
-          </p>
+        <div className="space-y-2">
+          <p className="type-ui uppercase">{title}</p>
+          <p className="text-4xl font-semibold tracking-[-0.02em]">{value}</p>
           {trend && (
             <div
               className={cn(
-                "text-[10px] font-mono flex items-center gap-1",
+                "text-xs font-medium flex items-center gap-1",
                 trend.isPositive
                   ? "text-green-600 dark:text-green-400"
                   : "text-red-600 dark:text-red-400"
               )}
             >
               <span>{trend.isPositive ? "↑" : "↓"}</span>
-              <span className="tabular-nums">{Math.abs(trend.value)}%</span>
+              <span>{Math.abs(trend.value)}%</span>
             </div>
           )}
         </div>
         {Icon && (
-          <div className="p-2.5 rounded-md bg-foreground/5">
-            <Icon className="h-5 w-5 text-foreground/80" strokeWidth={2.25} />
+          <div className="p-2 rounded-lg bg-secondary/30">
+            <Icon className="h-5 w-5 text-muted-foreground" />
           </div>
         )}
       </div>

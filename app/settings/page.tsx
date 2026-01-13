@@ -150,7 +150,7 @@ export default function SettingsPage() {
             {(!isDesktop || activeTab === "appearance") && (
               <section className="space-y-4">
                 <div>
-                  <h2 className="font-serif text-[11px] font-bold uppercase tracking-[0.1em] text-muted-foreground/80">
+                  <h2 className="type-micro font-medium uppercase">
                     Appearance
                   </h2>
                 </div>
@@ -199,7 +199,7 @@ export default function SettingsPage() {
             {!isDesktop && (
               <section className="space-y-4">
                 <div>
-                  <h2 className="font-serif text-[11px] font-bold uppercase tracking-[0.1em] text-muted-foreground/80">
+                  <h2 className="type-micro font-medium uppercase">
                     Preferences
                   </h2>
                 </div>
@@ -230,7 +230,7 @@ export default function SettingsPage() {
             {isGuestMode && (!isDesktop || activeTab === "account") && (
               <section className="space-y-4">
                 <div>
-                  <h2 className="font-serif text-[11px] font-bold uppercase tracking-[0.1em] text-muted-foreground/80">
+                  <h2 className="type-micro font-medium uppercase">
                     Guest Mode
                   </h2>
                 </div>
@@ -276,9 +276,7 @@ export default function SettingsPage() {
             {(!isDesktop || activeTab === "account") && (
               <section className="space-y-4">
                 <div>
-                  <h2 className="font-serif text-[11px] font-bold uppercase tracking-[0.1em] text-muted-foreground/80">
-                    Account
-                  </h2>
+                  <h2 className="type-micro font-medium uppercase">Account</h2>
                 </div>
 
                 <div className="space-y-3">
@@ -323,7 +321,7 @@ export default function SettingsPage() {
 
             {/* App Info */}
             <div className="pt-8 border-t border-border/50">
-              <p className="text-[10px] font-mono text-muted-foreground/60 text-center uppercase tracking-widest">
+              <p className="text-xs text-muted-foreground text-center">
                 Kanso • Version 1.5.0
               </p>
             </div>

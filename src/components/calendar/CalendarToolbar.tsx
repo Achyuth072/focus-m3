@@ -75,7 +75,7 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
   return (
     <div
       className={cn(
-        "flex items-center justify-between gap-2 p-2 md:gap-4 md:p-4 border-b border-l bg-sidebar sticky top-16 md:top-0 z-10",
+        "flex items-center justify-between gap-2 p-2 md:gap-4 md:p-4 border-b border-l bg-sidebar",
         className
       )}
     >
@@ -117,7 +117,7 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
           </Button>
         </div>
 
-        <div className="font-serif text-lg md:text-2xl font-bold tracking-tight lowercase text-foreground/90 min-w-0 md:min-w-[200px] truncate">
+        <div className="text-lg md:text-2xl font-semibold min-w-0 md:min-w-[200px] truncate">
           {getDateLabel()}
         </div>
       </div>

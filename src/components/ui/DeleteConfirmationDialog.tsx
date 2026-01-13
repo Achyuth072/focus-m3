@@ -62,16 +62,14 @@ export function DeleteConfirmationDialog({
       <AlertDialog open={isOpen} onOpenChange={onClose}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="type-h2 lowercase">
-              {title}
-            </AlertDialogTitle>
+            <AlertDialogTitle>{title}</AlertDialogTitle>
             <AlertDialogDescription>{description}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={handleCancel}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirm}
-              className="bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white border border-red-500/20 transition-seijaku font-bold uppercase tracking-wider text-[10px] h-9"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Delete
             </AlertDialogAction>
@@ -85,14 +83,14 @@ export function DeleteConfirmationDialog({
     <Drawer open={isOpen} onOpenChange={onClose} repositionInputs={false}>
       <DrawerContent>
         <DrawerHeader className="text-left">
-          <DrawerTitle className="type-h2 lowercase">{title}</DrawerTitle>
+          <DrawerTitle>{title}</DrawerTitle>
           <DrawerDescription>{description}</DrawerDescription>
         </DrawerHeader>
         <DrawerFooter className="pt-2">
           <Button
             onClick={handleConfirm}
             variant="destructive"
-            className="w-full bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white border border-red-500/20 transition-seijaku font-bold uppercase tracking-wider text-xs h-12"
+            className="w-full"
           >
             Delete
           </Button>

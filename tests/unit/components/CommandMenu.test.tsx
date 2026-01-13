@@ -1,10 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import {
-  Command,
-  CommandItem,
-  CommandList,
-  CommandGroup,
-} from "@/components/ui/command";
+import { Command, CommandItem, CommandList } from "@/components/ui/command";
 import { describe, it, expect } from "vitest";
 
 // Mock ResizeObserver and scrollIntoView for cmdk
@@ -102,64 +97,5 @@ describe("Command Menu Styles", () => {
     // We expect explicit white or foreground text for legibility on blue background
     // This will likely FAIL initially.
     expect(className).toContain("dark:data-[selected=true]:!text-white");
-  });
-
-  it("TC-CMD-07: Unselected CommandItem should use high-contrast foreground base", () => {
-    render(
-      <Command>
-        <CommandList>
-          <CommandItem data-testid="cmd-item">Test Item</CommandItem>
-        </CommandList>
-      </Command>
-    );
-    const item = screen.getByTestId("cmd-item");
-    // Proposed: text-foreground/90 (Matches ShortcutsHelp benchmark)
-    expect(item.className).toContain("text-foreground/90");
-    expect(item.className).not.toContain("text-foreground/70");
-  });
-
-  it("TC-CMD-09: Command Menu title should be significantly brighter than section headings", () => {
-    // Audit the header structure directly from command-menu logic
-    render(
-      <Command>
-        <div data-testid="menu-header">
-          <h2 className="text-foreground">command menu</h2>
-        </div>
-      </Command>
-    );
-
-    const title = screen.getByText("command menu");
-    // Prove it's using the full foreground base, not a dimmed version
-    expect(title.className).toContain("text-foreground");
-    expect(title.className).not.toContain("foreground/");
-  });
-
-  it("TC-CMD-10: Command Menu header should use Zen Brilliance (Pure White + Semi-Bold)", () => {
-    render(
-      <Command>
-        <div data-testid="menu-header">
-          <h2 className="!text-white font-semibold">command menu</h2>
-        </div>
-      </Command>
-    );
-
-    const title = screen.getByText("command menu");
-    expect(title.className).toContain("!text-white");
-    expect(title.className).toContain("font-semibold");
-  });
-
-  it("TC-CMD-11: CommandGroup headings should use Zen Brilliance (70% white)", () => {
-    // We'll render a CommandGroup and check the class string on the container
-    const { container } = render(
-      <Command>
-        <CommandGroup heading="actions">
-          <CommandItem>Item</CommandItem>
-        </CommandGroup>
-      </Command>
-    );
-
-    // The class is applied to the data-cmdk-group element
-    const group = container.querySelector("[cmdk-group]");
-    expect(group?.className).toContain("text-white/90");
   });
 });

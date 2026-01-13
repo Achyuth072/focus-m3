@@ -44,13 +44,11 @@ function LoginContent() {
         <div className="max-w-md w-full p-8 rounded-xl border border-border bg-card">
           <div className="flex flex-col items-center gap-6">
             <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
-              <span className="font-serif text-3xl font-bold">K</span>
+              <span className="text-3xl font-semibold">K</span>
             </div>
 
             <div className="text-center space-y-2">
-              <h1 className="font-serif text-3xl font-bold tracking-tight text-foreground lowercase">
-                kanso
-              </h1>
+              <h1 className="text-3xl font-semibold">Kanso</h1>
               <p className="text-muted-foreground">
                 Your personal productivity super-app
               </p>
