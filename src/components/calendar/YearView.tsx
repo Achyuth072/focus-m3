@@ -44,8 +44,8 @@ const YearMonth = memo(
               "hover:bg-primary/10 hover:text-primary transition-colors text-muted-foreground"
             ),
             selected:
-              "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground",
-            today: "bg-primary text-primary-foreground font-bold !opacity-100",
+              "bg-brand text-brand-foreground hover:bg-brand hover:text-brand-foreground",
+            today: "bg-brand text-brand-foreground font-bold !opacity-100",
             outside: "invisible",
             disabled: "text-muted-foreground opacity-20",
           }}

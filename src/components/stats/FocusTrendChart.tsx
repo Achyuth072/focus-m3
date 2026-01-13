@@ -60,9 +60,9 @@ export function FocusTrendChart({ data, className }: FocusTrendChartProps) {
             <Line
               type="monotone"
               dataKey="hours"
-              stroke="hsl(var(--primary))"
+              stroke="hsl(var(--brand))"
               strokeWidth={2}
-              dot={{ fill: "hsl(var(--primary))", r: 4 }}
+              dot={{ fill: "hsl(var(--brand))", r: 4 }}
               activeDot={{ r: 6 }}
             />
           </LineChart>

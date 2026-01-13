@@ -55,10 +55,7 @@ export function TimeGrid({
           return (
             <div
               key={column.date.toString()}
-              className={cn(
-                "relative min-w-[100px]",
-                isToday && "bg-primary/5"
-              )}
+              className={cn("relative min-w-[100px]", isToday && "bg-brand/5")}
             >
               {/* Header for the Day */}
               <div className="sticky top-0 z-10 bg-background border-b border-border/40 h-24 flex flex-col items-center justify-center">
@@ -66,7 +63,7 @@ export function TimeGrid({
                   className={cn(
                     "text-xs",
                     isToday
-                      ? "text-primary font-semibold"
+                      ? "text-brand font-semibold"
                       : "text-muted-foreground"
                   )}
                 >
@@ -76,7 +73,7 @@ export function TimeGrid({
                   className={cn(
                     "text-lg font-semibold inline-flex items-center justify-center",
                     isToday &&
-                      "w-10 h-10 rounded-md bg-primary text-primary-foreground"
+                      "w-10 h-10 rounded-md bg-brand text-brand-foreground"
                   )}
                 >
                   {format(column.date, "d")}

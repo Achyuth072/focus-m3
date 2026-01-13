@@ -47,7 +47,8 @@ const MonthDayCell = memo(
         className={cn(
           "relative p-1 md:p-2 border-r border-b border-border/40 flex flex-col",
           "hover:bg-accent/50 cursor-pointer transition-colors",
-          !isCurrentMonth && "bg-muted/5"
+          !isCurrentMonth && "bg-muted/5",
+          isCurrentDay && "bg-brand/5"
         )}
       >
         {/* Date number */}
@@ -56,7 +57,7 @@ const MonthDayCell = memo(
             className={cn(
               "text-xs md:text-sm font-medium",
               isCurrentDay &&
-                "flex items-center justify-center w-5 h-5 md:w-6 md:h-6 rounded-md bg-primary text-primary-foreground",
+                "flex items-center justify-center w-5 h-5 md:w-6 md:h-6 rounded-md bg-brand text-brand-foreground",
               !isCurrentMonth && "text-muted-foreground/30"
             )}
           >

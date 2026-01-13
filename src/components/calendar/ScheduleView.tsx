@@ -65,7 +65,7 @@ const ScheduleView = memo(
                     <div
                       className={cn(
                         "text-3xl font-bold px-2 rounded-md",
-                        isToday && "text-primary bg-primary/10"
+                        isToday && "text-brand-foreground bg-brand"
                       )}
                     >
                       {format(date, "d")}
@@ -74,7 +74,7 @@ const ScheduleView = memo(
                       <div
                         className={cn(
                           "text-sm font-medium",
-                          isToday && "text-primary"
+                          isToday && "text-brand"
                         )}
                       >
                         {format(date, "EEEE")}
