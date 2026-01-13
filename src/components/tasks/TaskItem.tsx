@@ -210,7 +210,7 @@ function TaskItem({
           onDragEnd={handleDragEnd}
           className={cn(
             "relative flex group items-center bg-background cursor-pointer",
-            isDesktop && viewMode !== "board"
+            isDesktop
               ? "gap-2 px-2 py-3 rounded-md hover:bg-secondary/50 transition-seijaku"
               : viewMode === "board"
               ? "p-3 rounded-xl border border-border/80 hover:border-border hover:bg-secondary/20 transition-all"
@@ -346,9 +346,7 @@ function TaskItem({
               <div
                 className={cn(
                   "flex-1 min-w-0",
-                  isDesktop && viewMode !== "board"
-                    ? "flex flex-col gap-1"
-                    : "flex flex-col gap-0.5"
+                  isDesktop ? "flex flex-col gap-1" : "flex flex-col gap-0.5"
                 )}
               >
                 <div className="flex items-center gap-2">
@@ -367,9 +365,7 @@ function TaskItem({
                   <div
                     className={cn(
                       "flex items-center gap-2 flex-wrap",
-                      isDesktop && viewMode !== "board"
-                        ? "text-xs"
-                        : "mt-1 ml-0"
+                      isDesktop ? "text-xs" : "mt-1 ml-0"
                     )}
                   >
                     {task.due_date && (
@@ -442,7 +438,7 @@ function TaskItem({
               </div>
 
               {/* Desktop Actions - Positioned at right edge */}
-              {isDesktop && viewMode !== "board" && (
+              {isDesktop && (
                 <div className="flex items-center gap-1 shrink-0">
                   <Button
                     variant="ghost"
