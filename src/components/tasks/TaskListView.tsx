@@ -44,12 +44,14 @@ export function TaskListView({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="px-4 md:px-6 space-y-4 pb-24 md:pb-8">
+      <div className="px-4 md:px-6 flex flex-col gap-2 pb-20 md:pb-0">
         {/* Active Tasks Grouped */}
         {groups ? (
           groups.map((group) => (
             <div key={group.title} className="space-y-0 md:space-y-1">
-              <h3 className="type-h3 px-1">{group.title}</h3>
+              <h3 className="type-h3 px-1 mt-6 first:mt-2 mb-2">
+                {group.title}
+              </h3>
               {group.tasks.map((task) => (
                 <TaskItem
                   key={task.id}

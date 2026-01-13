@@ -211,10 +211,10 @@ function TaskItem({
           className={cn(
             "relative flex group items-center bg-background cursor-pointer",
             isDesktop && viewMode !== "board"
-              ? "gap-2 px-2 py-2 h-10 rounded-md hover:bg-secondary/50 transition-seijaku"
+              ? "gap-2 px-2 py-3 rounded-md hover:bg-secondary/50 transition-seijaku"
               : viewMode === "board"
               ? "p-3 rounded-xl border border-border/80 hover:border-border hover:bg-secondary/20 transition-all"
-              : "items-center gap-3 py-3 px-4 active:bg-secondary/20 transition-seijaku-fast",
+              : "items-center gap-3 py-3.5 px-4 active:bg-secondary/20 transition-seijaku-fast",
             isKeyboardSelected && "ring-2 ring-primary bg-secondary/40 z-10"
           )}
           onClick={() => {
@@ -347,11 +347,11 @@ function TaskItem({
                 className={cn(
                   "flex-1 min-w-0",
                   isDesktop && viewMode !== "board"
-                    ? "flex items-center justify-between gap-2"
+                    ? "flex flex-col gap-1"
                     : "flex flex-col gap-0.5"
                 )}
               >
-                <div className="flex items-center gap-2 flex-1">
+                <div className="flex items-center gap-2">
                   <p
                     className={cn(
                       "type-body font-medium leading-tight truncate",
@@ -368,26 +368,10 @@ function TaskItem({
                     className={cn(
                       "flex items-center gap-2 flex-wrap",
                       isDesktop && viewMode !== "board"
-                        ? "shrink-0"
+                        ? "text-xs"
                         : "mt-1 ml-0"
                     )}
                   >
-                    {/* Expand Toggle */}
-                    {isDesktop ? (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={toggleExpand}
-                        className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors opacity-0 group-hover:opacity-100"
-                      >
-                        {isExpanded ? (
-                          <ChevronDown className="h-4 w-4" />
-                        ) : (
-                          <ChevronRight className="h-4 w-4" />
-                        )}
-                      </Button>
-                    ) : null}
-
                     {task.due_date && (
                       <span
                         className={cn(
@@ -438,36 +422,51 @@ function TaskItem({
                       </span>
                     )}
 
-                    {/* Desktop Play Action */}
-                    {isDesktop && (
+                    {/* Expand Toggle - Moved to end */}
+                    {isDesktop ? (
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={handlePlayFocus}
-                        className="h-6 w-6 text-muted-foreground hover:text-green-600 opacity-0 group-hover:opacity-100 transition-opacity"
-                        title="Start focus timer"
+                        onClick={toggleExpand}
+                        className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors opacity-0 group-hover:opacity-100 ml-1"
                       >
-                        <Play className="h-3.5 w-3.5" />
+                        {isExpanded ? (
+                          <ChevronDown className="h-4 w-4" strokeWidth={3} />
+                        ) : (
+                          <ChevronRight className="h-4 w-4" strokeWidth={3} />
+                        )}
                       </Button>
-                    )}
-
-                    {/* Desktop Delete Action */}
-                    {isDesktop && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowDeleteDialog(true);
-                        }}
-                        className="h-6 w-6 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
-                    )}
+                    ) : null}
                   </div>
                 )}
               </div>
+
+              {/* Desktop Actions - Positioned at right edge */}
+              {isDesktop && viewMode !== "board" && (
+                <div className="flex items-center gap-1 shrink-0">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handlePlayFocus}
+                    className="h-6 w-6 text-muted-foreground hover:text-green-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                    title="Start focus timer"
+                  >
+                    <Play className="h-3.5 w-3.5" />
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowDeleteDialog(true);
+                    }}
+                    className="h-6 w-6 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              )}
 
               {/* Mobile Play Action */}
               {!isDesktop && (

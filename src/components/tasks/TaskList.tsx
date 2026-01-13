@@ -248,15 +248,17 @@ export default function TaskList({
             onSelect={handleTaskClick}
           />
         ) : (
-          <TaskListView
-            processedTasks={processedTasks}
-            localTasks={localTasks}
-            sensors={sensors}
-            handleDragStart={handleDragStart}
-            handleDragEnd={handleDragEnd}
-            handleTaskClick={handleTaskClick}
-            keyboardSelectedId={keyboardSelectedId}
-          />
+          <div className="space-y-2">
+            <TaskListView
+              processedTasks={processedTasks}
+              localTasks={localTasks}
+              sensors={sensors}
+              handleDragStart={handleDragStart}
+              handleDragEnd={handleDragEnd}
+              handleTaskClick={handleTaskClick}
+              keyboardSelectedId={keyboardSelectedId}
+            />
+          </div>
         )}
       </div>
 
