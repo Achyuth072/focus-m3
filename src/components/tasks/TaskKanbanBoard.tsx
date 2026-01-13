@@ -69,7 +69,7 @@ export function TaskKanbanBoard({
     setActiveTask(null);
 
     if (!over) return;
-    trigger(30);
+    trigger(50);
   };
 
   return (

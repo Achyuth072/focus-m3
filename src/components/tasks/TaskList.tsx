@@ -112,7 +112,7 @@ export default function TaskList({
     if (oldIndex === -1 || newIndex === -1) return;
 
     // Haptic feedback on successful drop
-    trigger(30);
+    trigger(50);
 
     // Mark as just dragged to skip sync overwrite
     justDragged.current = true;

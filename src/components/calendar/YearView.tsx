@@ -35,12 +35,11 @@ const YearMonth = memo(
             caption:
               "flex justify-center pt-1 relative items-center text-sm font-semibold text-primary",
             head_row: "flex gap-1",
-            head_cell:
-              "text-muted-foreground/60 w-[28px] font-medium text-[0.7rem]",
+            head_cell: "text-muted-foreground/60 w-7 font-medium text-[0.7rem]",
             row: "flex w-full mt-1 gap-1",
             cell: "relative p-0 text-center text-xs focus-within:relative focus-within:z-20",
             day: cn(
-              "h-[28px] w-[28px] p-0 font-normal rounded-md aria-selected:opacity-100",
+              "h-7 w-7 p-0 font-normal rounded-md aria-selected:opacity-100",
               "hover:bg-primary/10 hover:text-primary transition-colors text-muted-foreground"
             ),
             selected:

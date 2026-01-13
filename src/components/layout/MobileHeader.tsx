@@ -55,14 +55,14 @@ export function MobileHeader() {
   return (
     <header className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between h-16 px-4 pt-[env(safe-area-inset-top)] border-b bg-sidebar md:hidden">
       {/* Left: Hamburger Menu */}
-      <SidebarTrigger className="h-10 w-10 active:scale-95 transition-transform" />
+      <SidebarTrigger className="h-11 w-11 active:scale-95 transition-transform" />
 
       {/* Right: Focus Timer + More Menu */}
       <div className="flex items-center gap-2">
         {/* Dynamic Focus Timer */}
         <button
           onClick={() => {
-            trigger(30);
+            trigger(15);
             router.push("/focus");
           }}
           className="flex items-center gap-2 px-3 py-2 min-h-[40px] rounded-lg hover:bg-sidebar-accent active:bg-sidebar-accent active:scale-95 transition-all"
@@ -95,7 +95,7 @@ export function MobileHeader() {
             <Button
               variant="ghost"
               size="icon"
-              className="h-10 w-10 active:scale-95 transition-transform"
+              className="h-11 w-11 active:scale-95 transition-transform"
             >
               <MoreVertical className="h-5 w-5" />
               <span className="sr-only">More options</span>
@@ -106,7 +106,7 @@ export function MobileHeader() {
               <>
                 <DropdownMenuItem
                   onClick={() => {
-                    trigger(20);
+                    trigger(15);
                     openSheet();
                   }}
                 >
@@ -118,7 +118,7 @@ export function MobileHeader() {
             )}
             <DropdownMenuItem
               onClick={() => {
-                trigger(20);
+                trigger(15);
                 router.push("/settings");
               }}
             >

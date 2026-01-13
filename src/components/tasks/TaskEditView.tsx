@@ -344,7 +344,7 @@ export function TaskEditView({
             size="sm"
             className="h-10 w-10 p-0 text-muted-foreground/80 hover:text-red-500 hover:bg-red-500/10 transition-colors [&_svg]:!size-5"
             onClick={() => {
-              trigger(30);
+              trigger(50);
               onDelete();
             }}
             title="Delete task"

@@ -48,7 +48,7 @@ export function TaskListView({
         {/* Active Tasks Grouped */}
         {groups ? (
           groups.map((group) => (
-            <div key={group.title} className="space-y-0 md:space-y-0.5">
+            <div key={group.title} className="space-y-0 md:space-y-1">
               <h3 className="type-h3 px-1">{group.title}</h3>
               {group.tasks.map((task) => (
                 <TaskItem
@@ -66,7 +66,7 @@ export function TaskListView({
             items={localTasks.map((t) => t.id)}
             strategy={verticalListSortingStrategy}
           >
-            <div className="space-y-0 md:space-y-0.5">
+            <div className="space-y-0 md:space-y-1">
               {localTasks.map((task) => (
                 <SortableTaskItem
                   key={task.id}
@@ -86,7 +86,7 @@ export function TaskListView({
               <span className="text-sm">🌙</span>
               This Evening ({evening.length})
             </p>
-            <div className="space-y-0 md:space-y-0.5">
+            <div className="space-y-0 md:space-y-1">
               {evening.map((task) => (
                 <TaskItem
                   key={task.id}
@@ -105,7 +105,7 @@ export function TaskListView({
             <p className="text-xs font-medium text-muted-foreground px-1 mb-2">
               Completed ({completed.length})
             </p>
-            <div className="space-y-0 md:space-y-0.5 opacity-60">
+            <div className="space-y-0 md:space-y-1 opacity-60">
               {completed.map((task) => (
                 <TaskItem
                   key={task.id}

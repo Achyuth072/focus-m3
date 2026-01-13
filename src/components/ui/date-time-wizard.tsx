@@ -1,14 +1,13 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { format } from 'date-fns';
-import { useHaptic } from '@/lib/hooks/useHaptic';
-import { Calendar } from '@/components/ui/calendar';
-import { LargeTimePicker } from '@/components/ui/large-time-picker';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar as CalendarIcon, Clock, Check } from 'lucide-react';
-
+import { useState, useEffect } from "react";
+import { format } from "date-fns";
+import { useHaptic } from "@/lib/hooks/useHaptic";
+import { Calendar } from "@/components/ui/calendar";
+import { LargeTimePicker } from "@/components/ui/large-time-picker";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar as CalendarIcon, Clock, Check } from "lucide-react";
 
 interface DateTimeWizardProps {
   date: Date | undefined;
@@ -16,9 +15,13 @@ interface DateTimeWizardProps {
   onClose: () => void;
 }
 
-export function DateTimeWizard({ date, setDate, onClose }: DateTimeWizardProps) {
+export function DateTimeWizard({
+  date,
+  setDate,
+  onClose,
+}: DateTimeWizardProps) {
   const { trigger } = useHaptic();
-  const [step, setStep] = useState<'date' | 'time'>('date');
+  const [step, setStep] = useState<"date" | "time">("date");
   const [tempDate, setTempDate] = useState<Date | undefined>(date);
 
   // Sync tempDate if prop changes externally (optional, but good practice)
@@ -31,7 +34,7 @@ export function DateTimeWizard({ date, setDate, onClose }: DateTimeWizardProps) 
       setTempDate(undefined);
       return;
     }
-    
+
     // Preserve time if already set, or set default time (12:00 PM / Noon)
     const updatedDate = new Date(newDate);
     if (tempDate) {
@@ -41,7 +44,7 @@ export function DateTimeWizard({ date, setDate, onClose }: DateTimeWizardProps) 
       // New date, default to 12:00 PM (noon) instead of 9 AM
       updatedDate.setHours(12, 0, 0, 0);
     }
-    
+
     setTempDate(updatedDate);
   };
 
@@ -51,7 +54,7 @@ export function DateTimeWizard({ date, setDate, onClose }: DateTimeWizardProps) 
   };
 
   const onSave = () => {
-    trigger(30);
+    trigger(50);
     setDate(tempDate);
     onClose();
   };
@@ -60,29 +63,29 @@ export function DateTimeWizard({ date, setDate, onClose }: DateTimeWizardProps) 
     <div className="flex flex-col w-full max-w-[320px] mx-auto bg-popover rounded-md overflow-hidden">
       {/* Header / Tabs */}
       <div className="flex items-center justify-between p-2 border-b bg-muted/40">
-        <Tabs 
-          value={step} 
+        <Tabs
+          value={step}
           onValueChange={(v) => {
             trigger(25);
-            setStep(v as 'date' | 'time');
-          }} 
+            setStep(v as "date" | "time");
+          }}
           className="w-full"
         >
           <TabsList className="grid w-full grid-cols-2 h-9 p-0.5 bg-muted/50">
-            <TabsTrigger 
-              value="date" 
+            <TabsTrigger
+              value="date"
               className="text-xs font-medium data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-sm"
             >
               <CalendarIcon className="w-3.5 h-3.5 mr-1.5" />
-              {tempDate ? format(tempDate, 'MMM d') : 'Date'}
+              {tempDate ? format(tempDate, "MMM d") : "Date"}
             </TabsTrigger>
-            <TabsTrigger 
-              value="time" 
+            <TabsTrigger
+              value="time"
               disabled={!tempDate}
               className="text-xs font-medium data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-sm disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Clock className="w-3.5 h-3.5 mr-1.5" />
-              {tempDate ? format(tempDate, 'h:mm a') : 'Time'}
+              {tempDate ? format(tempDate, "h:mm a") : "Time"}
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -90,7 +93,7 @@ export function DateTimeWizard({ date, setDate, onClose }: DateTimeWizardProps) 
 
       {/* Content Area */}
       <div className="p-2 sm:p-3">
-        {step === 'date' ? (
+        {step === "date" ? (
           <div className="animate-in fade-in zoom-in-95 duration-200">
             <Calendar
               mode="single"
@@ -103,13 +106,14 @@ export function DateTimeWizard({ date, setDate, onClose }: DateTimeWizardProps) 
               initialFocus
               className="rounded-md border-0 w-full flex justify-center p-3"
               classNames={{
-                  month: 'space-y-4 w-full',
-                  table: 'w-full border-collapse space-y-1',
-                  head_row: 'flex w-full justify-between',
-                  row: 'flex w-full justify-between mt-2',
+                month: "space-y-4 w-full",
+                table: "w-full border-collapse space-y-1",
+                head_row: "flex w-full justify-between",
+                row: "flex w-full justify-between mt-2",
 
-                  day: 'h-9 w-9 p-0 font-normal aria-selected:opacity-100 rounded-md hover:bg-accent hover:text-accent-foreground',
-                  head_cell: 'text-muted-foreground rounded-md w-9 font-normal text-[0.8rem] text-center',
+                day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 rounded-md hover:bg-accent hover:text-accent-foreground",
+                head_cell:
+                  "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem] text-center",
               }}
             />
             {/* Quick Presets */}
@@ -158,37 +162,29 @@ export function DateTimeWizard({ date, setDate, onClose }: DateTimeWizardProps) 
 
             {/* Date View Footer */}
             <div className="mt-2 w-full flex justify-end">
-                <Button 
-                    size="sm"
-                    className="gap-1.5 w-full"
-                    onClick={onSave}
-                >
-                    <Check className="w-3.5 h-3.5" />
-                    Done
-                </Button>
-             </div>
+              <Button size="sm" className="gap-1.5 w-full" onClick={onSave}>
+                <Check className="w-3.5 h-3.5" />
+                Done
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="flex flex-col items-center animate-in slide-in-from-right-5 fade-in duration-200">
-             <div className="text-sm font-medium text-muted-foreground mb-4">
-                Set Time for {tempDate ? format(tempDate, 'MMMM d') : 'Today'}
-             </div>
-             
-             <LargeTimePicker 
-               value={tempDate || new Date()} 
-               onChange={handleTimeChange} 
-             />
-             
-             <div className="mt-4 w-full flex justify-end">
-                <Button 
-                    size="sm"
-                    className="gap-1.5 w-full"
-                    onClick={onSave}
-                >
-                    <Check className="w-3.5 h-3.5" />
-                    Done
-                </Button>
-             </div>
+            <div className="text-sm font-medium text-muted-foreground mb-4">
+              Set Time for {tempDate ? format(tempDate, "MMMM d") : "Today"}
+            </div>
+
+            <LargeTimePicker
+              value={tempDate || new Date()}
+              onChange={handleTimeChange}
+            />
+
+            <div className="mt-4 w-full flex justify-end">
+              <Button size="sm" className="gap-1.5 w-full" onClick={onSave}>
+                <Check className="w-3.5 h-3.5" />
+                Done
+              </Button>
+            </div>
           </div>
         )}
       </div>

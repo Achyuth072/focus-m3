@@ -9,7 +9,9 @@ import { useHaptic } from "@/lib/hooks/useHaptic";
 function formatTime(seconds: number): string {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
-  return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  return `${mins.toString().padStart(2, "0")}:${secs
+    .toString()
+    .padStart(2, "0")}`;
 }
 
 export function FloatingTimer() {
@@ -19,10 +21,13 @@ export function FloatingTimer() {
   const { trigger, isPhone } = useHaptic();
 
   // Only show if timer is active, NOT on focus page, and NOT on mobile
-  const shouldShow = (state.isRunning || state.completedSessions > 0) && pathname !== "/focus" && !isPhone;
+  const shouldShow =
+    (state.isRunning || state.completedSessions > 0) &&
+    pathname !== "/focus" &&
+    !isPhone;
 
   const handlePlayPause = () => {
-    trigger(30);
+    trigger(15);
     if (state.isRunning) {
       pause();
     } else {
@@ -31,12 +36,12 @@ export function FloatingTimer() {
   };
 
   const handleMaximize = () => {
-    trigger(30);
+    trigger(10);
     router.push("/focus");
   };
 
   const handleClose = () => {
-    trigger(20);
+    trigger(50);
     pause();
   };
 
@@ -47,13 +52,17 @@ export function FloatingTimer() {
           initial={{ opacity: 0, y: 100, scale: 0.8 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 100, scale: 0.8 }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          transition={{ type: "spring", stiffness: 280, damping: 60 }}
           className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-50 bg-card border border-border rounded-2xl shadow-2xl p-4 min-w-[200px] select-none"
           style={{ touchAction: "none" }}
         >
           {/* Mode Badge */}
           <div className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground mb-1 text-center">
-            {state.mode === "focus" ? "Focus" : state.mode === "shortBreak" ? "Short Break" : "Long Break"}
+            {state.mode === "focus"
+              ? "Focus"
+              : state.mode === "shortBreak"
+              ? "Short Break"
+              : "Long Break"}
           </div>
 
           {/* Timer Display */}

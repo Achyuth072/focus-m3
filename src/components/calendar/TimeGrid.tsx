@@ -55,7 +55,7 @@ export function TimeGrid({
           return (
             <div
               key={column.date.toString()}
-              className={cn("relative min-w-[100px]", isToday && "bg-brand/5")}
+              className={cn("relative min-w-25", isToday && "bg-brand/5")}
             >
               {/* Header for the Day */}
               <div className="sticky top-0 z-10 bg-background border-b border-border/40 h-24 flex flex-col items-center justify-center">

@@ -85,7 +85,7 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
           variant="outline"
           size={isMobile ? "icon" : "sm"}
           onClick={() => {
-            trigger(30);
+            trigger(10);
             goToToday();
           }}
           className={cn(isMobile && "h-8 w-8")}
@@ -99,7 +99,7 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
             variant="ghost"
             size="icon"
             onClick={() => {
-              trigger(30);
+              trigger(10);
               prev();
             }}
           >
@@ -109,7 +109,7 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
             variant="ghost"
             size="icon"
             onClick={() => {
-              trigger(30);
+              trigger(10);
               next();
             }}
           >
@@ -117,7 +117,7 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
           </Button>
         </div>
 
-        <div className="text-lg md:text-2xl font-semibold min-w-0 md:min-w-[200px] truncate">
+        <div className="text-lg md:text-2xl font-semibold min-w-0 md:min-w-50 truncate">
           {getDateLabel()}
         </div>
       </div>
@@ -126,11 +126,11 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
       <Select
         value={view}
         onValueChange={(v) => {
-          trigger(25);
+          trigger(15);
           setView(v as CalendarView);
         }}
       >
-        <SelectTrigger className="w-[105px] md:w-[140px] h-8 md:h-9 text-xs md:text-sm px-3 font-medium bg-background hover:bg-accent hover:text-accent-foreground transition-colors">
+        <SelectTrigger className="w-28 md:w-35 h-8 md:h-9 text-xs md:text-sm px-3 font-medium bg-background hover:bg-accent hover:text-accent-foreground transition-colors">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

@@ -145,7 +145,7 @@ export default function SettingsPage() {
           </aside>
 
           {/* Main Content */}
-          <main className="md:pt-[88px] space-y-12">
+          <main className="md:pt-22 space-y-12">
             {/* Appearance Section */}
             {(!isDesktop || activeTab === "appearance") && (
               <section className="space-y-4">
@@ -247,7 +247,7 @@ export default function SettingsPage() {
                         size="sm"
                         className="flex-1"
                         onClick={() => {
-                          trigger(30);
+                          trigger(50);
                           handleResetDemo();
                         }}
                       >

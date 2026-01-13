@@ -74,7 +74,7 @@ export default function FocusPage() {
   };
 
   const handlePiP = async () => {
-    trigger(30);
+    trigger(15);
     if (isPiPActive) {
       closePiP();
     } else {

@@ -66,7 +66,7 @@ export function TimePicker({
   return (
     <div
       className={cn(
-        "grid grid-cols-3 gap-1.5 px-3 py-1.5 border-t border-border w-[280px]",
+        "grid grid-cols-3 gap-1.5 px-3 py-1.5 border-t border-border w-70",
         className
       )}
     >
@@ -78,7 +78,7 @@ export function TimePicker({
         <div
           ref={hourRef}
           onWheel={(e) => handleWheel(e, hourRef)}
-          className="h-[80px] w-full overflow-y-auto overscroll-contain scrollbar-hide"
+          className="h-20 w-full overflow-y-auto overscroll-contain scrollbar-hide"
         >
           {Array.from({ length: 12 }, (_, i) => i + 1).map((hour) => (
             <div
@@ -108,7 +108,7 @@ export function TimePicker({
         <div
           ref={minuteRef}
           onWheel={(e) => handleWheel(e, minuteRef)}
-          className="h-[80px] w-full overflow-y-auto overscroll-contain scrollbar-hide"
+          className="h-20 w-full overflow-y-auto overscroll-contain scrollbar-hide"
         >
           {Array.from({ length: 60 }, (_, i) => i).map((minute) => (
             <div
@@ -135,7 +135,7 @@ export function TimePicker({
         <label className="text-[10px] text-muted-foreground mb-0.5 text-center shrink-0">
           Period
         </label>
-        <div className="flex flex-col gap-1 w-full h-[80px] justify-center">
+        <div className="flex flex-col gap-1 w-full h-20 justify-center">
           <div
             role="button"
             tabIndex={0}

@@ -110,13 +110,13 @@ function AppShellContent({ children }: AppShellProps) {
                 }}
                 className={cn(
                   "fixed z-30 pointer-events-none flex justify-center",
-                  "left-0 right-0 px-4 top-[72px]", // Mobile: Floating comfortably below header
+                  "left-0 right-0 px-4 top-18", // Mobile: Floating comfortably below header
                   "md:left-[var(--sidebar-width)] md:px-0 md:top-4 md:right-6 md:justify-end" // Desktop: Floating top-right banner
                 )}
               >
                 <div className="pointer-events-auto flex items-center justify-between w-full max-w-[500px] md:w-[350px] bg-sidebar border border-border text-foreground text-[13px] font-medium py-2.5 px-4 rounded-xl shadow-2xl shadow-black/5 backdrop-blur-md">
                   <div className="flex items-center gap-3">
-                    <div className="flex-shrink-0 w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.3)]" />
+                    <div className="flex-shrink-0 w-2 h-2 rounded-full bg-brand shadow-[0_0_8px_hsl(var(--brand)/0.3)]" />
                     <div className="flex flex-col leading-tight">
                       <span className="font-semibold tracking-tight">
                         Guest Mode

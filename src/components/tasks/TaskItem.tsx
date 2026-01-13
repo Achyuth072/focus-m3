@@ -87,7 +87,7 @@ function TaskItem({
 
   const handlePlayFocus = (e: React.MouseEvent) => {
     e.stopPropagation();
-    trigger(30);
+    trigger(50);
     start(task.id);
     router.push("/focus");
   };
@@ -106,7 +106,7 @@ function TaskItem({
   );
 
   const handleComplete = (checked: boolean) => {
-    trigger(checked ? [10, 30] : 30); // Double tick for completion
+    trigger(checked ? [10, 50] : 15); // Double tick/thud for completion, light for uncheck
     setIsChecking(true);
     toggleMutation.mutate(
       { id: task.id, is_completed: checked },
@@ -167,7 +167,7 @@ function TaskItem({
     <div
       className={cn(
         "group/item",
-        isDesktop && "hover:ring-1 hover:ring-border transition-all rounded-sm",
+        isDesktop && "hover:ring-1 hover:ring-border transition-all rounded-md",
         isDesktop && isExpanded && "pb-4"
       )}
     >
@@ -175,7 +175,7 @@ function TaskItem({
         style={{ background }}
         className={cn(
           "relative",
-          isDesktop ? "rounded-sm" : "overflow-hidden" // Mobile: removed rounded-xl/mx-2/mb-2 for separator look
+          isDesktop ? "rounded-md" : "overflow-hidden" // Mobile: removed rounded-xl/mx-2/mb-2 for separator look
         )}
       >
         {/* Swipe indicators - only visible during drag */}
@@ -209,7 +209,7 @@ function TaskItem({
           className={cn(
             "relative flex group items-center bg-background cursor-pointer",
             isDesktop
-              ? "gap-2 px-2 py-1 h-8 rounded-sm hover:bg-secondary/50 transition-seijaku"
+              ? "gap-2 px-2 py-2 h-10 rounded-md hover:bg-secondary/50 transition-seijaku"
               : "items-center gap-3 py-3 px-4 active:bg-secondary/20 transition-seijaku-fast",
             isKeyboardSelected && "ring-2 ring-primary bg-secondary/40 z-10"
           )}
@@ -249,7 +249,7 @@ function TaskItem({
           )}
           {/* Checkbox */}
           <div
-            className={cn("shrink-0", isDesktop ? "pt-0" : "pt-0.5")}
+            className={cn("shrink-0", isDesktop ? "pt-0" : "pt-0.5 p-3 -ml-3")} // Mobile: Negative margin to offset padding, ensuring alignment + 44px hit area
             onClick={(e) => e.stopPropagation()}
           >
             <Checkbox
