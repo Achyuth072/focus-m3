@@ -36,7 +36,7 @@ export const useUiStore = create<UiState>()(
       // Task List defaults
       sortBy: "date",
       groupBy: "none",
-      viewMode: "list",
+      viewMode: "grid",
       setSortBy: (sort) => set({ sortBy: sort }),
       setGroupBy: (group) => set({ groupBy: group }),
       setViewMode: (mode) => set({ viewMode: mode }),

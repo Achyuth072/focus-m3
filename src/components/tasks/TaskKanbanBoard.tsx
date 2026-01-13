@@ -98,7 +98,7 @@ export function TaskKanbanBoard({
       >
         {activeTask ? (
           <div className="w-[85vw] md:w-[320px] rotate-2 scale-105 shadow-xl rounded-xl overflow-hidden pointer-events-none">
-            <TaskItem task={activeTask} />
+            <TaskItem task={activeTask} viewMode="board" />
           </div>
         ) : null}
       </DragOverlay>
@@ -130,7 +130,12 @@ const KanbanColumn = memo(function KanbanColumn({
       >
         <div className="flex-1 space-y-2 overflow-y-auto pr-1">
           {group.tasks.map((task) => (
-            <SortableTaskItem key={task.id} task={task} onSelect={onSelect} />
+            <SortableTaskItem
+              key={task.id}
+              task={task}
+              onSelect={onSelect}
+              viewMode="board"
+            />
           ))}
         </div>
       </SortableContext>

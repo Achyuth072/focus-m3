@@ -51,35 +51,19 @@ export function TasksPageHeader({
   const { openSheet } = useCompletedTasks();
   const { trigger } = useHaptic();
 
-  useHotkeys("shift+1", () => onViewModeChange("list"), {
+  useHotkeys("shift+1", () => onViewModeChange("grid"), {
     preventDefault: true,
   });
-  useHotkeys("shift+2", () => onViewModeChange("grid"), {
+  useHotkeys("shift+2", () => onViewModeChange("board"), {
     preventDefault: true,
   });
-  useHotkeys("shift+3", () => onViewModeChange("board"), {
+  useHotkeys("shift+3", () => onViewModeChange("list"), {
     preventDefault: true,
   });
 
   return (
     <div className="flex items-center gap-2">
       <div className="flex items-center rounded-md border border-input h-8 overflow-hidden bg-muted/20">
-        <Button
-          variant="ghost"
-          size="sm"
-          className={cn(
-            "h-full w-8 p-0 rounded-none transition-all duration-200 border-r border-input/50 last:border-r-0",
-            viewMode === "list"
-              ? "bg-background text-primary shadow-sm"
-              : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-          )}
-          onClick={() => {
-            trigger(20);
-            onViewModeChange("list");
-          }}
-        >
-          <List className="h-4 w-4" />
-        </Button>
         <Button
           variant="ghost"
           size="sm"
@@ -93,6 +77,7 @@ export function TasksPageHeader({
             trigger(20);
             onViewModeChange("grid");
           }}
+          title="Grid View (Shift+1)"
         >
           <LayoutGrid className="h-4 w-4" />
         </Button>
@@ -109,8 +94,26 @@ export function TasksPageHeader({
             trigger(20);
             onViewModeChange("board");
           }}
+          title="Board View (Shift+2)"
         >
           <KanbanSquare className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          className={cn(
+            "h-full w-8 p-0 rounded-none transition-all duration-200 border-r border-input/50 last:border-r-0",
+            viewMode === "list"
+              ? "bg-background text-primary shadow-sm"
+              : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+          )}
+          onClick={() => {
+            trigger(20);
+            onViewModeChange("list");
+          }}
+          title="List View (Shift+3)"
+        >
+          <List className="h-4 w-4" />
         </Button>
       </div>
 

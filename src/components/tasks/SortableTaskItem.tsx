@@ -10,16 +10,17 @@ interface SortableTaskItemProps {
   task: Task;
   onSelect?: (task: Task) => void;
   isKeyboardSelected?: boolean;
+  viewMode?: "list" | "grid" | "board";
 }
 
-function SortableTaskItem({ task, onSelect, isKeyboardSelected }: SortableTaskItemProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    isDragging,
-  } = useSortable({ id: task.id });
+function SortableTaskItem({
+  task,
+  onSelect,
+  isKeyboardSelected,
+  viewMode,
+}: SortableTaskItemProps) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useSortable({ id: task.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -30,13 +31,14 @@ function SortableTaskItem({ task, onSelect, isKeyboardSelected }: SortableTaskIt
   // Pass drag listeners and state to TaskItem for dedicated handle
   return (
     <div ref={setNodeRef} style={style}>
-      <TaskItem 
-        task={task} 
-        onSelect={onSelect} 
+      <TaskItem
+        task={task}
+        onSelect={onSelect}
         dragListeners={listeners}
         dragAttributes={attributes}
         isDragging={isDragging}
         isKeyboardSelected={isKeyboardSelected}
+        viewMode={viewMode}
       />
     </div>
   );
