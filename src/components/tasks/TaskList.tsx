@@ -98,7 +98,7 @@ export default function TaskList({
   }, []);
 
   const handleDragStart = () => {
-    trigger(50);
+    trigger(15);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {

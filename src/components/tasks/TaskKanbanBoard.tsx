@@ -60,7 +60,7 @@ export function TaskKanbanBoard({
     const task = allTasks.find((t) => t.id === active.id);
     if (task) {
       setActiveTask(task);
-      trigger(50);
+      trigger(15);
     }
   };
 

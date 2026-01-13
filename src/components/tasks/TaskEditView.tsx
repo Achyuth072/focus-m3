@@ -166,7 +166,7 @@ export function TaskEditView({
               size="sm"
               className="h-7 px-2 text-[10px] uppercase tracking-wider font-bold text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
               onClick={() => {
-                trigger(20);
+                trigger(15);
                 setIsPreviewMode(!isPreviewMode);
               }}
               disabled={!description.trim() && !isPreviewMode}
@@ -201,7 +201,7 @@ export function TaskEditView({
               variant="outline"
               size="sm"
               onClick={() => {
-                trigger(25);
+                trigger(15);
                 setShowSubtasks(!showSubtasks);
               }}
               className={cn(
@@ -264,7 +264,7 @@ export function TaskEditView({
             )}
             onClick={() => {
               const nextValue = !isEvening;
-              trigger(nextValue ? 35 : 25);
+              trigger(nextValue ? 15 : 15);
               setIsEvening(nextValue);
               if (nextValue && !doDate) {
                 setDoDate(new Date());
@@ -298,7 +298,7 @@ export function TaskEditView({
           <Select
             value={selectedProjectId || "inbox"}
             onValueChange={(v) => {
-              trigger(20);
+              trigger(15);
               setSelectedProjectId(v === "inbox" ? null : v);
             }}
           >
@@ -360,7 +360,7 @@ export function TaskEditView({
                 "bg-brand hover:bg-brand/90 text-brand-foreground shadow-sm"
             )}
             onClick={() => {
-              trigger([10, 30]);
+              trigger([10, 50]);
               onSubmit();
             }}
             disabled={!hasContent || isPending}

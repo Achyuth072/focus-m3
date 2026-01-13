@@ -49,7 +49,7 @@ export function TaskPrioritySelect({
     <Select
       value={priority.toString()}
       onValueChange={(v) => {
-        trigger(25);
+        trigger(10);
         setPriority(parseInt(v) as 1 | 2 | 3 | 4);
       }}
       onOpenChange={(open) => {

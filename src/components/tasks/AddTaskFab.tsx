@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { Plus } from 'lucide-react';
-import { buttonVariants } from '@/components/ui/button';
-import { motion } from 'framer-motion';
-import { useHaptic } from '@/lib/hooks/useHaptic';
-import { cn } from '@/lib/utils';
+import { Plus } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { useHaptic } from "@/lib/hooks/useHaptic";
+import { cn } from "@/lib/utils";
 
 interface AddTaskFabProps {
   onClick: () => void;
@@ -15,7 +15,7 @@ export default function AddTaskFab({ onClick }: AddTaskFabProps) {
 
   return (
     <motion.button
-      onTapStart={() => trigger(40)}
+      onTapStart={() => trigger(50)}
       whileTap={isPhone ? { scale: 0.95 } : {}}
       onClick={onClick}
       className={cn(

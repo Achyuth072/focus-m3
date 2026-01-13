@@ -74,7 +74,7 @@ export function TasksPageHeader({
               : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
           )}
           onClick={() => {
-            trigger(20);
+            trigger(15);
             onViewModeChange("grid");
           }}
           title="Grid View (Shift+1)"
@@ -91,7 +91,7 @@ export function TasksPageHeader({
               : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
           )}
           onClick={() => {
-            trigger(20);
+            trigger(15);
             onViewModeChange("board");
           }}
           title="Board View (Shift+2)"
@@ -108,7 +108,7 @@ export function TasksPageHeader({
               : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
           )}
           onClick={() => {
-            trigger(20);
+            trigger(15);
             onViewModeChange("list");
           }}
           title="List View (Shift+3)"
@@ -123,7 +123,7 @@ export function TasksPageHeader({
             variant="outline"
             size="sm"
             className="h-8 w-8 p-0"
-            onClick={() => trigger(20)}
+            onClick={() => trigger(15)}
           >
             <ListFilter className="h-4 w-4" />
           </Button>

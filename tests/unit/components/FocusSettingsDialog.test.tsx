@@ -26,9 +26,10 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
   disconnect: vi.fn(),
 }));
 
+const mockHapticTrigger = vi.fn();
 vi.mock("@/lib/hooks/useHaptic", () => ({
   useHaptic: () => ({
-    trigger: vi.fn(),
+    trigger: mockHapticTrigger,
     isPhone: false,
   }),
 }));
@@ -133,6 +134,8 @@ describe("FocusSettingsDialog", () => {
           focusDuration: 30,
         })
       );
+      // Verify haptic feedback (TC-C-01: Major action thud)
+      expect(mockHapticTrigger).toHaveBeenCalledWith(50);
     });
   });
 });

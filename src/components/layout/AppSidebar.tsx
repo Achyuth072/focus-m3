@@ -69,7 +69,7 @@ export function AppSidebar() {
   }, [router]);
 
   const handleProjectClick = (projectId: string | "inbox") => {
-    trigger(25);
+    trigger(15);
     router.push(`/?project=${projectId}`);
     if (isMobile) setOpenMobile(false);
   };
@@ -119,7 +119,7 @@ export function AppSidebar() {
                       <SidebarMenuItem key={item.label}>
                         <SidebarMenuButton
                           onClick={() => {
-                            trigger(20);
+                            trigger(15);
                             if (item.isAction) {
                               openSheet();
                             } else {
@@ -166,7 +166,7 @@ export function AppSidebar() {
             <SidebarGroupAction
               title="Add Project"
               onClick={() => {
-                trigger(20);
+                trigger(15);
                 openCreateProject();
               }}
             >
@@ -225,7 +225,7 @@ export function AppSidebar() {
                       <SidebarMenuItem key={item.label}>
                         <SidebarMenuButton
                           onClick={() => {
-                            trigger(20);
+                            trigger(15);
                             router.push(item.path);
                             if (isMobile) setOpenMobile(false);
                           }}
@@ -256,7 +256,7 @@ export function AppSidebar() {
                   <Link
                     href="/settings"
                     onClick={() => {
-                      trigger(20);
+                      trigger(15);
                     }}
                   >
                     <Settings className="h-5 w-5" />

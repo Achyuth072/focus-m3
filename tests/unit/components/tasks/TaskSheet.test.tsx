@@ -24,6 +24,14 @@ vi.mock("@/lib/hooks/useProjects", () => ({
   useProjects: vi.fn(),
 }));
 
+const mockHapticTrigger = vi.fn();
+vi.mock("@/lib/hooks/useHaptic", () => ({
+  useHaptic: () => ({
+    trigger: mockHapticTrigger,
+    isPhone: false,
+  }),
+}));
+
 describe("TaskSheet", () => {
   const mockCreateMutate = vi.fn();
   const mockUpdateMutate = vi.fn();
@@ -111,6 +119,8 @@ describe("TaskSheet", () => {
           content: "Updated Task Content",
         })
       );
+      // Verify signature haptic for task update
+      expect(mockHapticTrigger).toHaveBeenCalledWith([10, 50]);
     });
   });
 });

@@ -303,7 +303,7 @@ export function FocusSettingsDialog() {
   useBackNavigation(open && !isDesktop, () => setOpen(false));
 
   const onFormSubmit = (data: TimerSettings) => {
-    trigger(40);
+    trigger(50);
     updateSettings(data);
     setOpen(false);
   };
