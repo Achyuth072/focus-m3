@@ -185,9 +185,7 @@ export function useToggleTask() {
         }
 
         if (is_completed && recurrenceRule) {
-          const { calculateNextDueDate } = await import(
-            "@/lib/utils/recurrence"
-          );
+          const { calculateNextDueDate } = await import("../utils/recurrence");
           const completedDate = new Date();
           const nextDueDate = calculateNextDueDate(
             completedDate,
@@ -249,7 +247,7 @@ export function useToggleTask() {
       }
 
       if (is_completed && recurrenceRule) {
-        const { calculateNextDueDate } = await import("@/lib/utils/recurrence");
+        const { calculateNextDueDate } = await import("../utils/recurrence");
 
         const completedDate = new Date();
         const nextDueDate = calculateNextDueDate(completedDate, recurrenceRule);

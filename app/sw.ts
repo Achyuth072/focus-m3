@@ -25,8 +25,14 @@ const serwist = new Serwist({
 serwist.addEventListeners();
 
 // Push Notification Handlers
+// Fix for Vercel build: NotificationOptions in some envs is missing vibrate
+interface ExtendedNotificationOptions extends NotificationOptions {
+  vibrate?: number[];
+  actions?: Array<{ action: string; title: string; icon?: string }>;
+}
+
 self.addEventListener("push", (event) => {
-  const options: NotificationOptions = {
+  const options: ExtendedNotificationOptions = {
     icon: "/icons/icon-192.png",
     badge: "/icons/icon-192.png",
     vibrate: [200, 100, 200],
