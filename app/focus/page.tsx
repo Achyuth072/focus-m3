@@ -175,7 +175,7 @@ export default function FocusPage() {
           {state.isRunning ? (
             <Pause className="h-8 w-8" />
           ) : (
-            <Play className="h-8 w-8 ml-1" />
+            <Play className="h-8 w-8 ml-0.5" />
           )}
         </motion.button>
 
