@@ -123,7 +123,7 @@ export function TasksPageHeader({
             variant="outline"
             size="sm"
             className="h-8 w-8 p-0"
-            onClick={() => trigger(15)}
+            onPointerDown={() => trigger(25)}
           >
             <ListFilter className="h-4 w-4" />
           </Button>

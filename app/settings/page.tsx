@@ -96,6 +96,7 @@ export default function SettingsPage() {
             <Button
               variant="ghost"
               size="icon"
+              onPointerDown={() => trigger(25)}
               onClick={() => router.back()}
               className="h-12 w-12"
             >

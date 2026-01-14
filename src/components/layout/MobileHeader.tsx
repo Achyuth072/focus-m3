@@ -61,8 +61,8 @@ export function MobileHeader() {
       <div className="flex items-center gap-2">
         {/* Dynamic Focus Timer */}
         <button
+          onPointerDown={() => trigger(25)}
           onClick={() => {
-            trigger(15);
             router.push("/focus");
           }}
           className="flex items-center gap-2 px-3 py-2 min-h-[40px] rounded-lg hover:bg-sidebar-accent active:bg-sidebar-accent active:scale-95 transition-all"
@@ -96,6 +96,7 @@ export function MobileHeader() {
               variant="ghost"
               size="icon"
               className="h-11 w-11 active:scale-95 transition-transform"
+              onPointerDown={() => trigger(25)}
             >
               <MoreVertical className="h-5 w-5" />
               <span className="sr-only">More options</span>
