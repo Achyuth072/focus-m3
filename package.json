@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:pwa": "next dev --webpack",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -43,6 +44,7 @@
     "@tanstack/react-query": "^5.90.12",
     "@tanstack/react-query-persist-client": "^5.90.14",
     "@types/react-big-calendar": "^1.16.3",
+    "@types/web-push": "^3.6.4",
     "chrono-node": "^2.9.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -67,6 +69,7 @@
     "tailwind-merge": "^3.4.0",
     "temporal-polyfill": "^0.3.0",
     "vaul": "^1.1.2",
+    "web-push": "^3.6.7",
     "zod": "^4.2.1",
     "zustand": "^5.0.9"
   },
@@ -79,6 +82,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^5.1.2",
+    "@vitest/coverage-v8": "^4.0.17",
     "autoprefixer": "^10.4.23",
     "eslint": "^9",
     "eslint-config-next": "16.1.0",

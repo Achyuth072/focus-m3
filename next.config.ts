@@ -4,7 +4,8 @@ import withSerwistInit from "@serwist/next";
 const withSerwist = withSerwistInit({
   swSrc: "app/sw.ts",
   swDest: "public/sw.js",
-  disable: process.env.NODE_ENV !== "production",
+  disable:
+    process.env.NODE_ENV === "development" && process.env.ENABLE_PWA !== "true",
 });
 
 // Dual Build Strategy: Mobile (Capacitor) vs Web

@@ -12,7 +12,7 @@ declare global {
   }
 }
 
-declare const self: WorkerGlobalScope;
+declare const self: ServiceWorkerGlobalScope;
 
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
@@ -23,3 +23,64 @@ const serwist = new Serwist({
 });
 
 serwist.addEventListeners();
+
+// Push Notification Handlers
+self.addEventListener("push", (event) => {
+  const options: NotificationOptions = {
+    icon: "/icons/icon-192.png",
+    badge: "/icons/icon-192.png",
+    vibrate: [200, 100, 200],
+    tag: "kanso-notification",
+  };
+
+  let title = "Kanso";
+  let body = "You have a new notification";
+
+  if (event.data) {
+    try {
+      const data = event.data.json();
+      title = data.title || title;
+      body = data.body || body;
+
+      if (data.icon) options.icon = data.icon;
+      if (data.badge) options.badge = data.badge;
+      if (data.tag) options.tag = data.tag;
+      if (data.data) options.data = data.data;
+      if (data.actions) options.actions = data.actions;
+    } catch {
+      body = event.data.text();
+    }
+  }
+
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body,
+      ...options,
+    })
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+
+  event.waitUntil(
+    (async () => {
+      const allClients = await self.clients.matchAll({
+        type: "window",
+        includeUncontrolled: true,
+      });
+
+      // If a window is already open, focus it
+      for (const client of allClients) {
+        if ("focus" in client) {
+          return client.focus();
+        }
+      }
+
+      // Otherwise, open a new window
+      if (self.clients.openWindow) {
+        return self.clients.openWindow("/");
+      }
+    })()
+  );
+});

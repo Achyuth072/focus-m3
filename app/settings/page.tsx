@@ -28,6 +28,7 @@ import { useHaptic } from "@/lib/hooks/useHaptic";
 import { useQueryClient } from "@tanstack/react-query";
 import { mockStore } from "@/lib/mock/mock-store";
 import { toast } from "sonner";
+import { NotificationSettings } from "@/components/settings/NotificationSettings";
 
 const SignOutConfirmation = dynamic(
   () =>
@@ -46,9 +47,9 @@ export default function SettingsPage() {
 
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
-  const [activeTab, setActiveTab] = useState<"appearance" | "account">(
-    "appearance"
-  );
+  const [activeTab, setActiveTab] = useState<
+    "appearance" | "preferences" | "account"
+  >("appearance");
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const { trigger } = useHaptic();
 
@@ -130,6 +131,17 @@ export default function SettingsPage() {
                   Appearance
                 </button>
                 <button
+                  onClick={() => setActiveTab("preferences")}
+                  className={cn(
+                    "block w-full text-left px-3 py-2 text-sm rounded-md transition-seijaku-fast",
+                    activeTab === "preferences"
+                      ? "bg-secondary text-foreground font-medium"
+                      : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+                  )}
+                >
+                  Preferences
+                </button>
+                <button
                   onClick={() => setActiveTab("account")}
                   className={cn(
                     "block w-full text-left px-3 py-2 text-sm rounded-md transition-seijaku-fast",
@@ -195,8 +207,8 @@ export default function SettingsPage() {
               </section>
             )}
 
-            {/* Preference Section (Mobile Only) */}
-            {!isDesktop && (
+            {/* Preference Section (Mobile & Desktop) */}
+            {(!isDesktop || activeTab === "preferences") && (
               <section className="space-y-4">
                 <div>
                   <h2 className="type-micro font-medium uppercase">
@@ -222,6 +234,8 @@ export default function SettingsPage() {
                       onCheckedChange={setHapticsEnabled}
                     />
                   </div>
+
+                  <NotificationSettings />
                 </div>
               </section>
             )}

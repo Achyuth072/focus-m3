@@ -89,7 +89,21 @@ CREATE TABLE IF NOT EXISTS focus_logs (
 );
 
 -- =============================================================================
--- 7. TRIGGERS: Auto-update updated_at
+-- 7. PUSH_SUBSCRIPTIONS TABLE (Web Push)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS public.push_subscriptions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE UNIQUE,
+  subscription JSONB NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
+-- Index for faster lookups by user_id
+CREATE INDEX IF NOT EXISTS push_subscriptions_user_id_idx ON public.push_subscriptions (user_id);
+
+-- =============================================================================
+-- 8. TRIGGERS: Auto-update updated_at
 -- =============================================================================
 CREATE OR REPLACE FUNCTION update_updated_at()
 RETURNS TRIGGER AS $$
@@ -111,8 +125,12 @@ CREATE TRIGGER tasks_updated_at
   BEFORE UPDATE ON tasks
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
+CREATE TRIGGER push_subscriptions_updated_at
+  BEFORE UPDATE ON push_subscriptions
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
 -- =============================================================================
--- 8. TRIGGER: Create Profile and Inbox on User Signup
+-- 9. TRIGGER: Create Profile and Inbox on User Signup
 -- =============================================================================
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
@@ -155,6 +173,7 @@ ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE labels ENABLE ROW LEVEL SECURITY;
 ALTER TABLE task_labels ENABLE ROW LEVEL SECURITY;
 ALTER TABLE focus_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE push_subscriptions ENABLE ROW LEVEL SECURITY;
 
 -- Profiles: Users can only access their own profile
 CREATE POLICY "Users can view own profile" ON profiles
@@ -242,8 +261,19 @@ CREATE POLICY "Users can update own focus_logs" ON focus_logs
     )
   );
 
+-- Push Subscriptions: Users can only access their own subscriptions
+CREATE POLICY "Users can view own push_subscriptions" ON push_subscriptions
+  FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own push_subscriptions" ON push_subscriptions
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own push_subscriptions" ON push_subscriptions
+  FOR UPDATE USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can delete own push_subscriptions" ON push_subscriptions
+  FOR DELETE USING (auth.uid() = user_id);
+
 -- =============================================================================
--- 10. MIGRATION: 20260109_rls_hardening (Validation Constraints)
+-- 11. MIGRATION: 20260109_rls_hardening (Validation Constraints)
 -- =============================================================================
 
 -- 1. Projects Table Constraints

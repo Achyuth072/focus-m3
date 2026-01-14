@@ -19,6 +19,8 @@ interface UiState {
   // Global Settings
   hapticsEnabled: boolean;
   setHapticsEnabled: (enabled: boolean) => void;
+  notificationsEnabled: boolean;
+  setNotificationsEnabled: (enabled: boolean) => void;
 
   // Shortcuts Help Dialog
   isShortcutsHelpOpen: boolean;
@@ -44,6 +46,9 @@ export const useUiStore = create<UiState>()(
       // Global Settings defaults
       hapticsEnabled: true,
       setHapticsEnabled: (enabled) => set({ hapticsEnabled: enabled }),
+      notificationsEnabled: false,
+      setNotificationsEnabled: (enabled) =>
+        set({ notificationsEnabled: enabled }),
 
       // Shortcuts Help defaults
       isShortcutsHelpOpen: false,
