@@ -455,6 +455,7 @@ function TaskItem({
                     size="icon"
                     onClick={(e) => {
                       e.stopPropagation();
+                      setPendingDelete(true);
                       setShowDeleteDialog(true);
                     }}
                     className="h-6 w-6 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
