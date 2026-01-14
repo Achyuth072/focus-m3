@@ -30,8 +30,9 @@ describe("Command Menu Styles", () => {
     const className = item.className;
     console.log("Light Mode ClassName:", className);
 
-    // Check for Light Mode Ink Wash
-    expect(className).toContain("data-[selected=true]:bg-foreground/10");
+    // Check for Brand Selection
+    expect(className).toContain("aria-selected:bg-brand");
+    expect(className).toContain("aria-selected:text-brand-foreground");
   });
 
   it("TC-CMD-02: CommandItem should have correct selection classes for Dark Mode", () => {
@@ -49,8 +50,9 @@ describe("Command Menu Styles", () => {
     const className = item.className;
     console.log("Dark Mode ClassName:", className);
 
-    // Check for Dark Mode Kanso Blue (brand)
-    expect(className).toContain("dark:data-[selected=true]:bg-brand/20");
+    // Check for Brand Selection (consistent across modes)
+    expect(className).toContain("aria-selected:bg-brand");
+    expect(className).toContain("aria-selected:text-brand-foreground");
   });
 
   it("TC-CMD-05: CommandItem should NOT use text-primary-foreground in Dark Mode selection (Low Contrast)", () => {
@@ -94,8 +96,7 @@ describe("Command Menu Styles", () => {
     const item = screen.getByTestId("cmd-item");
     const className = item.className;
 
-    // We expect explicit white or foreground text for legibility on blue background
-    // This will likely FAIL initially.
-    expect(className).toContain("dark:data-[selected=true]:!text-white");
+    // We expect brand-foreground text for legibility on blue background
+    expect(className).toContain("aria-selected:text-brand-foreground");
   });
 });

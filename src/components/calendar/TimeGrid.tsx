@@ -28,10 +28,13 @@ export function TimeGrid({
   const hours = Array.from({ length: 24 }).map((_, i) => i);
 
   return (
-    <div className={cn("flex h-full overflow-auto bg-background", className)}>
+    <div
+      data-testid="time-grid"
+      className={cn("flex h-full overflow-auto bg-background", className)}
+    >
       {/* Time Labels Column */}
       <div className="w-16 flex-shrink-0 border-r border-border/40">
-        <div className="h-24 border-b border-border/40" />{" "}
+        <div className="h-16 border-b border-border/40" />{" "}
         {/* Spacer for header */}
         {hours.map((hour) => (
           <div
@@ -58,7 +61,7 @@ export function TimeGrid({
               className={cn("relative min-w-25", isToday && "bg-brand/5")}
             >
               {/* Header for the Day */}
-              <div className="sticky top-0 z-10 bg-background border-b border-border/40 h-24 flex flex-col items-center justify-center">
+              <div className="sticky top-0 z-10 bg-background border-b border-border/40 h-16 flex flex-col items-center justify-center">
                 <div
                   className={cn(
                     "text-xs",
@@ -105,7 +108,7 @@ export function TimeGrid({
                     style={
                       {
                         "--event-color": event.color || "hsl(var(--primary))",
-                        top: `${topPx + 96}px`, // +96px for h-24 header height
+                        top: `${topPx + 64}px`, // +64px for h-16 header height
                         height: `${Math.max(heightPx, 20)}px`, // Minimum 20px height
                         left: "2px",
                         right: "2px",

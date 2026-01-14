@@ -44,7 +44,7 @@ export function TaskListView({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="px-4 md:px-6 flex flex-col gap-2 pb-20 md:pb-0">
+      <div className="px-4 md:px-6 flex flex-col gap-2 pb-24 md:pb-8">
         {/* Active Tasks Grouped */}
         {groups ? (
           groups.map((group) => (
