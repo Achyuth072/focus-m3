@@ -94,7 +94,7 @@ export function usePushNotifications() {
 
           sub = await registration.pushManager.subscribe({
             userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(vapidPublicKey) as any,
+            applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
           });
         }
 
@@ -153,7 +153,7 @@ export function usePushNotifications() {
         badge: "/icons/icon-192.png",
         vibrate: [200, 100, 200],
         ...options,
-      } as any);
+      });
     } catch (error) {
       console.error("Error showing notification:", error);
     }
@@ -183,6 +183,7 @@ export function usePushNotifications() {
     permission,
     sendSubscriptionToBackend,
     subscribeToPush,
+    getServiceWorkerRegistration,
   ]);
 
   return {

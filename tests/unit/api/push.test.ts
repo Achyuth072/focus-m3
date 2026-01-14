@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { POST as subscribePOST } from "@/../app/api/push/subscribe/route";
 import { POST as sendPOST } from "@/../app/api/push/send/route";
-import { NextResponse } from "next/server";
 import { webpush } from "@/lib/push";
 
 // Mock Supabase Server Client
@@ -126,7 +125,7 @@ describe("Push Notification API Routes", () => {
         data: { subscription: { endpoint: "https://test.com" } },
         error: null,
       });
-      (webpush.sendNotification as any).mockResolvedValue({});
+      vi.mocked(webpush.sendNotification).mockResolvedValue({ statusCode: 200, headers: {}, body: "" });
 
       const request = new Request("http://localhost/api/push/send", {
         method: "POST",
@@ -179,7 +178,7 @@ describe("Push Notification API Routes", () => {
       });
 
       const error410 = { statusCode: 410 };
-      (webpush.sendNotification as any).mockRejectedValue(error410);
+      vi.mocked(webpush.sendNotification).mockRejectedValue(error410);
 
       const request = new Request("http://localhost/api/push/send", {
         method: "POST",

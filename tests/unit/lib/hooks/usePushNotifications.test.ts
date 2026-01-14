@@ -111,7 +111,7 @@ describe("usePushNotifications", () => {
       writable: true,
     });
 
-    const { result } = renderHook(() => usePushNotifications());
+    renderHook(() => usePushNotifications());
 
     // Wait for effects
     await new Promise((resolve) => setTimeout(resolve, 100));
@@ -190,7 +190,7 @@ describe("usePushNotifications", () => {
     const { result } = renderHook(() => usePushNotifications());
 
     // Act
-    const success = await result.current.unsubscribe();
+    await result.current.unsubscribe();
 
     // Assert
     // It might return false because no actual subscription was removed,
