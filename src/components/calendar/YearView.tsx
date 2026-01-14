@@ -4,12 +4,37 @@ import { addMonths, startOfYear } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { useMemo, memo } from "react";
+import type { DayButtonProps } from "react-day-picker";
 
 interface YearViewProps {
   currentYear: number;
   onDateClick?: (date: Date) => void;
   className?: string;
 }
+
+const YearDayButton = ({
+  day,
+  modifiers,
+  className,
+  ...props
+}: DayButtonProps) => {
+  const isToday = modifiers.today;
+
+  return (
+    <button
+      {...props}
+      className={cn(
+        "h-7 w-7 p-0 font-medium rounded-lg transition-all flex items-center justify-center relative select-none",
+        "hover:bg-accent/40 hover:text-foreground text-muted-foreground/80",
+        isToday &&
+          "bg-brand text-white font-bold !opacity-100 shadow-sm scale-110 hover:!bg-brand/90 hover:!text-white",
+        className
+      )}
+    >
+      {day.date.getDate()}
+    </button>
+  );
+};
 
 const YearMonth = memo(
   ({
@@ -33,20 +58,17 @@ const YearMonth = memo(
             month: "space-y-3",
             nav: "hidden",
             caption:
-              "flex justify-center pt-1 relative items-center text-sm font-semibold text-primary",
-            head_row: "flex gap-1",
-            head_cell: "text-muted-foreground/60 w-7 font-medium text-[0.7rem]",
-            row: "flex w-full mt-1 gap-1",
+              "flex justify-center pt-2 relative items-center text-sm font-bold tracking-tight text-foreground",
+            head_row: "flex gap-1 mb-1",
+            head_cell:
+              "text-muted-foreground/40 w-7 font-bold text-[0.65rem] uppercase tracking-tighter",
+            row: "flex w-full gap-1",
             cell: "relative p-0 text-center text-xs focus-within:relative focus-within:z-20",
-            day: cn(
-              "h-7 w-7 p-0 font-normal rounded-md aria-selected:opacity-100",
-              "hover:bg-primary/10 hover:text-primary transition-colors text-muted-foreground"
-            ),
-            selected:
-              "bg-brand text-brand-foreground hover:bg-brand hover:text-brand-foreground",
-            today: "bg-brand text-brand-foreground font-bold !opacity-100",
             outside: "invisible",
             disabled: "text-muted-foreground opacity-20",
+          }}
+          components={{
+            DayButton: YearDayButton,
           }}
         />
       </div>

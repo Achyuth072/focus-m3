@@ -2,10 +2,11 @@ import { render, screen } from "@testing-library/react";
 import { TimeGrid } from "@/components/calendar/TimeGrid";
 import { MonthView } from "@/components/calendar/MonthView";
 import { describe, it, expect } from "vitest";
+import type { CalendarEvent } from "@/lib/calendar/types";
 
 describe("Regression Fixes", () => {
   const mockDate = new Date("2024-01-01T12:00:00");
-  const mockEvents = [];
+  const mockEvents: CalendarEvent[] = [];
 
   it("TimeGrid: Header height should be compact (h-16) to avoid huge gap", () => {
     // Note: We test strictly for what we want to enact (h-16)
@@ -42,8 +43,27 @@ describe("Regression Fixes", () => {
     const dayOne = dayOneText.closest("div.relative");
 
     expect(dayOne).toBeTruthy();
-    // Expect visible borders (e.g. /40), not invisible (/10)
-    expect(dayOne?.className).toContain("border-border/40");
-    expect(dayOne?.className).not.toContain("border-border/10");
+    // Expect minimal/subtle borders (/[0.08]), not heavy (/40)
+    const grid = dayOne?.parentElement;
+    expect(grid?.className).toContain("divide-border/[0.08]");
+    expect(dayOne?.className).not.toContain("border-border/40");
+  });
+
+  it("MonthView: Events should be rendered on current day (highlighted)", () => {
+    const today = new Date();
+    const event: CalendarEvent = {
+      id: "1",
+      title: "Test Event Today",
+      start: today,
+      end: new Date(today.getTime() + 3600000),
+      color: "#ff0000",
+    };
+
+    render(<MonthView currentDate={today} events={[event]} />);
+
+    // Check if event title is in the document
+    // If this fails, it's a Logic issue (event filtered out/not passed)
+    // If this passes, it's a Visual issue (CSS/z-index)
+    expect(screen.getByText("Test Event Today")).toBeInTheDocument();
   });
 });

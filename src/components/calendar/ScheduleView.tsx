@@ -57,15 +57,15 @@ const ScheduleView = memo(
                 {/* Date Header */}
                 <div
                   className={cn(
-                    "sticky top-0 z-10 bg-background",
-                    "py-2 border-b border-border/40"
+                    "sticky top-0 z-10 bg-background/95 backdrop-blur-sm",
+                    "py-4 border-b border-border/10"
                   )}
                 >
                   <div className="flex items-baseline gap-3">
                     <div
                       className={cn(
-                        "text-3xl font-bold px-2 rounded-md",
-                        isToday && "text-brand-foreground bg-brand"
+                        "text-3xl font-bold px-2 rounded-lg min-w-[2.5rem] h-10 flex items-center justify-center",
+                        isToday && "text-white bg-brand shadow-sm"
                       )}
                     >
                       {format(date, "d")}
@@ -93,8 +93,8 @@ const ScheduleView = memo(
                       <div
                         key={event.id}
                         className={cn(
-                          "flex gap-3 p-3 rounded-xl hover:bg-accent/50 cursor-pointer transition-colors border mx-2 mb-2",
-                          "bg-(--event-color)/15 border-(--event-color)/30 shadow-sm font-medium"
+                          "flex gap-4 p-4 rounded-xl hover:bg-accent/30 cursor-pointer transition-all active:scale-[0.99] mb-2",
+                          "bg-(--event-color)/15 font-medium border-l-4 border-(--event-color)"
                         )}
                         style={
                           {

@@ -19,6 +19,7 @@ interface MonthViewProps {
   events: CalendarEvent[];
   onDateClick?: (date: Date) => void;
   className?: string;
+  "data-testid"?: string;
 }
 
 interface MonthDayCellProps {
@@ -45,20 +46,20 @@ const MonthDayCell = memo(
       <div
         onClick={() => onDateClick?.(day)}
         className={cn(
-          "relative p-1 md:p-2 border-r border-b border-border/40 flex flex-col",
-          "hover:bg-accent/50 cursor-pointer transition-colors",
-          !isCurrentMonth && "bg-muted/5",
-          isCurrentDay && "bg-brand/5"
+          "relative p-1 md:p-2 flex flex-col min-h-[100px] md:min-h-[120px]",
+          "cursor-pointer transition-colors",
+          !isCurrentMonth && "bg-muted/5 opacity-40",
+          isCurrentDay ? "bg-brand/15 hover:bg-brand/25" : "hover:bg-accent/30"
         )}
       >
         {/* Date number */}
         <div className="flex items-center justify-between mb-0.5 md:mb-1 shrink-0">
           <span
             className={cn(
-              "text-xs md:text-sm font-medium",
+              "text-xs md:text-sm font-medium transition-all",
               isCurrentDay &&
-                "flex items-center justify-center w-5 h-5 md:w-6 md:h-6 rounded-md bg-brand text-brand-foreground",
-              !isCurrentMonth && "text-muted-foreground/30"
+                "flex items-center justify-center w-5 h-5 md:w-6 md:h-6 rounded-lg bg-brand text-white shadow-sm",
+              !isCurrentMonth && "text-muted-foreground/50"
             )}
           >
             {format(day, "d")}
@@ -66,11 +67,11 @@ const MonthDayCell = memo(
         </div>
 
         {/* Events */}
-        <div className="flex-1 min-h-0 space-y-0.5 md:space-y-1 overflow-hidden">
+        <div className="flex-1 min-h-0 space-y-0.5 md:space-y-1 overflow-hidden relative z-10">
           {visibleEvents.map((event) => (
             <div
               key={event.id}
-              className="text-[10px] md:text-xs px-1 md:px-2 py-0.5 rounded border truncate bg-(--event-color)/15 border-(--event-color)/30 text-foreground font-medium"
+              className="text-[10px] md:text-[11px] px-1.5 md:px-2 py-0.5 rounded-sm truncate bg-(--event-color)/20 text-foreground font-semibold leading-tight"
               style={
                 {
                   "--event-color": event.color || "hsl(var(--primary))",
@@ -98,7 +99,13 @@ const MonthDayCell = memo(
 MonthDayCell.displayName = "MonthDayCell";
 
 const MonthView = memo(
-  ({ currentDate, events, onDateClick, className }: MonthViewProps) => {
+  ({
+    currentDate,
+    events,
+    onDateClick,
+    className,
+    "data-testid": testId,
+  }: MonthViewProps) => {
     const monthStart = startOfMonth(currentDate);
     const monthEnd = endOfMonth(currentDate);
     const calendarStart = startOfWeek(monthStart);
@@ -124,13 +131,19 @@ const MonthView = memo(
     }, [events]);
 
     return (
-      <div className={cn("h-full flex flex-col bg-background", className)}>
+      <div
+        data-testid={testId}
+        className={cn(
+          "h-full flex flex-col overflow-hidden bg-background",
+          className
+        )}
+      >
         {/* Week day headers */}
         <div className="grid grid-cols-7 border-b border-border/40">
           {weekDays.map((day) => (
             <div
               key={day}
-              className="p-2 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider"
+              className="p-3 text-center text-[11px] font-bold text-muted-foreground/60 uppercase tracking-widest"
             >
               {day}
             </div>
@@ -140,7 +153,7 @@ const MonthView = memo(
         {/* Calendar grid */}
         <div
           className={cn(
-            "flex-1 grid grid-cols-7 border-l border-t border-border/40",
+            "flex-1 grid grid-cols-7 divide-x divide-border/[0.08] divide-y divide-border/[0.08] border-b border-r border-border/[0.08]",
             numWeeks === 5 ? "grid-rows-5" : "grid-rows-6"
           )}
         >

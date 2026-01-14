@@ -13,6 +13,7 @@ interface TimeGridProps {
   daysToShow: number; // 1 for Day, 3 for Mobile, 4 for Desktop, 7 for Week
   events: CalendarEvent[];
   className?: string;
+  "data-testid"?: string;
 }
 
 export function TimeGrid({
@@ -20,6 +21,7 @@ export function TimeGrid({
   daysToShow,
   events,
   className,
+  "data-testid": testId,
 }: TimeGridProps) {
   const dates = getDayRange(startDate, daysToShow);
 
@@ -29,17 +31,16 @@ export function TimeGrid({
 
   return (
     <div
-      data-testid="time-grid"
+      data-testid={testId || "time-grid"}
       className={cn("flex h-full overflow-auto bg-background", className)}
     >
       {/* Time Labels Column */}
-      <div className="w-16 flex-shrink-0 border-r border-border/40">
-        <div className="h-16 border-b border-border/40" />{" "}
-        {/* Spacer for header */}
+      <div className="w-16 flex-shrink-0">
+        <div className="h-16" /> {/* Spacer for header */}
         {hours.map((hour) => (
           <div
             key={hour}
-            className="text-xs text-muted-foreground text-right pr-2 pt-2 border-t border-border/40"
+            className="text-[10px] md:text-xs text-muted-foreground/50 text-right pr-3 pt-2 font-medium"
             style={{ height: `${HOUR_HEIGHT}px` }}
           >
             {format(new Date().setHours(hour, 0), "h a")}
@@ -49,7 +50,7 @@ export function TimeGrid({
 
       {/* Days Columns */}
       <div
-        className="flex-1 grid divide-x divide-border/40"
+        className="flex-1 grid divide-x divide-border/[0.08]"
         style={{ gridTemplateColumns: `repeat(${daysToShow}, 1fr)` }}
       >
         {columns.map((column) => {
@@ -58,10 +59,10 @@ export function TimeGrid({
           return (
             <div
               key={column.date.toString()}
-              className={cn("relative min-w-25", isToday && "bg-brand/5")}
+              className={cn("relative min-w-[120px]", isToday && "bg-brand/15")}
             >
               {/* Header for the Day */}
-              <div className="sticky top-0 z-10 bg-background border-b border-border/40 h-16 flex flex-col items-center justify-center">
+              <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border/10 h-16 flex flex-col items-center justify-center">
                 <div
                   className={cn(
                     "text-xs",
@@ -74,9 +75,9 @@ export function TimeGrid({
                 </div>
                 <div
                   className={cn(
-                    "text-lg font-semibold inline-flex items-center justify-center",
+                    "text-xl font-bold inline-flex items-center justify-center transition-all",
                     isToday &&
-                      "w-10 h-10 rounded-md bg-brand text-brand-foreground"
+                      "w-8 h-8 rounded-lg bg-brand text-white shadow-sm"
                   )}
                 >
                   {format(column.date, "d")}
@@ -87,7 +88,7 @@ export function TimeGrid({
               {hours.map((hour) => (
                 <div
                   key={hour}
-                  className="border-t border-border/40"
+                  className="border-t border-border/[0.06]"
                   style={{ height: `${HOUR_HEIGHT}px` }}
                 />
               ))}
@@ -101,30 +102,32 @@ export function TimeGrid({
                   <div
                     key={event.id}
                     className={cn(
-                      "absolute rounded-md border px-2 py-0.5 text-xs cursor-pointer overflow-hidden flex items-center gap-1.5",
-                      "hover:z-20 hover:shadow-lg transition-all",
-                      "bg-(--event-color)/15 border-(--event-color)/30 text-foreground"
+                      "absolute rounded-sm px-2 py-1 text-xs cursor-pointer overflow-hidden flex flex-col gap-0.5",
+                      "z-10 hover:z-20 hover:brightness-95 active:scale-[0.98] transition-all",
+                      "bg-(--event-color)/25 text-foreground border-l-2 border-(--event-color)"
                     )}
                     style={
                       {
                         "--event-color": event.color || "hsl(var(--primary))",
                         top: `${topPx + 64}px`, // +64px for h-16 header height
-                        height: `${Math.max(heightPx, 20)}px`, // Minimum 20px height
-                        left: "2px",
-                        right: "2px",
-                        width: "calc(100% - 4px)",
+                        height: `${Math.max(heightPx, 24)}px`, // Minimum 24px height
+                        left: "1px",
+                        right: "1px",
+                        width: "calc(100% - 2px)",
                       } as React.CSSProperties
                     }
                   >
-                    {/* Time - Only show if enough width/height, but for pill style we try to show inline */}
-                    <div className="text-muted-foreground text-[10px] leading-tight font-medium shrink-0">
-                      {format(event.start, "h:mm a")}
-                    </div>
-
                     {/* Title */}
-                    <div className="font-semibold truncate text-[11px] leading-tight flex-1">
+                    <div className="font-bold truncate text-[11px] leading-tight">
                       {event.title}
                     </div>
+
+                    {/* Time - Only show if enough height */}
+                    {heightPx > 40 && (
+                      <div className="text-muted-foreground/70 text-[10px] leading-tight font-medium">
+                        {format(event.start, "h:mm a")}
+                      </div>
+                    )}
                   </div>
                 );
               })}
