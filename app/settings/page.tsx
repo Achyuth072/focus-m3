@@ -217,23 +217,25 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-4 rounded-lg border border-border/50 bg-background">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-full bg-secondary/30">
-                        <Vibrate className="h-4 w-4 text-muted-foreground" />
+                  {!isDesktop && (
+                    <div className="flex items-center justify-between p-4 rounded-lg border border-border/50 bg-background">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-full bg-secondary/30">
+                          <Vibrate className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">Haptic Feedback</p>
+                          <p className="text-xs text-muted-foreground">
+                            Vibrate on interactions
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium">Haptic Feedback</p>
-                        <p className="text-xs text-muted-foreground">
-                          Vibrate on interactions
-                        </p>
-                      </div>
+                      <Switch
+                        checked={hapticsEnabled}
+                        onCheckedChange={setHapticsEnabled}
+                      />
                     </div>
-                    <Switch
-                      checked={hapticsEnabled}
-                      onCheckedChange={setHapticsEnabled}
-                    />
-                  </div>
+                  )}
 
                   <NotificationSettings />
                 </div>
