@@ -33,8 +33,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#09090b" },
+    { media: "(prefers-color-scheme: light)", color: "#FCFCFA" },
+    { media: "(prefers-color-scheme: dark)", color: "#1A1A1A" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -70,7 +70,7 @@ export default function RootLayout({
               unstyled: true,
               classNames: {
                 toast:
-                  "bg-card border border-border text-foreground rounded-lg p-4 shadow-none flex items-center justify-between gap-3 w-[90vw] sm:w-[420px]",
+                  "bg-card border border-border text-foreground rounded-lg p-4 shadow-none flex items-center justify-between gap-3 w-[90vw] sm:w-[420px] mb-[calc(76px+env(safe-area-inset-bottom))] md:mb-0",
                 title: "font-medium text-sm",
                 description: "text-sm text-muted-foreground",
                 actionButton:

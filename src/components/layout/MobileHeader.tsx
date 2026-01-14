@@ -53,7 +53,7 @@ export function MobileHeader() {
   const isTasksPage = pathname === "/";
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between h-16 px-4 pt-[env(safe-area-inset-top)] border-b bg-sidebar md:hidden">
+    <header className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between h-[calc(4rem+env(safe-area-inset-top,0px))] px-4 pt-[env(safe-area-inset-top,0px)] border-b bg-sidebar md:hidden">
       {/* Left: Hamburger Menu */}
       <SidebarTrigger className="h-11 w-11 active:scale-95 transition-transform" />
 
