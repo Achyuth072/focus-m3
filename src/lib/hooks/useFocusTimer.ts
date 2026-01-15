@@ -186,7 +186,7 @@ export function useFocusTimer() {
                 : "Your break is over. Time to focus!",
             tag: "timer-notification",
             renotify: true,
-          }
+          } as any
         );
       }
 
