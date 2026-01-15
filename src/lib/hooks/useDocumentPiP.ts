@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, useEffect } from "react";
+import { useUiStore } from "@/lib/store/uiStore";
 
 /**
  * Document Picture-in-Picture Hook
@@ -19,12 +20,19 @@ interface PiPWindow extends Window {
 }
 
 export function useDocumentPiP() {
+  const setIsPipActive = useUiStore((state) => state.setIsPipActive);
+
   // Lazy initialization to avoid setState in useEffect
   const [isPiPSupported] = useState(
     () => typeof window !== "undefined" && "documentPictureInPicture" in window
   );
   const [pipWindow, setPipWindow] = useState<Window | null>(null);
   const isPopupFallback = useRef(false);
+
+  // Sync pipWindow state to global store
+  useEffect(() => {
+    setIsPipActive(pipWindow !== null);
+  }, [pipWindow, setIsPipActive]);
 
   const copyStylesToWindow = useCallback((targetWindow: Window) => {
     // Copy all stylesheets

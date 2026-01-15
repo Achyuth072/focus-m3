@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import { useUiStore } from "@/lib/store/uiStore";
 import type { TimerMode, TimerState, TimerSettings } from "@/lib/types/timer";
 import {
   DEFAULT_TIMER_SETTINGS,
@@ -174,7 +175,7 @@ export function useFocusTimer() {
 
       // Smart notifications: trigger if user is away or document hidden
       const isViewingFocus = pathname === "/focus" || pathname === "/";
-      const isPipActive = !!document.pictureInPictureElement;
+      const isPipActive = useUiStore.getState().isPipActive;
 
       if (document.hidden || (!isViewingFocus && !isPipActive)) {
         showNotification(

@@ -25,6 +25,10 @@ interface UiState {
   // Shortcuts Help Dialog
   isShortcutsHelpOpen: boolean;
   setShortcutsHelpOpen: (open: boolean | ((prev: boolean) => boolean)) => void;
+
+  // PIP State (for cross-hook communication)
+  isPipActive: boolean;
+  setIsPipActive: (active: boolean) => void;
 }
 
 export const useUiStore = create<UiState>()(
@@ -59,6 +63,10 @@ export const useUiStore = create<UiState>()(
               ? (open as (prev: boolean) => boolean)(state.isShortcutsHelpOpen)
               : open,
         })),
+
+      // PIP State defaults
+      isPipActive: false,
+      setIsPipActive: (active) => set({ isPipActive: active }),
     }),
     {
       name: "kanso-ui-state",
