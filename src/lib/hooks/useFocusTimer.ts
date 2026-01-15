@@ -165,9 +165,6 @@ export function useFocusTimer() {
 
   const handleTimerComplete = useCallback(
     (prev: TimerState): TimerState => {
-      // Cancel any pending server-side notification since it's completing on client
-      handleCancelNotification();
-
       if (prev.mode === "focus") {
         const newCompletedSessions = prev.completedSessions + 1;
         const isLongBreakTime =
