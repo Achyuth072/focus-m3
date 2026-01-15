@@ -13,6 +13,8 @@ import { useFocusHistoryStore } from "@/lib/store/focusHistoryStore";
 import { useAuth } from "@/components/AuthProvider";
 import { mockStore } from "@/lib/mock/mock-store";
 import { useFocusSounds } from "@/lib/hooks/useFocusSounds";
+import { usePathname } from "next/navigation";
+import { usePushNotifications } from "@/lib/hooks/usePushNotifications";
 import {
   scheduleTimerNotification,
   cancelTimerNotification,
@@ -73,6 +75,8 @@ function getDurationForMode(mode: TimerMode, settings: TimerSettings): number {
  */
 export function useFocusTimer() {
   const queryClient = useQueryClient();
+  const pathname = usePathname();
+  const { showNotification } = usePushNotifications();
 
   // NOTE: uncertain intent — lazy initialization to ensure SSR safety and state persistence on mount.
   const [settings, setSettingsState] = useState<TimerSettings>(() =>
@@ -165,6 +169,27 @@ export function useFocusTimer() {
 
   const handleTimerComplete = useCallback(
     (prev: TimerState): TimerState => {
+      // Clear current notification ID so the auto-scheduler can pick up the next mode
+      notificationIdRef.current = null;
+
+      // Smart notifications: trigger if user is away or document hidden
+      const isViewingFocus = pathname === "/focus" || pathname === "/";
+      const isPipActive = !!document.pictureInPictureElement;
+
+      if (document.hidden || (!isViewingFocus && !isPipActive)) {
+        showNotification(
+          prev.mode === "focus" ? "Focus Complete 🎯" : "Break Complete ☕",
+          {
+            body:
+              prev.mode === "focus"
+                ? "Your focus session is complete. Take a break!"
+                : "Your break is over. Time to focus!",
+            tag: "timer-notification",
+            renotify: true,
+          }
+        );
+      }
+
       if (prev.mode === "focus") {
         const newCompletedSessions = prev.completedSessions + 1;
         const isLongBreakTime =
@@ -207,7 +232,7 @@ export function useFocusTimer() {
         remainingSeconds: getDurationForMode("focus", settings),
       };
     },
-    [settings, logFocusSession, play]
+    [settings, logFocusSession, play, pathname, showNotification]
   );
 
   // Timer tick
@@ -241,6 +266,25 @@ export function useFocusTimer() {
       }
     };
   }, [state.isRunning, handleTimerComplete, play]);
+
+  // Handle server-side notification scheduling for auto-started sessions or transitions
+  useEffect(() => {
+    if (state.isRunning && !isGuestMode && !notificationIdRef.current) {
+      const schedule = async () => {
+        try {
+          const { notificationId } = await scheduleTimerNotification({
+            duration: state.remainingSeconds,
+            taskId: state.activeTaskId,
+            mode: state.mode,
+          });
+          notificationIdRef.current = notificationId;
+        } catch (err) {
+          console.warn("Failed to auto-schedule timer notification:", err);
+        }
+      };
+      schedule();
+    }
+  }, [state.isRunning, state.mode, isGuestMode, state.activeTaskId]);
 
   // Controls
   const start = useCallback(
