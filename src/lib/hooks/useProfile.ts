@@ -36,7 +36,7 @@ export function useProfile() {
           notifications: {
             ...DEFAULT_USER_SETTINGS.notifications,
             ...(profile.settings?.notifications || {}),
-          },
+          } as UserSettings["notifications"],
         },
       };
     },
