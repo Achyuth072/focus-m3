@@ -1,8 +1,10 @@
 -- Kanso Database Schema
 -- Run this in Supabase SQL Editor
 
--- Enable UUID extension
+-- Enable Extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pg_cron";
+CREATE EXTENSION IF NOT EXISTS "pg_net";
 
 -- =============================================================================
 -- 1. PROFILES TABLE (Extends Supabase Auth)
@@ -11,6 +13,7 @@ CREATE TABLE IF NOT EXISTS profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   display_name TEXT,
   settings JSONB DEFAULT '{}',
+  timezone TEXT DEFAULT 'UTC',
   created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -103,6 +106,26 @@ CREATE TABLE IF NOT EXISTS public.push_subscriptions (
 CREATE INDEX IF NOT EXISTS push_subscriptions_user_id_idx ON public.push_subscriptions (user_id);
 
 -- =============================================================================
+-- 7.5. NOTIFICATION_QUEUE TABLE (Scheduled Alerts)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS public.notification_queue (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  scheduled_at TIMESTAMPTZ NOT NULL,
+  type TEXT NOT NULL CHECK (type IN ('timer_end', 'due_date', 'do_date', 'evening', 'briefing')),
+  payload JSONB NOT NULL DEFAULT '{}',
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'sent', 'failed', 'cancelled')),
+  reference_id UUID,
+  created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+  sent_at TIMESTAMPTZ,
+  error_message TEXT
+);
+
+-- Index for queue processing
+CREATE INDEX IF NOT EXISTS notification_queue_processing_idx ON public.notification_queue (scheduled_at, status) WHERE status = 'pending';
+CREATE INDEX IF NOT EXISTS notification_queue_user_id_idx ON public.notification_queue (user_id);
+
+-- =============================================================================
 -- 8. TRIGGERS: Auto-update updated_at
 -- =============================================================================
 CREATE OR REPLACE FUNCTION update_updated_at()
@@ -163,6 +186,125 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();
 
 -- =============================================================================
+-- 10. NOTIFICATION HELPERS & SYNC
+-- =============================================================================
+
+-- A. Morning Briefing Helper
+CREATE OR REPLACE FUNCTION get_users_for_morning_briefing()
+RETURNS TABLE (id UUID, timezone TEXT) 
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT p.id, p.timezone
+  FROM profiles p
+  WHERE 
+    -- Is it 8 AM in their timezone?
+    (now() AT TIME ZONE p.timezone)::time >= '08:00:00' 
+    AND (now() AT TIME ZONE p.timezone)::time < '09:00:00'
+    -- Haven't received a briefing in the last 20 hours
+    AND NOT EXISTS (
+      SELECT 1 FROM notification_queue n 
+      WHERE n.user_id = p.id 
+      AND n.type = 'briefing' 
+      AND n.created_at > now() - interval '20 hours'
+    );
+END;
+$$;
+
+-- B. Evening Plan Helper
+CREATE OR REPLACE FUNCTION get_users_for_evening_plan()
+RETURNS TABLE (id UUID, timezone TEXT) 
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT p.id, p.timezone
+  FROM profiles p
+  WHERE 
+    -- Is it 6 PM in their timezone? (18:00)
+    (now() AT TIME ZONE p.timezone)::time >= '18:00:00' 
+    AND (now() AT TIME ZONE p.timezone)::time < '19:00:00'
+    -- Haven't received an evening plan in the last 20 hours
+    AND NOT EXISTS (
+      SELECT 1 FROM notification_queue n 
+      WHERE n.user_id = p.id 
+      AND n.type = 'evening' 
+      AND n.created_at > now() - interval '20 hours'
+    );
+END;
+$$;
+
+-- C. Task Notification Sync Trigger Function
+CREATE OR REPLACE FUNCTION handle_task_notification_sync()
+RETURNS TRIGGER AS $$
+DECLARE
+  payload_title TEXT;
+  payload_body TEXT;
+  user_settings JSONB;
+BEGIN
+  -- 1. CLEANUP: If task is updated or deleted, cancel pending notifications for this task
+  IF TG_OP IN ('UPDATE', 'DELETE') THEN
+    UPDATE public.notification_queue
+    SET status = 'cancelled'
+    WHERE reference_id = OLD.id
+      AND status = 'pending';
+  END IF;
+
+  -- 2. CREATE NEW NOTIFICATIONS: If task is created or updated (and not completed)
+  IF (TG_OP IN ('INSERT', 'UPDATE')) AND (NEW.is_completed = FALSE) THEN
+    -- Fetch user settings to check preferences
+    SELECT settings INTO user_settings FROM profiles WHERE id = NEW.user_id;
+
+    -- i. Handle Due Date
+    IF (user_settings->'notifications'->>'due_date_alerts')::boolean IS NOT FALSE 
+       AND NEW.due_date IS NOT NULL AND NEW.due_date > now() THEN
+      payload_title := 'Task Due Soon 🔔';
+      payload_body := 'Your task "' || NEW.content || '" is due now.';
+      
+      INSERT INTO public.notification_queue (user_id, scheduled_at, type, payload, reference_id)
+      VALUES (NEW.user_id, NEW.due_date, 'due_date', 
+              jsonb_build_object(
+                'title', payload_title, 
+                'body', payload_body, 
+                'data', jsonb_build_object('url', '/today', 'taskId', NEW.id)
+              ),
+              NEW.id);
+    END IF;
+
+    -- ii. Handle Do Date
+    IF (user_settings->'notifications'->>'do_date_alerts')::boolean IS NOT FALSE 
+       AND NEW.do_date IS NOT NULL AND NEW.do_date > now() THEN
+      payload_title := 'Time to focus 🚀';
+      payload_body := 'Scheduled: ' || NEW.content;
+
+      INSERT INTO public.notification_queue (user_id, scheduled_at, type, payload, reference_id)
+      VALUES (NEW.user_id, NEW.do_date, 'do_date', 
+              jsonb_build_object(
+                'title', payload_title, 
+                'body', payload_body, 
+                'data', jsonb_build_object('url', '/today', 'taskId', NEW.id)
+              ),
+              NEW.id);
+    END IF;
+  END IF;
+
+  IF TG_OP = 'DELETE' THEN
+    RETURN OLD;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- D. Sync Trigger on Tasks
+DROP TRIGGER IF EXISTS sync_task_notifications ON public.tasks;
+CREATE TRIGGER sync_task_notifications
+AFTER INSERT OR UPDATE OR DELETE ON public.tasks
+FOR EACH ROW EXECUTE FUNCTION handle_task_notification_sync();
+
+-- =============================================================================
 -- 9. ROW LEVEL SECURITY (RLS)
 -- =============================================================================
 
@@ -174,6 +316,7 @@ ALTER TABLE labels ENABLE ROW LEVEL SECURITY;
 ALTER TABLE task_labels ENABLE ROW LEVEL SECURITY;
 ALTER TABLE focus_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE push_subscriptions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE notification_queue ENABLE ROW LEVEL SECURITY;
 
 -- Profiles: Users can only access their own profile
 CREATE POLICY "Users can view own profile" ON profiles
@@ -270,6 +413,17 @@ CREATE POLICY "Users can update own push_subscriptions" ON push_subscriptions
   FOR UPDATE USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users can delete own push_subscriptions" ON push_subscriptions
+  FOR DELETE USING (auth.uid() = user_id);
+
+-- Notification Queue: Users can only access their own
+CREATE POLICY "Users can view own notification_queue" ON notification_queue
+  FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own notification_queue" ON notification_queue
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own notification_queue" ON notification_queue
+  FOR UPDATE USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can delete own notification_queue" ON notification_queue
   FOR DELETE USING (auth.uid() = user_id);
 
 -- =============================================================================

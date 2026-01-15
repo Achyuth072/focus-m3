@@ -13,6 +13,10 @@ import { useFocusHistoryStore } from "@/lib/store/focusHistoryStore";
 import { useAuth } from "@/components/AuthProvider";
 import { mockStore } from "@/lib/mock/mock-store";
 import { useFocusSounds } from "@/lib/hooks/useFocusSounds";
+import {
+  scheduleTimerNotification,
+  cancelTimerNotification,
+} from "@/lib/timer-api";
 
 function loadSettings(): TimerSettings {
   if (typeof window === "undefined") return DEFAULT_TIMER_SETTINGS;
@@ -95,6 +99,7 @@ export function useFocusTimer() {
   const isLoaded = typeof window !== "undefined";
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const notificationIdRef = useRef<string | null>(null);
   const supabase = createClient();
   const { isGuestMode } = useAuth();
   const { play } = useFocusSounds();
@@ -147,8 +152,22 @@ export function useFocusTimer() {
     [supabase, queryClient, isGuestMode]
   );
 
+  const handleCancelNotification = useCallback(async () => {
+    if (notificationIdRef.current) {
+      try {
+        await cancelTimerNotification(notificationIdRef.current);
+        notificationIdRef.current = null;
+      } catch (err) {
+        console.warn("Failed to cancel timer notification:", err);
+      }
+    }
+  }, []);
+
   const handleTimerComplete = useCallback(
     (prev: TimerState): TimerState => {
+      // Cancel any pending server-side notification since it's completing on client
+      handleCancelNotification();
+
       if (prev.mode === "focus") {
         const newCompletedSessions = prev.completedSessions + 1;
         const isLongBreakTime =
@@ -228,22 +247,41 @@ export function useFocusTimer() {
 
   // Controls
   const start = useCallback(
-    (taskId?: string) => {
+    async (taskId?: string) => {
       play("focusStart");
+
+      const targetTaskId = taskId ?? state.activeTaskId;
+
+      // Schedule server-side notification
+      if (!isGuestMode) {
+        try {
+          const { notificationId } = await scheduleTimerNotification({
+            duration: state.remainingSeconds,
+            taskId: targetTaskId,
+            mode: state.mode,
+          });
+          notificationIdRef.current = notificationId;
+        } catch (err) {
+          console.warn("Failed to schedule timer notification:", err);
+        }
+      }
+
       setState((prev) => ({
         ...prev,
         isRunning: true,
-        activeTaskId: taskId ?? prev.activeTaskId,
+        activeTaskId: targetTaskId,
       }));
     },
-    [play]
+    [play, isGuestMode, state.remainingSeconds, state.activeTaskId, state.mode]
   );
 
   const pause = useCallback(() => {
+    handleCancelNotification();
     setState((prev) => ({ ...prev, isRunning: false }));
-  }, []);
+  }, [handleCancelNotification]);
 
   const stop = useCallback(() => {
+    handleCancelNotification();
     clearState();
     setState({
       mode: "focus",
@@ -252,7 +290,7 @@ export function useFocusTimer() {
       completedSessions: 0,
       activeTaskId: null,
     });
-  }, [settings]);
+  }, [settings, handleCancelNotification]);
 
   const skip = useCallback(() => {
     setState((prev) => handleTimerComplete(prev));

@@ -1,0 +1,126 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import webpush from "npm:web-push";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
+
+serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
+  try {
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+    );
+
+    // 1. Fetch pending notifications
+    const { data: queue, error: queueError } = await supabaseAdmin
+      .from("notification_queue")
+      .select("*")
+      .eq("status", "pending")
+      .lte("scheduled_at", new Date().toISOString())
+      .limit(50); // Process in batches
+
+    if (queueError) throw queueError;
+    if (!queue || queue.length === 0) {
+      return new Response(
+        JSON.stringify({ message: "No pending notifications" }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 200,
+        }
+      );
+    }
+
+    // 2. Setup VAPID
+    const publicVapidKey = Deno.env.get("VAPID_PUBLIC_KEY");
+    const privateVapidKey = Deno.env.get("VAPID_PRIVATE_KEY");
+    const vapidSubject = Deno.env.get("VAPID_SUBJECT");
+
+    if (!publicVapidKey || !privateVapidKey || !vapidSubject) {
+      throw new Error("VAPID configuration missing in environment variables");
+    }
+
+    webpush.setVapidDetails(vapidSubject, publicVapidKey, privateVapidKey);
+
+    const results = { sent: 0, failed: 0, skipped: 0 };
+
+    // 3. Process each notification
+    for (const item of queue) {
+      try {
+        // Get user's subscription
+        const { data: subData, error: subError } = await supabaseAdmin
+          .from("push_subscriptions")
+          .select("subscription")
+          .eq("user_id", item.user_id)
+          .single();
+
+        if (subError || !subData) {
+          await supabaseAdmin
+            .from("notification_queue")
+            .update({
+              status: "failed",
+              error_message: "User subscription not found",
+            })
+            .eq("id", item.id);
+          results.skipped++;
+          continue;
+        }
+
+        const payload = JSON.stringify({
+          title: item.payload?.title || "Kanso",
+          body: item.payload?.body || "Notification",
+          data: item.payload?.data || {},
+        });
+
+        await webpush.sendNotification(subData.subscription, payload);
+
+        await supabaseAdmin
+          .from("notification_queue")
+          .update({ status: "sent", sent_at: new Date().toISOString() })
+          .eq("id", item.id);
+
+        results.sent++;
+      } catch (error) {
+        console.error(`Error sending notification ${item.id}:`, error);
+
+        const statusCode = error.statusCode;
+        if (statusCode === 410 || statusCode === 404) {
+          // Cleanup expired subscription
+          await supabaseAdmin
+            .from("push_subscriptions")
+            .delete()
+            .eq("user_id", item.user_id);
+
+          await supabaseAdmin
+            .from("notification_queue")
+            .update({ status: "failed", error_message: "Subscription expired" })
+            .eq("id", item.id);
+        } else {
+          await supabaseAdmin
+            .from("notification_queue")
+            .update({ status: "failed", error_message: error.message })
+            .eq("id", item.id);
+        }
+        results.failed++;
+      }
+    }
+
+    return new Response(JSON.stringify(results), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 200,
+    });
+  } catch (error) {
+    console.error("Critical error in process-queue:", error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 500,
+    });
+  }
+});
