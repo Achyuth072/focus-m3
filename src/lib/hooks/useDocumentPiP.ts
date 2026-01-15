@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState, useEffect } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useUiStore } from "@/lib/store/uiStore";
 
 /**
@@ -28,11 +28,6 @@ export function useDocumentPiP() {
   );
   const [pipWindow, setPipWindow] = useState<Window | null>(null);
   const isPopupFallback = useRef(false);
-
-  // Sync pipWindow state to global store
-  useEffect(() => {
-    setIsPipActive(pipWindow !== null);
-  }, [pipWindow, setIsPipActive]);
 
   const copyStylesToWindow = useCallback((targetWindow: Window) => {
     // Copy all stylesheets
@@ -115,31 +110,35 @@ export function useDocumentPiP() {
         // Copy styles to the PiP/popup window
         copyStylesToWindow(pipWindow);
 
-        // Handle window close
+        // Handle window close - update global store when PIP actually closes
         pipWindow.addEventListener("pagehide", () => {
           setPipWindow(null);
+          setIsPipActive(false);
           isPopupFallback.current = false;
         });
 
         setPipWindow(pipWindow);
+        setIsPipActive(true); // Mark PIP as active in global store
 
         return pipWindow;
       } catch (error) {
         console.error("Failed to open Picture-in-Picture:", error);
         setPipWindow(null);
+        setIsPipActive(false);
         return null;
       }
     },
-    [isPiPSupported, copyStylesToWindow]
+    [isPiPSupported, copyStylesToWindow, setIsPipActive]
   );
 
   const closePiP = useCallback(() => {
     if (pipWindow) {
       pipWindow.close();
       setPipWindow(null);
+      setIsPipActive(false);
       isPopupFallback.current = false;
     }
-  }, [pipWindow]);
+  }, [pipWindow, setIsPipActive]);
 
   return {
     isPiPSupported: isPiPSupported || true, // Always show button (fallback available)
