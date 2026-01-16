@@ -165,47 +165,6 @@ describe("useFocusTimer - Reconciliation", () => {
     expect(toastMock).toHaveBeenCalledTimes(callCountAfterMount);
   });
 
-  it("should show pending toast when background transition happened", () => {
-    // 1. Initial render
-    const { result } = renderHook(() => useFocusTimer());
-
-    // 2. Mock document reaching hidden state
-    Object.defineProperty(document, "hidden", {
-      configurable: true,
-      get: () => true,
-    });
-
-    // 3. Trigger completion while hidden (e.g. via interval or background sync)
-    // We use skip() here to simulate any completion trigger safely
-    act(() => {
-      result.current.skip();
-    });
-
-    // 4. Verification: No toast yet because app is hidden
-    expect(toastMock).not.toHaveBeenCalled();
-
-    // 5. Document becomes visible
-    Object.defineProperty(document, "hidden", {
-      configurable: true,
-      get: () => false,
-    });
-    Object.defineProperty(document, "visibilityState", {
-      configurable: true,
-      get: () => "visible",
-    });
-    // Trigger reconciliation
-    act(() => {
-      document.dispatchEvent(new Event("visibilitychange"));
-    });
-
-    // Then: Pending toast should be shown
-    expect(toastMock).toHaveBeenCalled();
-    expect(toastMock).toHaveBeenCalledWith(
-      "Focus session completed",
-      expect.anything()
-    );
-  });
-
   it("should show toast on mount when session expired while app was closed", () => {
     // Given: Timer that started 30 mins ago (expired) is in localStorage
     const baseTime = Date.now();
