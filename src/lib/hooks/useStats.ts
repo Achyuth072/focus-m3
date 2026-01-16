@@ -7,6 +7,7 @@ import { mockStore } from "@/lib/mock/mock-store";
 export interface DailyStats {
   date: string;
   hours: number;
+  totalSessions: number;
   tasksCompleted: number;
 }
 
@@ -17,6 +18,7 @@ export interface StatsTrend {
 
 export interface StatsData {
   totalFocusHours: number;
+  totalSessions: number;
   tasksCompleted: number;
   completionRate: number;
   currentStreak: number;
@@ -34,33 +36,61 @@ export function useStats() {
 
   return useQuery({
     queryKey: ["stats-dashboard", isGuestMode],
-    staleTime: 0, // Mark data as stale immediately
-    refetchOnWindowFocus: "always", // Always refetch when window gets focus
+    staleTime: 0,
+    refetchOnWindowFocus: "always",
     queryFn: async (): Promise<StatsData> => {
+      // Helper to calculate streak
+      const calculateCurrentStreak = (logs: any[], tasks: any[]) => {
+        const activityDates = new Set<string>();
+        logs.forEach((l) =>
+          activityDates.add(new Date(l.start_time).toDateString())
+        );
+        tasks.forEach((t) => {
+          if (t.is_completed && t.completed_at) {
+            activityDates.add(new Date(t.completed_at).toDateString());
+          }
+        });
+
+        if (activityDates.size === 0) return 0;
+
+        let streak = 0;
+        const today = new Date();
+        let checkDate = new Date(today);
+
+        // If no activity today, check yesterday to see if streak is still alive
+        if (!activityDates.has(checkDate.toDateString())) {
+          checkDate.setDate(checkDate.getDate() - 1);
+        }
+
+        while (activityDates.has(checkDate.toDateString())) {
+          streak++;
+          checkDate.setDate(checkDate.getDate() - 1);
+        }
+
+        return streak;
+      };
+
       // Guest Mode
       if (isGuestMode) {
-        // Mock stats logic
         const tasks = mockStore.getTasks();
         const logs = mockStore.getFocusLogs();
 
-        // Aggregations
         const totalFocusSeconds =
           logs?.reduce((acc, log) => acc + (log.duration_seconds || 0), 0) || 0;
         const totalFocusHours =
           Math.round((totalFocusSeconds / 3600) * 10) / 10;
+        const totalSessions = logs?.length || 0;
 
         const completedTasks = tasks.filter((t) => t.is_completed).length;
         const totalTasks = tasks.length;
         const completionRate =
           totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
-        // Daily Trend (Last 7 Days)
         const dailyTrend: DailyStats[] = [];
         for (let i = 6; i >= 0; i--) {
           const date = subDays(new Date(), i);
           const dateStr = format(date, "EEE");
 
-          // Focus Minutes for this day
           const dayLogs =
             logs?.filter((log) => isSameDay(new Date(log.start_time), date)) ||
             [];
@@ -72,11 +102,16 @@ export function useStats() {
           dailyTrend.push({
             date: dateStr,
             hours: Math.round((daySeconds / 3600) * 10) / 10,
-            tasksCompleted: 0,
+            totalSessions: dayLogs.length,
+            tasksCompleted: tasks.filter(
+              (t) =>
+                t.is_completed &&
+                t.completed_at &&
+                isSameDay(new Date(t.completed_at), date)
+            ).length,
           });
         }
 
-        // Trends calculation (Current 7 days vs Previous 7 days)
         const now = new Date();
         const sevenDaysAgo = subDays(now, 7);
         const fourteenDaysAgo = subDays(now, 14);
@@ -139,9 +174,10 @@ export function useStats() {
 
         return {
           totalFocusHours,
+          totalSessions,
           tasksCompleted: completedTasks,
           completionRate,
-          currentStreak: 0,
+          currentStreak: calculateCurrentStreak(logs, tasks),
           dailyTrend,
           trends: {
             focus: calculateTrend(currentFocusSec, prevFocusSec),
@@ -176,6 +212,7 @@ export function useStats() {
       const totalFocusSeconds =
         logs?.reduce((acc, log) => acc + (log.duration_seconds || 0), 0) || 0;
       const totalFocusHours = Math.round((totalFocusSeconds / 3600) * 10) / 10;
+      const totalSessions = logs?.length || 0;
 
       const completedTasks = tasks?.filter((t) => t.is_completed).length || 0;
       const totalTasks = tasks?.length || 0;
@@ -186,9 +223,8 @@ export function useStats() {
       const dailyTrend: DailyStats[] = [];
       for (let i = 6; i >= 0; i--) {
         const date = subDays(new Date(), i);
-        const dateStr = format(date, "EEE"); // Mon, Tue...
+        const dateStr = format(date, "EEE");
 
-        // Focus Minutes for this day
         const dayLogs =
           logs?.filter((log) => isSameDay(new Date(log.start_time), date)) ||
           [];
@@ -199,15 +235,19 @@ export function useStats() {
 
         dailyTrend.push({
           date: dateStr,
-          hours: Math.round((daySeconds / 3600) * 10) / 10, // Convert to hours with 1 decimal
-          tasksCompleted: 0, // Placeholder if we want to track this per day later
+          hours: Math.round((daySeconds / 3600) * 10) / 10,
+          totalSessions: dayLogs.length,
+          tasksCompleted:
+            tasks?.filter(
+              (t) =>
+                t.is_completed &&
+                t.completed_at &&
+                isSameDay(new Date(t.completed_at), date)
+            ).length || 0,
         });
       }
 
-      // Calculate Streak (Simplified: consecutive days with at least one completed task or focus session)
-      const streak = 0;
-
-      // Calculate Trends (Current 7 days vs Previous 7 days)
+      // Calculate Trends
       const now = new Date();
       const sevenDaysAgo = subDays(now, 7);
       const fourteenDaysAgo = subDays(now, 14);
@@ -276,9 +316,10 @@ export function useStats() {
 
       return {
         totalFocusHours,
+        totalSessions,
         tasksCompleted: completedTasks,
         completionRate,
-        currentStreak: streak,
+        currentStreak: calculateCurrentStreak(logs || [], tasks || []),
         dailyTrend,
         trends: {
           focus: calculateTrend(currentFocusSec, prevFocusSec),

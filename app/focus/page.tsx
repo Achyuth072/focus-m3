@@ -14,7 +14,9 @@ import { createClient } from "@/lib/supabase/client";
 import type { Task } from "@/lib/types/task";
 import { useHaptic } from "@/lib/hooks/useHaptic";
 import { usePiP } from "@/components/providers/PiPProvider";
-import { Minimize2 } from "lucide-react";
+import { Minimize2, Target } from "lucide-react";
+import { useFocusHistoryStore } from "@/lib/store/focusHistoryStore";
+import { useMemo } from "react";
 
 const MODE_LABELS: Record<TimerMode, string> = {
   focus: "Focus",
@@ -35,8 +37,14 @@ export default function FocusPage() {
   const { state, settings, start, pause, stop, skip } = useTimer();
   const supabase = createClient();
   const { trigger, isPhone } = useHaptic();
-  const { isPiPSupported, isPiPActive, openPiP, closePiP } =
-    usePiP();
+  const { isPiPSupported, isPiPActive, openPiP, closePiP } = usePiP();
+  const { sessions } = useFocusHistoryStore();
+  const todaySessionsCount = useMemo(() => {
+    const today = new Date().toDateString();
+    return sessions.filter(
+      (s) => new Date(s.completedAt).toDateString() === today
+    ).length;
+  }, [sessions]);
 
   // Fetch active task if one is set
   const { data: activeTask } = useQuery({
@@ -125,35 +133,49 @@ export default function FocusPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="flex flex-col items-center"
+            className="flex flex-col items-center text-center"
           >
             {/* Mode Badge */}
-            <div className="type-ui font-medium uppercase">
+            <div className="type-ui font-medium uppercase tracking-widest text-muted-foreground/80">
               {MODE_LABELS[state.mode]}
             </div>
 
             {/* Active Task Name */}
             {activeTask && (
-              <div className="type-body font-medium text-foreground mt-4 max-w-md text-center px-4">
+              <div className="type-body font-medium text-foreground mt-4 max-w-sm">
                 {activeTask.content}
               </div>
             )}
 
             {/* Timer Display */}
-            <div className="text-7xl sm:text-8xl md:text-9xl font-light font-mono tracking-tight text-foreground tabular-nums mt-6">
+            <div className="text-7xl sm:text-8xl md:text-[10rem] font-extralight font-mono tracking-tighter text-foreground tabular-nums mt-6 leading-none">
               {formatTime(state.remainingSeconds)}
             </div>
 
             {/* Progress Bar */}
-            <div className="w-full max-w-xs mt-8 mb-4">
-              <Progress value={progress} className="h-0.5" />
+            <div className="w-full max-w-[240px] mt-12 mb-6">
+              <Progress value={progress} className="h-0.5 opacity-40" />
             </div>
 
-            {/* Session Counter */}
-            <p className="text-sm text-muted-foreground mb-8">
-              Session {state.completedSessions + 1} of{" "}
-              {settings.sessionsBeforeLongBreak}
-            </p>
+            {/* Session Counter & Daily Total */}
+            <div className="flex flex-col items-center gap-2 mb-10">
+              <p className="type-ui text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                {state.mode === "focus"
+                  ? `Session ${state.completedSessions + 1} of ${
+                      settings.sessionsBeforeLongBreak
+                    }`
+                  : state.mode === "longBreak"
+                  ? "Cycle Complete"
+                  : `Break after Session ${state.completedSessions}`}
+              </p>
+
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/30 border border-secondary/50">
+                <Target className="h-3 w-3 text-primary" />
+                <span className="type-ui text-[10px] font-semibold text-primary/90">
+                  {todaySessionsCount} TODAY
+                </span>
+              </div>
+            </div>
 
             {/* Controls */}
             <div className="flex items-center gap-4">

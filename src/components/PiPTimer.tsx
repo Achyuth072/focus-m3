@@ -7,7 +7,9 @@ import { useEffect } from "react";
 function formatTime(seconds: number): string {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
-  return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  return `${mins.toString().padStart(2, "0")}:${secs
+    .toString()
+    .padStart(2, "0")}`;
 }
 
 interface PiPTimerProps {
@@ -36,7 +38,11 @@ export function PiPTimer({ onClose }: PiPTimerProps) {
     <div className="flex flex-col items-center justify-center h-full w-full bg-background p-4 select-none">
       {/* Mode Badge */}
       <div className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground mb-2">
-        {state.mode === "focus" ? "Focus" : state.mode === "shortBreak" ? "Short Break" : "Long Break"}
+        {state.mode === "focus"
+          ? "Focus"
+          : state.mode === "shortBreak"
+          ? "Short Break"
+          : "Long Break"}
       </div>
 
       {/* Timer Display */}
@@ -71,7 +77,11 @@ export function PiPTimer({ onClose }: PiPTimerProps) {
 
       {/* Session Counter */}
       <div className="text-xs text-muted-foreground mt-3">
-        Session {state.completedSessions + 1}
+        {state.mode === "focus"
+          ? `Session ${state.completedSessions + 1}`
+          : state.mode === "longBreak"
+          ? "Cycle Complete"
+          : `Break after Session ${state.completedSessions}`}
       </div>
     </div>
   );

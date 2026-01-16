@@ -107,7 +107,11 @@ export function FloatingTimer() {
 
           {/* Session Counter */}
           <div className="text-[10px] text-muted-foreground mt-2 text-center">
-            Session {state.completedSessions + 1}
+            {state.mode === "focus"
+              ? `Session ${state.completedSessions + 1}`
+              : state.mode === "longBreak"
+              ? "Cycle Complete"
+              : `Break after Session ${state.completedSessions}`}
           </div>
         </motion.div>
       )}

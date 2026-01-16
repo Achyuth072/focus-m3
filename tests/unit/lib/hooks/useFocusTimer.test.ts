@@ -157,4 +157,40 @@ describe("useFocusTimer", () => {
 
     expect(result.current.state.mode).toBe("longBreak");
   });
+
+  it("should reset completedSessions only AFTER longBreak", () => {
+    const { result } = renderHook(() => useFocusTimer());
+
+    act(() => {
+      result.current.updateSettings({ sessionsBeforeLongBreak: 2 });
+    });
+
+    // Session 1 -> completion -> Short Break
+    act(() => {
+      result.current.skip();
+    });
+    expect(result.current.state.mode).toBe("shortBreak");
+    expect(result.current.state.completedSessions).toBe(1);
+
+    // Short Break -> completion -> Focus 2
+    act(() => {
+      result.current.skip();
+    });
+    expect(result.current.state.mode).toBe("focus");
+    expect(result.current.state.completedSessions).toBe(1);
+
+    // Session 2 -> completion -> Long Break
+    act(() => {
+      result.current.skip();
+    });
+    expect(result.current.state.mode).toBe("longBreak");
+    expect(result.current.state.completedSessions).toBe(2); // Kept during break
+
+    // Long Break -> completion -> Focus 1
+    act(() => {
+      result.current.skip();
+    });
+    expect(result.current.state.mode).toBe("focus");
+    expect(result.current.state.completedSessions).toBe(0); // Reset after break
+  });
 });

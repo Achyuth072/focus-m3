@@ -203,7 +203,7 @@ export function useFocusTimer() {
           mode: nextMode,
           isRunning: settings.autoStartBreak,
           remainingSeconds: getDurationForMode(nextMode, settings),
-          completedSessions: isLongBreakTime ? 0 : newCompletedSessions,
+          completedSessions: newCompletedSessions,
           startedAt: settings.autoStartBreak ? Date.now() : null,
         };
       }
@@ -214,6 +214,8 @@ export function useFocusTimer() {
         mode: "focus",
         isRunning: settings.autoStartFocus,
         remainingSeconds: getDurationForMode("focus", settings),
+        completedSessions:
+          prev.mode === "longBreak" ? 0 : prev.completedSessions,
         startedAt: settings.autoStartFocus ? Date.now() : null,
       };
     },

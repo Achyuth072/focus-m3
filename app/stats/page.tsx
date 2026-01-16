@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Target, CheckCircle2, Flame, Clock } from "lucide-react";
+import { Target, CheckCircle2, Flame, Clock, Zap } from "lucide-react";
 import { MetricCard } from "@/components/stats/MetricCard";
 import { useStats } from "@/lib/hooks/useStats";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -23,8 +23,8 @@ export default function StatsPage() {
       <div className="p-6">
         <div className="max-w-7xl mx-auto space-y-6">
           <Skeleton className="h-8 w-48" />
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map((i) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            {[1, 2, 3, 4, 5].map((i) => (
               <Skeleton key={i} className="h-32 rounded-xl" />
             ))}
           </div>
@@ -49,7 +49,7 @@ export default function StatsPage() {
         </div>
 
         {/* Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           {/* Top Row - Key Metrics */}
           <MetricCard
             title="Total Focus"
@@ -58,8 +58,13 @@ export default function StatsPage() {
             trend={stats?.trends?.focus}
           />
           <MetricCard
+            title="Total Sessions"
+            value={stats?.totalSessions?.toString() || "0"}
+            icon={Zap}
+          />
+          <MetricCard
             title="Tasks Completed"
-            value={stats?.tasksCompleted.toString() || "0"}
+            value={stats?.tasksCompleted?.toString() || "0"}
             icon={CheckCircle2}
             trend={stats?.trends?.tasks}
           />
