@@ -108,7 +108,7 @@ export function useFocusTimer() {
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const notificationIdRef = useRef<string | null>(null);
-  const reconciliationDoneRef = useRef(false); // Prevent duplicate reconciliation toasts
+  const lastReconciledStartedAtRef = useRef<number | null>(null); // Guard against multiple reconciliations of the same session
   const supabase = createClient();
   const { isGuestMode } = useAuth();
   const { play } = useFocusSounds();
@@ -258,9 +258,9 @@ export function useFocusTimer() {
     const totalMs = getDurationForMode(state.mode, settings) * 1000;
 
     if (elapsedMs >= totalMs) {
-      // Prevent showing toast twice if reconcileTimerState is called multiple times
-      if (reconciliationDoneRef.current) return;
-      reconciliationDoneRef.current = true;
+      // Prevent showing toast twice if reconcileTimerState is called multiple times for the same session
+      if (lastReconciledStartedAtRef.current === state.startedAt) return;
+      lastReconciledStartedAtRef.current = state.startedAt;
 
       // Session finished while away
       setState((prev) => {
@@ -320,13 +320,6 @@ export function useFocusTimer() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Run only once on mount
-
-  // Reset reconciliation flag when a new timer session starts
-  useEffect(() => {
-    if (state.isRunning && state.startedAt) {
-      reconciliationDoneRef.current = false;
-    }
-  }, [state.isRunning, state.startedAt]);
 
   // Timer tick
   useEffect(() => {
