@@ -109,16 +109,18 @@ export function useFocusTimer() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const notificationIdRef = useRef<string | null>(null);
   const lastReconciledStartedAtRef = useRef<number | null>(null); // Guard against multiple reconciliations of the same session
+  const pendingCompletionToastRef = useRef<{
+    title: string;
+    description: string;
+  } | null>(null);
   const stateRef = useRef(state); // Always have latest state access for reconciliation without breaking dependencies
   const supabase = createClient();
   const { isGuestMode } = useAuth();
   const { play } = useFocusSounds();
   const { trigger } = useHaptic();
 
-  // Sync state reference
-  useEffect(() => {
-    stateRef.current = state;
-  }, [state]);
+  // Sync state reference synchronously so any callback created or called in this render sees latest state
+  stateRef.current = state;
 
   // Persist settings changes
   useEffect(() => {
@@ -224,7 +226,11 @@ export function useFocusTimer() {
    * Managed completion that handles side effects outside of setState.
    */
   const completeTimer = useCallback(
-    (options?: { skipNotification?: boolean; skipLog?: boolean }) => {
+    (options?: {
+      skipNotification?: boolean;
+      skipLog?: boolean;
+      skipToast?: boolean;
+    }) => {
       const prevState = stateRef.current;
       const nextState = getNextStateAfterCompletion(prevState);
 
@@ -254,7 +260,40 @@ export function useFocusTimer() {
       }
       trigger(50);
 
-      // Smart notification logic
+      // Show toast / notification
+      const modeName = prevState.mode === "focus" ? "focus session" : "break";
+      const title =
+        prevState.mode === "focus"
+          ? "Focus session completed"
+          : "Break completed";
+
+      const description =
+        nextState.isRunning && nextState.mode !== prevState.mode
+          ? `Automatically started ${
+              nextState.mode === "shortBreak" ? "short break" : "focus"
+            }`
+          : "The timer is ready for your next session.";
+
+      if (!options?.skipToast) {
+        if (document.hidden) {
+          // App in background, queue toast for when we return
+          pendingCompletionToastRef.current = { title, description };
+        } else {
+          // App visible, show toast if away from focus page or PIP
+          const isPipActive = useUiStore.getState().isPipActive;
+          const isOnFocusPage = pathname === "/focus";
+
+          if (!isOnFocusPage && !isPipActive) {
+            toast(title, {
+              description,
+              duration: 4000,
+              icon: null,
+            });
+          }
+        }
+      }
+
+      // Smart push notification logic
       if (!options?.skipNotification) {
         const isPipActive = useUiStore.getState().isPipActive;
         const isOnFocusPage = pathname === "/focus";
@@ -290,6 +329,14 @@ export function useFocusTimer() {
   );
 
   const reconcileTimerState = useCallback(() => {
+    // 1. Check if there's a pending toast from an automatic transition in background
+    // We check this FIRST because it should show even if the timer has since stopped
+    if (pendingCompletionToastRef.current) {
+      const { title, description } = pendingCompletionToastRef.current;
+      toast(title, { description, duration: 4000, icon: null });
+      pendingCompletionToastRef.current = null;
+    }
+
     const currentState = stateRef.current;
     if (!currentState.isRunning || !currentState.startedAt) return;
 
@@ -302,7 +349,14 @@ export function useFocusTimer() {
       lastReconciledStartedAtRef.current = currentState.startedAt;
 
       // Perform transition side-effect-free in a managed wrap
-      const nextState = completeTimer({ skipNotification: true });
+      // We pass skipToast: true because reconcileTimerState will show its own specialized "while away" toast
+      const nextState = completeTimer({
+        skipNotification: true,
+        skipToast: true,
+      });
+
+      // Clean up any pending toast from completeTimer just in case
+      pendingCompletionToastRef.current = null;
 
       // Zen-Modernism toast (Side effect outside setState)
       toast(
@@ -332,9 +386,7 @@ export function useFocusTimer() {
 
   // Ref to always have latest reconcileTimerState without effect re-runs
   const reconcileTimerStateRef = useRef(reconcileTimerState);
-  useEffect(() => {
-    reconcileTimerStateRef.current = reconcileTimerState;
-  }, [reconcileTimerState]);
+  reconcileTimerStateRef.current = reconcileTimerState;
 
   // Handle visibility change for state reconciliation
   useEffect(() => {
@@ -426,6 +478,9 @@ export function useFocusTimer() {
           console.warn("Failed to schedule timer notification:", err);
         }
       }
+
+      // Clear any pending toasts when starting a new session
+      pendingCompletionToastRef.current = null;
 
       setState((prev) => ({
         ...prev,

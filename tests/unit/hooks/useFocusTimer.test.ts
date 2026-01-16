@@ -164,4 +164,73 @@ describe("useFocusTimer - Reconciliation", () => {
     // Then: Toast count should remain the same (no duplicate)
     expect(toastMock).toHaveBeenCalledTimes(callCountAfterMount);
   });
+
+  it("should show pending toast when background transition happened", () => {
+    // 1. Initial render
+    const { result } = renderHook(() => useFocusTimer());
+
+    // 2. Mock document reaching hidden state
+    Object.defineProperty(document, "hidden", {
+      configurable: true,
+      get: () => true,
+    });
+
+    // 3. Trigger completion while hidden (e.g. via interval or background sync)
+    // We use skip() here to simulate any completion trigger safely
+    act(() => {
+      result.current.skip();
+    });
+
+    // 4. Verification: No toast yet because app is hidden
+    expect(toastMock).not.toHaveBeenCalled();
+
+    // 5. Document becomes visible
+    Object.defineProperty(document, "hidden", {
+      configurable: true,
+      get: () => false,
+    });
+    Object.defineProperty(document, "visibilityState", {
+      configurable: true,
+      get: () => "visible",
+    });
+    // Trigger reconciliation
+    act(() => {
+      document.dispatchEvent(new Event("visibilitychange"));
+    });
+
+    // Then: Pending toast should be shown
+    expect(toastMock).toHaveBeenCalled();
+    expect(toastMock).toHaveBeenCalledWith(
+      "Focus session completed",
+      expect.anything()
+    );
+  });
+
+  it("should show toast on mount when session expired while app was closed", () => {
+    // Given: Timer that started 30 mins ago (expired) is in localStorage
+    const baseTime = Date.now();
+    const startTime = baseTime - 30 * 60 * 1000; // 30 mins ago
+
+    const expiredState = {
+      mode: "focus",
+      isRunning: true,
+      remainingSeconds: 1500, // 25 mins
+      completedSessions: 0,
+      activeTaskId: null,
+      startedAt: startTime,
+    };
+    localStorage.setItem("kanso-timer-state", JSON.stringify(expiredState));
+
+    vi.setSystemTime(baseTime);
+
+    // When: Hook mounts (simulating PWA reopen)
+    renderHook(() => useFocusTimer());
+
+    // Then: Toast should appear exactly once
+    expect(toastMock).toHaveBeenCalled();
+    expect(toastMock).toHaveBeenCalledWith(
+      expect.stringContaining("completed while away"),
+      expect.anything()
+    );
+  });
 });
