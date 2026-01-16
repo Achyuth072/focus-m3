@@ -173,31 +173,34 @@ export function useFocusTimer() {
   }, []);
 
   const handleTimerComplete = useCallback(
-    (prev: TimerState): TimerState => {
+    (
+      prev: TimerState,
+      options?: { skipNotification?: boolean }
+    ): TimerState => {
       // Clear current notification ID so the auto-scheduler can pick up the next mode
       notificationIdRef.current = null;
 
       // Smart notifications: trigger if user is NOT visually seeing a timer
-      // 1. User is on the focus page
-      // 2. Document PIP is active
-      // 3. User is in the app and has a visible indicator (FloatingTimer on desktop or MobileHeader on phone)
-      const isPipActive = useUiStore.getState().isPipActive;
-      const isOnFocusPage = pathname === "/focus";
+      // Skip if called during reconciliation (server already sent the notification)
+      if (!options?.skipNotification) {
+        const isPipActive = useUiStore.getState().isPipActive;
+        const isOnFocusPage = pathname === "/focus";
 
-      // Smart notifications: trigger if user is away or document hidden,
-      // but SUPPRESS if Document PIP is active as it provides its own visibility.
-      if (document.hidden || (!isOnFocusPage && !isPipActive)) {
-        showNotification(
-          prev.mode === "focus" ? "Focus Complete 🎯" : "Break Complete ☕",
-          {
-            body:
-              prev.mode === "focus"
-                ? "Your focus session is complete. Take a break!"
-                : "Your break is over. Time to focus!",
-            tag: "timer-notification",
-            renotify: true,
-          } as any
-        );
+        // Smart notifications: trigger if user is away or document hidden,
+        // but SUPPRESS if Document PIP is active as it provides its own visibility.
+        if (document.hidden || (!isOnFocusPage && !isPipActive)) {
+          showNotification(
+            prev.mode === "focus" ? "Focus Complete 🎯" : "Break Complete ☕",
+            {
+              body:
+                prev.mode === "focus"
+                  ? "Your focus session is complete. Take a break!"
+                  : "Your break is over. Time to focus!",
+              tag: "timer-notification",
+              renotify: true,
+            } as any
+          );
+        }
       }
 
       if (prev.mode === "focus") {
@@ -256,7 +259,8 @@ export function useFocusTimer() {
     if (elapsedMs >= totalMs) {
       // Session finished while away
       setState((prev) => {
-        const nextState = handleTimerComplete(prev);
+        // Skip client-side notification since server already sent push while away
+        const nextState = handleTimerComplete(prev, { skipNotification: true });
         // Zen haptic feedback for completion
         trigger(50);
 
