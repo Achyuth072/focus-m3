@@ -20,6 +20,8 @@ import {
   scheduleTimerNotification,
   cancelTimerNotification,
 } from "@/lib/timer-api";
+import { toast } from "sonner";
+import { useHaptic } from "@/lib/hooks/useHaptic";
 
 function loadSettings(): TimerSettings {
   if (typeof window === "undefined") return DEFAULT_TIMER_SETTINGS;
@@ -97,6 +99,7 @@ export function useFocusTimer() {
       remainingSeconds: initialSettings.focusDuration * 60,
       completedSessions: 0,
       activeTaskId: null,
+      startedAt: null,
     };
   });
 
@@ -108,6 +111,7 @@ export function useFocusTimer() {
   const supabase = createClient();
   const { isGuestMode } = useAuth();
   const { play } = useFocusSounds();
+  const { trigger } = useHaptic();
 
   // Persist state changes
   useEffect(() => {
@@ -224,6 +228,7 @@ export function useFocusTimer() {
           isRunning: settings.autoStartBreak, // Auto-start break if enabled
           remainingSeconds: getDurationForMode(nextMode, settings),
           completedSessions: isLongBreakTime ? 0 : newCompletedSessions,
+          startedAt: settings.autoStartBreak ? Date.now() : null,
         };
       }
 
@@ -236,10 +241,75 @@ export function useFocusTimer() {
         mode: "focus",
         isRunning: settings.autoStartFocus, // Auto-start if enabled
         remainingSeconds: getDurationForMode("focus", settings),
+        startedAt: settings.autoStartFocus ? Date.now() : null,
       };
     },
     [settings, logFocusSession, play, pathname, showNotification]
   );
+
+  const reconcileTimerState = useCallback(() => {
+    if (!state.isRunning || !state.startedAt) return;
+
+    const elapsedMs = Date.now() - state.startedAt;
+    const totalMs = getDurationForMode(state.mode, settings) * 1000;
+
+    if (elapsedMs >= totalMs) {
+      // Session finished while away
+      setState((prev) => {
+        const nextState = handleTimerComplete(prev);
+        // Zen haptic feedback for completion
+        trigger(50);
+
+        // Minimal Zen-Modernism toast
+        toast(
+          prev.mode === "focus"
+            ? "Focus session completed while away"
+            : "Break completed while away",
+          {
+            description:
+              nextState.isRunning && nextState.mode !== prev.mode
+                ? `Automatically started ${
+                    nextState.mode === "shortBreak" ? "short break" : "focus"
+                  }`
+                : "The timer is ready for your next session.",
+            duration: 4000,
+            icon: null, // Minimal - no icon
+          }
+        );
+        return nextState;
+      });
+    } else {
+      // Still running, update the remaining seconds
+      const newRemaining = Math.max(0, Math.ceil((totalMs - elapsedMs) / 1000));
+      setState((prev) => ({
+        ...prev,
+        remainingSeconds: newRemaining,
+      }));
+    }
+  }, [
+    state.isRunning,
+    state.startedAt,
+    state.mode,
+    settings,
+    handleTimerComplete,
+  ]);
+
+  // Handle visibility change for state reconciliation
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        reconcileTimerState();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    // Also reconcile on mount
+    reconcileTimerState();
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [reconcileTimerState]);
 
   // Timer tick
   useEffect(() => {
@@ -317,6 +387,7 @@ export function useFocusTimer() {
         ...prev,
         isRunning: true,
         activeTaskId: targetTaskId,
+        startedAt: Date.now(),
       }));
     },
     [play, isGuestMode, state.remainingSeconds, state.activeTaskId, state.mode]
@@ -324,7 +395,7 @@ export function useFocusTimer() {
 
   const pause = useCallback(() => {
     handleCancelNotification();
-    setState((prev) => ({ ...prev, isRunning: false }));
+    setState((prev) => ({ ...prev, isRunning: false, startedAt: null }));
   }, [handleCancelNotification]);
 
   const stop = useCallback(() => {
@@ -336,6 +407,7 @@ export function useFocusTimer() {
       remainingSeconds: settings.focusDuration * 60,
       completedSessions: 0,
       activeTaskId: null,
+      startedAt: null,
     });
   }, [settings, handleCancelNotification]);
 

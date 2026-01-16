@@ -19,6 +19,7 @@ export interface TimerState {
   remainingSeconds: number;
   completedSessions: number;
   activeTaskId: string | null;
+  startedAt: number | null; // Unix timestamp (ms) when timer started
 }
 
 export const DEFAULT_TIMER_SETTINGS: TimerSettings = {
