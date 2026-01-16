@@ -14,6 +14,7 @@ import {
   useProjectActions,
 } from "@/components/ProjectActionsProvider";
 import { useRealtimeSync } from "@/lib/hooks/useRealtimeSync";
+import { PiPProvider } from "@/components/providers/PiPProvider";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
@@ -204,11 +205,13 @@ export default function AppShell({ children }: AppShellProps) {
   return (
     <ProjectActionsProvider>
       <TaskActionsProvider>
-        {loading || !user || isLoginPage ? (
-          <>{children}</>
-        ) : (
-          <AppShellContent>{children}</AppShellContent>
-        )}
+        <PiPProvider>
+          {loading || !user || isLoginPage ? (
+            <>{children}</>
+          ) : (
+            <AppShellContent>{children}</AppShellContent>
+          )}
+        </PiPProvider>
       </TaskActionsProvider>
     </ProjectActionsProvider>
   );

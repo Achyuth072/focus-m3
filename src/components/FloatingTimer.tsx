@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Play, Pause, X, Maximize2 } from "lucide-react";
 import { useHaptic } from "@/lib/hooks/useHaptic";
+import { useUiStore } from "@/lib/store/uiStore";
 
 function formatTime(seconds: number): string {
   const mins = Math.floor(seconds / 60);
@@ -20,11 +21,14 @@ export function FloatingTimer() {
   const router = useRouter();
   const { trigger, isPhone } = useHaptic();
 
-  // Only show if timer is active, NOT on focus page, and NOT on mobile
+  const isPipActive = useUiStore((state) => state.isPipActive);
+
+  // Only show if timer is active, NOT on focus page, NOT on mobile, AND NOT in PIP
   const shouldShow =
     (state.isRunning || state.completedSessions > 0) &&
     pathname !== "/focus" &&
-    !isPhone;
+    !isPhone &&
+    !isPipActive;
 
   const handlePlayPause = () => {
     trigger(15);

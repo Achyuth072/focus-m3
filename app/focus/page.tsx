@@ -1,8 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTimer } from "@/components/TimerProvider";
-import { buttonVariants } from "@/components/ui/button";
+import { buttonVariants, Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Play, Pause, Square, SkipForward, X } from "lucide-react";
 import { FocusSettingsDialog } from "@/components/FocusSettingsDialog";
@@ -13,10 +13,9 @@ import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import type { Task } from "@/lib/types/task";
 import { useHaptic } from "@/lib/hooks/useHaptic";
-import { useDocumentPiP } from "@/lib/hooks/useDocumentPiP";
+import { usePiP } from "@/components/providers/PiPProvider";
 import { PiPTimer } from "@/components/PiPTimer";
 import { Minimize2 } from "lucide-react";
-import { createPortal } from "react-dom";
 
 const MODE_LABELS: Record<TimerMode, string> = {
   focus: "Focus",
@@ -38,7 +37,7 @@ export default function FocusPage() {
   const supabase = createClient();
   const { trigger, isPhone } = useHaptic();
   const { isPiPSupported, isPiPActive, pipWindow, openPiP, closePiP } =
-    useDocumentPiP();
+    usePiP();
 
   // Fetch active task if one is set
   const { data: activeTask } = useQuery({
@@ -119,88 +118,126 @@ export default function FocusPage() {
         </motion.button>
       )}
 
-      {/* Mode Badge */}
-      <div className="type-ui font-medium uppercase">
-        {MODE_LABELS[state.mode]}
-      </div>
+      {/* Main Timer UI - Hidden when in PiP */}
+      <AnimatePresence mode="wait">
+        {!isPiPActive ? (
+          <motion.div
+            key="timer-content"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="flex flex-col items-center"
+          >
+            {/* Mode Badge */}
+            <div className="type-ui font-medium uppercase">
+              {MODE_LABELS[state.mode]}
+            </div>
 
-      {/* Active Task Name */}
-      {activeTask && (
-        <div className="type-body font-medium text-foreground mt-4 max-w-md text-center px-4">
-          {activeTask.content}
-        </div>
-      )}
+            {/* Active Task Name */}
+            {activeTask && (
+              <div className="type-body font-medium text-foreground mt-4 max-w-md text-center px-4">
+                {activeTask.content}
+              </div>
+            )}
 
-      {/* Timer Display */}
-      <div className="text-7xl sm:text-8xl md:text-9xl font-light font-mono tracking-tight text-foreground tabular-nums mt-6">
-        {formatTime(state.remainingSeconds)}
-      </div>
+            {/* Timer Display */}
+            <div className="text-7xl sm:text-8xl md:text-9xl font-light font-mono tracking-tight text-foreground tabular-nums mt-6">
+              {formatTime(state.remainingSeconds)}
+            </div>
 
-      {/* Progress Bar */}
-      <div className="w-full max-w-xs mt-8 mb-4">
-        <Progress value={progress} className="h-0.5" />
-      </div>
+            {/* Progress Bar */}
+            <div className="w-full max-w-xs mt-8 mb-4">
+              <Progress value={progress} className="h-0.5" />
+            </div>
 
-      {/* Session Counter */}
-      <p className="text-sm text-muted-foreground mb-8">
-        Session {state.completedSessions + 1} of{" "}
-        {settings.sessionsBeforeLongBreak}
-      </p>
+            {/* Session Counter */}
+            <p className="text-sm text-muted-foreground mb-8">
+              Session {state.completedSessions + 1} of{" "}
+              {settings.sessionsBeforeLongBreak}
+            </p>
 
-      {/* Controls */}
-      <div className="flex items-center gap-4">
-        {/* Stop */}
-        <motion.button
-          className={cn(
-            buttonVariants({ variant: "ghost", size: "icon" }),
-            "h-14 w-14 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-seijaku cursor-pointer"
-          )}
-          onTapStart={() => trigger(50)}
-          whileTap={isPhone ? { scale: 0.95 } : {}}
-          onClick={stop}
-        >
-          <Square className="h-5 w-5" />
-        </motion.button>
+            {/* Controls */}
+            <div className="flex items-center gap-4">
+              {/* Stop */}
+              <motion.button
+                className={cn(
+                  buttonVariants({ variant: "ghost", size: "icon" }),
+                  "h-14 w-14 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-seijaku cursor-pointer"
+                )}
+                onTapStart={() => trigger(50)}
+                whileTap={isPhone ? { scale: 0.95 } : {}}
+                onClick={() => {
+                  stop();
+                  if (isPiPActive) closePiP();
+                }}
+              >
+                <Square className="h-5 w-5" />
+              </motion.button>
 
-        {/* Play/Pause - Main action button */}
-        <motion.button
-          className={cn(
-            buttonVariants({ variant: "default", size: "icon" }),
-            "h-20 w-20 rounded-full transition-seijaku hover:scale-105 active:scale-95 active:opacity-90 cursor-pointer"
-          )}
-          onTapStart={() => trigger(50)}
-          whileTap={isPhone ? { scale: 0.95 } : {}}
-          onClick={handlePlayPause}
-        >
-          {state.isRunning ? (
-            <Pause className="h-8 w-8" />
-          ) : (
-            <Play className="h-8 w-8 ml-0.5" />
-          )}
-        </motion.button>
+              {/* Play/Pause - Main action button */}
+              <motion.button
+                className={cn(
+                  buttonVariants({ variant: "default", size: "icon" }),
+                  "h-20 w-20 rounded-full transition-seijaku hover:scale-105 active:scale-95 active:opacity-90 cursor-pointer"
+                )}
+                onTapStart={() => trigger(50)}
+                whileTap={isPhone ? { scale: 0.95 } : {}}
+                onClick={handlePlayPause}
+              >
+                {state.isRunning ? (
+                  <Pause className="h-8 w-8" />
+                ) : (
+                  <Play className="h-8 w-8 ml-0.5" />
+                )}
+              </motion.button>
 
-        {/* Skip */}
-        <motion.button
-          className={cn(
-            buttonVariants({ variant: "ghost", size: "icon" }),
-            "h-14 w-14 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-seijaku cursor-pointer"
-          )}
-          onTapStart={() => trigger(50)}
-          whileTap={isPhone ? { scale: 0.95 } : {}}
-          onClick={skip}
-        >
-          <SkipForward className="h-5 w-5" />
-        </motion.button>
-      </div>
+              {/* Skip */}
+              <motion.button
+                className={cn(
+                  buttonVariants({ variant: "ghost", size: "icon" }),
+                  "h-14 w-14 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-seijaku cursor-pointer"
+                )}
+                onTapStart={() => trigger(50)}
+                whileTap={isPhone ? { scale: 0.95 } : {}}
+                onClick={skip}
+              >
+                <SkipForward className="h-5 w-5" />
+              </motion.button>
+            </div>
 
-      {/* Settings Dialog */}
-      <div className="mt-16">
-        <FocusSettingsDialog />
-      </div>
-
-      {/* Render PiP Timer into external window using Portal */}
-      {pipWindow &&
-        createPortal(<PiPTimer onClose={closePiP} />, pipWindow.document.body)}
+            {/* Settings Dialog */}
+            <div className="mt-16">
+              <FocusSettingsDialog />
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="pip-active-indicator"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="flex flex-col items-center justify-center text-center py-12"
+          >
+            <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
+              <Minimize2 className="h-10 w-10 text-primary animate-pulse" />
+            </div>
+            <h2 className="text-2xl font-semibold tracking-tight mb-2">
+              Viewing in PiP
+            </h2>
+            <p className="text-muted-foreground max-w-[280px]">
+              The timer is running in a floating window. You can browse other
+              pages in Kanso.
+            </p>
+            <Button
+              variant="outline"
+              className="mt-8 rounded-full px-6"
+              onClick={closePiP}
+            >
+              Return to main view
+            </Button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

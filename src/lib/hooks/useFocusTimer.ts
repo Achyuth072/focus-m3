@@ -173,11 +173,16 @@ export function useFocusTimer() {
       // Clear current notification ID so the auto-scheduler can pick up the next mode
       notificationIdRef.current = null;
 
-      // Smart notifications: trigger if user is away or document hidden
-      const isViewingFocus = pathname === "/focus" || pathname === "/";
+      // Smart notifications: trigger if user is NOT visually seeing a timer
+      // 1. User is on the focus page
+      // 2. Document PIP is active
+      // 3. User is in the app and has a visible indicator (FloatingTimer on desktop or MobileHeader on phone)
       const isPipActive = useUiStore.getState().isPipActive;
+      const isOnFocusPage = pathname === "/focus";
 
-      if (document.hidden || (!isViewingFocus && !isPipActive)) {
+      // Smart notifications: trigger if user is away or document hidden,
+      // but SUPPRESS if Document PIP is active as it provides its own visibility.
+      if (document.hidden || (!isOnFocusPage && !isPipActive)) {
         showNotification(
           prev.mode === "focus" ? "Focus Complete 🎯" : "Break Complete ☕",
           {
