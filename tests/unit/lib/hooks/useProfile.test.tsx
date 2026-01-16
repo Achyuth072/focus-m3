@@ -3,7 +3,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { useProfile } from "@/lib/hooks/useProfile";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
-import { DEFAULT_USER_SETTINGS } from "@/lib/types/profile";
 
 // Mock Supabase
 const mockQuery = {
@@ -21,8 +20,8 @@ vi.mock("@/lib/supabase/client", () => ({
 }));
 
 // Mock Auth
-const mockAuthValue = {
-  user: { id: "test-user-123" } as any,
+const mockAuthValue: { user: { id: string } | null; isGuestMode: boolean } = {
+  user: { id: "test-user-123" },
   isGuestMode: false,
 };
 
@@ -38,9 +37,11 @@ const createWrapper = () => {
       },
     },
   });
-  return ({ children }: { children: React.ReactNode }) => (
+  const Wrapper = ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
+  Wrapper.displayName = "QueryClientWrapper";
+  return Wrapper;
 };
 
 describe("useProfile", () => {
@@ -117,7 +118,7 @@ describe("useProfile", () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     await result.current.updateSettings.mutateAsync({
-      notifications: { morning_briefing: false } as any,
+      notifications: { morning_briefing: false } as Record<string, boolean>,
     });
 
     expect(mockQuery.update).toHaveBeenCalledWith(

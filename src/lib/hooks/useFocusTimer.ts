@@ -116,7 +116,9 @@ export function useFocusTimer() {
   const { trigger } = useHaptic();
 
   // Sync state reference synchronously so any callback created or called in this render sees latest state
-  stateRef.current = state;
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
 
   // Persist settings changes
   useEffect(() => {
@@ -257,7 +259,6 @@ export function useFocusTimer() {
       trigger(50);
 
       // Show toast / notification
-      const modeName = prevState.mode === "focus" ? "focus session" : "break";
       const title =
         prevState.mode === "focus"
           ? "Focus session completed"
@@ -301,7 +302,7 @@ export function useFocusTimer() {
                   : "Your break is over. Time to focus!",
               tag: "timer-notification",
               renotify: true,
-            } as any
+            } as NotificationOptions
           );
         }
       }
@@ -366,7 +367,10 @@ export function useFocusTimer() {
 
   // Ref to always have latest reconcileTimerState without effect re-runs
   const reconcileTimerStateRef = useRef(reconcileTimerState);
-  reconcileTimerStateRef.current = reconcileTimerState;
+
+  useEffect(() => {
+    reconcileTimerStateRef.current = reconcileTimerState;
+  }, [reconcileTimerState]);
 
   // Handle visibility change for state reconciliation
   useEffect(() => {
@@ -436,7 +440,13 @@ export function useFocusTimer() {
       };
       schedule();
     }
-  }, [state.isRunning, state.mode, isGuestMode, state.activeTaskId]);
+  }, [
+    state.isRunning,
+    state.mode,
+    isGuestMode,
+    state.activeTaskId,
+    state.remainingSeconds,
+  ]);
 
   // Controls
   const start = useCallback(

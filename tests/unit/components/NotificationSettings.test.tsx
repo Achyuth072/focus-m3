@@ -1,5 +1,5 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { NotificationSettings } from "@/components/settings/NotificationSettings";
 import { usePushNotifications } from "@/lib/hooks/usePushNotifications";
 import { useProfile } from "@/lib/hooks/useProfile";
@@ -20,7 +20,7 @@ describe("NotificationSettings Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    (usePushNotifications as any).mockReturnValue({
+    (usePushNotifications as Mock).mockReturnValue({
       isSupported: true,
       permission: "granted", // Set to granted by default for most tests
       notificationsEnabled: true,
@@ -29,7 +29,7 @@ describe("NotificationSettings Component", () => {
       unsubscribe: vi.fn(),
     });
 
-    (useProfile as any).mockReturnValue({
+    (useProfile as Mock).mockReturnValue({
       profile: {
         timezone: "UTC",
         settings: {
@@ -46,8 +46,8 @@ describe("NotificationSettings Component", () => {
       updateProfile: mockUpdateProfile,
     });
 
-    (useAuth as any).mockReturnValue({ isGuestMode: false });
-    (useHaptic as any).mockReturnValue({ trigger: vi.fn() });
+    (useAuth as Mock).mockReturnValue({ isGuestMode: false });
+    (useHaptic as Mock).mockReturnValue({ trigger: vi.fn() });
   });
 
   it("TC-NS-01: should render all notification toggles and timezone picker", () => {
@@ -70,7 +70,7 @@ describe("NotificationSettings Component", () => {
   });
 
   it("TC-NS-04: should show guest mode warning when permission is granted", () => {
-    (useAuth as any).mockReturnValue({ isGuestMode: true });
+    (useAuth as Mock).mockReturnValue({ isGuestMode: true });
     render(<NotificationSettings />);
 
     expect(
@@ -79,7 +79,7 @@ describe("NotificationSettings Component", () => {
   });
 
   it("TC-NS-05: should show not supported message when browser doesn't support push", () => {
-    (usePushNotifications as any).mockReturnValue({
+    (usePushNotifications as Mock).mockReturnValue({
       isSupported: false,
       permission: "default",
     });

@@ -14,7 +14,6 @@ import { createClient } from "@/lib/supabase/client";
 import type { Task } from "@/lib/types/task";
 import { useHaptic } from "@/lib/hooks/useHaptic";
 import { usePiP } from "@/components/providers/PiPProvider";
-import { PiPTimer } from "@/components/PiPTimer";
 import { Minimize2 } from "lucide-react";
 
 const MODE_LABELS: Record<TimerMode, string> = {
@@ -36,7 +35,7 @@ export default function FocusPage() {
   const { state, settings, start, pause, stop, skip } = useTimer();
   const supabase = createClient();
   const { trigger, isPhone } = useHaptic();
-  const { isPiPSupported, isPiPActive, pipWindow, openPiP, closePiP } =
+  const { isPiPSupported, isPiPActive, openPiP, closePiP } =
     usePiP();
 
   // Fetch active task if one is set

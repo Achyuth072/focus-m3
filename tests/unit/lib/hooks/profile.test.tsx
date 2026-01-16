@@ -18,7 +18,7 @@ vi.mock("@/lib/supabase/client", () => ({
 }));
 
 // We'll use a local mock for auth to allow better control
-let mockUser: any = { id: "test-user-123" };
+let mockUser: { id: string } | null = { id: "test-user-123" };
 let mockIsGuestMode = false;
 
 vi.mock("@/components/AuthProvider", () => ({
@@ -32,9 +32,11 @@ const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
-  return ({ children }: { children: React.ReactNode }) => (
+  const Wrapper = ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
+  Wrapper.displayName = "QueryClientWrapper";
+  return Wrapper;
 };
 
 describe("useProfile", () => {

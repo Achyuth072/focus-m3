@@ -18,7 +18,6 @@ import { useProfile } from "@/lib/hooks/useProfile";
 import { useAuth } from "@/components/AuthProvider";
 import { toast } from "sonner";
 import { sendPushNotification } from "@/lib/push-api";
-import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -26,7 +25,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEffect, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
+
+const getInitialTimezones = () => {
+  if (typeof window === "undefined")
+    return ["UTC", "America/New_York", "Europe/London", "Asia/Tokyo"];
+  try {
+    return (Intl as unknown as { supportedValuesOf: (key: string) => string[] }).supportedValuesOf("timeZone");
+  } catch {
+    return ["UTC", "America/New_York", "Europe/London", "Asia/Tokyo"];
+  }
+};
 
 export function NotificationSettings() {
   const {
@@ -41,19 +50,8 @@ export function NotificationSettings() {
   const { profile, updateProfile, updateSettings } = useProfile();
   const { trigger } = useHaptic();
 
-  const [timezones, setTimezones] = useState<string[]>([]);
+  const [timezones] = useState<string[]>(getInitialTimezones);
   const [timezoneSearch, setTimezoneSearch] = useState("");
-
-  useEffect(() => {
-    try {
-      // @ts-ignore - Intl.supportedValuesOf is a newer API
-      const allZones = Intl.supportedValuesOf("timeZone");
-      setTimezones(allZones);
-    } catch (e) {
-      // Fallback for older browsers
-      setTimezones(["UTC", "America/New_York", "Europe/London", "Asia/Tokyo"]);
-    }
-  }, []);
 
   // Get UTC offset for a timezone
   const getTimezoneOffset = (timezone: string): string => {
@@ -120,8 +118,8 @@ export function NotificationSettings() {
           ...profile?.settings?.notifications,
           [key]: checked,
         },
-      } as any);
-    } catch (error) {
+      } as Parameters<typeof updateSettings.mutateAsync>[0]);
+    } catch {
       toast.error("Failed to update settings");
     }
   };
@@ -139,7 +137,7 @@ export function NotificationSettings() {
         data: { type: "test" },
       });
       toast.success("Test notification sent");
-    } catch (error) {
+    } catch {
       toast.error("Failed to send test notification");
     }
   };
@@ -339,7 +337,7 @@ function ScheduleToggle({
   checked,
   onChange,
 }: {
-  icon: any;
+  icon: React.ComponentType<{ className?: string }>;
   title: string;
   description: string;
   checked: boolean;

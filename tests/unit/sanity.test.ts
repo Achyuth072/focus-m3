@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { renderHook } from "@testing-library/react";
 import { useProfile } from "../../src/lib/hooks/useProfile";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createElement } from "react";
+import { createElement, type ReactNode } from "react";
 
 vi.mock("../../src/lib/supabase/client", () => ({
   createClient: () => ({
@@ -26,8 +26,9 @@ vi.mock("../../src/components/AuthProvider", () => ({
 describe("useProfile render test", () => {
   it("should render", () => {
     const queryClient = new QueryClient();
-    const wrapper = ({ children }: any) =>
+    const wrapper = ({ children }: { children: ReactNode }) =>
       createElement(QueryClientProvider, { client: queryClient }, children);
+    wrapper.displayName = "SanityWrapper";
     const { result } = renderHook(() => useProfile(), { wrapper });
     expect(result.current).toBeDefined();
   });
