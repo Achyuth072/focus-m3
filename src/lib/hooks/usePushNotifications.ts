@@ -48,27 +48,6 @@ export function usePushNotifications() {
     []
   );
 
-  const requestPermission = async (): Promise<NotificationPermission> => {
-    if (!isSupported) {
-      return "denied";
-    }
-
-    try {
-      const result = await Notification.requestPermission();
-      setPermission(result as NotificationPermission);
-
-      if (result === "granted") {
-        // Note: subscribeToPush now handles setNotificationsEnabled(true) on success
-        await subscribeToPush(result as NotificationPermission);
-      }
-
-      return result as NotificationPermission;
-    } catch (error) {
-      console.error("Error requesting notification permission:", error);
-      return "denied";
-    }
-  };
-
   const subscribeToPush = useCallback(
     async (
       permissionOverride?: NotificationPermission
@@ -123,7 +102,29 @@ export function usePushNotifications() {
     ]
   );
 
-  const unsubscribe = async (): Promise<boolean> => {
+  const requestPermission =
+    useCallback(async (): Promise<NotificationPermission> => {
+      if (!isSupported) {
+        return "denied";
+      }
+
+      try {
+        const result = await Notification.requestPermission();
+        setPermission(result as NotificationPermission);
+
+        if (result === "granted") {
+          // Note: subscribeToPush now handles setNotificationsEnabled(true) on success
+          await subscribeToPush(result as NotificationPermission);
+        }
+
+        return result as NotificationPermission;
+      } catch (error) {
+        console.error("Error requesting notification permission:", error);
+        return "denied";
+      }
+    }, [isSupported, subscribeToPush]);
+
+  const unsubscribe = useCallback(async (): Promise<boolean> => {
     if (!subscription) {
       setNotificationsEnabled(false);
       return true;
@@ -138,28 +139,28 @@ export function usePushNotifications() {
       console.error("Error unsubscribing from push notifications:", error);
       return false;
     }
-  };
+  }, [subscription, setNotificationsEnabled]);
 
-  const showNotification = async (
-    title: string,
-    options?: NotificationOptions
-  ): Promise<void> => {
-    if (!isSupported || permission !== "granted") {
-      return;
-    }
+  const showNotification = useCallback(
+    async (title: string, options?: NotificationOptions): Promise<void> => {
+      if (!isSupported || permission !== "granted") {
+        return;
+      }
 
-    try {
-      const registration = await getServiceWorkerRegistration();
-      await registration.showNotification(title, {
-        icon: "/icons/icon-192.png",
-        badge: "/icons/icon-192.png",
-        vibrate: [200, 100, 200],
-        ...options,
-      } as NotificationOptions);
-    } catch (error) {
-      console.error("Error showing notification:", error);
-    }
-  };
+      try {
+        const registration = await getServiceWorkerRegistration();
+        await registration.showNotification(title, {
+          icon: "/icons/icon-192.png",
+          badge: "/icons/icon-192.png",
+          vibrate: [200, 100, 200],
+          ...options,
+        } as NotificationOptions);
+      } catch (error) {
+        console.error("Error showing notification:", error);
+      }
+    },
+    [isSupported, permission, getServiceWorkerRegistration]
+  );
 
   useEffect(() => {
     if (isSupported && notificationsEnabled) {

@@ -109,10 +109,21 @@ export function useFocusTimer() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const notificationIdRef = useRef<string | null>(null);
   const lastReconciledStartedAtRef = useRef<number | null>(null); // Guard against multiple reconciliations of the same session
+  const stateRef = useRef(state); // Always have latest state access for reconciliation without breaking dependencies
   const supabase = createClient();
   const { isGuestMode } = useAuth();
   const { play } = useFocusSounds();
   const { trigger } = useHaptic();
+
+  // Sync state reference
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
+
+  // Persist settings changes
+  useEffect(() => {
+    saveSettings(settings);
+  }, [settings]);
 
   // Persist state changes
   useEffect(() => {
@@ -173,28 +184,89 @@ export function useFocusTimer() {
     }
   }, []);
 
-  const handleTimerComplete = useCallback(
-    (
-      prev: TimerState,
-      options?: { skipNotification?: boolean }
-    ): TimerState => {
-      // Clear current notification ID so the auto-scheduler can pick up the next mode
+  /**
+   * Pure function to calculate the next state after a timer completion.
+   * No side effects allowed here!
+   */
+  const getNextStateAfterCompletion = useCallback(
+    (prev: TimerState): TimerState => {
+      if (prev.mode === "focus") {
+        const newCompletedSessions = prev.completedSessions + 1;
+        const isLongBreakTime =
+          newCompletedSessions >= settings.sessionsBeforeLongBreak;
+        const nextMode: TimerMode = isLongBreakTime
+          ? "longBreak"
+          : "shortBreak";
+
+        return {
+          ...prev,
+          mode: nextMode,
+          isRunning: settings.autoStartBreak,
+          remainingSeconds: getDurationForMode(nextMode, settings),
+          completedSessions: isLongBreakTime ? 0 : newCompletedSessions,
+          startedAt: settings.autoStartBreak ? Date.now() : null,
+        };
+      }
+
+      // After break, back to focus
+      return {
+        ...prev,
+        mode: "focus",
+        isRunning: settings.autoStartFocus,
+        remainingSeconds: getDurationForMode("focus", settings),
+        startedAt: settings.autoStartFocus ? Date.now() : null,
+      };
+    },
+    [settings]
+  );
+
+  /**
+   * Managed completion that handles side effects outside of setState.
+   */
+  const completeTimer = useCallback(
+    (options?: { skipNotification?: boolean; skipLog?: boolean }) => {
+      const prevState = stateRef.current;
+      const nextState = getNextStateAfterCompletion(prevState);
+
+      // Perform state transition
+      setState(nextState);
+
+      // Reset notification ref
       notificationIdRef.current = null;
 
-      // Smart notifications: trigger if user is NOT visually seeing a timer
-      // Skip if called during reconciliation (server already sent the notification)
+      // Log focus if needed
+      if (!options?.skipLog && prevState.mode === "focus") {
+        if (prevState.activeTaskId) {
+          logFocusSession(prevState.activeTaskId, settings.focusDuration * 60);
+        }
+        useFocusHistoryStore.getState().addSession({
+          taskId: prevState.activeTaskId,
+          duration: settings.focusDuration * 60,
+          completedAt: new Date().toISOString(),
+        });
+      }
+
+      // Side feedback
+      if (prevState.mode === "focus") {
+        play("sessionComplete");
+      } else {
+        play("breakEnd");
+      }
+      trigger(50);
+
+      // Smart notification logic
       if (!options?.skipNotification) {
         const isPipActive = useUiStore.getState().isPipActive;
         const isOnFocusPage = pathname === "/focus";
 
-        // Smart notifications: trigger if user is away or document hidden,
-        // but SUPPRESS if Document PIP is active as it provides its own visibility.
         if (document.hidden || (!isOnFocusPage && !isPipActive)) {
           showNotification(
-            prev.mode === "focus" ? "Focus Complete 🎯" : "Break Complete ☕",
+            prevState.mode === "focus"
+              ? "Focus Complete 🎯"
+              : "Break Complete ☕",
             {
               body:
-                prev.mode === "focus"
+                prevState.mode === "focus"
                   ? "Your focus session is complete. Take a break!"
                   : "Your break is over. Time to focus!",
               tag: "timer-notification",
@@ -204,144 +276,106 @@ export function useFocusTimer() {
         }
       }
 
-      if (prev.mode === "focus") {
-        const newCompletedSessions = prev.completedSessions + 1;
-        const isLongBreakTime =
-          newCompletedSessions >= settings.sessionsBeforeLongBreak;
-        const nextMode: TimerMode = isLongBreakTime
-          ? "longBreak"
-          : "shortBreak";
-
-        // Log focus session
-        if (prev.activeTaskId) {
-          logFocusSession(prev.activeTaskId, settings.focusDuration * 60);
-        }
-
-        useFocusHistoryStore.getState().addSession({
-          taskId: prev.activeTaskId,
-          duration: settings.focusDuration * 60,
-          completedAt: new Date().toISOString(),
-        });
-
-        // Play success sound
-        play("sessionComplete");
-
-        return {
-          ...prev,
-          mode: nextMode,
-          isRunning: settings.autoStartBreak, // Auto-start break if enabled
-          remainingSeconds: getDurationForMode(nextMode, settings),
-          completedSessions: isLongBreakTime ? 0 : newCompletedSessions,
-          startedAt: settings.autoStartBreak ? Date.now() : null,
-        };
-      }
-
-      // After a break, go back to focus
-      // Play break end sound
-      play("breakEnd");
-
-      return {
-        ...prev,
-        mode: "focus",
-        isRunning: settings.autoStartFocus, // Auto-start if enabled
-        remainingSeconds: getDurationForMode("focus", settings),
-        startedAt: settings.autoStartFocus ? Date.now() : null,
-      };
+      return nextState;
     },
-    [settings, logFocusSession, play, pathname, showNotification]
+    [
+      getNextStateAfterCompletion,
+      logFocusSession,
+      settings,
+      play,
+      trigger,
+      pathname,
+      showNotification,
+    ]
   );
 
   const reconcileTimerState = useCallback(() => {
-    if (!state.isRunning || !state.startedAt) return;
+    const currentState = stateRef.current;
+    if (!currentState.isRunning || !currentState.startedAt) return;
 
-    const elapsedMs = Date.now() - state.startedAt;
-    const totalMs = getDurationForMode(state.mode, settings) * 1000;
+    const elapsedMs = Date.now() - currentState.startedAt;
+    const totalMs = getDurationForMode(currentState.mode, settings) * 1000;
 
     if (elapsedMs >= totalMs) {
-      // Prevent showing toast twice if reconcileTimerState is called multiple times for the same session
-      if (lastReconciledStartedAtRef.current === state.startedAt) return;
-      lastReconciledStartedAtRef.current = state.startedAt;
+      // Prevent duplicate transitions for the same session
+      if (lastReconciledStartedAtRef.current === currentState.startedAt) return;
+      lastReconciledStartedAtRef.current = currentState.startedAt;
 
-      // Session finished while away
-      setState((prev) => {
-        // Skip client-side notification since server already sent push while away
-        const nextState = handleTimerComplete(prev, { skipNotification: true });
-        // Zen haptic feedback for completion
-        trigger(50);
+      // Perform transition side-effect-free in a managed wrap
+      const nextState = completeTimer({ skipNotification: true });
 
-        // Minimal Zen-Modernism toast
-        toast(
-          prev.mode === "focus"
-            ? "Focus session completed while away"
-            : "Break completed while away",
-          {
-            description:
-              nextState.isRunning && nextState.mode !== prev.mode
-                ? `Automatically started ${
-                    nextState.mode === "shortBreak" ? "short break" : "focus"
-                  }`
-                : "The timer is ready for your next session.",
-            duration: 4000,
-            icon: null, // Minimal - no icon
-          }
-        );
-        return nextState;
-      });
+      // Zen-Modernism toast (Side effect outside setState)
+      toast(
+        currentState.mode === "focus"
+          ? "Focus session completed while away"
+          : "Break completed while away",
+        {
+          description:
+            nextState.isRunning && nextState.mode !== currentState.mode
+              ? `Automatically started ${
+                  nextState.mode === "shortBreak" ? "short break" : "focus"
+                }`
+              : "The timer is ready for your next session.",
+          duration: 4000,
+          icon: null,
+        }
+      );
     } else {
-      // Still running, update the remaining seconds
+      // Still running, sync remaining seconds
       const newRemaining = Math.max(0, Math.ceil((totalMs - elapsedMs) / 1000));
       setState((prev) => ({
         ...prev,
         remainingSeconds: newRemaining,
       }));
     }
-  }, [
-    state.isRunning,
-    state.startedAt,
-    state.mode,
-    settings,
-    handleTimerComplete,
-  ]);
+  }, [settings, completeTimer]);
+
+  // Ref to always have latest reconcileTimerState without effect re-runs
+  const reconcileTimerStateRef = useRef(reconcileTimerState);
+  useEffect(() => {
+    reconcileTimerStateRef.current = reconcileTimerState;
+  }, [reconcileTimerState]);
 
   // Handle visibility change for state reconciliation
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
-        reconcileTimerState();
+        reconcileTimerStateRef.current();
       }
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
     // Initial reconciliation on mount
-    reconcileTimerState();
+    reconcileTimerStateRef.current();
 
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Run only once on mount
 
   // Timer tick
   useEffect(() => {
     if (state.isRunning) {
       intervalRef.current = setInterval(() => {
-        setState((prev) => {
-          if (prev.remainingSeconds <= 0) {
-            // Timer finished, handle transition
-            return handleTimerComplete(prev);
-          }
+        const currentState = stateRef.current;
+        if (currentState.remainingSeconds <= 0) {
+          completeTimer();
+          return;
+        }
 
-          // Warning sounds at 1 minute remaining
-          if (prev.remainingSeconds === 60) {
-            if (prev.mode === "focus") {
-              play("sessionWarning");
-            } else {
-              play("breakWarning");
-            }
+        // Warning sounds at 1 minute remaining (Outside setState)
+        if (currentState.remainingSeconds === 61) {
+          if (currentState.mode === "focus") {
+            play("sessionWarning");
+          } else {
+            play("breakWarning");
           }
+        }
 
-          return { ...prev, remainingSeconds: prev.remainingSeconds - 1 };
-        });
+        setState((prev) => ({
+          ...prev,
+          remainingSeconds: prev.remainingSeconds - 1,
+        }));
       }, 1000);
     }
 
@@ -351,7 +385,7 @@ export function useFocusTimer() {
         intervalRef.current = null;
       }
     };
-  }, [state.isRunning, handleTimerComplete, play]);
+  }, [state.isRunning, completeTimer, play]);
 
   // Handle server-side notification scheduling for auto-started sessions or transitions
   useEffect(() => {
@@ -422,15 +456,11 @@ export function useFocusTimer() {
   }, [settings, handleCancelNotification]);
 
   const skip = useCallback(() => {
-    setState((prev) => handleTimerComplete(prev));
-  }, [handleTimerComplete]);
+    completeTimer({ skipLog: true }); // Skipping doesn't count as a full completed session for logs
+  }, [completeTimer]);
 
   const updateSettings = useCallback((newSettings: Partial<TimerSettings>) => {
-    setSettingsState((prev) => {
-      const updated = { ...prev, ...newSettings };
-      saveSettings(updated);
-      return updated;
-    });
+    setSettingsState((prev) => ({ ...prev, ...newSettings }));
   }, []);
 
   return {

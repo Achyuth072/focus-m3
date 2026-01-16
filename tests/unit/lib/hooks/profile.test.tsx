@@ -5,27 +5,27 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 
 // Mock Supabase
-const mockQuery = {
+const mockSupabase = {
+  from: vi.fn().mockReturnThis(),
   select: vi.fn().mockReturnThis(),
   update: vi.fn().mockReturnThis(),
   eq: vi.fn().mockReturnThis(),
   single: vi.fn(),
-  then: vi.fn((resolve) => resolve({ data: null, error: null })),
 };
 
 vi.mock("@/lib/supabase/client", () => ({
-  createClient: () => ({
-    from: vi.fn(() => mockQuery),
-  }),
+  createClient: () => mockSupabase,
 }));
 
-const mockAuthValue = {
-  user: { id: "test-user-123" },
-  isGuestMode: false,
-};
+// We'll use a local mock for auth to allow better control
+let mockUser: any = { id: "test-user-123" };
+let mockIsGuestMode = false;
 
 vi.mock("@/components/AuthProvider", () => ({
-  useAuth: () => mockAuthValue,
+  useAuth: () => ({
+    user: mockUser,
+    isGuestMode: mockIsGuestMode,
+  }),
 }));
 
 const createWrapper = () => {
@@ -40,13 +40,12 @@ const createWrapper = () => {
 describe("useProfile", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockQuery.select.mockReturnThis();
-    mockQuery.update.mockReturnThis();
-    mockQuery.eq.mockReturnThis();
+    mockUser = { id: "test-user-123" };
+    mockIsGuestMode = false;
   });
 
   it("TC-PR-01: should fetch profile with settings", async () => {
-    mockQuery.single.mockResolvedValue({
+    mockSupabase.single.mockResolvedValue({
       data: {
         id: "test-user-123",
         timezone: "Asia/Tokyo",
@@ -64,13 +63,13 @@ describe("useProfile", () => {
   });
 
   it("TC-PR-02: should handle guest mode", async () => {
-    mockAuthValue.isGuestMode = true;
-    mockAuthValue.user = null;
+    mockIsGuestMode = true;
+    mockUser = null;
 
     const { result } = renderHook(() => useProfile(), {
       wrapper: createWrapper(),
     });
     expect(result.current.profile).toBeNull();
-    expect(mockQuery.from).not.toHaveBeenCalled();
+    expect(mockSupabase.from).not.toHaveBeenCalled();
   });
 });

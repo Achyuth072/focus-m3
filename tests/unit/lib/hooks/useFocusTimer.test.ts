@@ -35,6 +35,33 @@ vi.mock("@/lib/store/focusHistoryStore", () => ({
   },
 }));
 
+vi.mock("@/lib/store/uiStore", () => ({
+  useUiStore: { getState: vi.fn(() => ({ isPipActive: false })) },
+}));
+
+vi.mock("next/navigation", () => ({
+  usePathname: vi.fn(() => "/"),
+}));
+
+vi.mock("@/lib/hooks/usePushNotifications", () => ({
+  usePushNotifications: vi.fn(() => ({ showNotification: vi.fn() })),
+}));
+
+vi.mock("@/lib/timer-api", () => ({
+  scheduleTimerNotification: vi.fn(() =>
+    Promise.resolve({ success: true, notificationId: "test-id" })
+  ),
+  cancelTimerNotification: vi.fn(() => Promise.resolve({ success: true })),
+}));
+
+vi.mock("sonner", () => ({
+  toast: vi.fn(),
+}));
+
+vi.mock("@/lib/hooks/useHaptic", () => ({
+  useHaptic: vi.fn(() => ({ trigger: vi.fn(), isPhone: false })),
+}));
+
 describe("useFocusTimer", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -52,11 +79,11 @@ describe("useFocusTimer", () => {
     );
   });
 
-  it("should start and pause the timer", () => {
+  it("should start and pause the timer", async () => {
     const { result } = renderHook(() => useFocusTimer());
 
-    act(() => {
-      result.current.start();
+    await act(async () => {
+      await result.current.start();
     });
     expect(result.current.state.isRunning).toBe(true);
 
@@ -66,11 +93,14 @@ describe("useFocusTimer", () => {
     expect(result.current.state.isRunning).toBe(false);
   });
 
-  it("should stop and reset the timer", () => {
+  it("should stop and reset the timer", async () => {
     const { result } = renderHook(() => useFocusTimer());
 
+    await act(async () => {
+      await result.current.start();
+    });
+
     act(() => {
-      result.current.start();
       result.current.stop();
     });
 
