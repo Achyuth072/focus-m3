@@ -31,7 +31,9 @@ const getInitialTimezones = () => {
   if (typeof window === "undefined")
     return ["UTC", "America/New_York", "Europe/London", "Asia/Tokyo"];
   try {
-    return (Intl as unknown as { supportedValuesOf: (key: string) => string[] }).supportedValuesOf("timeZone");
+    return (
+      Intl as unknown as { supportedValuesOf: (key: string) => string[] }
+    ).supportedValuesOf("timeZone");
   } catch {
     return ["UTC", "America/New_York", "Europe/London", "Asia/Tokyo"];
   }
@@ -53,40 +55,60 @@ export function NotificationSettings() {
   const [timezones] = useState<string[]>(getInitialTimezones);
   const [timezoneSearch, setTimezoneSearch] = useState("");
 
-  // Get UTC offset for a timezone
-  const getTimezoneOffset = (timezone: string): string => {
-    try {
-      const now = new Date();
-      const formatter = new Intl.DateTimeFormat("en-US", {
-        timeZone: timezone,
-        timeZoneName: "shortOffset",
-      });
-      const parts = formatter.formatToParts(now);
-      const offset = parts.find((p) => p.type === "timeZoneName")?.value || "";
-      return offset.replace("GMT", "UTC");
-    } catch {
-      return "";
-    }
-  };
-
-  // Filter timezones based on search
-  const filteredTimezones = useMemo(() => {
-    if (!timezoneSearch) return timezones;
-    const search = timezoneSearch.toLowerCase();
-
-    return timezones.filter((tz) => {
-      const normalizedTz = tz
-        .toLowerCase()
-        .replace(/_/g, " ")
-        .replace(/\//g, " ");
-      const offset = getTimezoneOffset(tz).toLowerCase();
-      return (
-        normalizedTz.includes(search) ||
-        offset.includes(search) ||
-        tz.toLowerCase().includes(search)
-      );
+  // Memoize timezone data with offsets once
+  const timezoneOptions = useMemo(() => {
+    const now = new Date();
+    return timezones.map((tz) => {
+      try {
+        const formatter = new Intl.DateTimeFormat("en-US", {
+          timeZone: tz,
+          timeZoneName: "shortOffset",
+        });
+        const parts = formatter.formatToParts(now);
+        const offset =
+          parts.find((p) => p.type === "timeZoneName")?.value || "";
+        return {
+          id: tz,
+          label: tz.replace(/_/g, " "),
+          offset: offset.replace("GMT", "UTC"),
+          searchable: `${tz} ${offset}`.toLowerCase().replace(/[_/]/g, " "),
+        };
+      } catch {
+        return {
+          id: tz,
+          label: tz.replace(/_/g, " "),
+          offset: "",
+          searchable: tz.toLowerCase().replace(/[_/]/g, " "),
+        };
+      }
     });
-  }, [timezones, timezoneSearch]);
+  }, [timezones]);
+
+  // Filter and limit results, ensuring current selection is ALWAYS present
+  const filteredTimezones = useMemo(() => {
+    const search = timezoneSearch.toLowerCase().trim();
+    const currentTz = profile?.timezone || "UTC";
+
+    let results = search
+      ? timezoneOptions.filter((opt) => opt.searchable.includes(search))
+      : timezoneOptions;
+
+    // Separate top 100
+    const topResults = results.slice(0, 100);
+
+    // If current selection is NOT in top results but IS in the overall matching results, add it
+    const isSelectedInTop = topResults.some((opt) => opt.id === currentTz);
+
+    if (!isSelectedInTop) {
+      const selectedOpt = results.find((opt) => opt.id === currentTz);
+      if (selectedOpt) {
+        // Add current selection to the top of the list if searching, or keep batch small
+        return [selectedOpt, ...topResults];
+      }
+    }
+
+    return topResults;
+  }, [timezoneOptions, timezoneSearch, profile?.timezone]);
 
   const handleTogglePush = async (checked: boolean) => {
     if (isSyncing) return;
@@ -221,14 +243,11 @@ export function NotificationSettings() {
                 setTimezoneSearch(""); // Clear search on selection
               }}
             >
-              <SelectTrigger
-                className="w-full max-w-[320px]"
-                aria-label="Select Timezone"
-              >
+              <SelectTrigger className="w-full" aria-label="Select Timezone">
                 <SelectValue placeholder="Select Timezone" />
               </SelectTrigger>
-              <SelectContent className="max-h-[300px] w-[--radix-select-trigger-width] min-w-[320px]">
-                <div className="sticky top-0 z-10 bg-popover px-2 py-2 border-b border-border/50">
+              <SelectContent className="max-h-[300px] w-[--radix-select-trigger-width]">
+                <div className="sticky top-0 z-10 bg-popover px-2 py-2 pt-4 border-b border-border/50">
                   <input
                     type="text"
                     placeholder="Search timezone..."
@@ -248,16 +267,13 @@ export function NotificationSettings() {
                     </div>
                   ) : (
                     filteredTimezones.map((tz) => {
-                      const offset = getTimezoneOffset(tz);
                       return (
-                        <SelectItem key={tz} value={tz}>
+                        <SelectItem key={tz.id} value={tz.id}>
                           <div className="flex items-center justify-between gap-3 w-full">
-                            <span className="truncate">
-                              {tz.replace(/_/g, " ")}
-                            </span>
-                            {offset && (
+                            <span className="truncate">{tz.label}</span>
+                            {tz.offset && (
                               <span className="text-xs text-muted-foreground font-mono shrink-0">
-                                {offset}
+                                {tz.offset}
                               </span>
                             )}
                           </div>
