@@ -4,6 +4,12 @@ import React, { useMemo, memo } from "react";
 import type { Task, Project } from "@/lib/types/task";
 import type { ProcessedTasks } from "@/lib/hooks/useTaskViewData";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Play } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useTimer } from "@/components/TimerProvider";
+import { useHaptic } from "@/lib/hooks/useHaptic";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 
 interface TaskMasonryGridProps {
   processedTasks: ProcessedTasks;
@@ -51,7 +57,7 @@ export function TaskMasonryGrid({
           {allNavigableTasks
             .filter(
               (_, i) =>
-                i % 3 === 0 || (allNavigableTasks.length < 3 && i % 2 === 0)
+                i % 3 === 0 || (allNavigableTasks.length < 3 && i % 2 === 0),
             )
             .map((task) => (
               <TaskCard
@@ -66,7 +72,7 @@ export function TaskMasonryGrid({
         <div className="hidden sm:flex flex-col gap-4">
           {allNavigableTasks
             .filter((_, i) =>
-              allNavigableTasks.length >= 3 ? i % 3 === 1 : i % 2 === 1
+              allNavigableTasks.length >= 3 ? i % 3 === 1 : i % 2 === 1,
             )
             .map((task) => (
               <TaskCard
@@ -114,30 +120,33 @@ const TaskCard = memo(function TaskCard({
   return (
     <div
       className={cn(
-        "group relative bg-background border border-border/80 hover:border-muted-foreground/50 hover:bg-secondary/5 transition-all rounded-xl p-4 cursor-pointer"
+        "group relative bg-background border border-border/80 hover:border-muted-foreground/50 hover:bg-secondary/5 transition-all rounded-xl p-4 cursor-pointer",
       )}
       onClick={() => onSelect?.(task)}
     >
       <div className="flex flex-col gap-3">
-        <div className="flex items-start justify-between gap-4">
-          <h4
-            className={cn(
-              "text-sm font-medium leading-normal",
-              task.is_completed && "line-through text-muted-foreground"
-            )}
-          >
-            {task.content}
-          </h4>
+        <div className="flex items-start gap-2">
+          <div className="flex items-center gap-0.5 flex-1 min-w-0">
+            <h4
+              className={cn(
+                "text-sm font-medium leading-normal",
+                task.is_completed && "line-through text-muted-foreground",
+              )}
+            >
+              {task.content}
+            </h4>
+            <PlayButton task={task} />
+          </div>
           <div
             className={cn(
               "shrink-0 h-4 w-4 rounded-sm border",
               task.priority === 1
                 ? "border-red-500"
                 : task.priority === 2
-                ? "border-orange-500"
-                : task.priority === 3
-                ? "border-blue-500"
-                : "border-muted-foreground/30"
+                  ? "border-orange-500"
+                  : task.priority === 3
+                    ? "border-blue-500"
+                    : "border-muted-foreground/30",
             )}
           />
         </div>
@@ -164,3 +173,33 @@ const TaskCard = memo(function TaskCard({
     </div>
   );
 });
+
+// PlayButton component for starting focus timer
+function PlayButton({ task }: { task: Task }) {
+  const { start } = useTimer();
+  const router = useRouter();
+  const { trigger } = useHaptic();
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+
+  const handlePlayFocus = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    trigger(50);
+    start(task.id);
+    router.push("/focus");
+  };
+
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={handlePlayFocus}
+      className={cn(
+        "shrink-0 text-muted-foreground hover:text-green-600 transition-all",
+        isDesktop ? "h-6 w-6 opacity-0 group-hover:opacity-100" : "h-8 w-8",
+      )}
+      title="Start focus timer"
+    >
+      <Play className={cn(isDesktop ? "h-3.5 w-3.5" : "h-4 w-4")} />
+    </Button>
+  );
+}

@@ -46,7 +46,7 @@ export function TaskKanbanBoard({
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 8 },
-    })
+    }),
   );
 
   const allTasks = useMemo(() => {
@@ -128,7 +128,7 @@ const KanbanColumn = memo(function KanbanColumn({
         items={group.tasks.map((t) => t.id)}
         strategy={verticalListSortingStrategy}
       >
-        <div className="flex-1 space-y-2 overflow-y-auto pr-1">
+        <div className="flex-1 space-y-2 overflow-y-auto -mx-1 px-1 -my-1 py-1">
           {group.tasks.map((task) => (
             <SortableTaskItem
               key={task.id}

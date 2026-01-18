@@ -1,6 +1,7 @@
 import React from "react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Moon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Moon, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/lib/types/task";
 import { priorityColors, formatDueDate } from "./task-utils";
@@ -14,7 +15,9 @@ interface TaskBoardCardProps {
   task: Task;
   project: { color: string; name: string } | undefined;
   isOverdue: boolean;
+  isDesktop: boolean;
   handleComplete: (checked: boolean) => void;
+  handlePlayFocus: (e: React.MouseEvent) => void;
   dragListeners?: DraggableSyntheticListeners;
   dragAttributes?: DraggableAttributes;
 }
@@ -23,7 +26,9 @@ export function TaskBoardCard({
   task,
   project,
   isOverdue,
+  isDesktop,
   handleComplete,
+  handlePlayFocus,
   dragListeners,
   dragAttributes,
 }: TaskBoardCardProps) {
@@ -48,11 +53,27 @@ export function TaskBoardCard({
         <p
           className={cn(
             "type-body font-medium leading-tight text-sm flex-1",
-            task.is_completed && "line-through text-muted-foreground"
+            task.is_completed && "line-through text-muted-foreground",
           )}
         >
           {task.content}
         </p>
+
+        {/* Play Button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handlePlayFocus}
+          className={cn(
+            "shrink-0 text-muted-foreground hover:text-green-600 transition-colors",
+            isDesktop
+              ? "h-6 w-6 opacity-0 group-hover/item:opacity-100"
+              : "h-8 w-8",
+          )}
+          title="Start focus timer"
+        >
+          <Play className={cn(isDesktop ? "h-3.5 w-3.5" : "h-4 w-4")} />
+        </Button>
       </div>
 
       {/* Footer: Project (Left) | Tags (Right) */}

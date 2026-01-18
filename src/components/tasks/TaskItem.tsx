@@ -76,7 +76,7 @@ function TaskItem({
       "transparent",
       "hsl(142 76% 36% / 0.3)",
       "hsl(142 76% 36%)",
-    ]
+    ],
   );
 
   const handleComplete = (checked: boolean) => {
@@ -86,7 +86,7 @@ function TaskItem({
       { id: task.id, is_completed: checked },
       {
         onSettled: () => setIsChecking(false),
-      }
+      },
     );
   };
 
@@ -96,7 +96,7 @@ function TaskItem({
 
   const handleDragEnd = (
     _: MouseEvent | TouchEvent | PointerEvent,
-    info: PanInfo
+    info: PanInfo,
   ) => {
     setIsSwipeDragging(false);
     if (info.offset.x < -SWIPE_THRESHOLD) {
@@ -142,15 +142,12 @@ function TaskItem({
       className={cn(
         "group/item",
         isDesktop && "hover:ring-1 hover:ring-border transition-all rounded-md",
-        isDesktop && isExpanded && "pb-4"
+        isDesktop && isExpanded && "pb-4",
       )}
     >
       <motion.div
         style={{ background }}
-        className={cn(
-          "relative",
-          isDesktop ? "rounded-md" : "overflow-hidden"
-        )}
+        className={cn("relative", isDesktop ? "rounded-md" : "overflow-hidden")}
       >
         {/* Swipe indicators - only visible during drag */}
         {isSwipeDragging && (
@@ -183,9 +180,9 @@ function TaskItem({
             isDesktop
               ? "gap-2 px-2 py-3 rounded-md hover:bg-secondary/50 transition-seijaku"
               : viewMode === "board"
-              ? "p-3 rounded-xl border border-border/80 hover:border-border hover:bg-secondary/20 transition-all"
-              : "items-center gap-3 py-3.5 px-4 active:bg-secondary/20 transition-seijaku-fast",
-            isKeyboardSelected && "ring-2 ring-primary bg-secondary/40 z-10"
+                ? "p-3 rounded-xl border border-border/80 hover:border-border hover:bg-secondary/20 transition-all"
+                : "items-center gap-3 py-3.5 px-4 active:bg-secondary/20 transition-seijaku-fast",
+            isKeyboardSelected && "ring-2 ring-primary bg-secondary/40 z-10",
           )}
           onClick={() => {
             if (!isSwipeDragging && onSelect) {
@@ -196,9 +193,15 @@ function TaskItem({
           {viewMode === "board" ? (
             <TaskBoardCard
               task={task}
-              project={project ? { color: project.color, name: project.name } : undefined}
+              project={
+                project
+                  ? { color: project.color, name: project.name }
+                  : undefined
+              }
               isOverdue={isOverdue}
+              isDesktop={isDesktop}
               handleComplete={handleComplete}
+              handlePlayFocus={handlePlayFocus}
               dragListeners={dragListeners}
               dragAttributes={dragAttributes}
             />
@@ -215,7 +218,11 @@ function TaskItem({
                 setPendingDelete(true);
                 setShowDeleteDialog(true);
               }}
-              project={project ? { color: project.color, name: project.name } : undefined}
+              project={
+                project
+                  ? { color: project.color, name: project.name }
+                  : undefined
+              }
               isOverdue={isOverdue}
               dragListeners={dragListeners}
               dragAttributes={dragAttributes}
