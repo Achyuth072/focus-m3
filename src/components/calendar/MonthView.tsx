@@ -13,6 +13,7 @@ import {
 import { useMemo, memo } from "react";
 import { cn } from "@/lib/utils";
 import type { CalendarEvent } from "@/lib/calendar/types";
+import { EventOverflowPopover } from "./EventOverflowPopover";
 
 interface MonthViewProps {
   currentDate: Date;
@@ -49,7 +50,7 @@ const MonthDayCell = memo(
           "relative p-1 md:p-2 flex flex-col min-h-[100px] md:min-h-[120px]",
           "cursor-pointer transition-colors",
           !isCurrentMonth && "bg-muted/5 opacity-40",
-          isCurrentDay ? "bg-brand/15 hover:bg-brand/25" : "hover:bg-accent/30"
+          isCurrentDay ? "bg-brand/15 hover:bg-brand/25" : "hover:bg-accent/30",
         )}
       >
         {/* Date number */}
@@ -59,7 +60,7 @@ const MonthDayCell = memo(
               "text-xs md:text-sm font-medium transition-all",
               isCurrentDay &&
                 "flex items-center justify-center w-5 h-5 md:w-6 md:h-6 rounded-lg bg-brand text-white shadow-sm",
-              !isCurrentMonth && "text-muted-foreground/50"
+              !isCurrentMonth && "text-muted-foreground/50",
             )}
           >
             {format(day, "d")}
@@ -86,14 +87,15 @@ const MonthDayCell = memo(
             </div>
           ))}
           {remainingCount > 0 && (
-            <div className="text-[10px] md:text-xs text-muted-foreground px-1 md:px-2">
-              +{remainingCount} more
-            </div>
+            <EventOverflowPopover
+              remainingEvents={dayEvents.slice(maxVisible)}
+              day={day}
+            />
           )}
         </div>
       </div>
     );
-  }
+  },
 );
 
 MonthDayCell.displayName = "MonthDayCell";
@@ -135,7 +137,7 @@ const MonthView = memo(
         data-testid={testId}
         className={cn(
           "h-full flex flex-col overflow-hidden bg-background",
-          className
+          className,
         )}
       >
         {/* Week day headers */}
@@ -154,7 +156,7 @@ const MonthView = memo(
         <div
           className={cn(
             "flex-1 grid grid-cols-7 divide-x divide-border/[0.08] divide-y divide-border/[0.08] border-b border-r border-border/[0.08]",
-            numWeeks === 5 ? "grid-rows-5" : "grid-rows-6"
+            numWeeks === 5 ? "grid-rows-5" : "grid-rows-6",
           )}
         >
           {days.map((day) => (
@@ -170,7 +172,7 @@ const MonthView = memo(
         </div>
       </div>
     );
-  }
+  },
 );
 
 MonthView.displayName = "MonthView";
