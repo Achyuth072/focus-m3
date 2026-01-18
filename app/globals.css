@@ -385,4 +385,9 @@ select {
       )
       transparent;
   }
+
+  /* Resizable panel collapse animation */
+  [data-panel] {
+    transition: flex-grow 300ms var(--ease-seijaku);
+  }
 }

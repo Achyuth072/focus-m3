@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { cn } from "@/lib/utils";
 import { useHaptic } from "@/lib/hooks/useHaptic";
 import {
   ResizablePanelGroup,
@@ -48,7 +47,7 @@ export function SplitViewLayout({
       className="h-full w-full gap-0"
       style={{ transitionTimingFunction: "var(--ease-seijaku)" }}
     >
-      <ResizablePanel defaultSize={60} minSize={40}>
+      <ResizablePanel defaultSize="60%" minSize="40%">
         <TaskList
           sortBy={sortBy}
           groupBy={groupBy}
@@ -61,9 +60,9 @@ export function SplitViewLayout({
       <ResizableHandle className="relative w-0 after:!inset-y-auto after:!top-1/2 after:!-translate-y-1/2 after:!h-8 after:absolute after:left-0 after:-translate-x-1/2 after:w-1 after:rounded-full after:cursor-col-resize after:transition-all after:duration-300 after:bg-transparent hover:after:!bg-border/60 active:after:!bg-primary/40" />
 
       <ResizablePanel
-        defaultSize={40}
-        minSize={25}
-        maxSize={50}
+        defaultSize="40%"
+        minSize="25%"
+        maxSize="50%"
         collapsible
         collapsedSize={0}
         onResize={(size) => {
@@ -71,10 +70,7 @@ export function SplitViewLayout({
             setSelectedTask(null);
           }
         }}
-        className={cn(
-          "border-l border-border/80 transition-all duration-300",
-          !selectedTask && "border-l-0",
-        )}
+        className="border-l border-border/80 transition-all duration-300"
       >
         <TaskDetailPanel task={selectedTask} onClose={handleCloseDetail} />
       </ResizablePanel>
