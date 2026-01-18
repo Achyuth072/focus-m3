@@ -43,9 +43,30 @@ vi.mock("@dnd-kit/utilities", () => ({
   },
 }));
 
+// Mock next/navigation
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+    back: vi.fn(),
+  }),
+}));
+
 // Mock useHaptic hook
 vi.mock("@/lib/hooks/useHaptic", () => ({
   useHaptic: () => ({ trigger: vi.fn() }),
+}));
+
+// Mock useTimer hook
+vi.mock("@/components/TimerProvider", () => ({
+  useTimer: () => ({
+    start: vi.fn(),
+    stop: vi.fn(),
+    pause: vi.fn(),
+    resume: vi.fn(),
+    status: "idle",
+  }),
 }));
 
 // Mock TaskItem component (use correct alias path)
