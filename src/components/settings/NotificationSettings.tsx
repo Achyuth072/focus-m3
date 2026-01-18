@@ -89,7 +89,7 @@ export function NotificationSettings() {
     const search = timezoneSearch.toLowerCase().trim();
     const currentTz = profile?.timezone || "UTC";
 
-    let results = search
+    const results = search
       ? timezoneOptions.filter((opt) => opt.searchable.includes(search))
       : timezoneOptions;
 

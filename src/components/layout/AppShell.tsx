@@ -31,23 +31,23 @@ const TaskSheet = dynamic(() => import("@/components/tasks/TaskSheet"), {
 });
 const CommandMenu = dynamic(
   () => import("@/components/command-menu").then((mod) => mod.CommandMenu),
-  { ssr: false }
+  { ssr: false },
 );
 const ShortcutsHelp = dynamic(
   () =>
     import("@/components/ui/ShortcutsHelp").then((mod) => mod.ShortcutsHelp),
-  { ssr: false }
+  { ssr: false },
 );
 const CreateProjectDialog = dynamic(
   () =>
     import("@/components/projects/CreateProjectDialog").then(
-      (mod) => mod.CreateProjectDialog
+      (mod) => mod.CreateProjectDialog,
     ),
-  { ssr: false }
+  { ssr: false },
 );
 const FloatingTimer = dynamic(
   () => import("@/components/FloatingTimer").then((mod) => mod.FloatingTimer),
-  { ssr: false }
+  { ssr: false },
 );
 
 interface AppShellProps {
@@ -112,7 +112,7 @@ function AppShellContent({ children }: AppShellProps) {
                 className={cn(
                   "fixed z-30 pointer-events-none flex justify-center",
                   "left-0 right-0 px-4 top-18", // Mobile: Floating comfortably below header
-                  "md:left-[var(--sidebar-width)] md:px-0 md:top-4 md:right-6 md:justify-end" // Desktop: Floating top-right banner
+                  "md:left-[var(--sidebar-width)] md:px-0 md:top-4 md:right-6 md:justify-end", // Desktop: Floating top-right banner
                 )}
               >
                 <div className="pointer-events-auto flex items-center justify-between w-full max-w-[500px] md:w-[350px] bg-sidebar border border-border text-foreground text-[13px] font-medium py-2.5 px-4 rounded-xl shadow-2xl shadow-black/5 backdrop-blur-md">
@@ -154,10 +154,10 @@ function AppShellContent({ children }: AppShellProps) {
           <div
             className={cn(
               "flex-1 md:pt-0 md:pb-0",
-              pathname === "/calendar" || isFocus
+              pathname === "/calendar" || isFocus || pathname === "/"
                 ? "overflow-hidden"
                 : "overflow-y-auto overflow-x-hidden",
-              !hideMobileNav && "pt-[calc(4rem+env(safe-area-inset-top,0px))]"
+              !hideMobileNav && "pt-[calc(4rem+env(safe-area-inset-top,0px))]",
             )}
           >
             {children}

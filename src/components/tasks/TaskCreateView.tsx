@@ -97,41 +97,47 @@ export function TaskCreateView({
 
   return (
     <div className="flex flex-col h-auto max-h-[90dvh] w-full max-w-full overflow-hidden">
-      <ResponsiveDialogHeader className="pb-4 shrink-0">
-        <ResponsiveDialogTitle>New Task</ResponsiveDialogTitle>
+      <ResponsiveDialogHeader className="pb-6 shrink-0 px-6 sm:px-0">
+        <ResponsiveDialogTitle className="type-h2">
+          New Task
+        </ResponsiveDialogTitle>
       </ResponsiveDialogHeader>
 
-      <div className="flex-1 overflow-y-auto min-h-0 px-4 sm:pl-0 sm:pr-4 space-y-4 scrollbar-thin w-full">
+      <div className="flex-1 min-h-0 px-6 sm:px-0 space-y-8 w-full">
         {/* Task Name Input */}
-        <Label htmlFor="task-content" className="sr-only">
-          Task Content
-        </Label>
-        <Textarea
-          id="task-content"
-          placeholder="What needs to be done?"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          onKeyDown={onKeyDown}
-          autoFocus
-          className={cn(
-            "text-lg sm:text-xl p-0 min-h-[40px] h-auto bg-transparent border-0 focus-visible:ring-0 resize-none placeholder:text-muted-foreground/50",
-            errors?.content &&
-              "text-destructive placeholder:text-destructive/50"
+        <div>
+          <Label htmlFor="task-content" className="sr-only">
+            Task Content
+          </Label>
+          <Textarea
+            id="task-content"
+            placeholder="What needs to be done?"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            onKeyDown={onKeyDown}
+            autoFocus
+            className={cn(
+              "text-xl sm:text-2xl font-semibold p-0 min-h-[40px] h-auto bg-transparent border-0 focus-visible:ring-0 resize-none placeholder:text-muted-foreground/40 tracking-tight leading-tight",
+              errors?.content &&
+                "text-destructive placeholder:text-destructive/50",
+            )}
+            aria-invalid={!!errors?.content}
+            aria-describedby={
+              errors?.content ? "task-content-error" : undefined
+            }
+          />
+          {errors?.content && (
+            <p
+              id="task-content-error"
+              className="text-xs font-medium text-destructive mt-1"
+            >
+              {errors.content.message}
+            </p>
           )}
-          aria-invalid={!!errors?.content}
-          aria-describedby={errors?.content ? "task-content-error" : undefined}
-        />
-        {errors?.content && (
-          <p
-            id="task-content-error"
-            className="text-xs font-medium text-destructive mt-1"
-          >
-            {errors.content.message}
-          </p>
-        )}
+        </div>
 
         {/* Icon Row - Metadata Controls */}
-        <div className="flex items-center gap-2 pt-2 pb-3 overflow-x-auto scrollbar-hide flex-wrap">
+        <div className="flex items-center gap-3 pt-2 pb-4 overflow-x-auto scrollbar-hide flex-wrap">
           <TaskDatePicker
             date={dueDate}
             setDate={setDueDate}
@@ -162,12 +168,13 @@ export function TaskCreateView({
             variant="outline"
             size="sm"
             className={cn(
-              "h-10 px-3 transition-all text-muted-foreground hover:text-foreground hover:bg-accent gap-1.5 shrink-0",
-              isEvening && "text-brand bg-brand/10 hover:bg-brand/20"
+              "h-10 px-4 transition-all text-muted-foreground hover:text-foreground hover:bg-accent gap-2 shrink-0 rounded-lg border-border/50",
+              isEvening &&
+                "text-brand bg-brand/10 border-brand/20 hover:bg-brand/20",
             )}
             onClick={() => {
               const nextValue = !isEvening;
-              trigger(nextValue ? 15 : 15);
+              trigger(15);
               setIsEvening(nextValue);
               if (nextValue && !doDate) {
                 setDoDate(new Date());
@@ -176,8 +183,8 @@ export function TaskCreateView({
             title={!isMobile ? "This Evening" : undefined}
             aria-label="This Evening"
           >
-            <Moon strokeWidth={2} className="h-4 w-4" />
-            {!isMobile && <span className="text-xs font-medium">Evening</span>}
+            <Moon strokeWidth={2.25} className="h-4 w-4" />
+            {!isMobile && <span className="type-ui">Evening</span>}
           </Button>
 
           <Button
@@ -188,14 +195,14 @@ export function TaskCreateView({
               setShowSubtasks(!showSubtasks);
             }}
             className={cn(
-              "h-10 w-10 p-0 transition-all text-muted-foreground hover:text-foreground hover:bg-accent group [&_svg]:!size-5 shrink-0",
+              "h-10 w-10 p-0 transition-all text-muted-foreground hover:text-foreground hover:bg-accent group [&_svg]:!size-5 shrink-0 rounded-lg border-border/50",
               showSubtasks &&
-                "text-brand bg-brand/10 hover:bg-brand/20 hover:text-brand"
+                "text-brand bg-brand/10 border-brand/20 hover:bg-brand/20 hover:text-brand",
             )}
             title={!isMobile ? "Toggle subtasks" : undefined}
             aria-label="Toggle subtasks"
           >
-            <ListChecks strokeWidth={2} className="transition-all" />
+            <ListChecks strokeWidth={2.25} className="transition-all" />
           </Button>
 
           <div className="shrink-0">
@@ -219,19 +226,26 @@ export function TaskCreateView({
 
         {/* Subtasks Section - Collapsible */}
         {showSubtasks && (
-          <div className="pt-2 pb-2 border-t">
-            <SubtaskList
-              taskId={undefined}
-              projectId={inboxProjectId}
-              draftSubtasks={draftSubtasks}
-              onDraftSubtasksChange={setDraftSubtasks}
-            />
+          <div className="pt-2 pb-2">
+            <div className="mb-4">
+              <span className="type-ui text-muted-foreground/70 uppercase tracking-widest font-bold">
+                Subtasks
+              </span>
+            </div>
+            <div className="pl-1">
+              <SubtaskList
+                taskId={undefined}
+                projectId={inboxProjectId}
+                draftSubtasks={draftSubtasks}
+                onDraftSubtasksChange={setDraftSubtasks}
+              />
+            </div>
           </div>
         )}
       </div>
 
       {/* Footer Row - Project & Send */}
-      <div className="shrink-0 flex items-center justify-between pt-4 border-t mt-3 px-4 sm:px-0 pb-[calc(0.5rem+env(safe-area-inset-bottom))] bg-background">
+      <div className="shrink-0 flex items-center justify-between pt-6 border-t border-border/40 mt-6 px-6 sm:px-0 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-background">
         <Select
           value={selectedProjectId || "inbox"}
           onValueChange={(v) => {
@@ -241,15 +255,15 @@ export function TaskCreateView({
         >
           <SelectTrigger
             onPointerDown={() => trigger(15)}
-            className="h-10 w-[140px] text-xs border border-transparent dark:border-white/10 bg-secondary/20 dark:bg-white/[0.05] hover:bg-secondary/30 focus:ring-0 transition-colors"
+            className="h-10 w-[140px] type-ui border-border/50 bg-secondary/10 hover:bg-secondary/20 focus:ring-0 transition-colors rounded-lg"
           >
             <SelectValue placeholder="Inbox" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="rounded-lg border-border/80 shadow-2xl">
             <SelectItem value="inbox">
               <div className="flex items-center gap-2">
-                <Inbox strokeWidth={2} className="h-3 w-3" />
-                <span>Inbox</span>
+                <Inbox strokeWidth={2.25} className="h-4 w-4" />
+                <span className="font-medium">Inbox</span>
               </div>
             </SelectItem>
             {projects
@@ -261,7 +275,7 @@ export function TaskCreateView({
                       className="h-3 w-3 rounded-full shrink-0"
                       style={{ backgroundColor: project.color }}
                     />
-                    <span className="truncate">{project.name}</span>
+                    <span className="truncate font-medium">{project.name}</span>
                   </div>
                 </SelectItem>
               ))}
@@ -270,7 +284,7 @@ export function TaskCreateView({
 
         <Button
           size="sm"
-          className="h-10 w-10 p-0 rounded-md [&_svg]:size-5 bg-brand hover:bg-brand/90 text-brand-foreground shadow-sm"
+          className="h-10 w-10 p-0 rounded-lg [&_svg]:size-5 bg-brand hover:bg-brand/90 text-brand-foreground shadow-lg shadow-brand/10 transition-seijaku"
           onClick={() => {
             trigger([10, 50]);
             onSubmit();
@@ -279,7 +293,7 @@ export function TaskCreateView({
           title={!isMobile ? "Create task" : undefined}
           aria-label="Create task"
         >
-          <Send className="stroke-[1.5px]" />
+          <Send className="stroke-[2.25px]" />
         </Button>
       </div>
     </div>

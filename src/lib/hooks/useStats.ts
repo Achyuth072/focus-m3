@@ -40,7 +40,10 @@ export function useStats() {
     refetchOnWindowFocus: "always",
     queryFn: async (): Promise<StatsData> => {
       // Helper to calculate streak
-      const calculateCurrentStreak = (logs: any[], tasks: any[]) => {
+      const calculateCurrentStreak = (
+        logs: { start_time: string }[],
+        tasks: { is_completed: boolean; completed_at: string | null }[]
+      ) => {
         const activityDates = new Set<string>();
         logs.forEach((l) =>
           activityDates.add(new Date(l.start_time).toDateString())
@@ -55,7 +58,7 @@ export function useStats() {
 
         let streak = 0;
         const today = new Date();
-        let checkDate = new Date(today);
+        const checkDate = new Date(today);
 
         // If no activity today, check yesterday to see if streak is still alive
         if (!activityDates.has(checkDate.toDateString())) {

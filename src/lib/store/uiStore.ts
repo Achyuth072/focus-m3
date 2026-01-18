@@ -70,6 +70,14 @@ export const useUiStore = create<UiState>()(
     }),
     {
       name: "kanso-ui-state",
-    }
-  )
+      migrate: (persistedState: unknown, _version: number) => {
+        const state = persistedState as Record<string, unknown> | undefined;
+        // Migrate legacy "split" viewMode to "list"
+        if (state?.viewMode === "split") {
+          return { ...state, viewMode: "list" };
+        }
+        return state;
+      },
+    },
+  ),
 );

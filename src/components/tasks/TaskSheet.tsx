@@ -42,7 +42,7 @@ export default function TaskSheet({
 }: TaskSheetProps) {
   // NOTE: uncertain intent — logic preserved to prevent flickering between Create/Edit modes during close animation.
   const [preservedTask, setPreservedTask] = useState<Task | null | undefined>(
-    initialTask
+    initialTask,
   );
 
   // Update preserved task only when dialog opens with a new task
@@ -186,14 +186,14 @@ export default function TaskSheet({
           data.due_date instanceof Date
             ? data.due_date.toISOString()
             : typeof data.due_date === "string"
-            ? data.due_date
-            : undefined,
+              ? data.due_date
+              : undefined,
         do_date:
           data.do_date instanceof Date
             ? data.do_date.toISOString()
             : typeof data.do_date === "string"
-            ? data.do_date
-            : undefined,
+              ? data.do_date
+              : undefined,
         is_evening: data.is_evening,
         project_id: data.project_id ?? undefined,
         parent_id: data.parent_id,
@@ -248,101 +248,111 @@ export default function TaskSheet({
         className="w-full sm:max-w-lg gap-0 rounded-lg"
         aria-describedby={undefined}
       >
-        {isCreationMode ? (
-          <TaskCreateView
-            content={content}
-            setContent={(v) => setValue("content", v, { shouldValidate: true })}
-            dueDate={dueDate}
-            setDueDate={(v) =>
-              setValue("due_date", v, { shouldValidate: true })
-            }
-            doDate={doDate}
-            setDoDate={(v) => setValue("do_date", v, { shouldValidate: true })}
-            isEvening={isEvening}
-            setIsEvening={(v) =>
-              setValue("is_evening", v, { shouldValidate: true })
-            }
-            priority={priority}
-            setPriority={(v) =>
-              setValue("priority", v, { shouldValidate: true })
-            }
-            recurrence={recurrence}
-            setRecurrence={(v) =>
-              setValue("recurrence", v, { shouldValidate: true })
-            }
-            selectedProjectId={selectedProjectId}
-            setSelectedProjectId={(v) =>
-              setValue("project_id", v, { shouldValidate: true })
-            }
-            datePickerOpen={datePickerOpen}
-            setDatePickerOpen={setDatePickerOpen}
-            doDatePickerOpen={doDatePickerOpen}
-            setDoDatePickerOpen={setDoDatePickerOpen}
-            showSubtasks={showSubtasks}
-            setShowSubtasks={setShowSubtasks}
-            draftSubtasks={draftSubtasks}
-            setDraftSubtasks={setDraftSubtasks}
-            inboxProjectId={inboxProject?.id || null}
-            projects={projects}
-            isMobile={isMobile}
-            hasContent={isValid}
-            isPending={isPending}
-            onSubmit={handleSubmit(onFormSubmit)}
-            onKeyDown={handleKeyDown}
-            errors={errors}
-          />
-        ) : (
-          <TaskEditView
-            initialTask={initialTask!}
-            content={content}
-            setContent={(v) => setValue("content", v, { shouldValidate: true })}
-            description={description}
-            setDescription={(v) =>
-              setValue("description", v, { shouldValidate: true })
-            }
-            isPreviewMode={isPreviewMode}
-            setIsPreviewMode={setIsPreviewMode}
-            dueDate={dueDate}
-            setDueDate={(v) =>
-              setValue("due_date", v, { shouldValidate: true })
-            }
-            doDate={doDate}
-            setDoDate={(v) => setValue("do_date", v, { shouldValidate: true })}
-            isEvening={isEvening}
-            setIsEvening={(v) =>
-              setValue("is_evening", v, { shouldValidate: true })
-            }
-            priority={priority}
-            setPriority={(v) =>
-              setValue("priority", v, { shouldValidate: true })
-            }
-            recurrence={recurrence}
-            setRecurrence={(v) =>
-              setValue("recurrence", v, { shouldValidate: true })
-            }
-            selectedProjectId={selectedProjectId}
-            setSelectedProjectId={(v) =>
-              setValue("project_id", v, { shouldValidate: true })
-            }
-            datePickerOpen={datePickerOpen}
-            setDatePickerOpen={setDatePickerOpen}
-            doDatePickerOpen={doDatePickerOpen}
-            setDoDatePickerOpen={setDoDatePickerOpen}
-            showSubtasks={showSubtasks}
-            setShowSubtasks={setShowSubtasks}
-            draftSubtasks={draftSubtasks}
-            setDraftSubtasks={setDraftSubtasks}
-            inboxProjectId={inboxProject?.id || null}
-            projects={projects}
-            isMobile={isMobile}
-            hasContent={isValid}
-            isPending={isPending}
-            onSubmit={handleSubmit(onFormSubmit)}
-            onDelete={handleDelete}
-            onKeyDown={handleKeyDown}
-            errors={errors}
-          />
-        )}
+        <div className="overflow-y-auto max-h-[85vh] scrollbar-thin">
+          {isCreationMode ? (
+            <TaskCreateView
+              content={content}
+              setContent={(v) =>
+                setValue("content", v, { shouldValidate: true })
+              }
+              dueDate={dueDate}
+              setDueDate={(v) =>
+                setValue("due_date", v, { shouldValidate: true })
+              }
+              doDate={doDate}
+              setDoDate={(v) =>
+                setValue("do_date", v, { shouldValidate: true })
+              }
+              isEvening={isEvening}
+              setIsEvening={(v) =>
+                setValue("is_evening", v, { shouldValidate: true })
+              }
+              priority={priority}
+              setPriority={(v) =>
+                setValue("priority", v, { shouldValidate: true })
+              }
+              recurrence={recurrence}
+              setRecurrence={(v) =>
+                setValue("recurrence", v, { shouldValidate: true })
+              }
+              selectedProjectId={selectedProjectId}
+              setSelectedProjectId={(v) =>
+                setValue("project_id", v, { shouldValidate: true })
+              }
+              datePickerOpen={datePickerOpen}
+              setDatePickerOpen={setDatePickerOpen}
+              doDatePickerOpen={doDatePickerOpen}
+              setDoDatePickerOpen={setDoDatePickerOpen}
+              showSubtasks={showSubtasks}
+              setShowSubtasks={setShowSubtasks}
+              draftSubtasks={draftSubtasks}
+              setDraftSubtasks={setDraftSubtasks}
+              inboxProjectId={inboxProject?.id || null}
+              projects={projects}
+              isMobile={isMobile}
+              hasContent={isValid}
+              isPending={isPending}
+              onSubmit={handleSubmit(onFormSubmit)}
+              onKeyDown={handleKeyDown}
+              errors={errors}
+            />
+          ) : (
+            <TaskEditView
+              initialTask={initialTask!}
+              content={content}
+              setContent={(v) =>
+                setValue("content", v, { shouldValidate: true })
+              }
+              description={description}
+              setDescription={(v) =>
+                setValue("description", v, { shouldValidate: true })
+              }
+              isPreviewMode={isPreviewMode}
+              setIsPreviewMode={setIsPreviewMode}
+              dueDate={dueDate}
+              setDueDate={(v) =>
+                setValue("due_date", v, { shouldValidate: true })
+              }
+              doDate={doDate}
+              setDoDate={(v) =>
+                setValue("do_date", v, { shouldValidate: true })
+              }
+              isEvening={isEvening}
+              setIsEvening={(v) =>
+                setValue("is_evening", v, { shouldValidate: true })
+              }
+              priority={priority}
+              setPriority={(v) =>
+                setValue("priority", v, { shouldValidate: true })
+              }
+              recurrence={recurrence}
+              setRecurrence={(v) =>
+                setValue("recurrence", v, { shouldValidate: true })
+              }
+              selectedProjectId={selectedProjectId}
+              setSelectedProjectId={(v) =>
+                setValue("project_id", v, { shouldValidate: true })
+              }
+              datePickerOpen={datePickerOpen}
+              setDatePickerOpen={setDatePickerOpen}
+              doDatePickerOpen={doDatePickerOpen}
+              setDoDatePickerOpen={setDoDatePickerOpen}
+              showSubtasks={showSubtasks}
+              setShowSubtasks={setShowSubtasks}
+              draftSubtasks={draftSubtasks}
+              setDraftSubtasks={setDraftSubtasks}
+              inboxProjectId={inboxProject?.id || null}
+              projects={projects}
+              isMobile={isMobile}
+              hasContent={isValid}
+              isPending={isPending}
+              onSubmit={handleSubmit(onFormSubmit)}
+              onDelete={handleDelete}
+              onKeyDown={handleKeyDown}
+              errors={errors}
+            />
+          )}
+        </div>
       </ResponsiveDialogContent>
 
       <DeleteConfirmationDialog

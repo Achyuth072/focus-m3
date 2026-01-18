@@ -57,7 +57,7 @@ export function TaskDatePicker({
         strokeWidth={1.5}
         className={cn(
           isCompact ? "h-5 w-5" : "h-5 w-5 transition-all",
-          date && (isCompact ? "mr-1.5 h-4 w-4" : "text-primary")
+          date && (isCompact ? "mr-1.5 h-4 w-4" : "text-primary"),
         )}
       />
       {date && (
@@ -72,7 +72,7 @@ export function TaskDatePicker({
               "ml-1 p-0.5 rounded",
               isCompact
                 ? "hover:bg-destructive/20"
-                : "rounded-full hover:bg-current/10"
+                : "rounded-full hover:bg-current/10",
             )}
             onClick={(e) => {
               e.preventDefault();
@@ -106,16 +106,16 @@ export function TaskDatePicker({
               ? cn(
                   "w-10 px-0 text-muted-foreground hover:text-foreground",
                   date &&
-                    cn("w-auto px-2.5 border-transparent", activeClassName)
+                    cn("w-auto px-2.5 border-transparent", activeClassName),
                 )
               : cn(
                   "min-w-10 px-0 text-muted-foreground hover:text-foreground hover:bg-accent",
                   date &&
                     cn(
                       "px-3 w-auto hover:bg-transparent border-transparent",
-                      activeClassName
-                    )
-                )
+                      activeClassName,
+                    ),
+                ),
           )}
           title={!isMobile ? `Set ${title.toLowerCase()}` : undefined}
         >
@@ -125,7 +125,7 @@ export function TaskDatePicker({
           className={cn(
             "w-full p-0",
             !isCompact &&
-              "max-w-[320px] mx-auto h-auto rounded-[10px] mb-4 bg-popover [&>div.h-2]:hidden"
+              "max-w-[320px] mx-auto h-auto rounded-[10px] mb-4 bg-popover [&>div.h-2]:hidden",
           )}
         >
           <ResponsiveDialogHeader className="sr-only">
@@ -153,16 +153,16 @@ export function TaskDatePicker({
               ? cn(
                   "w-10 px-0 text-muted-foreground hover:text-foreground",
                   date &&
-                    cn("w-auto px-2.5 border-transparent", activeClassName)
+                    cn("w-auto px-2.5 border-transparent", activeClassName),
                 )
               : cn(
                   "min-w-10 px-0 text-muted-foreground hover:text-foreground hover:bg-accent",
                   date &&
                     cn(
                       "px-3 w-auto hover:bg-transparent border-transparent",
-                      activeClassName
-                    )
-                )
+                      activeClassName,
+                    ),
+                ),
           )}
           title={!isMobile ? `Set ${title.toLowerCase()}` : undefined}
         >

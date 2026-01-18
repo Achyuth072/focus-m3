@@ -54,7 +54,7 @@ export default function SubtaskList({
           onSuccess: () => {
             setNewSubtaskContent("");
           },
-        }
+        },
       );
     }
   };
@@ -78,7 +78,7 @@ export default function SubtaskList({
   const items = isDraftMode ? draftSubtasks : subtasks || [];
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {/* Existing Subtasks */}
       <div className="space-y-1">
         {items.map((item, index) => {
@@ -90,13 +90,13 @@ export default function SubtaskList({
           return (
             <div
               key={id}
-              className="group flex items-center gap-3 py-1.5 px-2 hover:bg-secondary/30 rounded-md transition-colors"
+              className="group flex items-center gap-3 py-2 px-3 hover:bg-secondary/10 rounded-lg transition-colors"
             >
               <Checkbox
                 checked={isCompleted}
                 onCheckedChange={(checked) => {
                   if (!isDraftMode && typeof item !== "string") {
-                    trigger(20);
+                    trigger(15);
                     toggleMutation.mutate({
                       id: item.id,
                       is_completed: checked as boolean,
@@ -104,13 +104,13 @@ export default function SubtaskList({
                   }
                 }}
                 disabled={isDraftMode}
-                className="mt-0.5 !rounded-sm"
+                className="mt-0.5 !rounded-sm border-muted-foreground/40 data-[state=checked]:bg-brand data-[state=checked]:border-brand"
               />
               <span
                 className={cn(
-                  "flex-1 text-sm transition-all break-all",
+                  "flex-1 text-[14px] leading-tight transition-all break-all",
                   isCompleted &&
-                    "text-muted-foreground line-through decoration-muted-foreground/50"
+                    "text-muted-foreground/60 line-through decoration-muted-foreground/30",
                 )}
               >
                 {content}
@@ -118,14 +118,15 @@ export default function SubtaskList({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-                onClick={() =>
+                className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground/40 hover:text-destructive hover:bg-destructive/10 rounded-lg"
+                onClick={() => {
+                  trigger(10);
                   handleDeleteSubtask(
-                    isDraftMode ? index : (item as { id: string }).id
-                  )
-                }
+                    isDraftMode ? index : (item as { id: string }).id,
+                  );
+                }}
               >
-                <Trash2 className="h-3.5 w-3.5" />
+                <Trash2 className="h-4 w-4" />
               </Button>
             </div>
           );
@@ -133,15 +134,15 @@ export default function SubtaskList({
       </div>
 
       {/* Add New Subtask Input */}
-      <div className="flex items-center gap-2 px-2">
-        <div className="flex-1 relative">
-          <Plus className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/70" />
+      <div className="flex items-center gap-2 px-3">
+        <div className="flex-1 relative group">
+          <Plus className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40 group-focus-within:text-brand transition-colors" />
           <Input
             value={newSubtaskContent}
             onChange={(e) => setNewSubtaskContent(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Add a step..."
-            className="h-9 pl-8 text-sm bg-transparent border-transparent hover:bg-secondary/20 focus-visible:bg-secondary/20 focus-visible:ring-0 placeholder:text-muted-foreground/60 transition-colors"
+            className="h-10 pl-8 text-[14px] bg-transparent border-none shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/30 transition-colors p-0"
           />
         </div>
       </div>

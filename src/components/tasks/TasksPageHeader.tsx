@@ -71,7 +71,7 @@ export function TasksPageHeader({
             "h-full w-8 p-0 rounded-none transition-all duration-200 border-r border-input/50 last:border-r-0",
             viewMode === "grid"
               ? "bg-background text-primary"
-              : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+              : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
           )}
           onClick={() => {
             trigger(15);
@@ -88,7 +88,7 @@ export function TasksPageHeader({
             "h-full w-8 p-0 rounded-none transition-all duration-200 border-r border-input/50 last:border-r-0",
             viewMode === "board"
               ? "bg-background text-primary"
-              : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+              : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
           )}
           onClick={() => {
             trigger(15);
@@ -105,7 +105,7 @@ export function TasksPageHeader({
             "h-full w-8 p-0 rounded-none transition-all duration-200 border-r border-input/50 last:border-r-0",
             viewMode === "list"
               ? "bg-background text-primary"
-              : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+              : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
           )}
           onClick={() => {
             trigger(15);

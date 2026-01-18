@@ -71,14 +71,14 @@ export function TaskPrioritySelect({
                   "text-muted-foreground hover:text-foreground hover:bg-secondary/50",
                 priorities.find((p) => p.value === priority)?.color,
                 // For colored priorities (P1-P3), remove border to avoid clash with solid background
-                priority !== 4 && "border-transparent"
+                priority !== 4 && "border-transparent",
               )
             : cn(
                 "min-w-10 items-center justify-center",
                 priority !== 4
                   ? "text-primary bg-primary/10 px-3 w-auto border-transparent hover:bg-primary/20 hover:text-primary"
-                  : "px-0 w-10 text-muted-foreground hover:text-foreground hover:bg-accent"
-              )
+                  : "px-0 w-10 text-muted-foreground hover:text-foreground hover:bg-accent",
+              ),
         )}
         title={!isMobile ? "Set priority" : undefined}
       >
@@ -92,14 +92,14 @@ export function TaskPrioritySelect({
                   ? "text-white h-3.5 w-3.5"
                   : "text-red-500 fill-red-500"
                 : priority === 2
-                ? isCompact
-                  ? "text-white h-3.5 w-3.5"
-                  : "text-orange-500 fill-orange-500"
-                : priority === 3
-                ? isCompact
-                  ? "text-white h-3.5 w-3.5"
-                  : "text-blue-500 fill-blue-500"
-                : "" // Removed text-muted-foreground to match other icons
+                  ? isCompact
+                    ? "text-white h-3.5 w-3.5"
+                    : "text-orange-500 fill-orange-500"
+                  : priority === 3
+                    ? isCompact
+                      ? "text-white h-3.5 w-3.5"
+                      : "text-blue-500 fill-blue-500"
+                    : "", // Removed text-muted-foreground to match other icons
             )}
           />
           {isCompact && priority !== 4 && (
@@ -118,7 +118,7 @@ export function TaskPrioritySelect({
                   "h-3.5 w-3.5",
                   p.value === 4
                     ? "text-muted-foreground"
-                    : p.color.split(" ")[0].replace("bg-", "text-")
+                    : p.color.split(" ")[0].replace("bg-", "text-"),
                 )}
               />
               <span className="font-medium">
@@ -126,10 +126,10 @@ export function TaskPrioritySelect({
                 {p.value === 1
                   ? "Urgent"
                   : p.value === 2
-                  ? "High"
-                  : p.value === 3
-                  ? "Normal"
-                  : "Low"}
+                    ? "High"
+                    : p.value === 3
+                      ? "Normal"
+                      : "Low"}
               </span>
             </div>
           </SelectItem>

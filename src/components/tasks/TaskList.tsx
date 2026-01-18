@@ -34,6 +34,7 @@ interface TaskListProps {
   groupBy?: GroupOption;
   projectId?: string | null;
   filter?: string;
+  onTaskSelect?: (task: Task) => void;
 }
 
 export default function TaskList({
@@ -41,13 +42,14 @@ export default function TaskList({
   groupBy = "none",
   projectId,
   filter,
+  onTaskSelect,
 }: TaskListProps) {
   const { data: tasks, isLoading } = useTasks({ projectId, filter });
   const { data: projectsData } = useProjects();
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [localTasks, setLocalTasks] = useState<Task[]>([]);
   const [keyboardSelectedId, setKeyboardSelectedId] = useState<string | null>(
-    null
+    null,
   );
 
   const reorderMutation = useReorderTasks();
@@ -73,7 +75,7 @@ export default function TaskList({
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   const processedTasks = useTaskViewData({
@@ -93,9 +95,16 @@ export default function TaskList({
     setLocalTasks(processedTasks.active);
   }, [processedTasks.active]);
 
-  const handleTaskClick = useCallback((task: Task) => {
-    setSelectedTask(task);
-  }, []);
+  const handleTaskClick = useCallback(
+    (task: Task) => {
+      if (onTaskSelect) {
+        onTaskSelect(task);
+      } else {
+        setSelectedTask(task);
+      }
+    },
+    [onTaskSelect],
+  );
 
   const handleDragStart = () => {
     trigger(15);
@@ -150,7 +159,7 @@ export default function TaskList({
     if (navigableTasks.length === 0) return;
 
     const currentIndex = navigableTasks.findIndex(
-      (t) => t.id === keyboardSelectedId
+      (t) => t.id === keyboardSelectedId,
     );
     if (currentIndex === -1) {
       // Select first if nothing selected
@@ -192,7 +201,7 @@ export default function TaskList({
         if (task) setSelectedTask(task);
       }
     },
-    { preventDefault: true }
+    { preventDefault: true },
   );
 
   useHotkeys(["d", "backspace"], () => {
@@ -235,7 +244,7 @@ export default function TaskList({
 
   return (
     <>
-      <div className="flex-1">
+      <div className="flex-1 h-full overflow-y-auto scrollbar-thin">
         {viewMode === "grid" ? (
           <TaskMasonryGrid
             processedTasks={processedTasks}

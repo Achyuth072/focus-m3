@@ -11,6 +11,8 @@ import { useUiStore } from "@/lib/store/uiStore";
 import { useTaskActions } from "@/components/TaskActionsProvider";
 import { PlusIcon } from "lucide-react";
 import { useHaptic } from "@/lib/hooks/useHaptic";
+import { SplitViewLayout } from "@/components/tasks/SplitViewLayout";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 
 function HomeContent() {
   const { user, loading } = useAuth();
@@ -20,6 +22,7 @@ function HomeContent() {
     useUiStore();
   const { openAddTask } = useTaskActions();
   const { trigger } = useHaptic();
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   const currentProjectId = searchParams.get("project") || "all";
   const filter = searchParams.get("filter") || undefined;
@@ -46,7 +49,7 @@ function HomeContent() {
   const greeting = getGreeting();
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-124px)] md:h-dvh">
+    <div className="flex flex-col h-[calc(100dvh-124px)] md:h-dvh overflow-hidden">
       <div className="px-6 pt-4 pb-4 flex flex-col md:flex-row md:items-start justify-between gap-4 md:gap-0">
         <div>
           <p className="text-sm text-muted-foreground flex items-center gap-2">
@@ -86,12 +89,21 @@ function HomeContent() {
       </div>
 
       <div className="flex-1 min-h-0">
-        <TaskList
-          sortBy={sortBy}
-          groupBy={groupBy}
-          projectId={currentProjectId}
-          filter={filter}
-        />
+        {viewMode === "list" && !isMobile ? (
+          <SplitViewLayout
+            sortBy={sortBy}
+            groupBy={groupBy}
+            projectId={currentProjectId}
+            filter={filter}
+          />
+        ) : (
+          <TaskList
+            sortBy={sortBy}
+            groupBy={groupBy}
+            projectId={currentProjectId}
+            filter={filter}
+          />
+        )}
       </div>
     </div>
   );

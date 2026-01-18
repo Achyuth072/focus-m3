@@ -75,6 +75,7 @@ interface TaskEditViewProps {
   onDelete: () => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
   errors?: FieldErrors<CreateTaskInput>;
+  hideDialogHeader?: boolean;
 }
 
 export function TaskEditView({
@@ -114,57 +115,69 @@ export function TaskEditView({
   onDelete,
   onKeyDown,
   errors,
+  hideDialogHeader = false,
 }: TaskEditViewProps) {
   const scrollRef = useHorizontalScroll();
   const { trigger } = useHaptic();
 
   return (
     <div className="flex flex-col h-auto max-h-[90dvh] w-full max-w-full overflow-hidden">
-      <ResponsiveDialogHeader className="pb-4 shrink-0">
-        <ResponsiveDialogTitle>Edit Task</ResponsiveDialogTitle>
-      </ResponsiveDialogHeader>
+      {!hideDialogHeader && (
+        <ResponsiveDialogHeader className="pb-4 shrink-0">
+          <ResponsiveDialogTitle>Edit Task</ResponsiveDialogTitle>
+        </ResponsiveDialogHeader>
+      )}
 
       {/* Scrollable Content Area */}
-      <div className="flex-1 overflow-y-auto min-h-0 px-4 sm:pl-0 sm:pr-4 space-y-4 scrollbar-thin w-full">
-        {/* Content Input */}
-        <Label htmlFor="task-content-edit" className="sr-only">
-          Task Content
-        </Label>
-        <Textarea
-          id="task-content-edit"
-          placeholder="What needs to be done?"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          onKeyDown={onKeyDown}
-          className={cn(
-            "text-lg sm:text-xl p-0 min-h-[40px] h-auto bg-transparent border-0 focus-visible:ring-0 resize-none placeholder:text-muted-foreground/50",
-            errors?.content &&
-              "text-destructive placeholder:text-destructive/50"
-          )}
-          aria-invalid={!!errors?.content}
-          aria-describedby={
-            errors?.content ? "task-content-edit-error" : undefined
-          }
-        />
-        {errors?.content && (
-          <p
-            id="task-content-edit-error"
-            className="text-xs font-medium text-destructive mt-1"
-          >
-            {errors.content.message}
-          </p>
+      <div
+        className={cn(
+          "flex-1 min-h-0 w-full",
+          hideDialogHeader
+            ? "px-8 py-8 md:px-12 md:py-12 space-y-10"
+            : "px-4 sm:pl-0 sm:pr-4 space-y-6",
         )}
+      >
+        {/* Content Input */}
+        <div>
+          <Label htmlFor="task-content-edit" className="sr-only">
+            Task Content
+          </Label>
+          <Textarea
+            id="task-content-edit"
+            placeholder="What needs to be done?"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            onKeyDown={onKeyDown}
+            className={cn(
+              "text-xl sm:text-2xl font-semibold p-0 min-h-[40px] h-auto bg-transparent border-0 focus-visible:ring-0 resize-none placeholder:text-muted-foreground/40 tracking-tight leading-tight",
+              errors?.content &&
+                "text-destructive placeholder:text-destructive/50",
+            )}
+            aria-invalid={!!errors?.content}
+            aria-describedby={
+              errors?.content ? "task-content-edit-error" : undefined
+            }
+          />
+          {errors?.content && (
+            <p
+              id="task-content-edit-error"
+              className="text-xs font-medium text-destructive mt-1"
+            >
+              {errors.content.message}
+            </p>
+          )}
+        </div>
 
         {/* Description Input (Markdown) */}
-        <div className="px-0 pt-2 pb-2">
-          <div className="flex items-center justify-between pb-2">
-            <span className="text-xs font-medium text-muted-foreground ml-1">
+        <div className="pt-2">
+          <div className="flex items-center justify-between pb-3">
+            <span className="type-ui text-muted-foreground/70 uppercase tracking-widest font-bold">
               Description
             </span>
             <Button
               variant="outline"
               size="sm"
-              className="h-7 px-2 text-[10px] uppercase tracking-wider font-bold text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+              className="h-7 px-3 text-[10px] uppercase tracking-wider font-bold text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors rounded-lg border-border/40"
               onClick={() => {
                 trigger(15);
                 setIsPreviewMode(!isPreviewMode);
@@ -176,9 +189,9 @@ export function TaskEditView({
           </div>
 
           {isPreviewMode ? (
-            <div className="h-[200px] p-3 text-sm prose prose-sm dark:prose-invert max-w-none bg-secondary/10 rounded-md overflow-y-auto border border-border/40 scrollbar-thin">
+            <div className="min-h-[160px] p-4 text-[15px] prose prose-sm dark:prose-invert max-w-none bg-secondary/10 rounded-lg overflow-y-auto border border-border/40 scrollbar-hide">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {description || "*No description*"}
+                {description || "_No description provided._"}
               </ReactMarkdown>
             </div>
           ) : (
@@ -186,15 +199,15 @@ export function TaskEditView({
               placeholder="Add details... (Markdown supported)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="h-[200px] text-sm resize-none border-none shadow-none focus-visible:ring-0 p-3 bg-transparent hover:bg-secondary/20 focus:bg-secondary/30 rounded-md placeholder:text-muted-foreground/60 overflow-y-auto transition-colors"
+              className="min-h-[200px] text-[15px] leading-relaxed resize-none border-none shadow-none focus-visible:ring-0 p-0 bg-transparent hover:bg-secondary/10 focus:bg-transparent rounded-lg placeholder:text-muted-foreground/40 overflow-y-auto transition-colors scrollbar-hide"
             />
           )}
         </div>
 
         {/* Subtasks / Checklist */}
-        <div className="pt-4 border-t mt-2">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-medium text-muted-foreground ml-1">
+        <div className="pt-6">
+          <div className="flex items-center justify-between mb-4">
+            <span className="type-ui text-muted-foreground/70 uppercase tracking-widest font-bold">
               Subtasks
             </span>
             <Button
@@ -205,29 +218,36 @@ export function TaskEditView({
                 setShowSubtasks(!showSubtasks);
               }}
               className={cn(
-                "h-6 w-6 p-0 text-muted-foreground hover:text-foreground transition-all [&_svg]:!size-4",
+                "h-8 w-8 p-0 text-muted-foreground hover:text-foreground transition-all [&_svg]:!size-4 rounded-lg border-border/40",
                 showSubtasks &&
-                  "text-brand bg-brand/10 hover:bg-brand/20 hover:text-brand"
+                  "text-brand bg-brand/10 border-brand/20 hover:bg-brand/20 hover:text-brand",
               )}
               title="Toggle subtasks"
             >
-              <ListChecks strokeWidth={2} />
+              <ListChecks strokeWidth={2.25} />
             </Button>
           </div>
 
           {showSubtasks && (
-            <SubtaskList
-              taskId={initialTask.id}
-              projectId={initialTask.project_id || inboxProjectId}
-              draftSubtasks={draftSubtasks}
-              onDraftSubtasksChange={setDraftSubtasks}
-            />
+            <div className="pl-1">
+              <SubtaskList
+                taskId={initialTask.id}
+                projectId={initialTask.project_id || inboxProjectId}
+                draftSubtasks={draftSubtasks}
+                onDraftSubtasksChange={setDraftSubtasks}
+              />
+            </div>
           )}
         </div>
       </div>
 
       {/* Fixed Footer - Actions Row */}
-      <div className="shrink-0 grid grid-cols-[1fr_auto] gap-2 pt-4 border-t mt-4 px-4 sm:px-0 pb-[calc(0.5rem+env(safe-area-inset-bottom))] bg-background w-full max-w-full">
+      <div
+        className={cn(
+          "shrink-0 grid grid-cols-[1fr_auto] gap-4 pt-6 border-t border-border/40 mt-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] bg-background w-full max-w-full",
+          hideDialogHeader ? "px-8 md:px-12" : "px-4 sm:px-0",
+        )}
+      >
         <div
           ref={scrollRef}
           className="flex items-center gap-3 overflow-x-auto scrollbar-hide pr-8 py-1 min-w-0 mask-linear-horizontal"
@@ -259,12 +279,13 @@ export function TaskEditView({
             variant="outline"
             size="sm"
             className={cn(
-              "h-10 px-3 text-xs border border-input bg-background hover:bg-accent hover:text-accent-foreground shrink-0 gap-1.5",
-              isEvening && "text-brand bg-brand/10 hover:bg-brand/20"
+              "h-10 px-4 text-xs border border-border/50 bg-background hover:bg-accent hover:text-accent-foreground shrink-0 gap-2 rounded-lg transition-seijaku-fast",
+              isEvening &&
+                "text-brand bg-brand/10 border-brand/20 hover:bg-brand/20",
             )}
             onClick={() => {
               const nextValue = !isEvening;
-              trigger(nextValue ? 15 : 15);
+              trigger(15);
               setIsEvening(nextValue);
               if (nextValue && !doDate) {
                 setDoDate(new Date());
@@ -272,8 +293,8 @@ export function TaskEditView({
             }}
             title="This Evening"
           >
-            <Moon className="h-3.5 w-3.5" />
-            {!isMobile && "Evening"}
+            <Moon className="h-3.5 w-3.5" strokeWidth={2.25} />
+            {!isMobile && <span className="font-medium">Evening</span>}
           </Button>
 
           {/* Priority Selector */}
@@ -294,7 +315,7 @@ export function TaskEditView({
             />
           </div>
 
-          {/* Project Selector */}
+          {/* Project Selector - Themed to align with Zen-Modernism */}
           <Select
             value={selectedProjectId || "inbox"}
             onValueChange={(v) => {
@@ -305,17 +326,17 @@ export function TaskEditView({
             <SelectTrigger
               onPointerDown={() => trigger(15)}
               className={cn(
-                "h-10 w-[110px] md:w-[130px] text-xs border border-input bg-background hover:bg-accent hover:text-accent-foreground shrink-0 focus:ring-0",
-                selectedProjectId ? "min-w-16" : "min-w-10"
+                "h-10 w-[120px] md:w-[140px] type-ui border-border/50 bg-background hover:bg-accent hover:text-accent-foreground shrink-0 focus:ring-0 rounded-lg",
+                selectedProjectId ? "min-w-20" : "min-w-12",
               )}
             >
               <SelectValue placeholder="Inbox" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-lg border-border/80 shadow-2xl">
               <SelectItem value="inbox">
                 <div className="flex items-center gap-2">
-                  <Inbox className="h-3 w-3" />
-                  <span>Inbox</span>
+                  <Inbox className="h-3.5 w-3.5" strokeWidth={2.25} />
+                  <span className="font-medium">Inbox</span>
                 </div>
               </SelectItem>
               {projects
@@ -327,7 +348,9 @@ export function TaskEditView({
                         className="h-3 w-3 rounded-full shrink-0"
                         style={{ backgroundColor: project.color }}
                       />
-                      <span className="truncate">{project.name}</span>
+                      <span className="truncate font-medium">
+                        {project.name}
+                      </span>
                     </div>
                   </SelectItem>
                 ))}
@@ -335,12 +358,12 @@ export function TaskEditView({
           </Select>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-3 shrink-0">
           {/* Delete Button */}
           <Button
             variant="ghost"
             size="sm"
-            className="h-10 w-10 p-0 text-muted-foreground/80 hover:text-red-500 hover:bg-red-500/10 transition-colors [&_svg]:!size-5"
+            className="h-10 w-10 p-0 text-muted-foreground/60 hover:text-red-500 hover:bg-red-500/10 transition-seijaku-fast [&_svg]:!size-5 rounded-lg"
             onClick={() => {
               trigger(50);
               onDelete();
@@ -350,14 +373,14 @@ export function TaskEditView({
             <Trash2 strokeWidth={1.5} />
           </Button>
 
-          {/* Submit Button */}
+          {/* Submit Button - Solid Finish Stroke */}
           <Button
             size="sm"
             variant={isPending ? "ghost" : "default"}
             className={cn(
-              "h-10 w-10 p-0 rounded-md [&_svg]:!size-5",
+              "h-10 w-10 p-0 rounded-lg [&_svg]:!size-5 transition-seijaku",
               !isPending &&
-                "bg-brand hover:bg-brand/90 text-brand-foreground shadow-sm"
+                "bg-brand hover:bg-brand/90 text-brand-foreground shadow-lg shadow-brand/10",
             )}
             onClick={() => {
               trigger([10, 50]);
@@ -366,7 +389,7 @@ export function TaskEditView({
             disabled={!hasContent || isPending}
             title="Save changes"
           >
-            <Save strokeWidth={1.5} className={cn(isPending && "opacity-50")} />
+            <Save strokeWidth={2} className={cn(isPending && "opacity-50")} />
           </Button>
         </div>
       </div>
