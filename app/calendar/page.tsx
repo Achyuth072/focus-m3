@@ -40,7 +40,7 @@ export default function CalendarPage() {
       setDate(date);
       setView("day");
     },
-    [setDate, setView]
+    [setDate, setView],
   );
 
   const renderView = () => {
