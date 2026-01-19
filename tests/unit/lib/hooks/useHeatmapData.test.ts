@@ -59,7 +59,7 @@ describe("useHeatmapData", () => {
       { completed_at: new Date().toISOString(), is_completed: true },
     ];
 
-    (useQuery as any).mockImplementation(({ queryKey }: any) => {
+    vi.mocked(useQuery).mockImplementation(({ queryKey }: { queryKey: string[] }) => {
       if (queryKey[0] === "heatmap-data") {
         return {
           data: {
@@ -90,7 +90,7 @@ describe("useHeatmapData", () => {
   });
 
   it("should handle guest mode by calling mockStore", async () => {
-    (useAuth as any).mockReturnValue({ isGuestMode: true });
+    vi.mocked(useAuth).mockReturnValue({ isGuestMode: true } as unknown as ReturnType<typeof useAuth>);
 
     const mockFocusLogs = [
       { start_time: new Date().toISOString(), duration_seconds: 7200 },
@@ -108,13 +108,13 @@ describe("useHeatmapData", () => {
       },
     ];
 
-    (mockStore.getFocusLogs as any).mockReturnValue(mockFocusLogs);
-    (mockStore.getTasks as any).mockReturnValue(mockTasks);
+    vi.mocked(mockStore.getFocusLogs).mockReturnValue(mockFocusLogs as unknown as unknown[]);
+    vi.mocked(mockStore.getTasks).mockReturnValue(mockTasks as unknown as unknown[]);
 
-    (useQuery as any).mockImplementation(() => ({
+    vi.mocked(useQuery).mockImplementation(() => ({
       data: { focusLogs: mockFocusLogs, tasks: mockTasks },
       isLoading: false,
-    }));
+    } as unknown as ReturnType<typeof useQuery>));
 
     const { result } = renderHook(() => useHeatmapData());
 
@@ -128,7 +128,7 @@ describe("useHeatmapData", () => {
   });
 
   it("should return empty heatmap if data is unavailable", async () => {
-    (useQuery as any).mockReturnValue({ data: null, isLoading: false });
+    vi.mocked(useQuery).mockReturnValue({ data: null, isLoading: false } as unknown as ReturnType<typeof useQuery>);
 
     const { result } = renderHook(() => useHeatmapData());
 

@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ActivityHeatmap } from "@/components/stats/ActivityHeatmap";
 import { useHeatmapData } from "@/lib/hooks/useHeatmapData";
@@ -34,7 +34,7 @@ describe("ActivityHeatmap", () => {
   });
 
   it("should render skeleton when loading", () => {
-    (useHeatmapData as any).mockReturnValue({
+    vi.mocked(useHeatmapData).mockReturnValue({
       data: [],
       isLoading: true,
       maxValue: { combined: 0, focus: 0, tasks: 0 },
@@ -46,7 +46,7 @@ describe("ActivityHeatmap", () => {
   });
 
   it("should initialize cal-heatmap on mount", () => {
-    (useHeatmapData as any).mockReturnValue({
+    vi.mocked(useHeatmapData).mockReturnValue({
       data: [{ date: "2026-01-01", combined: 5, focus: 4, tasks: 2 }],
       isLoading: false,
       maxValue: { combined: 10, focus: 8, tasks: 4 },
@@ -59,7 +59,7 @@ describe("ActivityHeatmap", () => {
   });
 
   it("should destroy cal-heatmap on unmount", () => {
-    (useHeatmapData as any).mockReturnValue({
+    vi.mocked(useHeatmapData).mockReturnValue({
       data: [],
       isLoading: false,
       maxValue: { combined: 1, focus: 1, tasks: 1 },
@@ -72,7 +72,7 @@ describe("ActivityHeatmap", () => {
 
   it("should render metric toggle tabs", () => {
     // Given: Component is rendered with data
-    (useHeatmapData as any).mockReturnValue({
+    vi.mocked(useHeatmapData).mockReturnValue({
       data: [{ date: "2026-01-01", combined: 5, focus: 4, tasks: 2 }],
       isLoading: false,
       maxValue: { combined: 10, focus: 8, tasks: 4 },

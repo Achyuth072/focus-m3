@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useEffect, useRef, useState, useMemo } from "react";
+// @ts-expect-error - cal-heatmap may have type resolution issues in some environments
 import CalHeatmap from "cal-heatmap";
-// @ts-ignore
+// @ts-expect-error - cal-heatmap plugins may not have types
 import Tooltip from "cal-heatmap/plugins/Tooltip";
-// @ts-ignore
+// @ts-expect-error - cal-heatmap plugins may not have types
 import Legend from "cal-heatmap/plugins/Legend";
 import "cal-heatmap/cal-heatmap.css";
 
@@ -110,7 +111,11 @@ export function ActivityHeatmap({ className }: ActivityHeatmapProps) {
           Tooltip,
           {
             enabled: true,
-            text: (date: any, value: any, dayjsDate: any) => {
+            text: (
+              _date: Date | string | number,
+              _value: number | null,
+              dayjsDate: { format: (fmt: string) => string },
+            ) => {
               const point = data.find(
                 (d) => d.date === dayjsDate.format("YYYY-MM-DD"),
               );

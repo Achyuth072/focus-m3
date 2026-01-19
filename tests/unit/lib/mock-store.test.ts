@@ -43,7 +43,7 @@ describe("MockStore (Guest Mode Data)", () => {
 
     // Verify localStorage
     const stored = JSON.parse(
-      localStorage.getItem("kanso_guest_data_v2") || "{}"
+      localStorage.getItem("kanso_guest_data_v5") || "{}"
     );
     expect(stored.tasks).toHaveLength(1);
     expect(stored.tasks[0].content).toBe("Test Task");
@@ -78,7 +78,7 @@ describe("MockStore (Guest Mode Data)", () => {
 
     // Verify localStorage
     const stored = JSON.parse(
-      localStorage.getItem("kanso_guest_data_v2") || "{}"
+      localStorage.getItem("kanso_guest_data_v5") || "{}"
     );
     expect(stored.tasks[0].content).toBe("Updated Content");
   });
