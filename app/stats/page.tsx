@@ -6,13 +6,27 @@ import { MetricCard } from "@/components/stats/MetricCard";
 import { useStats } from "@/lib/hooks/useStats";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Lazy load the chart component (Recharts is ~80KB+)
+// Lazy load components (D3/Recharts are large)
 const FocusTrendChart = dynamic(
   () =>
     import("@/components/stats/FocusTrendChart").then((mod) => ({
       default: mod.FocusTrendChart,
     })),
-  { loading: () => <Skeleton className="h-64 w-full rounded-xl" />, ssr: false }
+  {
+    loading: () => <Skeleton className="h-64 w-full rounded-xl" />,
+    ssr: false,
+  },
+);
+
+const ActivityHeatmap = dynamic(
+  () =>
+    import("@/components/stats/ActivityHeatmap").then((mod) => ({
+      default: mod.ActivityHeatmap,
+    })),
+  {
+    loading: () => <Skeleton className="h-48 w-full rounded-xl" />,
+    ssr: false,
+  },
 );
 
 export default function StatsPage() {
@@ -29,6 +43,7 @@ export default function StatsPage() {
             ))}
           </div>
           <Skeleton className="h-64 w-full rounded-xl" />
+          <Skeleton className="h-48 w-full rounded-xl" />
         </div>
       </div>
     );
@@ -79,6 +94,11 @@ export default function StatsPage() {
             icon={Target}
             trend={stats?.trends?.rate}
           />
+        </div>
+
+        {/* Heatmap */}
+        <div>
+          <ActivityHeatmap />
         </div>
 
         {/* Chart */}

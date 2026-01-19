@@ -5,7 +5,7 @@
 
 import type { Task, Project } from "@/lib/types/task";
 
-const STORAGE_KEY = "kanso_guest_data_v2";
+const STORAGE_KEY = "kanso_guest_data_v5";
 
 interface FocusLog {
   id: string;
@@ -94,17 +94,22 @@ class MockStore {
       dayOffset: number,
       projectId: string,
       priority: 1 | 2 | 3 | 4 = 4,
-      isEvening = false
+      isEvening = false,
     ) => {
       const date = new Date(now.getTime() + dayOffset * oneDay);
-      // Set specific time for calendar sorting (e.g. 9am for work, 7pm for evening)
-      if (isEvening) date.setHours(19, 0, 0, 0);
-      else date.setHours(9, 0, 0, 0);
+
+      // Randomize start time
+      const randomHour = isEvening
+        ? 18 + Math.random() * 4 // 18:00 - 22:00
+        : 8 + Math.random() * 6; // 08:00 - 14:00
+      const randomMinute = Math.floor(Math.random() * 60);
+      date.setHours(Math.floor(randomHour), randomMinute, 0, 0);
 
       const dueDate = date.toISOString();
       const isPast = dayOffset < 0;
-      // 80% chance of completion if in past
-      const isCompleted = isPast && Math.random() > 0.2;
+      // 85% chance of completion if in past for "Deep Work", 60% for others
+      const isCompleted =
+        isPast && Math.random() > (content.includes("Deep Work") ? 0.15 : 0.4);
 
       const taskId = `task-${generateId()}`;
 
@@ -118,8 +123,8 @@ class MockStore {
         priority,
         project_id: projectId,
         day_order: tasks.length,
-        created_at: now.toISOString(), // Created 'now' for simplicity
-        updated_at: now.toISOString(),
+        created_at: new Date(date.getTime() - 86400000).toISOString(),
+        updated_at: dueDate,
         due_date: dueDate,
         do_date: null,
         is_evening: isEvening,
@@ -132,36 +137,55 @@ class MockStore {
 
       // Add focus log if completed (simulate work done)
       if (isCompleted) {
+        const durationSeconds = 900 + Math.floor(Math.random() * 7200); // 15m to 2h
         logs.push({
           id: `log-${generateId()}`,
           user_id: "guest",
           task_id: taskId,
           start_time: dueDate,
-          end_time: new Date(date.getTime() + 30 * 60000).toISOString(),
-          duration_seconds: 1800 + Math.floor(Math.random() * 1800), // 30-60m
+          end_time: new Date(
+            date.getTime() + durationSeconds * 1000,
+          ).toISOString(),
+          duration_seconds: durationSeconds,
           created_at: dueDate,
         });
       }
     };
 
-    // Generate Past 21 Days (History for Stats) - Expanded for better trend view
-    for (let i = -21; i < 0; i++) {
+    // Generate Past 365 Days (History for Stats)
+    for (let i = -365; i < 0; i++) {
       const date = new Date(now.getTime() + i * oneDay);
       const dayOfWeek = date.getDay();
+      const monthOffset = Math.abs(i) / 30;
 
-      // Weekends (Saturday/Sunday) have less activity but not zero
+      // Higher probability of activity overall to fill heatmap
+      let probability = 0.7;
+      if (monthOffset > 4) probability = 0.5;
+      if (monthOffset > 8) probability = 0.35;
+
+      // Weekends still have less activity but not empty
       if (dayOfWeek === 0 || dayOfWeek === 6) {
-        if (Math.random() > 0.4) continue; // 60% chance skip weekends
-      } else {
-        if (Math.random() > 0.9) continue; // Only 10% chance skip weekdays
+        probability *= 0.4;
       }
 
-      createTask("Morning Standup", i, pWork, 1);
-      createTask("Deep Work Block", i, pWork, 1);
+      if (Math.random() > probability) continue;
 
-      if (Math.random() > 0.4) createTask("Clear Inbox", i, pWork, 3);
-      if (Math.random() > 0.6) createTask("Project Sync", i, pWork, 2);
-      if (Math.random() > 0.5) createTask("Workout 🏋️", i, pPersonal, 3, true);
+      // On active days, generate 1-3 tasks
+      const taskCount = Math.floor(Math.random() * 3) + 1;
+      for (let t = 0; t < taskCount; t++) {
+        const isEvening = Math.random() > 0.7;
+        createTask(
+          t === 0
+            ? "Deep Work Session"
+            : Math.random() > 0.5
+              ? "Review & Refactor"
+              : "Learning & Research",
+          i,
+          isEvening ? pPersonal : pWork,
+          (Math.floor(Math.random() * 3) + 1) as 1 | 2 | 3 | 4,
+          isEvening,
+        );
+      }
     }
 
     // Generate Today & Future 14 Days
@@ -180,6 +204,23 @@ class MockStore {
       }
       if (i % 3 === 0) createTask("Write Blog Post", i, pSide, 2);
       if (i % 7 === 0) createTask("Weekly Planning", i, pPersonal, 1);
+    }
+
+    // Inject "Busy Days" for Calendar Overflow Testing
+    // Pick 5 random days in the next 14 days (closer to now)
+    for (let j = 0; j < 5; j++) {
+      const busyDayOffset = Math.floor(Math.random() * 14); // 0 to 14 days from now
+      // Add 4-6 extra tasks to this day
+      const extraTasks = Math.floor(Math.random() * 3) + 4;
+      for (let k = 0; k < extraTasks; k++) {
+        createTask(
+          `Busy Day Task ${k + 1}`,
+          busyDayOffset,
+          Math.random() > 0.5 ? pWork : pSide,
+          2,
+          Math.random() > 0.8, // Mostly day tasks
+        );
+      }
     }
 
     return {
@@ -269,7 +310,7 @@ class MockStore {
   }
 
   addProject(
-    project: Omit<Project, "id" | "created_at" | "updated_at">
+    project: Omit<Project, "id" | "created_at" | "updated_at">,
   ): Project {
     const now = new Date().toISOString();
     const newProject: Project = {

@@ -19,6 +19,7 @@ export function useTasks(options: UseTasksOptions = {}) {
 
   return useQuery({
     queryKey: ["tasks", { projectId, showCompleted, filter, isGuestMode }],
+    staleTime: 60000,
     queryFn: async (): Promise<Task[]> => {
       // Guest Mode: Use mock store
       if (isGuestMode) {
@@ -29,7 +30,7 @@ export function useTasks(options: UseTasksOptions = {}) {
           const today = new Date();
           today.setHours(23, 59, 59, 999);
           tasks = tasks.filter(
-            (t) => t.due_date && new Date(t.due_date) <= today
+            (t) => t.due_date && new Date(t.due_date) <= today,
           );
         } else if (filter === "p1") {
           tasks = tasks.filter((t) => t.priority === 1);

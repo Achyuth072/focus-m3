@@ -36,21 +36,18 @@ export function useStats() {
 
   return useQuery({
     queryKey: ["stats-dashboard", isGuestMode],
-    staleTime: 0,
-    refetchOnWindowFocus: "always",
+    staleTime: 60000, // Cache for 1 minute to prevent constant re-calculation
     queryFn: async (): Promise<StatsData> => {
       // Helper to calculate streak
       const calculateCurrentStreak = (
         logs: { start_time: string }[],
-        tasks: { is_completed: boolean; completed_at: string | null }[]
+        tasks: { is_completed: boolean; completed_at: string | null }[],
       ) => {
         const activityDates = new Set<string>();
-        logs.forEach((l) =>
-          activityDates.add(new Date(l.start_time).toDateString())
-        );
+        logs.forEach((l) => activityDates.add(l.start_time.split("T")[0]));
         tasks.forEach((t) => {
           if (t.is_completed && t.completed_at) {
-            activityDates.add(new Date(t.completed_at).toDateString());
+            activityDates.add(t.completed_at.split("T")[0]);
           }
         });
 
@@ -60,14 +57,18 @@ export function useStats() {
         const today = new Date();
         const checkDate = new Date(today);
 
-        // If no activity today, check yesterday to see if streak is still alive
-        if (!activityDates.has(checkDate.toDateString())) {
+        const getDateKey = (date: Date) => date.toISOString().split("T")[0];
+
+        // If no activity today, check yesterday
+        if (!activityDates.has(getDateKey(checkDate))) {
           checkDate.setDate(checkDate.getDate() - 1);
         }
 
-        while (activityDates.has(checkDate.toDateString())) {
+        while (activityDates.has(getDateKey(checkDate))) {
           streak++;
           checkDate.setDate(checkDate.getDate() - 1);
+          // Safety break
+          if (streak > 365) break;
         }
 
         return streak;
@@ -77,6 +78,24 @@ export function useStats() {
       if (isGuestMode) {
         const tasks = mockStore.getTasks();
         const logs = mockStore.getFocusLogs();
+
+        // dictionary for O(1) lookups
+        const dailyStats: Record<string, { seconds: number; tasks: number }> =
+          {};
+
+        logs.forEach((log) => {
+          const key = log.start_time.split("T")[0];
+          if (!dailyStats[key]) dailyStats[key] = { seconds: 0, tasks: 0 };
+          dailyStats[key].seconds += log.duration_seconds || 0;
+        });
+
+        tasks.forEach((task) => {
+          if (task.is_completed && task.completed_at) {
+            const key = task.completed_at.split("T")[0];
+            if (!dailyStats[key]) dailyStats[key] = { seconds: 0, tasks: 0 };
+            dailyStats[key].tasks += 1;
+          }
+        });
 
         const totalFocusSeconds =
           logs?.reduce((acc, log) => acc + (log.duration_seconds || 0), 0) || 0;
@@ -92,26 +111,16 @@ export function useStats() {
         const dailyTrend: DailyStats[] = [];
         for (let i = 6; i >= 0; i--) {
           const date = subDays(new Date(), i);
+          const key = date.toISOString().split("T")[0];
           const dateStr = format(date, "EEE");
-
-          const dayLogs =
-            logs?.filter((log) => isSameDay(new Date(log.start_time), date)) ||
-            [];
-          const daySeconds = dayLogs.reduce(
-            (acc, log) => acc + (log.duration_seconds || 0),
-            0
-          );
+          const stats = dailyStats[key] || { seconds: 0, tasks: 0 };
 
           dailyTrend.push({
             date: dateStr,
-            hours: Math.round((daySeconds / 3600) * 10) / 10,
-            totalSessions: dayLogs.length,
-            tasksCompleted: tasks.filter(
-              (t) =>
-                t.is_completed &&
-                t.completed_at &&
-                isSameDay(new Date(t.completed_at), date)
-            ).length,
+            hours: Math.round((stats.seconds / 3600) * 10) / 10,
+            totalSessions: logs.filter((l) => l.start_time.startsWith(key))
+              .length, // Small N (7 days)
+            tasksCompleted: stats.tasks,
           });
         }
 
@@ -120,45 +129,45 @@ export function useStats() {
         const fourteenDaysAgo = subDays(now, 14);
 
         const currentLogs = logs.filter(
-          (l) => new Date(l.start_time) >= sevenDaysAgo
+          (l) => new Date(l.start_time) >= sevenDaysAgo,
         );
         const prevLogs = logs.filter(
           (l) =>
             new Date(l.start_time) >= fourteenDaysAgo &&
-            new Date(l.start_time) < sevenDaysAgo
+            new Date(l.start_time) < sevenDaysAgo,
         );
 
         const currentFocusSec = currentLogs.reduce(
           (acc, log) => acc + (log.duration_seconds || 0),
-          0
+          0,
         );
         const prevFocusSec = prevLogs.reduce(
           (acc, log) => acc + (log.duration_seconds || 0),
-          0
+          0,
         );
 
         const currentCompleted = tasks.filter(
           (t) =>
             t.is_completed &&
             t.completed_at &&
-            new Date(t.completed_at) >= sevenDaysAgo
+            new Date(t.completed_at) >= sevenDaysAgo,
         ).length;
         const prevCompleted = tasks.filter(
           (t) =>
             t.is_completed &&
             t.completed_at &&
             new Date(t.completed_at) >= fourteenDaysAgo &&
-            new Date(t.completed_at) < sevenDaysAgo
+            new Date(t.completed_at) < sevenDaysAgo,
         ).length;
 
         const currentTotal = tasks.filter(
-          (t) => !t.completed_at || new Date(t.completed_at) >= sevenDaysAgo
+          (t) => !t.completed_at || new Date(t.completed_at) >= sevenDaysAgo,
         ).length;
         const prevTotal = tasks.filter(
           (t) =>
             t.completed_at &&
             new Date(t.completed_at) >= fourteenDaysAgo &&
-            new Date(t.completed_at) < sevenDaysAgo
+            new Date(t.completed_at) < sevenDaysAgo,
         ).length;
 
         const currentRate =
@@ -233,7 +242,7 @@ export function useStats() {
           [];
         const daySeconds = dayLogs.reduce(
           (acc, log) => acc + (log.duration_seconds || 0),
-          0
+          0,
         );
 
         dailyTrend.push({
@@ -245,7 +254,7 @@ export function useStats() {
               (t) =>
                 t.is_completed &&
                 t.completed_at &&
-                isSameDay(new Date(t.completed_at), date)
+                isSameDay(new Date(t.completed_at), date),
             ).length || 0,
         });
       }
@@ -261,16 +270,16 @@ export function useStats() {
         logs?.filter(
           (l) =>
             new Date(l.start_time) >= fourteenDaysAgo &&
-            new Date(l.start_time) < sevenDaysAgo
+            new Date(l.start_time) < sevenDaysAgo,
         ) || [];
 
       const currentFocusSec = currentLogs.reduce(
         (acc, log) => acc + (log.duration_seconds || 0),
-        0
+        0,
       );
       const prevFocusSec = prevLogs.reduce(
         (acc, log) => acc + (log.duration_seconds || 0),
-        0
+        0,
       );
 
       const currentCompleted =
@@ -278,7 +287,7 @@ export function useStats() {
           (t) =>
             t.is_completed &&
             t.completed_at &&
-            new Date(t.completed_at) >= sevenDaysAgo
+            new Date(t.completed_at) >= sevenDaysAgo,
         ).length || 0;
       const prevCompleted =
         tasks?.filter(
@@ -286,21 +295,21 @@ export function useStats() {
             t.is_completed &&
             t.completed_at &&
             new Date(t.completed_at) >= fourteenDaysAgo &&
-            new Date(t.completed_at) < sevenDaysAgo
+            new Date(t.completed_at) < sevenDaysAgo,
         ).length || 0;
 
       const currentTotal =
         tasks?.filter(
           (t) =>
             !t.is_completed ||
-            (t.completed_at && new Date(t.completed_at) >= sevenDaysAgo)
+            (t.completed_at && new Date(t.completed_at) >= sevenDaysAgo),
         ).length || 0;
       const prevTotal =
         tasks?.filter(
           (t) =>
             t.completed_at &&
             new Date(t.completed_at) >= fourteenDaysAgo &&
-            new Date(t.completed_at) < sevenDaysAgo
+            new Date(t.completed_at) < sevenDaysAgo,
         ).length || 0;
 
       const currentRate =
