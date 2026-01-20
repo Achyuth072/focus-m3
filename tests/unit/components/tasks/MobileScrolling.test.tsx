@@ -22,7 +22,9 @@ vi.mock("@dnd-kit/core", () => ({
 
 // Mock DnD Kit Sortable
 vi.mock("@dnd-kit/sortable", () => ({
-  SortableContext: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+  SortableContext: ({ children }: { children: ReactNode }) => (
+    <div>{children}</div>
+  ),
   verticalListSortingStrategy: vi.fn(),
   useSortable: vi.fn(() => ({
     attributes: {},
@@ -89,7 +91,7 @@ describe("Mobile Scrolling Padding", () => {
 
   it("TaskMasonryGrid should have bottom padding to prevent cutoff on mobile", () => {
     const { container } = render(
-      <TaskMasonryGrid processedTasks={mockProcessedTasks} />
+      <TaskMasonryGrid processedTasks={mockProcessedTasks} />,
     );
 
     const gridContainer = container.querySelector("div.px-4");
@@ -100,13 +102,13 @@ describe("Mobile Scrolling Padding", () => {
 
   it("TaskKanbanBoard should have bottom padding to prevent cutoff on mobile", () => {
     const { container } = render(
-      <TaskKanbanBoard processedTasks={mockProcessedTasks} />
+      <TaskKanbanBoard processedTasks={mockProcessedTasks} />,
     );
 
-    // Find the board container which has pb-24 class
-    const boardContainer = container.querySelector("[class*='pb-24']");
+    // Find the board container which has pb-20 class
+    const boardContainer = container.querySelector("[class*='pb-20']");
     expect(boardContainer).not.toBeNull();
-    expect(boardContainer?.className).toContain("pb-24");
+    expect(boardContainer?.className).toContain("pb-20");
     expect(boardContainer?.className).toContain("md:pb-6");
   });
 
@@ -120,7 +122,7 @@ describe("Mobile Scrolling Padding", () => {
         handleDragEnd={vi.fn()}
         handleTaskClick={vi.fn()}
         keyboardSelectedId={null}
-      />
+      />,
     );
 
     const listContainer = container.querySelector("[class*='pb-24']");

@@ -79,7 +79,7 @@ export function TaskKanbanBoard({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex h-full overflow-x-auto pb-24 md:pb-6 px-4 md:px-6 gap-4 md:gap-6 snap-x snap-mandatory">
+      <div className="flex h-full overflow-x-auto pb-20 md:pb-6 px-4 md:px-6 gap-3 md:gap-6 snap-x snap-mandatory">
         {boardColumns.map((group) => (
           <KanbanColumn key={group.title} group={group} onSelect={onSelect} />
         ))}
@@ -97,7 +97,7 @@ export function TaskKanbanBoard({
         }}
       >
         {activeTask ? (
-          <div className="w-[85vw] md:w-[320px] rotate-2 scale-105 shadow-xl rounded-xl overflow-hidden pointer-events-none">
+          <div className="w-[90vw] md:w-[320px] rotate-2 scale-105 shadow-xl rounded-xl overflow-hidden pointer-events-none">
             <TaskItem task={activeTask} viewMode="board" />
           </div>
         ) : null}
@@ -114,7 +114,7 @@ const KanbanColumn = memo(function KanbanColumn({
   onSelect?: (task: Task) => void;
 }) {
   return (
-    <div className="flex-shrink-0 w-[85vw] md:w-[320px] snap-center flex flex-col h-full bg-secondary/10 rounded-2xl border border-border p-3">
+    <div className="flex-shrink-0 w-[90vw] md:w-[320px] snap-center flex flex-col h-full bg-secondary/10 rounded-2xl border border-border p-2">
       <div className="flex items-center justify-between mb-4 px-1">
         <h3 className="type-ui font-bold text-foreground/80 lowercase tracking-tight">
           {group.title}
