@@ -23,6 +23,7 @@ import {
   CheckSquare,
   Calendar,
   BarChart3,
+  Repeat,
   Timer,
   Settings,
   Plus,
@@ -40,6 +41,7 @@ const mainNavItems = [
   { label: "All Tasks", icon: CheckSquare, path: "/", isAction: false },
   { label: "Calendar", icon: Calendar, path: "/calendar", isAction: false },
   { label: "Stats", icon: BarChart3, path: "/stats", isAction: false },
+  { label: "Habits", icon: Repeat, path: "/habits", isAction: false },
 ];
 
 const secondaryNavItems = [
@@ -63,7 +65,7 @@ export function AppSidebar() {
   // Prefetch all routes on mount for instant navigation
   useEffect(() => {
     const allRoutes = [...mainNavItems, ...secondaryNavItems].map(
-      (item) => item.path
+      (item) => item.path,
     );
     allRoutes.forEach((path) => router.prefetch(path));
   }, [router]);
@@ -103,7 +105,9 @@ export function AppSidebar() {
                   .filter((item) => {
                     if (isMobile) {
                       return (
-                        item.label !== "Stats" && item.label !== "Calendar"
+                        item.label !== "Stats" &&
+                        item.label !== "Calendar" &&
+                        item.label !== "Habits"
                       );
                     }
                     return true;

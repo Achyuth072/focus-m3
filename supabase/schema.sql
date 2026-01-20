@@ -443,3 +443,74 @@ ALTER TABLE public.tasks
 
 ALTER TABLE public.tasks
   ADD CONSTRAINT tasks_description_length_check CHECK (char_length(description) <= 5000);
+
+-- =============================================================================
+-- 12. HABITS & HABIT_ENTRIES
+-- =============================================================================
+
+-- A. Habits Table
+CREATE TABLE IF NOT EXISTS public.habits (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  description TEXT,
+  color TEXT DEFAULT '#4B6CB7',
+  icon TEXT,
+  created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+  archived_at TIMESTAMPTZ,
+  
+  CONSTRAINT habits_name_length_check CHECK (char_length(name) <= 100),
+  CONSTRAINT habits_description_length_check CHECK (char_length(description) <= 500)
+);
+
+-- Index for faster user-scoped lookups
+CREATE INDEX IF NOT EXISTS habits_user_id_idx ON public.habits (user_id);
+
+-- Updated At Trigger
+CREATE TRIGGER habits_updated_at
+  BEFORE UPDATE ON public.habits
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+-- B. Habit Entries Table
+CREATE TABLE IF NOT EXISTS public.habit_entries (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  habit_id UUID NOT NULL REFERENCES public.habits(id) ON DELETE CASCADE,
+  date DATE NOT NULL,
+  value INTEGER DEFAULT 1,
+  created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+  UNIQUE(habit_id, date)
+);
+
+-- Index for performance
+CREATE INDEX IF NOT EXISTS habit_entries_habit_id_idx ON public.habit_entries (habit_id);
+
+-- C. ROW LEVEL SECURITY (RLS)
+ALTER TABLE public.habits ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.habit_entries ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own habits" ON public.habits
+  FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own habits" ON public.habits
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own habits" ON public.habits
+  FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own habits" ON public.habits
+  FOR DELETE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can view own habit_entries" ON public.habit_entries
+  FOR SELECT USING (
+    EXISTS (SELECT 1 FROM public.habits WHERE public.habits.id = habit_entries.habit_id AND public.habits.user_id = auth.uid())
+  );
+CREATE POLICY "Users can insert own habit_entries" ON public.habit_entries
+  FOR INSERT WITH CHECK (
+    EXISTS (SELECT 1 FROM public.habits WHERE public.habits.id = habit_entries.habit_id AND public.habits.user_id = auth.uid())
+  );
+CREATE POLICY "Users can update own habit_entries" ON public.habit_entries
+  FOR UPDATE USING (
+    EXISTS (SELECT 1 FROM public.habits WHERE public.habits.id = habit_entries.habit_id AND public.habits.user_id = auth.uid())
+  );
+CREATE POLICY "Users can delete own habit_entries" ON public.habit_entries
+  FOR DELETE USING (
+    EXISTS (SELECT 1 FROM public.habits WHERE public.habits.id = habit_entries.habit_id AND public.habits.user_id = auth.uid())
+  );

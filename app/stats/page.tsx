@@ -1,7 +1,15 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Target, CheckCircle2, Flame, Clock, Zap } from "lucide-react";
+import {
+  Target,
+  CheckCircle2,
+  Flame,
+  Clock,
+  Zap,
+  Repeat,
+  ChevronRight,
+} from "lucide-react";
 import { MetricCard } from "@/components/stats/MetricCard";
 import { useStats } from "@/lib/hooks/useStats";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -94,6 +102,29 @@ export default function StatsPage() {
             icon={Target}
             trend={stats?.trends?.rate}
           />
+        </div>
+
+        {/* Habits Summary */}
+        <div className="relative overflow-hidden rounded-xl border bg-card">
+          <a
+            href="/habits"
+            className="block p-6 transition-colors hover:bg-accent/50"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                  <Repeat className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">Habits</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Track your daily habits with heatmaps
+                  </p>
+                </div>
+              </div>
+              <ChevronRight className="h-5 w-5 text-muted-foreground" />
+            </div>
+          </a>
         </div>
 
         {/* Heatmap */}
