@@ -55,8 +55,8 @@ export default function RecurrencePicker({
 }: RecurrencePickerProps) {
   const [open, setOpen] = useState(false);
   const isIconVariant = variant === "icon";
-  const hasRecurrence = value !== null;
-  const badgeLetter = getRecurrenceBadge(value);
+  const hasRecurrence = !!value;
+  const badgeLetter = hasRecurrence ? getRecurrenceBadge(value) : null;
   const { trigger } = useHaptic();
 
   return (
@@ -70,7 +70,7 @@ export default function RecurrencePicker({
               "h-10 w-10 p-0 transition-all group relative border border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-none",
               hasRecurrence
                 ? "text-brand bg-brand/10 hover:bg-brand/20 hover:text-brand border-transparent"
-                : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent",
             )}
             onClick={() => {
               trigger(25);
