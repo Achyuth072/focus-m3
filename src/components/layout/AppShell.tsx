@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useLayoutEffect } from "react";
 import { usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useAuth } from "@/components/AuthProvider";
@@ -82,6 +82,14 @@ function AppShellContent({ children }: AppShellProps) {
     }
   };
 
+  // Reset scroll position on navigation to prevent layout shifts
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+    }
+  }, [pathname]);
+
   return (
     <CompletedTasksProvider>
       <SidebarProvider defaultOpen={true}>
@@ -152,6 +160,7 @@ function AppShellContent({ children }: AppShellProps) {
           </AnimatePresence>
 
           <div
+            ref={scrollContainerRef}
             className={cn(
               "flex-1 md:pt-0 md:pb-0",
               pathname === "/calendar" || isFocus || pathname === "/"
