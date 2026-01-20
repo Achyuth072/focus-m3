@@ -2,12 +2,12 @@ import {
   render,
   screen,
   fireEvent,
-  act,
   waitFor,
 } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import AppShell from "@/components/layout/AppShell";
 import { usePathname } from "next/navigation";
+import React from "react";
 
 // Mock dependencies
 vi.mock("next/navigation", () => ({
@@ -27,7 +27,7 @@ vi.mock("@/components/AuthProvider", () => ({
 }));
 
 vi.mock("@/components/TaskActionsProvider", () => ({
-  TaskActionsProvider: ({ children }: any) => <div>{children}</div>,
+  TaskActionsProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   useTaskActions: () => ({
     isAddTaskOpen: false,
     openAddTask: vi.fn(),
@@ -36,7 +36,7 @@ vi.mock("@/components/TaskActionsProvider", () => ({
 }));
 
 vi.mock("@/components/ProjectActionsProvider", () => ({
-  ProjectActionsProvider: ({ children }: any) => <div>{children}</div>,
+  ProjectActionsProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   useProjectActions: () => ({
     isCreateProjectOpen: false,
     closeCreateProject: vi.fn(),
@@ -44,11 +44,11 @@ vi.mock("@/components/ProjectActionsProvider", () => ({
 }));
 
 vi.mock("@/components/TimerProvider", () => ({
-  TimerProvider: ({ children }: any) => <div>{children}</div>,
+  TimerProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
 vi.mock("@/components/CompletedTasksProvider", () => ({
-  CompletedTasksProvider: ({ children }: any) => <div>{children}</div>,
+  CompletedTasksProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
 vi.mock("@/lib/hooks/useRealtimeSync", () => ({
@@ -88,8 +88,8 @@ vi.mock("@/components/tasks/AddTaskFab", () => ({
 }));
 
 vi.mock("@/components/ui/sidebar", () => ({
-  SidebarProvider: ({ children }: any) => <div>{children}</div>,
-  SidebarInset: ({ children }: any) => (
+  SidebarProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  SidebarInset: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="sidebar-inset">{children}</div>
   ),
   useSidebar: () => ({
@@ -106,7 +106,7 @@ describe("AppShell Layout & Scroll Behavior", () => {
 
   it("should reset scroll position when navigating from Stats (scrollable) to Tasks (hidden overflow)", async () => {
     // 1. Start at /stats (overflow-y-auto)
-    (usePathname as any).mockReturnValue("/stats");
+    vi.mocked(usePathname).mockReturnValue("/stats");
 
     // We need to render the internal component structure.
     // Since AppShell default export wraps context, we can test it directly if we mock everything right,
@@ -143,7 +143,7 @@ describe("AppShell Layout & Scroll Behavior", () => {
     }
 
     // 3. Navigate to / (Tasks) - which changes the class to overflow-hidden
-    (usePathname as any).mockReturnValue("/");
+    vi.mocked(usePathname).mockReturnValue("/");
 
     rerender(
       <AppShell>

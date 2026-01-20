@@ -2,6 +2,7 @@ import { render, screen, within } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import RecurrencePicker from "@/components/tasks/TaskSheet/RecurrencePicker";
 import "@testing-library/jest-dom";
+import React from "react";
 
 // Mock hooks
 vi.mock("@/lib/hooks/useHaptic", () => ({
@@ -10,11 +11,11 @@ vi.mock("@/lib/hooks/useHaptic", () => ({
 
 // Mock Popover to simplify testing
 vi.mock("@/components/ui/popover", () => ({
-  Popover: ({ children }: any) => <div data-testid="popover">{children}</div>,
-  PopoverTrigger: ({ children }: any) => (
+  Popover: ({ children }: { children: React.ReactNode }) => <div data-testid="popover">{children}</div>,
+  PopoverTrigger: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="popover-trigger">{children}</div>
   ),
-  PopoverContent: ({ children }: any) => (
+  PopoverContent: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="popover-content">{children}</div>
   ),
 }));
@@ -49,7 +50,7 @@ describe("RecurrencePicker Repetition State", () => {
     // Given: value is undefined
     render(
       <RecurrencePicker
-        value={undefined as any}
+        value={undefined as never}
         onChange={mockOnChange}
         variant="icon"
       />,
