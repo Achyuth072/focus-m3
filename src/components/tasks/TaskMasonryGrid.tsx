@@ -39,7 +39,7 @@ export function TaskMasonryGrid({
 
   if (allNavigableTasks.length === 0) {
     return (
-      <div className="px-6 py-12 text-center text-muted-foreground">
+      <div className="px-4 md:px-6 py-12 text-center text-muted-foreground">
         No active tasks to display in grid.
       </div>
     );

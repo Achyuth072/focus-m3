@@ -23,7 +23,7 @@ import {
   CheckSquare,
   Calendar,
   BarChart3,
-  Repeat,
+  Layers,
   Timer,
   Settings,
   Plus,
@@ -39,9 +39,9 @@ import { useHaptic } from "@/lib/hooks/useHaptic";
 
 const mainNavItems = [
   { label: "All Tasks", icon: CheckSquare, path: "/", isAction: false },
+  { label: "Habits", icon: Layers, path: "/habits", isAction: false },
   { label: "Calendar", icon: Calendar, path: "/calendar", isAction: false },
   { label: "Stats", icon: BarChart3, path: "/stats", isAction: false },
-  { label: "Habits", icon: Repeat, path: "/habits", isAction: false },
 ];
 
 const secondaryNavItems = [
@@ -69,12 +69,6 @@ export function AppSidebar() {
     );
     allRoutes.forEach((path) => router.prefetch(path));
   }, [router]);
-
-  const handleProjectClick = (projectId: string | "inbox") => {
-    trigger(15);
-    router.push(`/?project=${projectId}`);
-    if (isMobile) setOpenMobile(false);
-  };
 
   return (
     <>
@@ -105,9 +99,7 @@ export function AppSidebar() {
                   .filter((item) => {
                     if (isMobile) {
                       return (
-                        item.label !== "Stats" &&
-                        item.label !== "Calendar" &&
-                        item.label !== "Habits"
+                        item.label !== "Stats" && item.label !== "Calendar"
                       );
                     }
                     return true;
@@ -122,24 +114,38 @@ export function AppSidebar() {
                     return (
                       <SidebarMenuItem key={item.label}>
                         <SidebarMenuButton
-                          onClick={() => {
-                            trigger(15);
-                            if (item.isAction) {
-                              openSheet();
-                            } else {
-                              if (item.label === "All Tasks") {
-                                router.push("/?project=all");
-                              } else {
-                                router.push(item.path);
-                              }
-                            }
-                            if (isMobile) setOpenMobile(false);
-                          }}
+                          asChild
                           isActive={isActive}
                           tooltip={item.label}
                         >
-                          <Icon className="h-5 w-5" />
-                          <span>{item.label}</span>
+                          <Link
+                            href={
+                              item.label === "All Tasks"
+                                ? "/?project=all"
+                                : item.path
+                            }
+                            onClick={(e) => {
+                              trigger(15);
+                              if (item.isAction) {
+                                e.preventDefault();
+                                openSheet();
+                                if (isMobile) setOpenMobile(false);
+                              } else if (isMobile) {
+                                e.preventDefault();
+                                setOpenMobile(false);
+                                setTimeout(() => {
+                                  router.push(
+                                    item.label === "All Tasks"
+                                      ? "/?project=all"
+                                      : item.path,
+                                  );
+                                }, 50);
+                              }
+                            }}
+                          >
+                            <Icon className="h-5 w-5" />
+                            <span>{item.label}</span>
+                          </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     );
@@ -182,14 +188,29 @@ export function AppSidebar() {
                   {/* Inbox */}
                   <SidebarMenuItem>
                     <SidebarMenuButton
-                      onClick={() => handleProjectClick("inbox")}
+                      asChild
                       isActive={currentProjectId === "inbox"}
                       tooltip="Inbox"
                     >
-                      <div className="flex items-center justify-center w-5 h-5 shrink-0">
-                        <Inbox className="h-4 w-4" />
-                      </div>
-                      <span>Inbox</span>
+                      <Link
+                        href="/?project=inbox"
+                        onClick={(e) => {
+                          trigger(15);
+                          if (isMobile) {
+                            e.preventDefault();
+                            setOpenMobile(false);
+                            setTimeout(
+                              () => router.push("/?project=inbox"),
+                              50,
+                            );
+                          }
+                        }}
+                      >
+                        <div className="flex items-center justify-center w-5 h-5 shrink-0">
+                          <Inbox className="h-4 w-4" />
+                        </div>
+                        <span>Inbox</span>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
 
@@ -199,17 +220,32 @@ export function AppSidebar() {
                     .map((project) => (
                       <SidebarMenuItem key={project.id}>
                         <SidebarMenuButton
-                          onClick={() => handleProjectClick(project.id)}
+                          asChild
                           isActive={currentProjectId === project.id}
                           tooltip={project.name}
                         >
-                          <div className="flex items-center justify-center w-5 h-5 shrink-0">
-                            <div
-                              className="h-3 w-3 rounded-full"
-                              style={{ backgroundColor: project.color }}
-                            />
-                          </div>
-                          <span className="truncate">{project.name}</span>
+                          <Link
+                            href={`/?project=${project.id}`}
+                            onClick={(e) => {
+                              trigger(15);
+                              if (isMobile) {
+                                e.preventDefault();
+                                setOpenMobile(false);
+                                setTimeout(
+                                  () => router.push(`/?project=${project.id}`),
+                                  50,
+                                );
+                              }
+                            }}
+                          >
+                            <div className="flex items-center justify-center w-5 h-5 shrink-0">
+                              <div
+                                className="h-3 w-3 rounded-full"
+                                style={{ backgroundColor: project.color }}
+                              />
+                            </div>
+                            <span className="truncate">{project.name}</span>
+                          </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     ))}
@@ -228,16 +264,19 @@ export function AppSidebar() {
                     return (
                       <SidebarMenuItem key={item.label}>
                         <SidebarMenuButton
-                          onClick={() => {
-                            trigger(15);
-                            router.push(item.path);
-                            if (isMobile) setOpenMobile(false);
-                          }}
+                          asChild
                           isActive={isActive}
                           tooltip={item.label}
                         >
-                          <Icon className="h-5 w-5" />
-                          <span>{item.label}</span>
+                          <Link
+                            href={item.path}
+                            onClick={() => {
+                              trigger(15);
+                            }}
+                          >
+                            <Icon className="h-5 w-5" />
+                            <span>{item.label}</span>
+                          </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     );
@@ -259,8 +298,13 @@ export function AppSidebar() {
                 >
                   <Link
                     href="/settings"
-                    onClick={() => {
+                    onClick={(e) => {
                       trigger(15);
+                      if (isMobile) {
+                        e.preventDefault();
+                        setOpenMobile(false);
+                        setTimeout(() => router.push("/settings"), 50);
+                      }
                     }}
                   >
                     <Settings className="h-5 w-5" />

@@ -234,7 +234,7 @@ export default function TaskList({
     processedTasks.completed.length === 0
   ) {
     return (
-      <div className="px-6 py-12 text-center">
+      <div className="px-4 md:px-6 py-12 text-center">
         <p className="text-muted-foreground">
           No tasks yet. Create one to get started!
         </p>

@@ -4,8 +4,9 @@
  */
 
 import type { Task, Project } from "@/lib/types/task";
+import type { Habit, HabitEntry } from "@/lib/types/habit";
 
-const STORAGE_KEY = "kanso_guest_data_v5";
+const STORAGE_KEY = "kanso_guest_data_v6";
 
 interface FocusLog {
   id: string;
@@ -20,6 +21,8 @@ interface FocusLog {
 interface GuestData {
   tasks: Task[];
   projects: Project[];
+  habits: Habit[];
+  habit_entries: HabitEntry[];
   focus_logs: FocusLog[];
   lastUpdated: string;
 }
@@ -41,6 +44,9 @@ class MockStore {
     const now = new Date();
     const nowIso = now.toISOString();
     const oneDay = 86400000;
+    const startOfHistory = new Date(now.getTime() - 365 * oneDay)
+      .toISOString()
+      .split("T")[0];
 
     // Base Projects
     const pWork = "demo-project-work";
@@ -85,6 +91,8 @@ class MockStore {
 
     const tasks: Task[] = [];
     const logs: FocusLog[] = [];
+    const habits: Habit[] = [];
+    const entries: HabitEntry[] = [];
 
     // Generators
     const generateId = () => Math.random().toString(36).substr(2, 9);
@@ -206,26 +214,96 @@ class MockStore {
       if (i % 7 === 0) createTask("Weekly Planning", i, pPersonal, 1);
     }
 
-    // Inject "Busy Days" for Calendar Overflow Testing
-    // Pick 5 random days in the next 14 days (closer to now)
-    for (let j = 0; j < 5; j++) {
-      const busyDayOffset = Math.floor(Math.random() * 14); // 0 to 14 days from now
-      // Add 4-6 extra tasks to this day
-      const extraTasks = Math.floor(Math.random() * 3) + 4;
-      for (let k = 0; k < extraTasks; k++) {
-        createTask(
-          `Busy Day Task ${k + 1}`,
-          busyDayOffset,
-          Math.random() > 0.5 ? pWork : pSide,
-          2,
-          Math.random() > 0.8, // Mostly day tasks
-        );
+    // Generate Habits
+    const hWater = "habit-water";
+    const hExercise = "habit-exercise";
+    const hRead = "habit-read";
+
+    habits.push(
+      {
+        id: hWater,
+        user_id: "guest",
+        name: "Drink Water 💧",
+        description: "8 glasses a day",
+        color: "#3b82f6",
+        icon: "Droplets",
+        created_at: nowIso,
+        updated_at: nowIso,
+        archived_at: null,
+        start_date: startOfHistory,
+      },
+      {
+        id: hExercise,
+        user_id: "guest",
+        name: "Morning Exercise 🏃‍♂️",
+        description: "30 mins activity",
+        color: "#10b981",
+        icon: "Zap",
+        created_at: nowIso,
+        updated_at: nowIso,
+        archived_at: null,
+        start_date: startOfHistory,
+      },
+      {
+        id: hRead,
+        user_id: "guest",
+        name: "Read 📚",
+        description: "20 pages",
+        color: "#8b5cf6",
+        icon: "BookOpen",
+        created_at: nowIso,
+        updated_at: nowIso,
+        archived_at: null,
+        start_date: startOfHistory,
+      },
+    );
+
+    // Generate Habit Entries for the last 365 days
+    for (let i = -365; i <= 0; i++) {
+      const date = new Date(now.getTime() + i * oneDay);
+      const dateStr = date.toISOString().split("T")[0];
+
+      // Drink Water: 90% completion
+      if (Math.random() < 0.9) {
+        entries.push({
+          id: `entry-${generateId()}`,
+          habit_id: hWater,
+          date: dateStr,
+          value: 1,
+          created_at: nowIso,
+        });
+      }
+
+      // Exercise: 65% completion, higher on weekdays
+      const dayOfWeek = date.getDay();
+      const exerciseProb = dayOfWeek === 0 || dayOfWeek === 6 ? 0.4 : 0.75;
+      if (Math.random() < exerciseProb) {
+        entries.push({
+          id: `entry-${generateId()}`,
+          habit_id: hExercise,
+          date: dateStr,
+          value: 1,
+          created_at: nowIso,
+        });
+      }
+
+      // Read: 50% completion
+      if (Math.random() < 0.5) {
+        entries.push({
+          id: `entry-${generateId()}`,
+          habit_id: hRead,
+          date: dateStr,
+          value: 1,
+          created_at: nowIso,
+        });
       }
     }
 
     return {
       tasks,
       projects,
+      habits,
+      habit_entries: entries,
       focus_logs: logs,
       lastUpdated: nowIso,
     };
@@ -370,6 +448,91 @@ class MockStore {
     return newLog;
   }
 
+  // Habit Operations
+  getHabits(): Habit[] {
+    return [...(this.data.habits || [])];
+  }
+
+  getHabitEntries(habitId?: string): HabitEntry[] {
+    if (!this.data.habit_entries) return [];
+    if (habitId) {
+      return this.data.habit_entries.filter((e) => e.habit_id === habitId);
+    }
+    return [...this.data.habit_entries];
+  }
+
+  addHabit(habit: Omit<Habit, "id" | "created_at" | "updated_at">): Habit {
+    const now = new Date().toISOString();
+    const newHabit: Habit = {
+      ...habit,
+      id: `guest-habit-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      user_id: "guest",
+      created_at: now,
+      updated_at: now,
+      start_date: habit.start_date || now.split("T")[0],
+    };
+
+    if (!this.data.habits) this.data.habits = [];
+    this.data.habits.push(newHabit);
+    this.saveToStorage();
+    return newHabit;
+  }
+
+  updateHabit(id: string, updates: Partial<Habit>): Habit | null {
+    const index = this.data.habits.findIndex((h) => h.id === id);
+    if (index === -1) return null;
+
+    this.data.habits[index] = {
+      ...this.data.habits[index],
+      ...updates,
+      updated_at: new Date().toISOString(),
+    };
+
+    this.saveToStorage();
+    return this.data.habits[index];
+  }
+
+  deleteHabit(id: string): boolean {
+    const index = this.data.habits.findIndex((h) => h.id === id);
+    if (index === -1) return false;
+
+    this.data.habits.splice(index, 1);
+    // Also delete entries
+    this.data.habit_entries = this.data.habit_entries.filter(
+      (e) => e.habit_id !== id,
+    );
+
+    this.saveToStorage();
+    return true;
+  }
+
+  toggleHabitEntry(habitId: string, date: string): HabitEntry | null {
+    const existingIndex = this.data.habit_entries.findIndex(
+      (e) => e.habit_id === habitId && e.date === date,
+    );
+
+    if (existingIndex !== -1) {
+      // Remove entry
+      this.data.habit_entries.splice(existingIndex, 1);
+      this.saveToStorage();
+      return null;
+    } else {
+      // Add entry
+      const newEntry: HabitEntry = {
+        id: `guest-entry-${Date.now()}-${Math.random()
+          .toString(36)
+          .substr(2, 9)}`,
+        habit_id: habitId,
+        date,
+        value: 1,
+        created_at: new Date().toISOString(),
+      };
+      this.data.habit_entries.push(newEntry);
+      this.saveToStorage();
+      return newEntry;
+    }
+  }
+
   // Utility
   reset(): void {
     this.data = this.getInitialData();
@@ -380,6 +543,8 @@ class MockStore {
     this.data = {
       tasks: [],
       projects: [],
+      habits: [],
+      habit_entries: [],
       focus_logs: [],
       lastUpdated: new Date().toISOString(),
     };

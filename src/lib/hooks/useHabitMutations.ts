@@ -3,13 +3,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
-import type { Habit, HabitEntry, HabitWithEntries } from "./useHabits";
+import { mockStore } from "@/lib/mock/mock-store";
+import type { Habit, HabitEntry, HabitWithEntries } from "@/lib/types/habit";
 
 interface CreateHabitInput {
   name: string;
   description?: string;
   color?: string;
   icon?: string;
+  start_date?: string;
 }
 
 interface UpdateHabitInput {
@@ -34,7 +36,15 @@ export function useCreateHabit() {
   return useMutation({
     mutationFn: async (input: CreateHabitInput): Promise<Habit> => {
       if (isGuestMode) {
-        throw new Error("Habits are not supported in guest mode");
+        return mockStore.addHabit({
+          name: input.name,
+          description: input.description || null,
+          color: input.color || "#4B6CB7",
+          icon: input.icon || null,
+          archived_at: null,
+          start_date:
+            input.start_date || new Date().toISOString().split("T")[0],
+        });
       }
 
       const {
@@ -50,6 +60,8 @@ export function useCreateHabit() {
           description: input.description || null,
           color: input.color || "#4B6CB7",
           icon: input.icon || null,
+          start_date:
+            input.start_date || new Date().toISOString().split("T")[0],
         })
         .select()
         .single();
@@ -71,7 +83,10 @@ export function useUpdateHabit() {
   return useMutation({
     mutationFn: async (input: UpdateHabitInput): Promise<Habit> => {
       if (isGuestMode) {
-        throw new Error("Habits are not supported in guest mode");
+        const { id, ...updates } = input;
+        const result = mockStore.updateHabit(id, updates);
+        if (!result) throw new Error("Habit not found");
+        return result;
       }
 
       const { id, ...updates } = input;
@@ -99,7 +114,9 @@ export function useDeleteHabit() {
   return useMutation({
     mutationFn: async (habitId: string): Promise<void> => {
       if (isGuestMode) {
-        throw new Error("Habits are not supported in guest mode");
+        const success = mockStore.deleteHabit(habitId);
+        if (!success) throw new Error("Habit not found");
+        return;
       }
 
       const { error } = await supabase
@@ -146,7 +163,11 @@ export function useMarkHabitComplete() {
   return useMutation({
     mutationFn: async (input: MarkHabitCompleteInput): Promise<HabitEntry> => {
       if (isGuestMode) {
-        throw new Error("Habits are not supported in guest mode");
+        const { habitId, date } = input;
+        const entry = mockStore.toggleHabitEntry(habitId, date);
+        // Note: Returns null if removed, but mutationFn expects HabitEntry.
+        // For guest mode optimistic updates, we just need to settle.
+        return entry || ({ habit_id: habitId, date, value: 0 } as any);
       }
 
       const { habitId, date, value = 1 } = input;

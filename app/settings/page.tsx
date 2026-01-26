@@ -33,9 +33,9 @@ import { NotificationSettings } from "@/components/settings/NotificationSettings
 const SignOutConfirmation = dynamic(
   () =>
     import("@/components/auth/SignOutConfirmation").then(
-      (mod) => mod.SignOutConfirmation
+      (mod) => mod.SignOutConfirmation,
     ),
-  { ssr: false }
+  { ssr: false },
 );
 
 export default function SettingsPage() {
@@ -69,6 +69,7 @@ export default function SettingsPage() {
     mockStore.reset();
     queryClient.invalidateQueries({ queryKey: ["tasks"] });
     queryClient.invalidateQueries({ queryKey: ["projects"] });
+    queryClient.invalidateQueries({ queryKey: ["habits"] });
     queryClient.invalidateQueries({ queryKey: ["stats-dashboard"] });
     toast.success("Demo data reset successfully");
   };
@@ -77,6 +78,7 @@ export default function SettingsPage() {
     mockStore.clearData();
     queryClient.invalidateQueries({ queryKey: ["tasks"] });
     queryClient.invalidateQueries({ queryKey: ["projects"] });
+    queryClient.invalidateQueries({ queryKey: ["habits"] });
     queryClient.invalidateQueries({ queryKey: ["stats-dashboard"] });
     toast.success("All data cleared");
   };
@@ -126,7 +128,7 @@ export default function SettingsPage() {
                     "block w-full text-left px-3 py-2 text-sm rounded-md transition-seijaku-fast",
                     activeTab === "appearance"
                       ? "bg-secondary text-foreground font-medium"
-                      : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+                      : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground",
                   )}
                 >
                   Appearance
@@ -137,7 +139,7 @@ export default function SettingsPage() {
                     "block w-full text-left px-3 py-2 text-sm rounded-md transition-seijaku-fast",
                     activeTab === "preferences"
                       ? "bg-secondary text-foreground font-medium"
-                      : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+                      : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground",
                   )}
                 >
                   Preferences
@@ -148,7 +150,7 @@ export default function SettingsPage() {
                     "block w-full text-left px-3 py-2 text-sm rounded-md transition-seijaku-fast",
                     activeTab === "account"
                       ? "bg-secondary text-foreground font-medium"
-                      : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+                      : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground",
                   )}
                 >
                   Account
@@ -186,7 +188,7 @@ export default function SettingsPage() {
                             "flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-seijaku-fast",
                             isActive
                               ? "border-foreground bg-secondary/30"
-                              : "border-border/50 hover:border-border bg-background"
+                              : "border-border/50 hover:border-border bg-background",
                           )}
                         >
                           <Icon className="h-5 w-5 text-muted-foreground" />
@@ -195,7 +197,7 @@ export default function SettingsPage() {
                               "text-sm font-medium",
                               isActive
                                 ? "text-foreground"
-                                : "text-muted-foreground"
+                                : "text-muted-foreground",
                             )}
                           >
                             {option.label}

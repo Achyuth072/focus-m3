@@ -414,4 +414,13 @@ select {
   [data-panel] {
     transition: flex-grow 300ms var(--ease-seijaku);
   }
+
+  /* Scrollbar Management */
+  .scrollbar-none {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none; /* Chromium and Safari */
+  }
 }

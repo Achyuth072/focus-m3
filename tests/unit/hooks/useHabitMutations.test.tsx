@@ -66,7 +66,9 @@ describe("useHabitMutations", () => {
 
         mockCreateClient.mockReturnValue({
           auth: {
-            getUser: vi.fn().mockResolvedValue({ data: { user: mockUser }, error: null }),
+            getUser: vi
+              .fn()
+              .mockResolvedValue({ data: { user: mockUser }, error: null }),
           },
           from: vi.fn(() => ({
             insert: mockInsert,
@@ -98,20 +100,29 @@ describe("useHabitMutations", () => {
       });
     });
 
-    describe("TC-E-01: Guest mode - create attempt", () => {
-      it("should throw error in guest mode", async () => {
+    describe("TC-N-05: Guest mode - create habit", () => {
+      it("should create habit successfully in guest mode", async () => {
         // Given: User in guest mode
         mockUseAuth.mockReturnValue({ isGuestMode: true } as any);
+
+        const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
 
         // When: Mutation is called
         const { result } = renderHook(() => useCreateHabit(), { wrapper });
 
-        // Then: Error is thrown
-        await expect(async () => {
-          await result.current.mutateAsync({
-            name: "Test Habit",
+        let createdHabit: any;
+        await act(async () => {
+          createdHabit = await result.current.mutateAsync({
+            name: "Guest Habit",
+            description: "A habit for guest",
           });
-        }).rejects.toThrow("Habits are not supported in guest mode");
+        });
+
+        // Then: Habit is created via mockStore and queries invalidated
+        expect(createdHabit).toBeDefined();
+        expect(createdHabit.name).toBe("Guest Habit");
+        expect(createdHabit.id).toContain("guest-habit");
+        expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["habits"] });
       });
     });
   });
@@ -130,7 +141,9 @@ describe("useHabitMutations", () => {
         const mockUpdate = vi.fn(() => ({
           eq: vi.fn(() => ({
             select: vi.fn(() => ({
-              single: vi.fn().mockResolvedValue({ data: updatedHabit, error: null }),
+              single: vi
+                .fn()
+                .mockResolvedValue({ data: updatedHabit, error: null }),
             })),
           })),
         }));
@@ -172,7 +185,7 @@ describe("useHabitMutations", () => {
 
         queryClient.setQueryData(
           ["habits", { includeArchived: false, isGuestMode: false }],
-          existingHabits
+          existingHabits,
         );
 
         mockUseAuth.mockReturnValue({ isGuestMode: false } as any);
@@ -213,14 +226,16 @@ describe("useHabitMutations", () => {
 
         queryClient.setQueryData(
           ["habits", { includeArchived: false, isGuestMode: false }],
-          existingHabits
+          existingHabits,
         );
 
         mockUseAuth.mockReturnValue({ isGuestMode: false } as any);
         mockCreateClient.mockReturnValue({
           from: vi.fn(() => ({
             delete: vi.fn(() => ({
-              eq: vi.fn().mockResolvedValue({ error: { message: "Delete failed" } }),
+              eq: vi
+                .fn()
+                .mockResolvedValue({ error: { message: "Delete failed" } }),
             })),
           })),
         } as any);
@@ -257,14 +272,20 @@ describe("useHabitMutations", () => {
             id: "habit-1",
             name: "Habit 1",
             entries: [
-              { id: "entry-1", habit_id: "habit-1", date: "2024-01-14", value: 1, created_at: "2024-01-14T10:00:00Z" },
+              {
+                id: "entry-1",
+                habit_id: "habit-1",
+                date: "2024-01-14",
+                value: 1,
+                created_at: "2024-01-14T10:00:00Z",
+              },
             ],
           },
         ];
 
         queryClient.setQueryData(
           ["habits", { includeArchived: false, isGuestMode: false }],
-          existingHabits
+          existingHabits,
         );
 
         const newEntry = {
@@ -280,14 +301,18 @@ describe("useHabitMutations", () => {
           from: vi.fn(() => ({
             upsert: vi.fn(() => ({
               select: vi.fn(() => ({
-                single: vi.fn().mockResolvedValue({ data: newEntry, error: null }),
+                single: vi
+                  .fn()
+                  .mockResolvedValue({ data: newEntry, error: null }),
               })),
             })),
           })),
         } as any);
 
         // When: Mark complete mutation is called
-        const { result } = renderHook(() => useMarkHabitComplete(), { wrapper });
+        const { result } = renderHook(() => useMarkHabitComplete(), {
+          wrapper,
+        });
 
         await act(async () => {
           await result.current.mutateAsync({
@@ -312,14 +337,14 @@ describe("useHabitMutations", () => {
         const existingHabits = [
           {
             id: "habit-1",
-            name: "Habit 1",  
+            name: "Habit 1",
             entries: [],
           },
         ];
 
         queryClient.setQueryData(
           ["habits", { includeArchived: false, isGuestMode: false }],
-          existingHabits
+          existingHabits,
         );
 
         mockUseAuth.mockReturnValue({ isGuestMode: false } as any);
@@ -337,7 +362,9 @@ describe("useHabitMutations", () => {
         } as any);
 
         // When: Mutation fails
-        const { result } = renderHook(() => useMarkHabitComplete(), { wrapper });
+        const { result } = renderHook(() => useMarkHabitComplete(), {
+          wrapper,
+        });
 
         await act(async () => {
           try {

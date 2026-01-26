@@ -147,16 +147,18 @@ describe("useHabits", () => {
   });
 
   describe("TC-N-03: Guest mode", () => {
-    it("should return empty array in guest mode", async () => {
+    it("should return mock habits in guest mode", async () => {
       // Given: User is in guest mode
       mockUseAuth.mockReturnValue({ isGuestMode: true } as any);
 
       // When: Hook is called
       const { result } = renderHook(() => useHabits(), { wrapper });
 
-      // Then: Returns empty array immediately
+      // Then: Returns mock habits from mockStore
       await waitFor(() => {
-        expect(result.current.data).toEqual([]);
+        expect(result.current.data).toBeDefined();
+        expect(result.current.data?.length).toBeGreaterThan(0);
+        expect(result.current.data?.[0].name).toContain("Drink Water");
         expect(result.current.isLoading).toBe(false);
       });
     });
@@ -218,16 +220,17 @@ describe("useHabits", () => {
   });
 
   describe("useHabit - Single habit query", () => {
-    it("should return undefined for guest mode (query disabled)", async () => {
+    it("should return mock habit for guest mode", async () => {
       // Given: Guest mode
       mockUseAuth.mockReturnValue({ isGuestMode: true } as any);
 
-      // When: Hook is called
-      const { result } = renderHook(() => useHabit("habit-1"), { wrapper });
+      // When: Hook is called with a default guest habit ID
+      const { result } = renderHook(() => useHabit("habit-water"), { wrapper });
 
-      // Then: Returns undefined (since query is disabled)
+      // Then: Returns the mock habit
       await waitFor(() => {
-        expect(result.current.data).toBeUndefined();
+        expect(result.current.data).toBeDefined();
+        expect(result.current.data?.name).toContain("Drink Water");
       });
     });
 

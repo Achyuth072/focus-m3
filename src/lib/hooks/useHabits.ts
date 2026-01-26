@@ -3,30 +3,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
+import { mockStore } from "@/lib/mock/mock-store";
+import type { Habit, HabitEntry, HabitWithEntries } from "@/lib/types/habit";
 
-export interface Habit {
-  id: string;
-  user_id: string;
-  name: string;
-  description: string | null;
-  color: string;
-  icon: string | null;
-  created_at: string;
-  updated_at: string;
-  archived_at: string | null;
-}
-
-export interface HabitEntry {
-  id: string;
-  habit_id: string;
-  date: string; // ISO 8601 date (YYYY-MM-DD)
-  value: number;
-  created_at: string;
-}
-
-export interface HabitWithEntries extends Habit {
-  entries: HabitEntry[];
-}
+export type { Habit, HabitEntry, HabitWithEntries };
 
 interface UseHabitsOptions {
   includeArchived?: boolean;
@@ -41,9 +21,29 @@ export function useHabits(options: UseHabitsOptions = {}) {
     queryKey: ["habits", { includeArchived, isGuestMode }],
     staleTime: 60000, // 1 minute
     queryFn: async (): Promise<HabitWithEntries[]> => {
-      // Guest Mode: Return empty array (habits not supported in guest)
+      // Guest Mode: Return mock data
       if (isGuestMode) {
-        return [];
+        const habits = mockStore.getHabits();
+        const entries = mockStore.getHabitEntries();
+
+        // Filter archived if requested
+        const filteredHabits = includeArchived
+          ? habits
+          : habits.filter((h) => !h.archived_at);
+
+        // Group entries by habit_id
+        const entriesByHabit = new Map<string, HabitEntry[]>();
+        entries.forEach((entry) => {
+          const existing = entriesByHabit.get(entry.habit_id) || [];
+          existing.push(entry);
+          entriesByHabit.set(entry.habit_id, existing);
+        });
+
+        // Combine habits with their entries
+        return filteredHabits.map((habit) => ({
+          ...habit,
+          entries: entriesByHabit.get(habit.id) || [],
+        }));
       }
 
       // Fetch habits
@@ -102,7 +102,19 @@ export function useHabit(habitId: string | null) {
   return useQuery({
     queryKey: ["habit", habitId, isGuestMode],
     queryFn: async (): Promise<HabitWithEntries | null> => {
-      if (!habitId || isGuestMode) return null;
+      if (!habitId) return null;
+
+      if (isGuestMode) {
+        const habits = mockStore.getHabits();
+        const habit = habits.find((h) => h.id === habitId);
+        if (!habit) return null;
+
+        const entries = mockStore.getHabitEntries(habitId);
+        return {
+          ...habit,
+          entries,
+        };
+      }
 
       const { data: habit, error: habitError } = await supabase
         .from("habits")
@@ -128,6 +140,6 @@ export function useHabit(habitId: string | null) {
         entries: (entries || []) as HabitEntry[],
       };
     },
-    enabled: !!habitId && !isGuestMode,
+    enabled: !!habitId,
   });
 }

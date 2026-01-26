@@ -40,13 +40,13 @@ export function MobileNav() {
                 "flex flex-col items-center justify-center flex-1 h-full gap-1 transition-all cursor-pointer outline-none",
                 isActive
                   ? "text-primary"
-                  : "text-muted-foreground hover:text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               <div
                 className={cn(
                   "p-1 rounded-full overflow-hidden transition-colors",
-                  isActive && "bg-secondary/50"
+                  isActive && "bg-secondary/50",
                 )}
               >
                 <Icon className="h-6 w-6" />

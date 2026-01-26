@@ -50,7 +50,7 @@ function HomeContent() {
 
   return (
     <div className="flex flex-col h-[calc(100dvh-124px)] md:h-dvh overflow-hidden">
-      <div className="px-6 pt-4 pb-4 flex flex-col md:flex-row md:items-start justify-between gap-4 md:gap-0">
+      <div className="px-4 md:px-6 pt-4 pb-4 flex flex-col md:flex-row md:items-start justify-between gap-4 md:gap-0">
         <div>
           <p className="text-sm text-muted-foreground flex items-center gap-2">
             {format(today, "EEEE, MMMM d")}

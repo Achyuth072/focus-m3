@@ -456,6 +456,7 @@ CREATE TABLE IF NOT EXISTS public.habits (
   description TEXT,
   color TEXT DEFAULT '#4B6CB7',
   icon TEXT,
+  start_date DATE,
   created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
   archived_at TIMESTAMPTZ,
