@@ -167,7 +167,7 @@ export function useMarkHabitComplete() {
         const entry = mockStore.toggleHabitEntry(habitId, date);
         // Note: Returns null if removed, but mutationFn expects HabitEntry.
         // For guest mode optimistic updates, we just need to settle.
-        return entry || ({ habit_id: habitId, date, value: 0 } as any);
+        return entry || ({ habit_id: habitId, date, value: 0 } as HabitEntry);
       }
 
       const { habitId, date, value = 1 } = input;

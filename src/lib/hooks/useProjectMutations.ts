@@ -29,7 +29,6 @@ export function useCreateProject() {
       if (isGuestMode) {
         return mockStore.addProject({
           ...input,
-          user_id: "guest",
           view_style: "list",
           is_inbox: false,
           is_archived: false,

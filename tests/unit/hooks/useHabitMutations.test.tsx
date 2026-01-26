@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor, act } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -95,6 +97,7 @@ describe("useHabitMutations", () => {
           description: "Daily exercise",
           color: "#10b981",
           icon: null,
+          start_date: expect.any(String),
         });
         expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["habits"] });
       });

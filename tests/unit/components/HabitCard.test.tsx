@@ -1,7 +1,7 @@
-import { render, waitFor } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { HabitCard } from "@/components/habits/HabitCard";
-import type { HabitWithEntries } from "@/lib/hooks/useHabits";
+import type { HabitWithEntries } from "@/lib/types/habit";
 import * as useIsMobileModule from "@/lib/hooks/useIsMobile";
 import * as useHabitMutationsModule from "@/lib/hooks/useHabitMutations";
 
@@ -17,7 +17,7 @@ describe("HabitCard Scroll Initialization", () => {
       mutate: vi.fn(),
       mutateAsync: vi.fn(),
       isPending: false,
-    } as any);
+    } as unknown as ReturnType<typeof useHabitMutationsModule.useMarkHabitComplete>);
 
     const today = new Date();
     const startDate = new Date(today);

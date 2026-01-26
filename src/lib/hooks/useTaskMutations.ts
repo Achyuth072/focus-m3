@@ -21,7 +21,6 @@ export function useCreateTask() {
       // Guest Mode
       if (isGuestMode) {
         return mockStore.addTask({
-          user_id: "guest",
           content: input.content,
           description: input.description || null,
           priority: input.priority || 4,
@@ -193,7 +192,6 @@ export function useToggleTask() {
           );
 
           newRecurringTask = mockStore.addTask({
-            user_id: "guest",
             project_id: updatedTask.project_id,
             content: updatedTask.content,
             description: updatedTask.description,
@@ -203,7 +201,7 @@ export function useToggleTask() {
             is_evening: updatedTask.is_evening || false,
             recurrence: recurrenceRule, // Keep recurrence
             is_completed: false,
-          } as Omit<Task, "id" | "created_at" | "updated_at">);
+          } as Omit<Task, "id" | "user_id" | "created_at" | "updated_at">);
         }
 
         return { task: updatedTask, newRecurringTask };

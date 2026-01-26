@@ -21,7 +21,6 @@ describe("MockStore (Guest Mode Data)", () => {
   it("should add a task and persist to localStorage", () => {
     const newTask = mockStore.addTask({
       content: "Test Task",
-      user_id: "guest",
       project_id: null,
       parent_id: null,
       description: null,
@@ -43,7 +42,7 @@ describe("MockStore (Guest Mode Data)", () => {
 
     // Verify localStorage
     const stored = JSON.parse(
-      localStorage.getItem("kanso_guest_data_v5") || "{}"
+      localStorage.getItem("kanso_guest_data_v6") || "{}"
     );
     expect(stored.tasks).toHaveLength(1);
     expect(stored.tasks[0].content).toBe("Test Task");
@@ -52,7 +51,6 @@ describe("MockStore (Guest Mode Data)", () => {
   it("should update a task correctly", () => {
     const task = mockStore.addTask({
       content: "Original Content",
-      user_id: "guest",
       project_id: null,
       parent_id: null,
       description: null,
@@ -78,7 +76,7 @@ describe("MockStore (Guest Mode Data)", () => {
 
     // Verify localStorage
     const stored = JSON.parse(
-      localStorage.getItem("kanso_guest_data_v5") || "{}"
+      localStorage.getItem("kanso_guest_data_v6") || "{}"
     );
     expect(stored.tasks[0].content).toBe("Updated Content");
   });

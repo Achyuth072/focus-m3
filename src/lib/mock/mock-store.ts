@@ -340,7 +340,7 @@ class MockStore {
     return this.data.tasks.find((t) => t.id === id) || null;
   }
 
-  addTask(task: Omit<Task, "id" | "created_at" | "updated_at">): Task {
+  addTask(task: Omit<Task, "id" | "user_id" | "created_at" | "updated_at">): Task {
     const now = new Date().toISOString();
     const newTask: Task = {
       ...task,
@@ -388,7 +388,7 @@ class MockStore {
   }
 
   addProject(
-    project: Omit<Project, "id" | "created_at" | "updated_at">,
+    project: Omit<Project, "id" | "user_id" | "created_at" | "updated_at">,
   ): Project {
     const now = new Date().toISOString();
     const newProject: Project = {
@@ -461,7 +461,7 @@ class MockStore {
     return [...this.data.habit_entries];
   }
 
-  addHabit(habit: Omit<Habit, "id" | "created_at" | "updated_at">): Habit {
+  addHabit(habit: Omit<Habit, "id" | "user_id" | "created_at" | "updated_at">): Habit {
     const now = new Date().toISOString();
     const newHabit: Habit = {
       ...habit,
