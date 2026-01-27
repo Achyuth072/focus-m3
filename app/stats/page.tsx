@@ -37,9 +37,9 @@ export default function StatsPage() {
       <div className="px-4 md:px-6 py-6">
         <div className="max-w-7xl mx-auto space-y-6">
           <Skeleton className="h-8 w-48" />
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-4">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Skeleton key={i} className="h-32 rounded-xl" />
+              <Skeleton key={i} className="h-28 md:h-32 rounded-xl" />
             ))}
           </div>
           <Skeleton className="h-64 w-full rounded-xl" />
@@ -53,18 +53,18 @@ export default function StatsPage() {
   const focusTrendData = stats?.dailyTrend || [];
 
   return (
-    <div className="px-4 md:px-6 py-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="px-4 md:px-6 py-6 pb-20 md:pb-6">
+      <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
         {/* Header */}
         <div>
-          <h1 className="type-h1">Statistics</h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <h1 className="type-h1 text-2xl md:text-3xl">Statistics</h1>
+          <p className="text-xs md:text-sm text-muted-foreground mt-1">
             Track your productivity and progress
           </p>
         </div>
 
         {/* Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-4">
           {/* Top Row - Key Metrics */}
           <MetricCard
             title="Total Focus"
@@ -73,29 +73,29 @@ export default function StatsPage() {
             trend={stats?.trends?.focus}
           />
           <MetricCard
-            title="Total Sessions"
+            title="Sessions"
             value={stats?.totalSessions?.toString() || "0"}
             icon={Zap}
           />
           <MetricCard
-            title="Tasks Completed"
+            title="Tasks"
             value={stats?.tasksCompleted?.toString() || "0"}
             icon={CheckCircle2}
             trend={stats?.trends?.tasks}
           />
           <MetricCard
-            title="Current Streak"
-            value={`${stats?.currentStreak || 0} days`}
+            title="Streak"
+            value={`${stats?.currentStreak || 0}d`}
             icon={Flame}
           />
           <MetricCard
-            title="Completion Rate"
+            title="Rate"
             value={`${stats?.completionRate || 0}%`}
             icon={Target}
             trend={stats?.trends?.rate}
           />
           <MetricCard
-            title="Habit Reps"
+            title="Habits"
             value={stats?.habitReps?.toString() || "0"}
             icon={Repeat}
             trend={stats?.trends?.habitReps}

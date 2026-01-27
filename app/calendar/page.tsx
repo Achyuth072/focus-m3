@@ -55,22 +55,38 @@ export default function CalendarPage() {
 
       case "day":
         return (
-          <TimeGrid startDate={currentDate} daysToShow={1} events={events} />
+          <TimeGrid
+            isMobile={isMobile}
+            startDate={currentDate}
+            daysToShow={1}
+            events={events}
+          />
         );
 
       case "3day":
         return (
-          <TimeGrid startDate={currentDate} daysToShow={3} events={events} />
+          <TimeGrid
+            isMobile={isMobile}
+            startDate={currentDate}
+            daysToShow={3}
+            events={events}
+          />
         );
 
       case "4day":
         return (
-          <TimeGrid startDate={currentDate} daysToShow={4} events={events} />
+          <TimeGrid
+            isMobile={isMobile}
+            startDate={currentDate}
+            daysToShow={4}
+            events={events}
+          />
         );
 
       case "week":
         return (
           <TimeGrid
+            isMobile={isMobile}
             startDate={startOfWeek(currentDate)}
             daysToShow={7}
             events={events}

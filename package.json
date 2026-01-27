@@ -3,7 +3,7 @@
   "version": "1.8.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --webpack",
     "dev:pwa": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",

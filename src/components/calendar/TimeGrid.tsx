@@ -9,6 +9,7 @@ import type { CalendarEvent } from "@/lib/calendar/types";
 const HOUR_HEIGHT = 120; // 60 minutes * 2 pixels
 
 interface TimeGridProps {
+  isMobile?: boolean;
   startDate: Date;
   daysToShow: number; // 1 for Day, 3 for Mobile, 4 for Desktop, 7 for Week
   events: CalendarEvent[];
@@ -17,6 +18,7 @@ interface TimeGridProps {
 }
 
 export function TimeGrid({
+  isMobile = false,
   startDate,
   daysToShow,
   events,
@@ -29,18 +31,33 @@ export function TimeGrid({
   const columns = useMemo(() => layoutDayRange(events, dates), [events, dates]);
   const hours = Array.from({ length: 24 }).map((_, i) => i);
 
+  // Responsive column sizing logic
+  const gridTemplateColumns = useMemo(() => {
+    // On mobile, if showing more than 3 days (Week view),
+    // force each column to 33.33% to show 3 days at a time with scroll
+    if (isMobile && daysToShow > 3) {
+      return `repeat(${daysToShow}, 33.3333%)`;
+    }
+    return `repeat(${daysToShow}, 1fr)`;
+  }, [isMobile, daysToShow]);
+
   return (
     <div
       data-testid={testId || "time-grid"}
-      className={cn("flex h-full overflow-auto bg-background", className)}
+      className={cn(
+        "flex h-full overflow-auto bg-background custom-scrollbar",
+        "scroll-pl-12 md:scroll-pl-16",
+        isMobile && "snap-x snap-mandatory",
+        className,
+      )}
     >
       {/* Time Labels Column */}
-      <div className="w-16 flex-shrink-0">
+      <div className="w-12 md:w-16 flex-shrink-0 sticky left-0 z-20 bg-background/95 backdrop-blur-sm border-r border-border/5">
         <div className="h-16" /> {/* Spacer for header */}
         {hours.map((hour) => (
           <div
             key={hour}
-            className="text-[10px] md:text-xs text-muted-foreground/50 text-right pr-3 pt-2 font-medium"
+            className="text-[9px] md:text-xs text-muted-foreground/50 text-right pr-2 md:pr-3 pt-2 font-medium"
             style={{ height: `${HOUR_HEIGHT}px` }}
           >
             {format(new Date().setHours(hour, 0), "h a")}
@@ -51,7 +68,7 @@ export function TimeGrid({
       {/* Days Columns */}
       <div
         className="flex-1 grid divide-x divide-border/[0.08]"
-        style={{ gridTemplateColumns: `repeat(${daysToShow}, 1fr)` }}
+        style={{ gridTemplateColumns }}
       >
         {columns.map((column) => {
           const isToday = isSameDay(column.date, new Date());
@@ -59,25 +76,29 @@ export function TimeGrid({
           return (
             <div
               key={column.date.toString()}
-              className={cn("relative min-w-[120px]", isToday && "bg-brand/15")}
+              className={cn(
+                "relative min-w-0 md:min-w-[120px]",
+                isMobile && "snap-start",
+                isToday && "bg-brand/10",
+              )}
             >
               {/* Header for the Day */}
               <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border/10 h-16 flex flex-col items-center justify-center">
                 <div
                   className={cn(
-                    "text-xs",
+                    "text-[10px] md:text-xs",
                     isToday
                       ? "text-brand font-semibold"
-                      : "text-muted-foreground"
+                      : "text-muted-foreground",
                   )}
                 >
                   {format(column.date, "EEE")}
                 </div>
                 <div
                   className={cn(
-                    "text-xl font-bold inline-flex items-center justify-center transition-all",
+                    "text-lg md:text-xl font-bold inline-flex items-center justify-center transition-all",
                     isToday &&
-                      "w-8 h-8 rounded-lg bg-brand text-white shadow-sm"
+                      "w-7 h-7 md:w-8 md:h-8 rounded-lg bg-brand text-white shadow-sm",
                   )}
                 >
                   {format(column.date, "d")}
@@ -102,9 +123,9 @@ export function TimeGrid({
                   <div
                     key={event.id}
                     className={cn(
-                      "absolute rounded-sm px-2 py-1 text-xs cursor-pointer overflow-hidden flex flex-col gap-0.5",
+                      "absolute rounded-sm px-1 md:px-2 py-1 text-[10px] md:text-xs cursor-pointer overflow-hidden flex flex-col gap-0.5",
                       "z-10 hover:z-20 hover:brightness-95 active:scale-[0.98] transition-all",
-                      "bg-(--event-color)/25 text-foreground border-l-2 border-(--event-color)"
+                      "bg-(--event-color)/25 text-foreground border-l-2 border-(--event-color)",
                     )}
                     style={
                       {
@@ -118,13 +139,13 @@ export function TimeGrid({
                     }
                   >
                     {/* Title */}
-                    <div className="font-bold truncate text-[11px] leading-tight">
+                    <div className="font-bold truncate text-[10px] md:text-[11px] leading-tight">
                       {event.title}
                     </div>
 
                     {/* Time - Only show if enough height */}
                     {heightPx > 40 && (
-                      <div className="text-muted-foreground/70 text-[10px] leading-tight font-medium">
+                      <div className="text-muted-foreground/70 text-[9px] md:text-[10px] leading-tight font-medium">
                         {format(event.start, "h:mm a")}
                       </div>
                     )}

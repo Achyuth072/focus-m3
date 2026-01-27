@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "cal-heatmap/cal-heatmap.css";
 
 @plugin "tailwindcss-animate";
 @plugin "@tailwindcss/typography";

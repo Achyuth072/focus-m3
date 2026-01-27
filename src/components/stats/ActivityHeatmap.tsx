@@ -1,18 +1,15 @@
 "use client";
 
-import React, { useEffect, useRef, useState, useMemo } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
 // @ts-expect-error - cal-heatmap may have type resolution issues in some environments
 import CalHeatmap from "cal-heatmap";
 // @ts-expect-error - cal-heatmap plugins may not have types
 import Tooltip from "cal-heatmap/plugins/Tooltip";
 // @ts-expect-error - cal-heatmap plugins may not have types
 import Legend from "cal-heatmap/plugins/Legend";
-import "cal-heatmap/cal-heatmap.css";
-
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useHeatmapData, MetricType } from "@/lib/hooks/useHeatmapData";
+import { useHeatmapData } from "@/lib/hooks/useHeatmapData";
 import { cn } from "@/lib/utils";
 import { subDays } from "date-fns";
 
@@ -22,8 +19,8 @@ interface ActivityHeatmapProps {
 
 export function ActivityHeatmap({ className }: ActivityHeatmapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [selectedMetric, setSelectedMetric] = useState<MetricType>("combined");
   const { data, isLoading, maxValue, activeDays } = useHeatmapData();
+  const selectedMetric = "combined";
 
   const colorScale = useMemo(
     () => [
@@ -47,6 +44,7 @@ export function ActivityHeatmap({ className }: ActivityHeatmapProps) {
     ];
   }, [maxValue, selectedMetric]);
 
+  const startDate = useMemo(() => subDays(new Date(), 364), []);
   const legendId = React.useId().replace(/:/g, "");
 
   useEffect(() => {
@@ -57,7 +55,6 @@ export function ActivityHeatmap({ className }: ActivityHeatmapProps) {
     containerRef.current.appendChild(mountPoint);
 
     const cal = new CalHeatmap();
-    const startDate = subDays(new Date(), 364);
 
     cal.paint(
       {
@@ -145,7 +142,15 @@ export function ActivityHeatmap({ className }: ActivityHeatmapProps) {
         mountPoint.parentNode.removeChild(mountPoint);
       }
     };
-  }, [data, isLoading, selectedMetric, colorScale, thresholds, legendId]);
+  }, [
+    data,
+    isLoading,
+    selectedMetric,
+    colorScale,
+    thresholds,
+    legendId,
+    startDate,
+  ]);
 
   if (isLoading) {
     return (
@@ -153,7 +158,6 @@ export function ActivityHeatmap({ className }: ActivityHeatmapProps) {
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <Skeleton className="h-4 w-32" />
-            <Skeleton className="h-8 w-64 rounded-lg" />
           </div>
           <Skeleton className="h-32 w-full rounded-xl" />
         </div>
@@ -173,28 +177,17 @@ export function ActivityHeatmap({ className }: ActivityHeatmapProps) {
               {activeDays} active days in the past year
             </p>
           </div>
-
-          <Tabs
-            value={selectedMetric}
-            onValueChange={(v) => setSelectedMetric(v as MetricType)}
-          >
-            <TabsList className="bg-muted/50">
-              <TabsTrigger value="combined">Combined</TabsTrigger>
-              <TabsTrigger value="focus">Focus</TabsTrigger>
-              <TabsTrigger value="tasks">Tasks</TabsTrigger>
-            </TabsList>
-          </Tabs>
         </div>
 
-        <div className="relative">
+        <div className="relative flex flex-col items-center">
           <div
             ref={containerRef}
-            className="overflow-x-auto pb-4 custom-scrollbar"
+            className="w-full overflow-x-auto pb-4 custom-scrollbar flex justify-start md:justify-center"
           >
             {/* CalHeatmap will render here */}
           </div>
 
-          <div className="flex justify-end items-center mt-2 text-[10px] text-muted-foreground">
+          <div className="flex justify-center items-center mt-2 text-[10px] text-muted-foreground w-full">
             <span className="mr-2">Less</span>
             <div id={legendId} className="flex gap-1" />
             <span className="ml-2">More</span>
