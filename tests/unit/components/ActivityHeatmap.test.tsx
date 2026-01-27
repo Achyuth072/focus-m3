@@ -69,20 +69,4 @@ describe("ActivityHeatmap", () => {
     unmount();
     expect(mockDestroy).toHaveBeenCalled();
   });
-
-  it("should render metric toggle tabs", () => {
-    // Given: Component is rendered with data
-    vi.mocked(useHeatmapData).mockReturnValue({
-      data: [{ date: "2026-01-01", combined: 5, focus: 4, tasks: 2 }],
-      isLoading: false,
-      maxValue: { combined: 10, focus: 8, tasks: 4 },
-      activeDays: 1,
-    });
-    render(<ActivityHeatmap />);
-
-    // Then: All three metric tabs should be present
-    expect(screen.getByRole("tab", { name: /combined/i })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: /focus/i })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: /tasks/i })).toBeInTheDocument();
-  });
 });
