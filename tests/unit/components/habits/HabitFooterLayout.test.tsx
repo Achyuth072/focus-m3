@@ -1,3 +1,4 @@
+import React from "react";
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { HabitEditView } from "@/components/habits/HabitEditView";
@@ -13,10 +14,10 @@ vi.mock("@/lib/hooks/useHaptic", () => ({
 
 // Mock the components used in the views
 vi.mock("@/components/ui/responsive-dialog", () => ({
-  ResponsiveDialogHeader: ({ children, className }: any) => (
+  ResponsiveDialogHeader: ({ children, className }: { children: React.ReactNode; className?: string }) => (
     <div className={className}>{children}</div>
   ),
-  ResponsiveDialogTitle: ({ children, className }: any) => (
+  ResponsiveDialogTitle: ({ children, className }: { children: React.ReactNode; className?: string }) => (
     <div className={className}>{children}</div>
   ),
 }));
