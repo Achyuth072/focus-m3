@@ -23,10 +23,12 @@ export interface StatsData {
   completionRate: number;
   currentStreak: number;
   dailyTrend: DailyStats[];
+  habitReps: number;
   trends: {
     focus: StatsTrend;
     tasks: StatsTrend;
     rate: StatsTrend;
+    habitReps: StatsTrend;
   };
 }
 
@@ -184,6 +186,18 @@ export function useStats() {
           };
         };
 
+        const habitEntries = mockStore.getHabitEntries();
+        const habitReps = habitEntries.length;
+
+        const currentHabitReps = habitEntries.filter(
+          (e) => new Date(e.date) >= sevenDaysAgo,
+        ).length;
+        const prevHabitReps = habitEntries.filter(
+          (e) =>
+            new Date(e.date) >= fourteenDaysAgo &&
+            new Date(e.date) < sevenDaysAgo,
+        ).length;
+
         return {
           totalFocusHours,
           totalSessions,
@@ -191,10 +205,12 @@ export function useStats() {
           completionRate,
           currentStreak: calculateCurrentStreak(logs, tasks),
           dailyTrend,
+          habitReps,
           trends: {
             focus: calculateTrend(currentFocusSec, prevFocusSec),
             tasks: calculateTrend(currentCompleted, prevCompleted),
             rate: calculateTrend(currentRate, prevRate),
+            habitReps: calculateTrend(currentHabitReps, prevHabitReps),
           },
         };
       }
@@ -219,6 +235,14 @@ export function useStats() {
         .eq("user_id", userId);
 
       if (tasksError) throw tasksError;
+
+      // Fetch Habit Entries
+      const { data: habitEntries, error: habitEntriesError } = await supabase
+        .from("habit_entries")
+        .select("date")
+        .gte("date", thirtyDaysAgo);
+
+      if (habitEntriesError) throw habitEntriesError;
 
       // Aggregations
       const totalFocusSeconds =
@@ -326,6 +350,17 @@ export function useStats() {
         };
       };
 
+      const habitReps = habitEntries?.length || 0;
+      const currentHabitReps =
+        habitEntries?.filter((e) => new Date(e.date) >= sevenDaysAgo).length ||
+        0;
+      const prevHabitReps =
+        habitEntries?.filter(
+          (e) =>
+            new Date(e.date) >= fourteenDaysAgo &&
+            new Date(e.date) < sevenDaysAgo,
+        ).length || 0;
+
       return {
         totalFocusHours,
         totalSessions,
@@ -333,10 +368,12 @@ export function useStats() {
         completionRate,
         currentStreak: calculateCurrentStreak(logs || [], tasks || []),
         dailyTrend,
+        habitReps,
         trends: {
           focus: calculateTrend(currentFocusSec, prevFocusSec),
           tasks: calculateTrend(currentCompleted, prevCompleted),
           rate: calculateTrend(currentRate, prevRate),
+          habitReps: calculateTrend(currentHabitReps, prevHabitReps),
         },
       };
     },

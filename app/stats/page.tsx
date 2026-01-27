@@ -1,15 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import {
-  Target,
-  CheckCircle2,
-  Flame,
-  Clock,
-  Zap,
-  Repeat,
-  ChevronRight,
-} from "lucide-react";
+import { Target, CheckCircle2, Flame, Clock, Zap, Repeat } from "lucide-react";
 import { MetricCard } from "@/components/stats/MetricCard";
 import { useStats } from "@/lib/hooks/useStats";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -45,8 +37,8 @@ export default function StatsPage() {
       <div className="px-4 md:px-6 py-6">
         <div className="max-w-7xl mx-auto space-y-6">
           <Skeleton className="h-8 w-48" />
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            {[1, 2, 3, 4, 5].map((i) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
               <Skeleton key={i} className="h-32 rounded-xl" />
             ))}
           </div>
@@ -72,7 +64,7 @@ export default function StatsPage() {
         </div>
 
         {/* Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
           {/* Top Row - Key Metrics */}
           <MetricCard
             title="Total Focus"
@@ -102,29 +94,12 @@ export default function StatsPage() {
             icon={Target}
             trend={stats?.trends?.rate}
           />
-        </div>
-
-        {/* Habits Summary */}
-        <div className="relative overflow-hidden rounded-xl border bg-card">
-          <a
-            href="/habits"
-            className="block p-6 transition-colors hover:bg-accent/50"
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                  <Repeat className="h-6 w-6 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-lg">Habits</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Track your daily habits with heatmaps
-                  </p>
-                </div>
-              </div>
-              <ChevronRight className="h-5 w-5 text-muted-foreground" />
-            </div>
-          </a>
+          <MetricCard
+            title="Habit Reps"
+            value={stats?.habitReps?.toString() || "0"}
+            icon={Repeat}
+            trend={stats?.trends?.habitReps}
+          />
         </div>
 
         {/* Heatmap */}
