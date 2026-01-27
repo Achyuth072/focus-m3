@@ -97,13 +97,13 @@ export function TaskCreateView({
 
   return (
     <div className="flex flex-col h-auto max-h-[90dvh] w-full max-w-full overflow-hidden">
-      <ResponsiveDialogHeader className="pb-6 shrink-0 px-6 sm:px-0">
+      <ResponsiveDialogHeader className="px-4 pt-6 shrink-0">
         <ResponsiveDialogTitle className="type-h2">
           New Task
         </ResponsiveDialogTitle>
       </ResponsiveDialogHeader>
 
-      <div className="flex-1 min-h-0 px-6 sm:px-0 space-y-8 w-full">
+      <div className="flex-1 min-h-0 px-4 py-4 space-y-4 w-full overflow-y-auto">
         {/* Task Name Input */}
         <div>
           <Label htmlFor="task-content" className="sr-only">
@@ -226,11 +226,9 @@ export function TaskCreateView({
 
         {/* Subtasks Section - Collapsible */}
         {showSubtasks && (
-          <div className="pt-2 pb-2">
-            <div className="mb-4">
-              <span className="type-ui text-muted-foreground/70 uppercase tracking-widest font-bold">
-                Subtasks
-              </span>
+          <div className="grid gap-2">
+            <div>
+              <Label>Subtasks</Label>
             </div>
             <div className="pl-1">
               <SubtaskList
@@ -245,7 +243,7 @@ export function TaskCreateView({
       </div>
 
       {/* Footer Row - Project & Send */}
-      <div className="shrink-0 flex items-center justify-between pt-6 border-t border-border/40 mt-6 px-6 sm:px-0 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-background">
+      <div className="shrink-0 flex items-center justify-between p-4 border-t border-border/40 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-background">
         <Select
           value={selectedProjectId || "inbox"}
           onValueChange={(v) => {

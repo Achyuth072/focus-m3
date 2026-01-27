@@ -101,7 +101,7 @@ export function CreateProjectDialog({
                 className={cn(
                   "h-12 sm:h-10 text-base",
                   errors.name &&
-                    "border-destructive focus-visible:ring-destructive"
+                    "border-destructive focus-visible:ring-destructive",
                 )}
                 aria-invalid={!!errors.name}
                 aria-describedby={
@@ -141,7 +141,7 @@ export function CreateProjectDialog({
                       "h-10 w-10 sm:h-8 sm:w-8 rounded-xl transition-all border-2",
                       color === c.value
                         ? "border-current opacity-100"
-                        : "border-transparent opacity-70 hover:opacity-90"
+                        : "border-transparent opacity-70 hover:opacity-90",
                     )}
                     style={{
                       backgroundColor: c.value,
@@ -167,6 +167,7 @@ export function CreateProjectDialog({
             <Button
               type="submit"
               disabled={!isValid || createProject.isPending}
+              className="bg-brand hover:bg-brand/90 text-brand-foreground shadow-lg shadow-brand/10 transition-seijaku h-10 px-6"
             >
               {createProject.isPending ? "Creating..." : "Create"}
             </Button>

@@ -6,13 +6,14 @@ import { HabitHeatmap } from "./HabitHeatmap";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
 import { useMarkHabitComplete } from "@/lib/hooks/useHabitMutations";
 import type { HabitWithEntries } from "@/lib/hooks/useHabits";
-import { Check, Plus, LucideIcon, Flame, Trophy } from "lucide-react";
+import { Check, Plus, LucideIcon } from "lucide-react";
 import { format } from "date-fns";
 
 interface HabitCardProps {
   habit: HabitWithEntries;
   icon?: LucideIcon;
   onToggle?: () => void;
+  onEdit?: () => void;
 }
 
 /**
@@ -23,7 +24,12 @@ interface HabitCardProps {
  * - Stats moved to header for better focus hierarchy.
  * - Auto-scrolls heatmap to most recent data in the background.
  */
-export function HabitCard({ habit, icon: Icon, onToggle }: HabitCardProps) {
+export function HabitCard({
+  habit,
+  icon: Icon,
+  onToggle,
+  onEdit,
+}: HabitCardProps) {
   const isMobile = useIsMobile();
   const markComplete = useMarkHabitComplete();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -91,69 +97,59 @@ export function HabitCard({ habit, icon: Icon, onToggle }: HabitCardProps) {
   }, [onToggle, markComplete, habit.id, today, isCompletedToday]);
 
   return (
-    <Card className="bg-card border border-border/50 p-6 rounded-xl overflow-hidden shadow-none transition-seijaku-fast hover:border-border/80">
+    <Card
+      onClick={onEdit}
+      className="bg-card border border-border/40 p-6 rounded-xl overflow-hidden shadow-none transition-seijaku-fast hover:border-border/60 hover:shadow-sm cursor-pointer active:scale-[0.995]"
+    >
       <div className="flex flex-col gap-6">
         {/* Header: Title, Description + Toggle */}
         <div className="flex justify-between items-start">
           <div className="flex gap-4 items-center min-w-0">
-            {Icon && (
-              <div
-                className="w-12 h-12 rounded-lg flex items-center justify-center border border-border/50 bg-secondary/30 shrink-0"
-                style={{ color: habit.color }}
-              >
-                <Icon className="w-6 h-6" />
-              </div>
-            )}
             <div className="min-w-0">
-              <h3 className="font-semibold text-sm leading-tight text-foreground truncate">
-                {habit.name}
+              <h3 className="text-[15px] font-semibold tracking-tight text-foreground flex items-center gap-2.5 min-w-0">
+                {Icon && (
+                  <Icon
+                    className="w-5 h-5 shrink-0"
+                    strokeWidth={2.25}
+                    style={{ color: habit.color }}
+                  />
+                )}
+                <span className="truncate">{habit.name}</span>
               </h3>
               {habit.description && (
-                <p className="text-xs text-muted-foreground mt-1 truncate">
+                <p className="text-[13px] text-muted-foreground/80 mt-1 truncate leading-relaxed">
                   {habit.description}
                 </p>
-              )}
-              {/* Mobile Stats Subtitle */}
-              {isMobile && (
-                <div className="flex items-center gap-3 mt-2">
-                  <span className="flex items-center gap-1 text-[11px] font-medium text-orange-500/90">
-                    <Flame className="w-3 h-3" />
-                    {currentStreak}d
-                  </span>
-                  <span className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
-                    <Trophy className="w-3 h-3" />
-                    {totalCompletions}
-                  </span>
-                </div>
               )}
             </div>
           </div>
 
           <div className="flex items-center gap-4 shrink-0">
-            {/* Desktop Stats in Header */}
-            {!isMobile && (
-              <div className="flex items-center gap-6 mr-2">
-                <div className="text-right">
-                  <div className="text-[10px] uppercase text-muted-foreground font-semibold tracking-wider">
-                    Streak
-                  </div>
-                  <div className="text-sm font-bold text-foreground">
-                    {currentStreak}
-                  </div>
+            {/* Stats in Header */}
+            <div className="flex items-center gap-4 sm:gap-6 mr-1 sm:mr-2">
+              <div className="text-right">
+                <div className="text-[9px] uppercase text-muted-foreground/50 font-bold tracking-widest leading-none">
+                  Streak
                 </div>
-                <div className="text-right">
-                  <div className="text-[10px] uppercase text-muted-foreground font-semibold tracking-wider">
-                    Total
-                  </div>
-                  <div className="text-sm font-bold text-foreground">
-                    {totalCompletions}
-                  </div>
+                <div className="text-sm font-bold text-foreground mt-1">
+                  {currentStreak}
                 </div>
               </div>
-            )}
+              <div className="text-right">
+                <div className="text-[9px] uppercase text-muted-foreground/50 font-bold tracking-widest leading-none">
+                  Total
+                </div>
+                <div className="text-sm font-bold text-foreground mt-1">
+                  {totalCompletions}
+                </div>
+              </div>
+            </div>
 
             <button
-              onClick={handleToggle}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleToggle();
+              }}
               className={`w-9 h-9 rounded-lg flex items-center justify-center transition-seijaku-fast shrink-0 ${
                 isCompletedToday
                   ? "bg-primary text-primary-foreground"

@@ -32,6 +32,8 @@ interface TaskDatePickerProps {
   side?: "top" | "bottom" | "left" | "right";
   sideOffset?: number;
   align?: "start" | "center" | "end";
+  showTime?: boolean;
+  allowPastDates?: boolean;
 }
 
 export function TaskDatePicker({
@@ -46,7 +48,10 @@ export function TaskDatePicker({
   icon: Icon = CalendarIcon,
   side = "bottom",
   sideOffset = 4,
-  align = "start",
+  align = "center",
+
+  showTime = true,
+  allowPastDates = false,
 }: TaskDatePickerProps) {
   const isCompact = variant === "compact";
   const { trigger } = useHaptic();
@@ -63,8 +68,9 @@ export function TaskDatePicker({
       {date && (
         <>
           <span className={cn("text-sm font-medium", isCompact ? "" : "ml-1")}>
-            {format(date, "MMM d, h:mm a")}
+            {format(date, showTime ? "MMM d, h:mm a" : "MMMM d, yyyy")}
           </span>
+
           <span
             role="button"
             title={!isMobile ? `Clear ${title.toLowerCase()}` : undefined}
@@ -135,6 +141,8 @@ export function TaskDatePicker({
             date={date}
             setDate={setDate}
             onClose={() => onOpenChange(false)}
+            showTime={showTime}
+            allowPastDates={allowPastDates}
           />
         </ResponsiveDialogContent>
       </ResponsiveDialog>
@@ -174,11 +182,14 @@ export function TaskDatePicker({
         align={align}
         side={side}
         sideOffset={sideOffset}
+        collisionPadding={16}
       >
         <DateTimeWizard
           date={date}
           setDate={setDate}
           onClose={() => onOpenChange(false)}
+          showTime={showTime}
+          allowPastDates={allowPastDates}
         />
       </PopoverContent>
     </Popover>

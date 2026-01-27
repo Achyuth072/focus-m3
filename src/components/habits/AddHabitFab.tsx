@@ -6,11 +6,11 @@ import { motion } from "framer-motion";
 import { useHaptic } from "@/lib/hooks/useHaptic";
 import { cn } from "@/lib/utils";
 
-interface AddTaskFabProps {
+interface AddHabitFabProps {
   onClick: () => void;
 }
 
-export default function AddTaskFab({ onClick }: AddTaskFabProps) {
+export default function AddHabitFab({ onClick }: AddHabitFabProps) {
   const { trigger, isPhone } = useHaptic();
 
   return (

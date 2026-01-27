@@ -4,3 +4,4 @@ export * from "./project";
 export * from "./label";
 export * from "./focus-log";
 export * from "./profile";
+export * from "./habit";

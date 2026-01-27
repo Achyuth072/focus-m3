@@ -1,9 +1,4 @@
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-} from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import AppShell from "@/components/layout/AppShell";
 import { usePathname } from "next/navigation";
@@ -27,7 +22,9 @@ vi.mock("@/components/AuthProvider", () => ({
 }));
 
 vi.mock("@/components/TaskActionsProvider", () => ({
-  TaskActionsProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  TaskActionsProvider: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
   useTaskActions: () => ({
     isAddTaskOpen: false,
     openAddTask: vi.fn(),
@@ -36,7 +33,9 @@ vi.mock("@/components/TaskActionsProvider", () => ({
 }));
 
 vi.mock("@/components/ProjectActionsProvider", () => ({
-  ProjectActionsProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  ProjectActionsProvider: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
   useProjectActions: () => ({
     isCreateProjectOpen: false,
     closeCreateProject: vi.fn(),
@@ -44,11 +43,15 @@ vi.mock("@/components/ProjectActionsProvider", () => ({
 }));
 
 vi.mock("@/components/TimerProvider", () => ({
-  TimerProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  TimerProvider: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }));
 
 vi.mock("@/components/CompletedTasksProvider", () => ({
-  CompletedTasksProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  CompletedTasksProvider: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }));
 
 vi.mock("@/lib/hooks/useRealtimeSync", () => ({
@@ -60,6 +63,12 @@ vi.mock("@/lib/store/uiStore", () => ({
     isShortcutsHelpOpen: false,
     setShortcutsHelpOpen: vi.fn(),
   }),
+}));
+
+vi.mock("@/lib/hooks/useHabitMutations", () => ({
+  useCreateHabit: () => ({ mutate: vi.fn(), isPending: false }),
+  useUpdateHabit: () => ({ mutate: vi.fn(), isPending: false }),
+  useDeleteHabit: () => ({ mutate: vi.fn(), isPending: false }),
 }));
 
 // Mock dynamic components to avoid loading overhead/errors
@@ -88,7 +97,9 @@ vi.mock("@/components/tasks/AddTaskFab", () => ({
 }));
 
 vi.mock("@/components/ui/sidebar", () => ({
-  SidebarProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  SidebarProvider: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
   SidebarInset: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="sidebar-inset">{children}</div>
   ),

@@ -123,7 +123,7 @@ export function TaskEditView({
   return (
     <div className="flex flex-col h-auto max-h-[90dvh] w-full max-w-full overflow-hidden">
       {!hideDialogHeader && (
-        <ResponsiveDialogHeader className="pb-4 shrink-0">
+        <ResponsiveDialogHeader className="px-4 pt-6 shrink-0">
           <ResponsiveDialogTitle>Edit Task</ResponsiveDialogTitle>
         </ResponsiveDialogHeader>
       )}
@@ -131,10 +131,10 @@ export function TaskEditView({
       {/* Scrollable Content Area */}
       <div
         className={cn(
-          "flex-1 min-h-0 w-full",
+          "flex-1 min-h-0 w-full overflow-y-auto",
           hideDialogHeader
             ? "px-8 py-8 md:px-12 md:py-12 space-y-10"
-            : "px-4 sm:pl-0 sm:pr-4 space-y-6",
+            : "px-4 py-4 space-y-4",
         )}
       >
         {/* Content Input */}
@@ -169,11 +169,9 @@ export function TaskEditView({
         </div>
 
         {/* Description Input (Markdown) */}
-        <div className="pt-2">
-          <div className="flex items-center justify-between pb-3">
-            <span className="type-ui text-muted-foreground/70 uppercase tracking-widest font-bold">
-              Description
-            </span>
+        <div className="grid gap-2">
+          <div className="flex items-center justify-between">
+            <Label>Description</Label>
             <Button
               variant="outline"
               size="sm"
@@ -205,11 +203,9 @@ export function TaskEditView({
         </div>
 
         {/* Subtasks / Checklist */}
-        <div className="pt-6">
-          <div className="flex items-center justify-between mb-4">
-            <span className="type-ui text-muted-foreground/70 uppercase tracking-widest font-bold">
-              Subtasks
-            </span>
+        <div className="grid gap-2 pt-2">
+          <div className="flex items-center justify-between">
+            <Label>Subtasks</Label>
             <Button
               variant="outline"
               size="sm"
@@ -244,8 +240,8 @@ export function TaskEditView({
       {/* Fixed Footer - Actions Row */}
       <div
         className={cn(
-          "shrink-0 grid grid-cols-[1fr_auto] gap-4 pt-6 border-t border-border/40 mt-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] bg-background w-full max-w-full",
-          hideDialogHeader ? "px-8 md:px-12" : "px-4 sm:px-0",
+          "shrink-0 grid grid-cols-[1fr_auto] gap-4 p-4 border-t border-border/40 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-background w-full max-w-full",
+          hideDialogHeader && "px-8 md:px-12",
         )}
       >
         <div

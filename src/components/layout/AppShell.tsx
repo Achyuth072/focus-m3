@@ -20,7 +20,14 @@ import { AppSidebar } from "@/components/layout/AppSidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { MobileHeader } from "@/components/layout/MobileHeader";
 import AddTaskFab from "@/components/tasks/AddTaskFab";
+import AddHabitFab from "@/components/habits/AddHabitFab";
+import { HabitSheet } from "@/components/habits/HabitSheet";
+import {
+  HabitActionsProvider,
+  useHabitActions,
+} from "@/components/habits/HabitActionsProvider";
 import { GlobalHotkeys } from "@/components/layout/GlobalHotkeys";
+
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { useUiStore } from "@/lib/store/uiStore";
@@ -59,7 +66,11 @@ function AppShellContent({ children }: AppShellProps) {
   const isFocus = pathname === "/focus";
   const hideMobileNav = pathname === "/focus" || pathname === "/settings";
   const isTasksPage = pathname === "/";
+  const isHabitsPage = pathname === "/habits";
   const { isAddTaskOpen, openAddTask, closeAddTask } = useTaskActions();
+  const { isHabitSheetOpen, editingHabit, openAddHabit, closeHabitSheet } =
+    useHabitActions();
+
   const { isCreateProjectOpen, closeCreateProject } = useProjectActions();
   const { isShortcutsHelpOpen, setShortcutsHelpOpen } = useUiStore();
 
@@ -182,11 +193,20 @@ function AppShellContent({ children }: AppShellProps) {
         {/* Mobile Bottom Nav - hidden on Focus and Settings pages */}
         {!hideMobileNav && <MobileNav />}
 
-        {/* FAB - Only on Tasks page, rendered outside template animation */}
+        {/* FABs - Rendered outside template animation to prevent shifts */}
         {isTasksPage && <AddTaskFab onClick={openAddTask} />}
+        {isHabitsPage && <AddHabitFab onClick={openAddHabit} />}
 
         {/* Global Task Sheet */}
         <TaskSheet open={isAddTaskOpen} onClose={closeAddTask} />
+
+        {/* Global Habit Sheet */}
+        <HabitSheet
+          open={isHabitSheetOpen}
+          onClose={closeHabitSheet}
+          initialHabit={editingHabit}
+        />
+
         <CreateProjectDialog
           open={isCreateProjectOpen}
           onOpenChange={closeCreateProject}
@@ -214,13 +234,15 @@ export default function AppShell({ children }: AppShellProps) {
   return (
     <ProjectActionsProvider>
       <TaskActionsProvider>
-        <PiPProvider>
-          {loading || !user || isLoginPage ? (
-            <>{children}</>
-          ) : (
-            <AppShellContent>{children}</AppShellContent>
-          )}
-        </PiPProvider>
+        <HabitActionsProvider>
+          <PiPProvider>
+            {loading || !user || isLoginPage ? (
+              <>{children}</>
+            ) : (
+              <AppShellContent>{children}</AppShellContent>
+            )}
+          </PiPProvider>
+        </HabitActionsProvider>
       </TaskActionsProvider>
     </ProjectActionsProvider>
   );

@@ -8,17 +8,22 @@ import { LargeTimePicker } from "@/components/ui/large-time-picker";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar as CalendarIcon, Clock, Check } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface DateTimeWizardProps {
   date: Date | undefined;
   setDate: (date: Date | undefined) => void;
   onClose: () => void;
+  showTime?: boolean;
+  allowPastDates?: boolean;
 }
 
 export function DateTimeWizard({
   date,
   setDate,
   onClose,
+  showTime = true,
+  allowPastDates = false,
 }: DateTimeWizardProps) {
   const { trigger } = useHaptic();
   const [step, setStep] = useState<"date" | "time">("date");
@@ -71,7 +76,12 @@ export function DateTimeWizard({
           }}
           className="w-full"
         >
-          <TabsList className="grid w-full grid-cols-2 h-9 p-0.5 bg-muted/50">
+          <TabsList
+            className={cn(
+              "grid w-full h-9 p-0.5 bg-muted/50",
+              showTime ? "grid-cols-2" : "grid-cols-1",
+            )}
+          >
             <TabsTrigger
               value="date"
               className="text-xs font-medium data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-sm"
@@ -79,14 +89,16 @@ export function DateTimeWizard({
               <CalendarIcon className="w-3.5 h-3.5 mr-1.5" />
               {tempDate ? format(tempDate, "MMM d") : "Date"}
             </TabsTrigger>
-            <TabsTrigger
-              value="time"
-              disabled={!tempDate}
-              className="text-xs font-medium data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-sm disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <Clock className="w-3.5 h-3.5 mr-1.5" />
-              {tempDate ? format(tempDate, "h:mm a") : "Time"}
-            </TabsTrigger>
+            {showTime && (
+              <TabsTrigger
+                value="time"
+                disabled={!tempDate}
+                className="text-xs font-medium data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <Clock className="w-3.5 h-3.5 mr-1.5" />
+                {tempDate ? format(tempDate, "h:mm a") : "Time"}
+              </TabsTrigger>
+            )}
           </TabsList>
         </Tabs>
       </div>
@@ -99,7 +111,11 @@ export function DateTimeWizard({
               mode="single"
               selected={tempDate}
               onSelect={handleDateSelect}
-              disabled={{ before: new Date(new Date().setHours(0, 0, 0, 0)) }}
+              disabled={
+                allowPastDates
+                  ? undefined
+                  : { before: new Date(new Date().setHours(0, 0, 0, 0)) }
+              }
               captionLayout="dropdown"
               fromYear={new Date().getFullYear() - 1}
               toYear={new Date().getFullYear() + 5}

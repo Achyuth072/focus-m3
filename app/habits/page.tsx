@@ -1,13 +1,30 @@
 "use client";
 
 import { HabitCard } from "@/components/habits/HabitCard";
-import { useHabits } from "@/lib/hooks/useHabits";
+import { useHabits, type HabitWithEntries } from "@/lib/hooks/useHabits";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { AlertCircle, Plus } from "lucide-react";
 import { format } from "date-fns";
+import { useHaptic } from "@/lib/hooks/useHaptic";
+import { getHabitIcon } from "@/components/habits/shared/HabitIconPicker";
+
+import { useHabitActions } from "@/components/habits/HabitActionsProvider";
 
 export default function HabitsPage() {
   const { data: habits, isLoading, error } = useHabits();
+  const { openAddHabit, openEditHabit } = useHabitActions();
+  const { trigger } = useHaptic();
+
+  const handleOpenCreate = () => {
+    trigger(15);
+    openAddHabit();
+  };
+
+  const handleEditHabit = (habit: HabitWithEntries) => {
+    trigger(15);
+    openEditHabit(habit);
+  };
 
   if (isLoading) {
     return (
@@ -50,13 +67,22 @@ export default function HabitsPage() {
 
   if (!habits || habits.length === 0) {
     return (
-      <div className="container mx-auto py-32 flex flex-col items-center justify-center gap-4">
-        <div className="text-center">
+      <div className="container mx-auto py-32 flex flex-col items-center justify-center gap-6">
+        <div className="text-center space-y-2">
           <h2 className="type-h2">No habits yet</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Create your first habit to start tracking
+          <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+            Small changes lead to big results. Create your first habit to start
+            tracking.
           </p>
         </div>
+        <Button
+          variant="outline"
+          onClick={handleOpenCreate}
+          className="h-10 px-6 rounded-lg border-border/60 hover:bg-accent hover:text-accent-foreground transition-seijaku gap-2"
+        >
+          <Plus className="h-4 w-4" />
+          Create Habit
+        </Button>
       </div>
     );
   }
@@ -73,13 +99,25 @@ export default function HabitsPage() {
           <h1 className="type-h1 mt-1 text-primary">Habits</h1>
         </div>
 
-        {/* Action buttons could go here (e.g., Create Habit) */}
+        <Button
+          variant="outline"
+          onClick={handleOpenCreate}
+          className="hidden md:flex h-9 items-center gap-2 rounded-lg border-border/60 hover:bg-accent hover:text-accent-foreground transition-seijaku"
+        >
+          <Plus className="h-4 w-4" />
+          New Habit
+        </Button>
       </div>
 
       <div className="flex-1 min-h-0 overflow-y-auto px-4 md:px-6 py-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-20 max-w-7xl">
           {habits.map((habit) => (
-            <HabitCard key={habit.id} habit={habit} />
+            <HabitCard
+              key={habit.id}
+              habit={habit}
+              icon={getHabitIcon(habit.icon)}
+              onEdit={() => handleEditHabit(habit)}
+            />
           ))}
         </div>
       </div>
