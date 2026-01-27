@@ -94,14 +94,7 @@ export function ActivityHeatmap({ className }: ActivityHeatmapProps) {
           height: 12,
           gutter: 4,
         },
-        itemName: [
-          selectedMetric,
-          selectedMetric === "tasks"
-            ? "tasks"
-            : selectedMetric === "focus"
-              ? "hours"
-              : "points",
-        ],
+        itemName: ["combined", "points"],
       },
       [
         [
