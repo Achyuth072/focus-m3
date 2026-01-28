@@ -5,6 +5,7 @@ import { CreateHabitInput } from "@/lib/schemas/habit";
 import {
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
+  ResponsiveDialogDescription,
 } from "@/components/ui/responsive-dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -66,6 +67,9 @@ export function HabitCreateView({
         <ResponsiveDialogTitle className="type-h2 leading-none">
           New Habit
         </ResponsiveDialogTitle>
+        <ResponsiveDialogDescription className="sr-only">
+          Create a new habit to track your progress.
+        </ResponsiveDialogDescription>
       </ResponsiveDialogHeader>
 
       <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-4 w-full scrollbar-none">

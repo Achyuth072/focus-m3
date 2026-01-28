@@ -89,14 +89,12 @@ export function useHorizontalScroll() {
     let isDown = false;
     let startX: number;
     let scrollLeftStart: number;
-    let hasMoved = false;
 
     const onMouseDown = (e: MouseEvent) => {
       isDown = true;
       el.classList.add("cursor-grabbing");
       startX = e.pageX - el.offsetLeft;
       scrollLeftStart = el.scrollLeft;
-      hasMoved = false;
 
       // Disable snap during drag
       disableScrollSnap();
@@ -128,8 +126,6 @@ export function useHorizontalScroll() {
 
       const x = e.pageX - el.offsetLeft;
       const walk = (x - startX) * 1.5;
-
-      if (Math.abs(walk) > 5) hasMoved = true;
 
       el.scrollLeft = scrollLeftStart - walk;
       targetScrollLeft = el.scrollLeft;

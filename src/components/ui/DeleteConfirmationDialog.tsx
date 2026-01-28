@@ -60,10 +60,12 @@ export function DeleteConfirmationDialog({
   if (isDesktop) {
     return (
       <AlertDialog open={isOpen} onOpenChange={onClose}>
-        <AlertDialogContent>
+        <AlertDialogContent aria-describedby="delete-dialog-description">
           <AlertDialogHeader>
             <AlertDialogTitle>{title}</AlertDialogTitle>
-            <AlertDialogDescription>{description}</AlertDialogDescription>
+            <AlertDialogDescription id="delete-dialog-description">
+              {description}
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={handleCancel}>Cancel</AlertDialogCancel>

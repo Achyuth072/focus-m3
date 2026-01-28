@@ -8,6 +8,7 @@ import { useHaptic } from "@/lib/hooks/useHaptic";
 import {
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
+  ResponsiveDialogDescription,
 } from "@/components/ui/responsive-dialog";
 import {
   Select,
@@ -127,6 +128,9 @@ export function TaskEditView({
           <ResponsiveDialogTitle className="type-h2">
             Edit Task
           </ResponsiveDialogTitle>
+          <ResponsiveDialogDescription className="sr-only">
+            Update task details, description, and metadata.
+          </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
       )}
 

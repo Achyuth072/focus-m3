@@ -20,6 +20,9 @@ vi.mock("@/components/ui/responsive-dialog", () => ({
   ResponsiveDialogTitle: ({ children, className }: { children: React.ReactNode; className?: string }) => (
     <div className={className}>{children}</div>
   ),
+  ResponsiveDialogDescription: ({ children, className }: { children: React.ReactNode; className?: string }) => (
+    <div className={className}>{children}</div>
+  ),
 }));
 
 vi.mock("@/components/habits/shared/HabitColorPicker", () => ({

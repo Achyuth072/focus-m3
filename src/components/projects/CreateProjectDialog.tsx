@@ -89,7 +89,6 @@ export function CreateProjectDialog({
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
       <ResponsiveDialogContent
         className="sm:max-w-[400px] p-0 overflow-hidden"
-        aria-describedby="project-dialog-description"
       >
         <form
           onSubmit={handleSubmit(onFormSubmit)}
@@ -99,7 +98,7 @@ export function CreateProjectDialog({
             <ResponsiveDialogTitle className="type-h2">
               Create Project
             </ResponsiveDialogTitle>
-            <ResponsiveDialogDescription id="project-dialog-description">
+            <ResponsiveDialogDescription>
               Organize your tasks into a new project.
             </ResponsiveDialogDescription>
           </ResponsiveDialogHeader>

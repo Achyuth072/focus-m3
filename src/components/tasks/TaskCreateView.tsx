@@ -8,6 +8,7 @@ import { useHaptic } from "@/lib/hooks/useHaptic";
 import {
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
+  ResponsiveDialogDescription,
 } from "@/components/ui/responsive-dialog";
 import {
   Select,
@@ -101,6 +102,9 @@ export function TaskCreateView({
         <ResponsiveDialogTitle className="type-h2">
           New Task
         </ResponsiveDialogTitle>
+        <ResponsiveDialogDescription className="sr-only">
+          Add a new task to your list.
+        </ResponsiveDialogDescription>
       </ResponsiveDialogHeader>
 
       <div className="flex-1 min-h-0 px-4 py-4 space-y-4 w-full overflow-y-auto">

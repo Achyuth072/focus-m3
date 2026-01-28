@@ -147,7 +147,6 @@ export function HabitSheet({ open, onClose, initialHabit }: HabitSheetProps) {
     <ResponsiveDialog open={open} onOpenChange={onClose}>
       <ResponsiveDialogContent
         className="w-full sm:max-w-lg gap-0 rounded-lg p-0 overflow-hidden"
-        aria-describedby={undefined}
       >
         <div className="flex flex-col max-h-[85vh]">
           {isCreationMode ? (

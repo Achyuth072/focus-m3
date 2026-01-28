@@ -246,7 +246,6 @@ export default function TaskSheet({
     <ResponsiveDialog open={open} onOpenChange={onClose}>
       <ResponsiveDialogContent
         className="w-full sm:max-w-lg gap-0 rounded-lg p-0 overflow-hidden"
-        aria-describedby={undefined}
       >
         <div className="overflow-y-auto max-h-[85vh] scrollbar-thin">
           {isCreationMode ? (
