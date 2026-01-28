@@ -26,6 +26,15 @@ const IntersectionObserverMock = vi.fn(() => ({
 
 vi.stubGlobal("IntersectionObserver", IntersectionObserverMock);
 
+// Mock ResizeObserver
+class ResizeObserverMock {
+  disconnect = vi.fn();
+  observe = vi.fn();
+  unobserve = vi.fn();
+}
+
+vi.stubGlobal("ResizeObserver", ResizeObserverMock);
+
 // Mock CSS.supports
 Object.defineProperty(global, "CSS", {
   value: {
