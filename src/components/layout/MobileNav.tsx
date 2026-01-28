@@ -2,13 +2,14 @@
 
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { CheckSquare, Calendar, BarChart3 } from "lucide-react";
+import { CheckSquare, Calendar, BarChart3, Layers } from "lucide-react";
 import { motion } from "framer-motion";
 import { useHaptic } from "@/lib/hooks/useHaptic";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { label: "All Tasks", icon: CheckSquare, path: "/" },
+  { label: "Habits", icon: Layers, path: "/habits" },
   { label: "Calendar", icon: Calendar, path: "/calendar" },
   { label: "Stats", icon: BarChart3, path: "/stats" },
 ];

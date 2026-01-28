@@ -23,7 +23,7 @@ describe("Command Menu Styles", () => {
             Test Item
           </CommandItem>
         </CommandList>
-      </Command>
+      </Command>,
     );
 
     const item = screen.getByTestId("cmd-item");
@@ -43,7 +43,7 @@ describe("Command Menu Styles", () => {
             Test Item
           </CommandItem>
         </CommandList>
-      </Command>
+      </Command>,
     );
 
     const item = screen.getByTestId("cmd-item");
@@ -63,7 +63,7 @@ describe("Command Menu Styles", () => {
             Test Item
           </CommandItem>
         </CommandList>
-      </Command>
+      </Command>,
     );
 
     const item = screen.getByTestId("cmd-item");
@@ -78,7 +78,7 @@ describe("Command Menu Styles", () => {
     // However, for typical TDD, we often write the "Positive" test first.
     // Let's assert that it DOES NOT contain the bad class mapping.
     expect(className).not.toContain(
-      "dark:data-[selected=true]:!text-primary-foreground"
+      "dark:data-[selected=true]:!text-primary-foreground",
     );
   });
 
@@ -90,7 +90,7 @@ describe("Command Menu Styles", () => {
             Test Item
           </CommandItem>
         </CommandList>
-      </Command>
+      </Command>,
     );
 
     const item = screen.getByTestId("cmd-item");

@@ -19,10 +19,11 @@ const SHORTCUTS: ShortcutGroup[] = [
     title: "Navigation",
     shortcuts: [
       { keys: ["1"], description: "Go to Tasks" },
-      { keys: ["2"], description: "Go to Calendar" },
-      { keys: ["3"], description: "Go to Stats" },
-      { keys: ["4"], description: "Go to Focus" },
-      { keys: ["5"], description: "Go to Settings" },
+      { keys: ["2"], description: "Go to Habits" },
+      { keys: ["3"], description: "Go to Calendar" },
+      { keys: ["4"], description: "Go to Stats" },
+      { keys: ["5"], description: "Go to Focus" },
+      { keys: ["6"], description: "Go to Settings" },
       { keys: ["b"], description: "Toggle Sidebar" },
       { keys: ["Esc"], description: "Close Focus/Dialogs" },
     ],
@@ -31,6 +32,7 @@ const SHORTCUTS: ShortcutGroup[] = [
     title: "Actions",
     shortcuts: [
       { keys: ["n"], description: "New Task" },
+      { keys: ["h"], description: "Create Habit" },
       { keys: ["c"], description: "Toggle Completed Tasks" },
       { keys: ["Cmd", "Enter"], description: "Save Task" },
       { keys: ["s"], description: "Search / Command Menu" },
@@ -68,13 +70,13 @@ interface ShortcutsHelpProps {
 export function ShortcutsHelp({ open, onOpenChange }: ShortcutsHelpProps) {
   return (
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
-      <ResponsiveDialogContent className="sm:max-w-[550px] border-border/60 shadow-2xl p-0">
-        <ResponsiveDialogHeader className="p-6 pb-2 border-b border-border/40">
-          <ResponsiveDialogTitle className="flex items-center gap-2.5 text-[22px] font-semibold tracking-tight text-foreground">
+      <ResponsiveDialogContent className="sm:max-w-[550px] border-border/80 shadow-2xl p-0">
+        <ResponsiveDialogHeader className="p-6 pb-2 border-b border-border/80">
+          <ResponsiveDialogTitle className="flex items-center gap-2.5 text-[24px] font-semibold tracking-[-0.02em] text-foreground">
             <Keyboard className="h-5 w-5 text-muted-foreground/70" />
             Keyboard Shortcuts
           </ResponsiveDialogTitle>
-          <ResponsiveDialogDescription className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium pt-1">
+          <ResponsiveDialogDescription className="text-[11px] uppercase tracking-[0.02em] text-muted-foreground font-medium pt-1">
             Refine your workflow with Kanso
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
@@ -83,14 +85,14 @@ export function ShortcutsHelp({ open, onOpenChange }: ShortcutsHelpProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
             {SHORTCUTS.map((group) => (
               <div key={group.title} className="space-y-4">
-                <h3 className="text-[15px] font-bold tracking-tight text-foreground pb-2 border-b border-border/40">
+                <h3 className="text-[18px] font-medium tracking-[-0.01em] text-foreground pb-2 border-b border-border/80">
                   {group.title}
                 </h3>
                 <div className="space-y-3.5">
                   {group.shortcuts.map((shortcut, i) => (
                     <div
                       key={i}
-                      className="flex items-center justify-between text-[14px]"
+                      className="flex items-center justify-between text-[13px] font-medium tracking-[0.01em]"
                     >
                       <span className="text-foreground/90 font-medium">
                         {shortcut.description}
@@ -99,7 +101,7 @@ export function ShortcutsHelp({ open, onOpenChange }: ShortcutsHelpProps) {
                         {shortcut.keys.map((key) => (
                           <kbd
                             key={key}
-                            className="pointer-events-none h-5.5 min-w-[24px] select-none items-center justify-center rounded border border-border bg-sidebar px-1.5 font-mono text-[10px] font-bold text-foreground shadow-none flex"
+                            className="pointer-events-none h-5.5 min-w-[24px] select-none items-center justify-center rounded border border-border bg-sidebar px-1.5 font-mono text-[11px] font-medium text-foreground shadow-none flex"
                           >
                             {key}
                           </kbd>

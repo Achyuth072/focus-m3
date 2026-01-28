@@ -41,6 +41,7 @@ import {
 import { useProjects } from "@/lib/hooks/useProjects";
 import { useTaskActions } from "@/components/TaskActionsProvider";
 import { useProjectActions } from "@/components/ProjectActionsProvider";
+import { useHabitActions } from "@/components/habits/HabitActionsProvider";
 import { useCompletedTasks } from "@/components/CompletedTasksProvider";
 import { useAuth } from "@/components/AuthProvider";
 import { useSidebar } from "@/components/ui/sidebar";
@@ -62,6 +63,7 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
   const { data: projects } = useProjects();
   const { openAddTask } = useTaskActions();
   const { openCreateProject } = useProjectActions();
+  const { openAddHabit } = useHabitActions();
   const { openSheet: openCompletedSheet } = useCompletedTasks();
   const { user, signOut } = useAuth();
   const { toggleSidebar } = useSidebar();
@@ -80,20 +82,20 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
       onOpenChange(false);
       command();
     },
-    [onOpenChange]
+    [onOpenChange],
   );
 
   return (
     <>
       <CommandDialog open={open} onOpenChange={onOpenChange}>
-        <div className="p-6 pb-3 border-b border-border/40 bg-muted/20">
+        <div className="p-6 pb-3 border-b border-border/80 bg-muted/20">
           <div className="flex items-center gap-2.5">
             <CommandIcon className="h-5 w-5 text-muted-foreground/70" />
-            <h2 className="text-[22px] font-semibold tracking-tight text-foreground">
+            <h2 className="text-[24px] font-semibold tracking-[-0.02em] text-foreground">
               Command Menu
             </h2>
           </div>
-          <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium pt-1">
+          <p className="text-[11px] uppercase tracking-[0.02em] text-muted-foreground font-medium pt-1">
             Quick Actions & Navigation
           </p>
         </div>
@@ -105,6 +107,10 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
             <CommandItem onSelect={() => runCommand(() => openAddTask())}>
               <PlusIcon className="mr-2 h-4 w-4" />
               <span>New Task</span>
+            </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => openAddHabit())}>
+              <PlusIcon className="mr-2 h-4 w-4" />
+              <span>New Habit</span>
             </CommandItem>
             <CommandItem onSelect={() => runCommand(() => openCreateProject())}>
               <FolderPlus className="mr-2 h-4 w-4" />
@@ -211,6 +217,12 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
             <CommandItem onSelect={() => runCommand(() => router.push("/"))}>
               <HomeIcon className="mr-2 h-4 w-4" />
               <span>Home</span>
+            </CommandItem>
+            <CommandItem
+              onSelect={() => runCommand(() => router.push("/habits"))}
+            >
+              <Layers className="mr-2 h-4 w-4" />
+              <span>Habits</span>
             </CommandItem>
             {/* Inbox moved to projects */}
             <CommandItem

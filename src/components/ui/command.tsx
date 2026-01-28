@@ -16,7 +16,7 @@ const Command = React.forwardRef<
     ref={ref}
     className={cn(
       "flex h-full w-full flex-col overflow-hidden rounded-md bg-background text-foreground",
-      className
+      className,
     )}
     {...props}
   />
@@ -54,7 +54,7 @@ const CommandInput = React.forwardRef<
       ref={ref}
       className={cn(
         "flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 font-medium text-foreground",
-        className
+        className,
       )}
       {...props}
     />
@@ -71,7 +71,7 @@ const CommandList = React.forwardRef<
     ref={ref}
     className={cn(
       "max-h-[350px] overflow-y-auto overflow-x-hidden scrollbar-hide py-2",
-      className
+      className,
     )}
     {...props}
   />
@@ -100,7 +100,7 @@ const CommandGroup = React.forwardRef<
     ref={ref}
     className={cn(
       "overflow-hidden p-1.5 text-foreground [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2.5 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:text-foreground [&_[cmdk-group-heading]]:tracking-[0.05em] [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:opacity-90",
-      className
+      className,
     )}
     {...props}
   />
@@ -130,7 +130,7 @@ const CommandItem = React.forwardRef<
       "relative flex cursor-pointer select-none items-center rounded-md px-3 py-2.5 text-sm transition-all duration-200 outline-none",
       "text-foreground/90 font-medium aria-selected:bg-brand aria-selected:text-brand-foreground aria-selected:font-bold",
       "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      className
+      className,
     )}
     {...props}
   />
@@ -146,7 +146,7 @@ const CommandShortcut = ({
     <span
       className={cn(
         "ml-auto text-xs tracking-widest text-muted-foreground/60",
-        className
+        className,
       )}
       {...props}
     />
