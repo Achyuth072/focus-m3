@@ -46,7 +46,7 @@ export function TaskMasonryGrid({
   }
 
   return (
-    <div className="px-4 md:px-6 pb-24 md:pb-8">
+    <div className="px-4 md:px-6 pb-12 md:pb-8">
       {/* 
           Grid layout with auto-rows to maintain masonry feel 
           Kanso style: balanced void space (Ma)

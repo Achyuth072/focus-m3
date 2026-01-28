@@ -17,7 +17,9 @@ describe("HabitCard Scroll Initialization", () => {
       mutate: vi.fn(),
       mutateAsync: vi.fn(),
       isPending: false,
-    } as unknown as ReturnType<typeof useHabitMutationsModule.useMarkHabitComplete>);
+    } as unknown as ReturnType<
+      typeof useHabitMutationsModule.useMarkHabitComplete
+    >);
 
     const today = new Date();
     const startDate = new Date(today);
@@ -38,7 +40,7 @@ describe("HabitCard Scroll Initialization", () => {
     };
   });
 
-  it("should use custom-scrollbar for desktop affordance", async () => {
+  it("should use scrollbar-hide for a clean UI", async () => {
     // Given: A habit card
     const { container } = render(<HabitCard habit={mockHabit} />);
 
@@ -47,8 +49,8 @@ describe("HabitCard Scroll Initialization", () => {
       ".overflow-x-auto",
     ) as HTMLElement;
     expect(scrollContainer).toBeTruthy();
-    expect(scrollContainer.className).toContain("custom-scrollbar");
-    expect(scrollContainer.className).not.toContain("scrollbar-none");
+    expect(scrollContainer.className).toContain("scrollbar-hide");
+    expect(scrollContainer.className).not.toContain("custom-scrollbar");
     expect(scrollContainer.className).not.toContain("-mx-2");
   });
 });

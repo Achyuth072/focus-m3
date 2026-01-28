@@ -109,8 +109,8 @@ export default function HabitsPage() {
         </Button>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto px-4 md:px-6 py-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-20 max-w-7xl">
+      <div className="flex-1 min-h-0 overflow-y-auto px-4 md:px-6 py-4 scrollbar-hide">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-12 max-w-7xl">
           {habits.map((habit) => (
             <HabitCard
               key={habit.id}

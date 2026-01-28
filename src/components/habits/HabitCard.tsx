@@ -174,7 +174,7 @@ export function HabitCard({
         {/* Heatmap Area - Large Visual Centerpiece */}
         <div
           ref={scrollContainerRef}
-          className="w-full overflow-x-auto pb-1 custom-scrollbar"
+          className="w-full overflow-x-auto pb-1 scrollbar-hide"
         >
           <HabitHeatmap
             entries={habit.entries}
