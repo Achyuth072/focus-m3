@@ -3,6 +3,7 @@
 import React from "react";
 import { ActivityCalendar } from "react-activity-calendar";
 import "react-activity-calendar/tooltips.css";
+import { useTheme } from "next-themes";
 import type { HabitEntry } from "@/lib/hooks/useHabits";
 
 interface HabitHeatmapProps {
@@ -34,6 +35,8 @@ export function HabitHeatmap({
   blockMargin = 2,
   startDate,
 }: HabitHeatmapProps) {
+  const { resolvedTheme } = useTheme();
+
   // Transform habit entries to react-activity-calendar format
   // We ensure the start_date and today are at least represented to fix the range
   const today = new Date().toISOString().split("T")[0];
@@ -68,6 +71,7 @@ export function HabitHeatmap({
       <ActivityCalendar
         data={calendarData}
         theme={theme}
+        colorScheme={(resolvedTheme as "light" | "dark") || "light"}
         blockSize={blockSize}
         blockMargin={blockMargin}
         blockRadius={2}

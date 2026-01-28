@@ -99,7 +99,7 @@ export function HabitCard({
   return (
     <Card
       onClick={onEdit}
-      className="bg-card border border-border/40 p-6 rounded-xl overflow-hidden shadow-none transition-seijaku-fast hover:border-border/60 hover:shadow-sm cursor-pointer active:scale-[0.995]"
+      className="bg-card border border-border dark:border-border/40 p-6 rounded-xl overflow-hidden shadow-none transition-seijaku-fast hover:border-border/60 hover:shadow-sm cursor-pointer active:scale-[0.995]"
     >
       <div className="flex flex-col gap-6">
         {/* Header: Title, Description + Toggle */}
@@ -117,7 +117,7 @@ export function HabitCard({
                 <span className="truncate">{habit.name}</span>
               </h3>
               {habit.description && (
-                <p className="text-[13px] text-muted-foreground/80 mt-1 truncate leading-relaxed">
+                <p className="text-[13px] text-muted-foreground mt-1 truncate leading-relaxed">
                   {habit.description}
                 </p>
               )}
