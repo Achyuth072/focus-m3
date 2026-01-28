@@ -10,6 +10,7 @@ import {
   useSensors,
   closestCorners,
   DragOverlay,
+  useDroppable,
   defaultDropAnimationSideEffects,
 } from "@dnd-kit/core";
 import {
@@ -113,32 +114,47 @@ const KanbanColumn = memo(function KanbanColumn({
   group: TaskGroup;
   onSelect?: (task: Task) => void;
 }) {
-  return (
-    <div className="flex-shrink-0 w-[90vw] md:w-[320px] snap-center flex flex-col h-full bg-secondary/10 rounded-2xl border border-border p-2">
-      <div className="flex items-center justify-between mb-4 px-1">
-        <h3 className="type-ui font-bold text-foreground/80 lowercase tracking-tight">
-          {group.title}
-        </h3>
-        <span className="text-[10px] bg-muted px-1.5 py-0.5 rounded-full font-bold opacity-60">
-          {group.tasks.length}
-        </span>
-      </div>
+  const { setNodeRef } = useDroppable({
+    id: group.title,
+  });
 
-      <SortableContext
-        items={group.tasks.map((t) => t.id)}
-        strategy={verticalListSortingStrategy}
-      >
-        <div className="flex-1 space-y-2 overflow-y-auto -mx-1 px-1 -my-1 py-1">
-          {group.tasks.map((task) => (
-            <SortableTaskItem
-              key={task.id}
-              task={task}
-              onSelect={onSelect}
-              viewMode="board"
-            />
-          ))}
+  return (
+    <div
+      ref={setNodeRef}
+      className="flex-shrink-0 w-[90vw] md:w-[320px] snap-center h-full flex flex-col"
+    >
+      <div className="flex flex-col max-h-full bg-secondary/10 rounded-2xl border border-border p-2 overflow-hidden shadow-sm">
+        <div className="flex items-center justify-between mb-4 px-1 flex-shrink-0">
+          <h3 className="type-ui font-bold text-foreground/80 lowercase tracking-tight">
+            {group.title}
+          </h3>
+          <span className="text-[10px] bg-muted px-1.5 py-0.5 rounded-full font-bold opacity-60">
+            {group.tasks.length}
+          </span>
         </div>
-      </SortableContext>
+
+        <SortableContext
+          items={group.tasks.map((t) => t.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          <div className="flex-1 space-y-2 overflow-y-auto px-1 -mx-1 py-1 -my-1 scrollbar-hide">
+            {group.tasks.length > 0 ? (
+              group.tasks.map((task) => (
+                <SortableTaskItem
+                  key={task.id}
+                  task={task}
+                  onSelect={onSelect}
+                  viewMode="board"
+                />
+              ))
+            ) : (
+              <div className="h-20 flex items-center justify-center border-2 border-dashed border-border/20 rounded-xl opacity-0 hover:opacity-100 transition-opacity">
+                <span className="text-xs text-muted-foreground">Drop here</span>
+              </div>
+            )}
+          </div>
+        </SortableContext>
+      </div>
     </div>
   );
 });
