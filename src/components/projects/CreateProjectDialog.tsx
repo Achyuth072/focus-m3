@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCreateProject } from "@/lib/hooks/useProjectMutations";
 import { useHaptic } from "@/lib/hooks/useHaptic";
+import { useHorizontalScroll } from "@/lib/hooks/useHorizontalScroll";
 import { cn } from "@/lib/utils";
 
 interface CreateProjectDialogProps {
@@ -34,7 +35,17 @@ const PROJECT_COLORS = [
   { name: "Blue", value: "#2196F3" },
   { name: "Indigo", value: "#3F51B5" },
   { name: "Purple", value: "#9C27B0" },
+  { name: "Pink", value: "#FF4081" },
+  { name: "Cyan", value: "#00BCD4" },
+  { name: "Lime", value: "#CDDC39" },
+  { name: "Amber", value: "#FFC107" },
+  { name: "Deep Orange", value: "#FF5722" },
+  { name: "Brown", value: "#795548" },
   { name: "Grey", value: "#607D8B" },
+  { name: "Black", value: "#212121" },
+  { name: "Rose", value: "#FB7185" },
+  { name: "Violet", value: "#8B5CF6" },
+  { name: "Emerald", value: "#10B981" },
 ];
 
 export function CreateProjectDialog({
@@ -65,6 +76,7 @@ export function CreateProjectDialog({
   });
   const createProject = useCreateProject();
   const { trigger } = useHaptic();
+  const scrollRef = useHorizontalScroll();
 
   const onFormSubmit = async (data: CreateProjectInput) => {
     trigger(50);
@@ -84,7 +96,9 @@ export function CreateProjectDialog({
           className="flex flex-col h-auto max-h-[90dvh]"
         >
           <ResponsiveDialogHeader className="px-4 pt-6 shrink-0">
-            <ResponsiveDialogTitle>Create Project</ResponsiveDialogTitle>
+            <ResponsiveDialogTitle className="type-h2">
+              Create Project
+            </ResponsiveDialogTitle>
             <ResponsiveDialogDescription id="project-dialog-description">
               Organize your tasks into a new project.
             </ResponsiveDialogDescription>
@@ -121,7 +135,8 @@ export function CreateProjectDialog({
             <div className="grid gap-2">
               <Label>Color</Label>
               <div
-                className="flex flex-wrap gap-3 sm:gap-2"
+                ref={scrollRef}
+                className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide py-1 px-1 snap-x snap-mandatory"
                 role="radiogroup"
                 aria-label="Project color"
               >
@@ -134,14 +149,14 @@ export function CreateProjectDialog({
                     role="radio"
                     aria-checked={color === c.value}
                     onClick={() => {
-                      trigger(25);
+                      trigger(15);
                       setValue("color", c.value, { shouldValidate: true });
                     }}
                     className={cn(
-                      "h-10 w-10 sm:h-8 sm:w-8 rounded-xl transition-all border-2",
+                      "h-9 w-9 rounded-xl transition-all border-2 shrink-0 snap-start",
                       color === c.value
-                        ? "border-current opacity-100"
-                        : "border-transparent opacity-70 hover:opacity-90",
+                        ? "border-current opacity-100 scale-110 shadow-sm"
+                        : "border-transparent opacity-70 hover:opacity-90 hover:scale-105",
                     )}
                     style={{
                       backgroundColor: c.value,

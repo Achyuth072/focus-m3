@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Save, Trash2, CalendarIcon } from "lucide-react";
 import { useHaptic } from "@/lib/hooks/useHaptic";
-import { useHorizontalScroll } from "@/lib/hooks/useHorizontalScroll";
 import { HabitColorPicker } from "./shared/HabitColorPicker";
 import { HabitIconPicker } from "./shared/HabitIconPicker";
 import type { Habit } from "@/lib/types/habit";
@@ -64,28 +63,22 @@ export function HabitEditView({
 
   errors,
 }: HabitEditViewProps) {
-  const scrollRef = useHorizontalScroll();
   const { trigger } = useHaptic();
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden w-full max-w-full">
       <ResponsiveDialogHeader className="px-4 pt-6 shrink-0">
-        <ResponsiveDialogTitle className="type-h2">
+        <ResponsiveDialogTitle className="type-h2 leading-none">
           Edit Habit
         </ResponsiveDialogTitle>
       </ResponsiveDialogHeader>
 
       <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-4 w-full scrollbar-none">
         {/* Hero Icon Selection */}
-        <HabitIconPicker
-          value={icon}
-          onChange={setIcon}
-          color={color}
-          variant="hero"
-        />
+        <HabitIconPicker value={icon} onChange={setIcon} color={color} />
 
         {/* Name & Description Inputs */}
-        <div className="sm:space-y-4 space-y-2">
+        <div className="space-y-1.5">
           <div className="space-y-1">
             <Label htmlFor="habit-name-edit" className="sr-only">
               Habit Name
@@ -97,9 +90,9 @@ export function HabitEditView({
               onChange={(e) => setName(e.target.value)}
               onKeyDown={onKeyDown}
               className={cn(
-                "text-2xl sm:text-3xl font-semibold p-0 min-h-[40px] h-auto bg-transparent border-0 focus-visible:ring-0 resize-none placeholder:text-muted-foreground/30 tracking-tight leading-tight",
+                "text-2xl font-semibold px-3 py-2 h-10 min-h-[40px] bg-transparent border-border focus-visible:ring-1 focus-visible:ring-ring shadow-sm resize-none placeholder:text-muted-foreground/30 tracking-tight leading-tight rounded-md transition-all",
                 errors?.name &&
-                  "text-destructive placeholder:text-destructive/50",
+                  "text-destructive placeholder:text-destructive/50 border-destructive/20",
               )}
               aria-invalid={!!errors?.name}
             />
@@ -119,11 +112,11 @@ export function HabitEditView({
               placeholder="Add details..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="text-[15px] p-0 min-h-[24px] h-auto bg-transparent border-0 focus-visible:ring-0 resize-none placeholder:text-muted-foreground/40 leading-relaxed"
+              className="text-[15px] px-3 py-2 h-10 min-h-[40px] bg-transparent border-border focus-visible:ring-1 focus-visible:ring-ring shadow-sm resize-none placeholder:text-muted-foreground/40 leading-relaxed rounded-md transition-all"
             />
           </div>
 
-          <div className="pt-2">
+          <div className="pt-0">
             <HabitColorPicker value={color} onChange={setColor} />
           </div>
         </div>
@@ -131,10 +124,7 @@ export function HabitEditView({
 
       {/* Footer Actions */}
       <div className="shrink-0 grid grid-cols-[1fr_auto] gap-4 p-4 border-t border-border/40 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-background w-full max-w-full">
-        <div
-          ref={scrollRef}
-          className="flex items-center gap-2 overflow-x-auto scrollbar-hide flex-nowrap min-w-0 pr-8 py-1 mask-linear-horizontal"
-        >
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide flex-nowrap min-w-0 pr-8 py-1">
           <Button
             variant="ghost"
             size="sm"
@@ -146,7 +136,7 @@ export function HabitEditView({
             title="Delete habit"
             disabled={isPending}
           >
-            <Trash2 strokeWidth={1.5} />
+            <Trash2 strokeWidth={2.25} />
           </Button>
 
           <TaskDatePicker

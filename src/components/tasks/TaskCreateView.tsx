@@ -117,9 +117,9 @@ export function TaskCreateView({
             onKeyDown={onKeyDown}
             autoFocus
             className={cn(
-              "text-xl sm:text-2xl font-semibold p-0 min-h-[40px] h-auto bg-transparent border-0 focus-visible:ring-0 resize-none placeholder:text-muted-foreground/40 tracking-tight leading-tight",
+              "text-xl sm:text-2xl font-semibold px-3 py-2 h-10 min-h-[40px] bg-transparent border-border focus-visible:ring-1 focus-visible:ring-ring shadow-sm resize-none placeholder:text-muted-foreground/30 tracking-tight leading-tight rounded-md transition-all",
               errors?.content &&
-                "text-destructive placeholder:text-destructive/50",
+                "text-destructive placeholder:text-destructive/50 border-destructive/20",
             )}
             aria-invalid={!!errors?.content}
             aria-describedby={

@@ -124,17 +124,17 @@ export function TaskEditView({
     <div className="flex flex-col h-auto max-h-[90dvh] w-full max-w-full overflow-hidden">
       {!hideDialogHeader && (
         <ResponsiveDialogHeader className="px-4 pt-6 shrink-0">
-          <ResponsiveDialogTitle>Edit Task</ResponsiveDialogTitle>
+          <ResponsiveDialogTitle className="type-h2">
+            Edit Task
+          </ResponsiveDialogTitle>
         </ResponsiveDialogHeader>
       )}
 
       {/* Scrollable Content Area */}
       <div
         className={cn(
-          "flex-1 min-h-0 w-full overflow-y-auto",
-          hideDialogHeader
-            ? "px-8 py-8 md:px-12 md:py-12 space-y-10"
-            : "px-4 py-4 space-y-4",
+          "flex-1 min-h-0 w-full overflow-y-auto px-4 py-4 space-y-4",
+          hideDialogHeader && "md:px-6 md:py-6 md:space-y-6",
         )}
       >
         {/* Content Input */}
@@ -149,9 +149,9 @@ export function TaskEditView({
             onChange={(e) => setContent(e.target.value)}
             onKeyDown={onKeyDown}
             className={cn(
-              "text-xl sm:text-2xl font-semibold p-0 min-h-[40px] h-auto bg-transparent border-0 focus-visible:ring-0 resize-none placeholder:text-muted-foreground/40 tracking-tight leading-tight",
+              "text-xl sm:text-2xl font-semibold px-3 py-2 h-10 min-h-[40px] bg-transparent border-border focus-visible:ring-1 focus-visible:ring-ring shadow-sm resize-none placeholder:text-muted-foreground/30 tracking-tight leading-tight rounded-md transition-all",
               errors?.content &&
-                "text-destructive placeholder:text-destructive/50",
+                "text-destructive placeholder:text-destructive/50 border-destructive/20",
             )}
             aria-invalid={!!errors?.content}
             aria-describedby={
@@ -197,7 +197,7 @@ export function TaskEditView({
               placeholder="Add details... (Markdown supported)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="min-h-[200px] text-[15px] leading-relaxed resize-none border-none shadow-none focus-visible:ring-0 p-0 bg-transparent hover:bg-secondary/10 focus:bg-transparent rounded-lg placeholder:text-muted-foreground/40 overflow-y-auto transition-colors scrollbar-hide"
+              className="min-h-[200px] text-[15px] leading-relaxed px-3 py-2 bg-transparent border-border focus-visible:ring-1 focus-visible:ring-ring shadow-sm resize-none placeholder:text-muted-foreground/40 rounded-md transition-all overflow-y-auto scrollbar-hide"
             />
           )}
         </div>
@@ -241,12 +241,12 @@ export function TaskEditView({
       <div
         className={cn(
           "shrink-0 grid grid-cols-[1fr_auto] gap-4 p-4 border-t border-border/40 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-background w-full max-w-full",
-          hideDialogHeader && "px-8 md:px-12",
+          hideDialogHeader && "md:px-6",
         )}
       >
         <div
           ref={scrollRef}
-          className="flex items-center gap-3 overflow-x-auto scrollbar-hide pr-8 py-1 min-w-0 mask-linear-horizontal"
+          className="flex items-center gap-3 overflow-x-auto scrollbar-hide pr-8 py-1 min-w-0"
         >
           {/* Date & Time Picker (Due Date) */}
           <TaskDatePicker
@@ -366,7 +366,7 @@ export function TaskEditView({
             }}
             title="Delete task"
           >
-            <Trash2 strokeWidth={1.5} />
+            <Trash2 strokeWidth={2.25} />
           </Button>
 
           {/* Submit Button - Solid Finish Stroke */}
@@ -385,7 +385,10 @@ export function TaskEditView({
             disabled={!hasContent || isPending}
             title="Save changes"
           >
-            <Save strokeWidth={2} className={cn(isPending && "opacity-50")} />
+            <Save
+              strokeWidth={2.25}
+              className={cn(isPending && "opacity-50")}
+            />
           </Button>
         </div>
       </div>

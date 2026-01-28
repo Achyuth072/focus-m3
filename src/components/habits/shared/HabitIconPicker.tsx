@@ -17,7 +17,26 @@ import {
   Music,
   Code,
   Leaf,
+  Bike,
+  Brain,
+  Camera,
+  Utensils,
+  Gamepad2,
+  GraduationCap,
+  Coins,
+  Languages,
+  Medal,
+  Monitor,
+  Pizza,
+  Plane,
+  Rocket,
+  Sun,
+  Target,
+  Trees,
+  User,
+  Zap,
 } from "lucide-react";
+import { useHorizontalScroll } from "@/lib/hooks/useHorizontalScroll";
 
 export const HABIT_ICONS = [
   { name: "Flame", icon: Flame },
@@ -32,6 +51,24 @@ export const HABIT_ICONS = [
   { name: "Music", icon: Music },
   { name: "Code", icon: Code },
   { name: "Leaf", icon: Leaf },
+  { name: "Bike", icon: Bike },
+  { name: "Brain", icon: Brain },
+  { name: "Camera", icon: Camera },
+  { name: "Cooking", icon: Utensils },
+  { name: "Gamepad", icon: Gamepad2 },
+  { name: "Graduation", icon: GraduationCap },
+  { name: "Finances", icon: Coins },
+  { name: "Language", icon: Languages },
+  { name: "Medal", icon: Medal },
+  { name: "Monitor", icon: Monitor },
+  { name: "Pizza", icon: Pizza },
+  { name: "Plane", icon: Plane },
+  { name: "Rocket", icon: Rocket },
+  { name: "Sun", icon: Sun },
+  { name: "Target", icon: Target },
+  { name: "Trees", icon: Trees },
+  { name: "User", icon: User },
+  { name: "Zap", icon: Zap },
 ];
 
 export function getHabitIcon(iconName: string | null | undefined) {
@@ -54,66 +91,16 @@ export function HabitIconPicker({
   variant = "grid",
 }: HabitIconPickerProps) {
   const { trigger } = useHaptic();
-
-  if (variant === "hero") {
-    return (
-      <div className="flex flex-col items-center sm:gap-6 gap-3 py-1 sm:py-2">
-        <div
-          className="w-16 h-16 sm:w-20 sm:h-20 rounded-[22px] sm:rounded-[28px] flex items-center justify-center border border-border/40 bg-secondary/5 shadow-none transition-seijaku-fast"
-          style={{ color }}
-        >
-          {/* Use React.createElement to bypass lint rules for dynamic component resolution */}
-          {React.createElement(getHabitIcon(value), {
-            className: "w-8 h-8 sm:w-10 sm:h-10",
-            strokeWidth: 2.25,
-            style: { color },
-          })}
-        </div>
-        <div
-          className="flex flex-wrap justify-center gap-2 max-w-[320px]"
-          role="radiogroup"
-          aria-label="Habit icon"
-        >
-          {HABIT_ICONS.map((item) => {
-            const Icon = item.icon;
-            const isSelected = value === item.name;
-            return (
-              <button
-                key={item.name}
-                type="button"
-                title={item.name}
-                aria-label={item.name}
-                role="radio"
-                aria-checked={isSelected}
-                onClick={() => {
-                  trigger(15);
-                  onChange(item.name);
-                }}
-                className={cn(
-                  "h-10 w-10 rounded-xl transition-all border flex items-center justify-center shrink-0",
-                  isSelected
-                    ? "border-border/80 bg-secondary/50 scale-105 shadow-sm"
-                    : "border-border/20 bg-transparent opacity-40 hover:opacity-100 hover:bg-secondary/10",
-                )}
-              >
-                <Icon
-                  strokeWidth={2.25}
-                  className="h-5 w-5"
-                  style={{ color: isSelected ? color : "currentColor" }}
-                />
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
+  const scrollRef = useHorizontalScroll();
 
   return (
-    <div className="grid gap-2">
-      {variant !== "compact" && <Label>Icon</Label>}
+    <div className="grid gap-1.5 w-full overflow-hidden">
+      {variant !== "compact" && (
+        <Label className="px-1 text-xs text-muted-foreground/60">Icon</Label>
+      )}
       <div
-        className="flex flex-wrap gap-3 sm:gap-2"
+        ref={scrollRef}
+        className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide py-1 px-1 snap-x snap-mandatory"
         role="radiogroup"
         aria-label="Habit icon"
       >
@@ -133,10 +120,10 @@ export function HabitIconPicker({
                 onChange(item.name);
               }}
               className={cn(
-                "h-10 w-10 sm:h-9 sm:w-9 rounded-xl transition-all border flex items-center justify-center shrink-0",
+                "h-9 w-9 rounded-xl transition-all border flex items-center justify-center shrink-0 snap-start",
                 isSelected
                   ? "border-border/80 bg-secondary/50 scale-105 shadow-sm"
-                  : "border-border/30 bg-transparent opacity-60 hover:opacity-100 hover:bg-secondary/20",
+                  : "border-border/20 bg-transparent opacity-40 hover:opacity-100 hover:bg-secondary/10",
               )}
             >
               <Icon

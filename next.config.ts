@@ -11,6 +11,9 @@ const withSerwist = withSerwistInit({
 // Dual Build Strategy: Mobile (Capacitor) vs Web
 const isMobile = process.env.NEXT_PUBLIC_IS_CAPACITOR === "true";
 
+// Turbopack detection - skip Serwist wrapper for faster dev builds
+const isTurbopack = process.env.TURBOPACK === "1";
+
 const nextConfig: NextConfig = {
   // Static export for Capacitor mobile builds
   output: isMobile ? "export" : undefined,
@@ -22,4 +25,5 @@ const nextConfig: NextConfig = {
   turbopack: {},
 };
 
-export default withSerwist(nextConfig);
+// Only wrap with Serwist when using Webpack (dev:pwa, build)
+export default isTurbopack ? nextConfig : withSerwist(nextConfig);
