@@ -178,4 +178,42 @@ describe("AppShell Layout & Scroll Behavior", () => {
       expect(finalContainer?.scrollTop).toBe(0);
     });
   });
+
+  it("should apply overflow-hidden class for /habits path", () => {
+    // Given: Path is set to /habits
+    vi.mocked(usePathname).mockReturnValue("/habits");
+
+    // When: Rendering AppShell
+    render(
+      <AppShell>
+        <div>Habits Content</div>
+      </AppShell>,
+    );
+
+    // Then: The container inside SidebarInset should have overflow-hidden class
+    const container = screen
+      .getByTestId("sidebar-inset")
+      .querySelector("div.overflow-hidden");
+
+    expect(container).toBeInTheDocument();
+  });
+
+  it("should apply overflow-y-auto class for /stats path (regression check)", () => {
+    // Given: Path is set to /stats
+    vi.mocked(usePathname).mockReturnValue("/stats");
+
+    // When: Rendering AppShell
+    render(
+      <AppShell>
+        <div>Stats Content</div>
+      </AppShell>,
+    );
+
+    // Then: The container inside SidebarInset should have overflow-y-auto class
+    const container = screen
+      .getByTestId("sidebar-inset")
+      .querySelector("div.overflow-y-auto");
+
+    expect(container).toBeInTheDocument();
+  });
 });

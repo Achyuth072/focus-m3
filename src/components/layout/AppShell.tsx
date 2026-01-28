@@ -174,7 +174,10 @@ function AppShellContent({ children }: AppShellProps) {
             ref={scrollContainerRef}
             className={cn(
               "flex-1 md:pt-0 md:pb-0",
-              pathname === "/calendar" || isFocus || pathname === "/"
+              pathname === "/calendar" ||
+                isFocus ||
+                pathname === "/" ||
+                pathname === "/habits"
                 ? "overflow-hidden"
                 : "overflow-y-auto overflow-x-hidden",
               !hideMobileNav && "pt-[calc(4rem+env(safe-area-inset-top,0px))]",
