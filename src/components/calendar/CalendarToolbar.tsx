@@ -83,7 +83,7 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
       <div className="flex items-center gap-1 md:gap-2">
         <Button
           variant="outline"
-          size={isMobile ? "icon" : "sm"}
+          size={isMobile ? "icon" : "default"}
           onClick={() => {
             trigger(10);
             goToToday();
