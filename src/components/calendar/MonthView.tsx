@@ -155,7 +155,7 @@ const MonthView = memo(
         {/* Calendar grid */}
         <div
           className={cn(
-            "flex-1 min-h-0 grid grid-cols-7 overflow-hidden divide-x divide-border/[0.08] divide-y divide-border/[0.08] border-b border-r border-border/[0.08]",
+            "flex-1 min-h-0 grid grid-cols-7 overflow-hidden divide-x divide-border/40 divide-y divide-border/40 border-b border-r border-border/40",
             numWeeks === 5 ? "grid-rows-5" : "grid-rows-6",
           )}
         >

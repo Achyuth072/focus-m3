@@ -58,7 +58,7 @@ const ScheduleView = memo(
                 <div
                   className={cn(
                     "sticky top-0 z-10 bg-background/95 backdrop-blur-sm",
-                    "py-4 border-b border-border/10",
+                    "py-4 border-b border-border/40",
                   )}
                 >
                   <div className="flex items-baseline gap-3">

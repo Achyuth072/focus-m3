@@ -81,7 +81,7 @@ export function TimeGrid({
       )}
     >
       {/* Time Labels Column */}
-      <div className="w-12 md:w-16 flex-shrink-0 sticky left-0 z-50 bg-background border-r border-border/5">
+      <div className="w-12 md:w-16 flex-shrink-0 sticky left-0 z-50 bg-background border-r border-border/40 h-fit">
         <div className="h-16 bg-background" />{" "}
         {/* Spacer for header - ensured background */}
         {hours.map((hour) => (
@@ -97,7 +97,7 @@ export function TimeGrid({
 
       {/* Days Columns */}
       <div
-        className="flex-1 grid divide-x divide-border/[0.08]"
+        className="flex-1 grid divide-x divide-border/40 h-fit"
         style={{ gridTemplateColumns }}
       >
         {columns.map((column) => {
@@ -113,7 +113,7 @@ export function TimeGrid({
               )}
             >
               {/* Header for the Day - z-40 to be above events (10) and indicator (30) */}
-              <div className="sticky top-0 z-40 bg-background border-b border-border/10 h-16 flex flex-col items-center justify-center">
+              <div className="sticky top-0 z-40 bg-background border-b border-border/40 h-16 flex flex-col items-center justify-center">
                 <div
                   className={cn(
                     "text-[10px] md:text-xs",
@@ -139,7 +139,7 @@ export function TimeGrid({
               {hours.map((hour) => (
                 <div
                   key={hour}
-                  className="border-t border-border/[0.06]"
+                  className="border-t border-border/40"
                   style={{ height: `${HOUR_HEIGHT}px` }}
                 />
               ))}
