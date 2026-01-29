@@ -81,18 +81,30 @@ export function TimeGrid({
       )}
     >
       {/* Time Labels Column */}
-      <div className="w-12 md:w-16 flex-shrink-0 sticky left-0 z-50 bg-background border-r border-border/5">
-        <div className="h-16 bg-background" />{" "}
+      <div
+        data-testid="sidebar-container"
+        className="w-12 md:w-16 flex-shrink-0 sticky left-0"
+      >
+        <div
+          data-testid="sidebar-spacer"
+          className="h-16 bg-background sticky top-0 z-50 border-r border-border/5"
+        />{" "}
         {/* Spacer for header - ensured background */}
-        {hours.map((hour) => (
-          <div
-            key={hour}
-            className="text-[9px] md:text-xs text-muted-foreground/50 text-right pr-2 md:pr-3 pt-2 font-medium bg-background"
-            style={{ height: `${HOUR_HEIGHT}px` }}
-          >
-            {format(new Date().setHours(hour, 0), "h a")}
-          </div>
-        ))}
+        {/* Wrapper for labels to create a z-20 layer */}
+        <div
+          data-testid="sidebar-labels"
+          className="relative z-20 bg-background border-r border-border/5"
+        >
+          {hours.map((hour) => (
+            <div
+              key={hour}
+              className="text-[9px] md:text-xs text-muted-foreground/50 text-right pr-2 md:pr-3 pt-2 font-medium"
+              style={{ height: `${HOUR_HEIGHT}px` }}
+            >
+              {format(new Date().setHours(hour, 0), "h a")}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Days Columns */}
@@ -112,7 +124,10 @@ export function TimeGrid({
               )}
             >
               {/* Header for the Day - z-40 to be above events (10) and indicator (30) */}
-              <div className="sticky top-0 z-40 bg-background border-b border-border/10 h-16 flex flex-col items-center justify-center">
+              <div
+                data-testid="day-header"
+                className="sticky top-0 z-40 bg-background border-b border-border/10 h-16 flex flex-col items-center justify-center"
+              >
                 <div
                   className={cn(
                     "text-[10px] md:text-xs",
