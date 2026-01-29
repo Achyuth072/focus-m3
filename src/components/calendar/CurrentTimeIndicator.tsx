@@ -35,7 +35,7 @@ export function CurrentTimeIndicator({ className }: CurrentTimeIndicatorProps) {
       style={{ top: `${topPx}px` }}
     >
       {/* The Dot/Label on the left */}
-      <div className="absolute -left-1 md:-left-1.5 flex items-center">
+      <div className="absolute left-0 md:-left-1.5 flex items-center">
         <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-brand shadow-[0_0_0_2px_rgba(255,255,255,1)] dark:shadow-[0_0_0_2px_rgba(26,26,26,1)]" />
         <span className="ml-2 px-1.5 py-0.5 rounded bg-brand text-white text-[9px] md:text-[10px] font-bold leading-none uppercase tracking-wider">
           {format(now, "h:mm a")}
