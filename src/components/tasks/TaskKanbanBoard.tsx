@@ -123,7 +123,7 @@ const KanbanColumn = memo(function KanbanColumn({
       ref={setNodeRef}
       className="flex-shrink-0 w-[90vw] md:w-[320px] snap-center h-full flex flex-col"
     >
-      <div className="flex flex-col max-h-full bg-secondary/10 rounded-2xl border border-border p-2 overflow-hidden shadow-sm">
+      <div className="flex flex-col max-h-full bg-secondary/10 rounded-2xl border border-border p-2 overflow-hidden">
         <div className="flex items-center justify-between mb-4 px-1 flex-shrink-0">
           <h3 className="type-ui font-bold text-foreground/80 lowercase tracking-tight">
             {group.title}

@@ -120,10 +120,10 @@ export function HabitIconPicker({
                 onChange(item.name);
               }}
               className={cn(
-                "h-9 w-9 rounded-xl transition-all border flex items-center justify-center shrink-0 snap-start",
+                "h-9 w-9 rounded-lg transition-all border flex items-center justify-center shrink-0 snap-start",
                 isSelected
                   ? "border-border/80 bg-secondary/50 scale-105 shadow-sm"
-                  : "border-border/20 bg-transparent opacity-40 hover:opacity-100 hover:bg-secondary/10",
+                  : "border-border/50 bg-transparent text-muted-foreground hover:text-foreground hover:bg-accent",
               )}
             >
               <Icon
