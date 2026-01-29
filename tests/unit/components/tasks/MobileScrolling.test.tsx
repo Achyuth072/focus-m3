@@ -17,6 +17,10 @@ vi.mock("@dnd-kit/core", () => ({
   useSensors: vi.fn(() => []),
   PointerSensor: vi.fn(),
   DragOverlay: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+  useDroppable: vi.fn(() => ({
+    setNodeRef: vi.fn(),
+    isOver: false,
+  })),
   defaultDropAnimationSideEffects: vi.fn(() => ({})),
 }));
 
@@ -96,7 +100,7 @@ describe("Mobile Scrolling Padding", () => {
 
     const gridContainer = container.querySelector("div.px-4");
     expect(gridContainer).not.toBeNull();
-    expect(gridContainer?.className).toContain("pb-24");
+    expect(gridContainer?.className).toContain("pb-12");
     expect(gridContainer?.className).toContain("md:pb-8");
   });
 
@@ -105,10 +109,10 @@ describe("Mobile Scrolling Padding", () => {
       <TaskKanbanBoard processedTasks={mockProcessedTasks} />,
     );
 
-    // Find the board container which has pb-20 class
-    const boardContainer = container.querySelector("[class*='pb-20']");
+    // Find the board container which has pb-12 class
+    const boardContainer = container.querySelector("[class*='pb-12']");
     expect(boardContainer).not.toBeNull();
-    expect(boardContainer?.className).toContain("pb-20");
+    expect(boardContainer?.className).toContain("pb-12");
     expect(boardContainer?.className).toContain("md:pb-6");
   });
 
@@ -125,9 +129,9 @@ describe("Mobile Scrolling Padding", () => {
       />,
     );
 
-    const listContainer = container.querySelector("[class*='pb-24']");
+    const listContainer = container.querySelector("[class*='pb-12']");
     expect(listContainer).not.toBeNull();
-    expect(listContainer?.className).toContain("pb-24");
+    expect(listContainer?.className).toContain("pb-12");
     expect(listContainer?.className).toContain("md:pb-8");
   });
 });
