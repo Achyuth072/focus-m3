@@ -14,15 +14,16 @@ Kanso is a **Zen-Modernist** task management and focus tool. It fuses the Japane
 
 ## Features
 
-- **Guest Mode**: A full, privacy-first demo experience that persists locally.
-- **Project Organization**: Multi-project support with collapsible, color-coded sections.
-- **Focus Timer**: PiP-enabled timer (Chrome/Edge) with fallback for all browsers.
-- **Global Hotkeys**: Everything is 100% keyboard-navigable.
-- **Stats & Insights**: Real-time synchronization of focus and completion data.
-- **Smart Planning** Separate when you want to work on a task from its actual deadline. You can also defer things to a dedicated "This Evening" section.
-- **Command Menu** Jump anywhere in the app instantly using Cmd+K or Ctrl+K.
-- **Works on Mobile** Since it is a PWA, it feels like a native app on your phone with swipe gestures and haptics.
-- **Calendar** See your schedule in day, week, month, or year views.
+- **Macro & Micro Views**: Switch between Masonry Grid, Kanban Board, and List views instantly with `Shift+1/2/3`.
+- **Visual Activity Heatmap**: GitHub-style consistency chart tracking both focus minutes and habit repetitions.
+- **Habit Mastery**: Dedicated habit tracking system with CRUD management and longevity insights.
+- **Calendar Precision**: Vertical schedule with real-time indicators and programmatic auto-scroll to "Now."
+- **Guest Mode**: A 100% private, zero-footprint demo experience anchored in `localStorage`.
+- **Offline-First**: Powered by TanStack Query persistence and IndexedDB, ensuring total reliability without network.
+- **PWA Excellence**: Native-grade mobile experience with swipe-to-edit/delete gestures and "Seijaku" haptics.
+- **Command Menu**: Global `Ctrl+K` palette for instant navigation and action execution.
+- **Focus Timer**: PiP-enabled Pomodoro engine with real-time stats synchronization.
+- **Project Organization**: Multi-project support with collapsible, tactile organizational layers.
 
 ## Shortcuts
 
@@ -30,11 +31,12 @@ Press **Shift + H** to see the full list of keyboard shortcuts.
 
 ## Built with
 
-- **Next.js 15** and **Supabase**
-- **TanStack Query** and **Zustand** for state
-- **Tailwind CSS v4** and **Shadcn UI** for the interface
-- **Framer Motion** and **dnd-kit** for gestures and reordering
-- **Serwist** for offline PWA support
+- **Next.js 15 (App Router)** and **Supabase (PostgreSQL/Realtime)**
+- **TanStack Query v5** (Persistence via IndexedDB) and **Zustand**
+- **Tailwind CSS v4** and **Shadcn UI** (Radical Minimalism)
+- **Framer Motion** and **dnd-kit** for physical interactions
+- **Serwist** for Typed Service Worker & PWA support
+- **Recharts** and **Cal-Heatmap** for data visualization
 
 ## Setup
 
