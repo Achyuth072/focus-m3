@@ -54,7 +54,27 @@ describe("Regression Fixes", () => {
     );
     const grid = getByTestId("time-grid");
     expect(grid).toBeInTheDocument();
-    // We note that JSDOM doesn't handle scrollTop perfectly, but we verify rendering integrity
+  });
+
+  it("TimeGrid: should calculate horizontal scroll for mobile week view", () => {
+    const today = new Date();
+    // Start week 2 days ago so today is index 2
+    const startDate = new Date(today);
+    startDate.setDate(startDate.getDate() - 2);
+
+    const { getByTestId } = render(
+      <TimeGrid
+        isMobile={true}
+        startDate={startDate}
+        daysToShow={7}
+        events={[]}
+        data-testid="time-grid"
+      />,
+    );
+    const grid = getByTestId("time-grid");
+    expect(grid).toBeInTheDocument();
+    // Regression check: Ensure it doesn't crash and renders Today's indicator
+    expect(screen.getByTestId("current-time-indicator")).toBeInTheDocument();
   });
 
   it("MonthView: Grid lines should be visible (consistent border opacity)", () => {
