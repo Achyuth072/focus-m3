@@ -8,6 +8,8 @@ import { useMarkHabitComplete } from "@/lib/hooks/useHabitMutations";
 import type { HabitWithEntries } from "@/lib/hooks/useHabits";
 import { Check, Plus, LucideIcon } from "lucide-react";
 import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { useHorizontalScroll } from "@/lib/hooks/useHorizontalScroll";
 
 interface HabitCardProps {
   habit: HabitWithEntries;
@@ -33,6 +35,23 @@ export function HabitCard({
   const isMobile = useIsMobile();
   const markComplete = useMarkHabitComplete();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const horizontalScrollRef = useHorizontalScroll();
+
+  // Combine refs for both manual scroll-to-end and useHorizontalScroll logic
+  const setRefs = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (!isMobile) {
+        horizontalScrollRef(node);
+      } else {
+        // Ensure listeners are removed on mobile to allow native scrolling
+        horizontalScrollRef(null);
+      }
+      (
+        scrollContainerRef as React.MutableRefObject<HTMLDivElement | null>
+      ).current = node;
+    },
+    [horizontalScrollRef, isMobile],
+  );
 
   // Background scroll to end on mount
   useLayoutEffect(() => {
@@ -173,7 +192,7 @@ export function HabitCard({
 
         {/* Heatmap Area - Large Visual Centerpiece */}
         <div
-          ref={scrollContainerRef}
+          ref={setRefs}
           className="w-full overflow-x-auto pb-1 scrollbar-hide"
         >
           <HabitHeatmap

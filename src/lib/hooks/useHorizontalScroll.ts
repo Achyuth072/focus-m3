@@ -14,6 +14,12 @@ export function useHorizontalScroll() {
     let targetScrollLeft = el.scrollLeft;
     let animationId: number | null = null;
     const lerpFactor = 0.18;
+    const friction = 0.95; // Inertia decay rate
+    let velocity = 0;
+    let lastMouseX = 0;
+    let lastTime = 0;
+    let isMoving = false;
+    let totalMoved = 0;
 
     // Store original scroll-snap style to restore later
     let originalScrollSnapType: string | null = null;
@@ -34,16 +40,30 @@ export function useHorizontalScroll() {
 
     const update = () => {
       if (!el) return;
-      const diff = targetScrollLeft - el.scrollLeft;
 
-      if (Math.abs(diff) < 0.5) {
-        el.scrollLeft = targetScrollLeft;
-        animationId = null;
-        enableScrollSnap(); // Re-enable snap when animation completes
-        return;
+      if (isMoving) {
+        // Smoothly interpolate to target (used for Wheel)
+        const diff = targetScrollLeft - el.scrollLeft;
+        if (Math.abs(diff) < 0.5) {
+          el.scrollLeft = targetScrollLeft;
+          animationId = null;
+          enableScrollSnap();
+          return;
+        }
+        el.scrollLeft += diff * lerpFactor;
+      } else {
+        // Inertia (used for Drag release)
+        if (Math.abs(velocity) < 0.1) {
+          velocity = 0;
+          animationId = null;
+          enableScrollSnap();
+          return;
+        }
+        el.scrollLeft += velocity;
+        velocity *= friction;
+        targetScrollLeft = el.scrollLeft;
       }
 
-      el.scrollLeft += diff * lerpFactor;
       animationId = requestAnimationFrame(update);
     };
 
@@ -59,8 +79,8 @@ export function useHorizontalScroll() {
       const isScrollable = el.scrollWidth > el.clientWidth;
       if (!isScrollable) return;
 
-      // Disable scroll-snap during wheel animation to allow smooth programmatic scroll
       disableScrollSnap();
+      isMoving = true;
 
       if (animationId === null) {
         targetScrollLeft = el.scrollLeft;
@@ -95,8 +115,12 @@ export function useHorizontalScroll() {
       el.classList.add("cursor-grabbing");
       startX = e.pageX - el.offsetLeft;
       scrollLeftStart = el.scrollLeft;
+      totalMoved = 0;
+      velocity = 0;
+      lastMouseX = e.pageX;
+      lastTime = performance.now();
+      isMoving = false;
 
-      // Disable snap during drag
       disableScrollSnap();
 
       if (animationId !== null) {
@@ -105,32 +129,54 @@ export function useHorizontalScroll() {
       }
     };
 
-    const onMouseLeave = () => {
-      if (isDown) {
-        isDown = false;
-        el.classList.remove("cursor-grabbing");
+    const stopDragging = () => {
+      if (!isDown) return;
+      isDown = false;
+      el.classList.remove("cursor-grabbing");
+
+      if (Math.abs(velocity) > 2) {
+        // Trigger inertia
+        isMoving = false;
+        animationId = requestAnimationFrame(update);
+      } else {
         enableScrollSnap();
       }
     };
 
-    const onMouseUp = () => {
-      if (isDown) {
-        isDown = false;
-        el.classList.remove("cursor-grabbing");
-        enableScrollSnap();
-      }
-    };
+    const onMouseLeave = stopDragging;
+    const onMouseUp = stopDragging;
 
     const onMouseMove = (e: MouseEvent) => {
       if (!isDown) return;
 
       const x = e.pageX - el.offsetLeft;
       const walk = (x - startX) * 1.5;
+      const prevScrollLeft = el.scrollLeft;
 
       el.scrollLeft = scrollLeftStart - walk;
       targetScrollLeft = el.scrollLeft;
 
+      // Calculate velocity
+      const now = performance.now();
+      const dt = now - lastTime;
+      if (dt > 0) {
+        const dx = el.scrollLeft - prevScrollLeft;
+        velocity = dx; // Simple frame velocity
+        lastTime = now;
+      }
+
+      totalMoved += Math.abs(x - (lastMouseX - el.offsetLeft));
+      lastMouseX = e.pageX;
+
       e.preventDefault();
+    };
+
+    // Prevent click if we moved significantly
+    const onClick = (e: MouseEvent) => {
+      if (totalMoved > 10) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
     };
 
     el.addEventListener("wheel", onWheel, { passive: false });
@@ -139,6 +185,7 @@ export function useHorizontalScroll() {
     el.addEventListener("mouseleave", onMouseLeave);
     el.addEventListener("mouseup", onMouseUp);
     el.addEventListener("mousemove", onMouseMove);
+    el.addEventListener("click", onClick, { capture: true });
 
     resizeObserver.observe(el);
 
@@ -149,8 +196,9 @@ export function useHorizontalScroll() {
       el.removeEventListener("mouseleave", onMouseLeave);
       el.removeEventListener("mouseup", onMouseUp);
       el.removeEventListener("mousemove", onMouseMove);
+      el.removeEventListener("click", onClick, { capture: true });
       resizeObserver.disconnect();
-      enableScrollSnap(); // Restore on cleanup
+      enableScrollSnap();
       if (animationId !== null) cancelAnimationFrame(animationId);
     };
   }, []);
