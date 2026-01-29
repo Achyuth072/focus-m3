@@ -51,15 +51,23 @@ export function TimeGrid({
       const currentHour = now.getHours();
       const currentMinute = now.getMinutes();
 
-      // Calculate position relative to the grid start (excluding header)
+      // Vertical scroll position
       const scrollPos =
         currentHour * HOUR_HEIGHT + (currentMinute / 60) * HOUR_HEIGHT;
-
-      // Scroll so indicator is near the top but visible below sticky header
-      // Subtracting 120px gives some context of the previous hour
       scrollRef.current.scrollTop = Math.max(0, scrollPos - 120);
+
+      // Horizontal scroll (Mobile Week View)
+      if (isMobile && daysToShow > 3) {
+        const todayIndex = dates.findIndex((d) => isSameDay(d, now));
+        if (todayIndex > 0) {
+          const containerWidth = scrollRef.current.clientWidth;
+          // Each column is 33.3333% of the container width
+          const columnWidth = containerWidth / 3;
+          scrollRef.current.scrollLeft = todayIndex * columnWidth;
+        }
+      }
     }
-  }, []);
+  }, [dates, isMobile, daysToShow]);
 
   return (
     <div
