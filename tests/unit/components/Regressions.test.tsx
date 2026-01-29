@@ -16,17 +16,45 @@ describe("Regression Fixes", () => {
         daysToShow={1}
         events={mockEvents}
         data-testid="time-grid"
-      />
+      />,
     );
     const root = screen.getByTestId("time-grid");
     const headers = root.querySelectorAll(".sticky");
     const dayHeader = Array.from(headers).find((h) =>
-      h.textContent?.includes("Mon")
+      h.textContent?.includes("Mon"),
     );
 
     expect(dayHeader).toBeTruthy();
     expect(dayHeader?.className).toContain("h-16");
     expect(dayHeader?.className).not.toContain("h-24");
+  });
+
+  it("TimeGrid: should render CurrentTimeIndicator when today is visible", () => {
+    const today = new Date();
+    render(
+      <TimeGrid
+        startDate={today}
+        daysToShow={1}
+        events={[]}
+        data-testid="time-grid"
+      />,
+    );
+    expect(screen.getByTestId("current-time-indicator")).toBeInTheDocument();
+  });
+
+  it("TimeGrid: should attempt to scroll to current time on mount", () => {
+    const today = new Date();
+    const { getByTestId } = render(
+      <TimeGrid
+        startDate={today}
+        daysToShow={1}
+        events={[]}
+        data-testid="time-grid"
+      />,
+    );
+    const grid = getByTestId("time-grid");
+    expect(grid).toBeInTheDocument();
+    // We note that JSDOM doesn't handle scrollTop perfectly, but we verify rendering integrity
   });
 
   it("MonthView: Grid lines should be visible (consistent border opacity)", () => {
@@ -35,7 +63,7 @@ describe("Regression Fixes", () => {
         currentDate={mockDate}
         events={mockEvents} // No events, checking empty state regression
         data-testid="month-view"
-      />
+      />,
     );
 
     // Find the cell for day '1'

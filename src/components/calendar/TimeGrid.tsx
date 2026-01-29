@@ -1,10 +1,11 @@
 "use client";
 
 import { format, isSameDay } from "date-fns";
-import { useMemo, memo } from "react";
+import { useMemo, memo, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { getDayRange, layoutDayRange } from "@/lib/calendar/engine";
 import type { CalendarEvent } from "@/lib/calendar/types";
+import { CurrentTimeIndicator } from "./CurrentTimeIndicator";
 
 const HOUR_HEIGHT = 120; // 60 minutes * 2 pixels
 
@@ -41,8 +42,28 @@ export function TimeGrid({
     return `repeat(${daysToShow}, 1fr)`;
   }, [isMobile, daysToShow]);
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to current time on mount
+  useEffect(() => {
+    if (scrollRef.current) {
+      const now = new Date();
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
+
+      // Calculate position relative to the grid start (excluding header)
+      const scrollPos =
+        currentHour * HOUR_HEIGHT + (currentMinute / 60) * HOUR_HEIGHT;
+
+      // Scroll so indicator is near the top but visible below sticky header
+      // Subtracting 120px gives some context of the previous hour
+      scrollRef.current.scrollTop = Math.max(0, scrollPos - 120);
+    }
+  }, []);
+
   return (
     <div
+      ref={scrollRef}
       data-testid={testId || "time-grid"}
       className={cn(
         "flex h-full overflow-auto bg-background custom-scrollbar",
@@ -113,6 +134,9 @@ export function TimeGrid({
                   style={{ height: `${HOUR_HEIGHT}px` }}
                 />
               ))}
+
+              {/* Current Time Indicator */}
+              {isToday && <CurrentTimeIndicator />}
 
               {/* Render Events for this Day */}
               {column.events.map((event) => {
