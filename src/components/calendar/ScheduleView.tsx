@@ -20,9 +20,9 @@ const ScheduleView = memo(
     const dateRange = useMemo(
       () =>
         Array.from({ length: daysToShow }).map((_, i) =>
-          addDays(startOfToday, i)
+          addDays(startOfToday, i),
         ),
-      [startOfToday, daysToShow]
+      [startOfToday, daysToShow],
     );
 
     // Memoize event grouping by day
@@ -58,14 +58,14 @@ const ScheduleView = memo(
                 <div
                   className={cn(
                     "sticky top-0 z-10 bg-background/95 backdrop-blur-sm",
-                    "py-4 border-b border-border/10"
+                    "py-4 border-b border-border/10",
                   )}
                 >
                   <div className="flex items-baseline gap-3">
                     <div
                       className={cn(
                         "text-3xl font-bold px-2 rounded-lg min-w-[2.5rem] h-10 flex items-center justify-center",
-                        isToday && "text-white bg-brand shadow-sm"
+                        isToday && "text-white bg-brand shadow-sm",
                       )}
                     >
                       {format(date, "d")}
@@ -74,7 +74,7 @@ const ScheduleView = memo(
                       <div
                         className={cn(
                           "text-sm font-medium",
-                          isToday && "text-brand"
+                          isToday && "text-brand",
                         )}
                       >
                         {format(date, "EEEE")}
@@ -94,7 +94,7 @@ const ScheduleView = memo(
                         key={event.id}
                         className={cn(
                           "flex gap-4 p-4 rounded-xl hover:bg-accent/30 cursor-pointer transition-all active:scale-[0.99] mb-2",
-                          "bg-(--event-color)/15 font-medium border-l-4 border-(--event-color)"
+                          "bg-(--event-color)/15 font-medium border-l-4 border-(--event-color)",
                         )}
                         style={
                           {
@@ -139,7 +139,7 @@ const ScheduleView = memo(
         </div>
       </div>
     );
-  }
+  },
 );
 
 ScheduleView.displayName = "ScheduleView";

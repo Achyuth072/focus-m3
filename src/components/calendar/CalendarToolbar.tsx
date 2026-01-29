@@ -76,7 +76,7 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
     <div
       className={cn(
         "flex items-center justify-between gap-4 p-4 md:p-6 border-b bg-background/50 backdrop-blur-md sticky top-0 z-20",
-        className
+        className,
       )}
     >
       {/* Left: Date Navigation */}
