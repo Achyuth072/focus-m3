@@ -4,7 +4,6 @@ import React, { useMemo, memo } from "react";
 import type { Task, Project } from "@/lib/types/task";
 import type { ProcessedTasks } from "@/lib/hooks/useTaskViewData";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTimer } from "@/components/TimerProvider";

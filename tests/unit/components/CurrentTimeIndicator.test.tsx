@@ -3,9 +3,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { CurrentTimeIndicator } from "@/components/calendar/CurrentTimeIndicator";
 
 describe("CurrentTimeIndicator", () => {
-  const HOUR_HEIGHT = 120;
-  const HEADER_HEIGHT = 64;
-
   beforeEach(() => {
     vi.useFakeTimers();
   });

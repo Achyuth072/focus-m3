@@ -42,7 +42,6 @@ export function IntegratedTaskKanbanBoard({
   const { trigger } = useHaptic();
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const { start: startTimer } = useTimer();
-  const router = useRouter();
   const { data: projects } = useProjects();
   const reorderMutation = useReorderTasks();
 

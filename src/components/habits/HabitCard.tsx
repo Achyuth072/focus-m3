@@ -8,7 +8,6 @@ import { useMarkHabitComplete } from "@/lib/hooks/useHabitMutations";
 import type { HabitWithEntries } from "@/lib/hooks/useHabits";
 import { Check, Plus, LucideIcon } from "lucide-react";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 import { useHorizontalScroll } from "@/lib/hooks/useHorizontalScroll";
 
 interface HabitCardProps {

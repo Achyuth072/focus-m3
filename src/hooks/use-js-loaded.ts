@@ -14,6 +14,7 @@ export function useJsLoaded() {
       document.readyState === 'complete' ||
       document.readyState === 'interactive'
     ) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoaded(true);
       return;
     }

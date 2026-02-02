@@ -141,7 +141,7 @@ const MonthView = memo(
         )}
       >
         {/* Week day headers */}
-        <div className="grid grid-cols-7 border-b border-border/40">
+        <div className="grid grid-cols-7 border-b border-border/[0.08]">
           {weekDays.map((day) => (
             <div
               key={day}
@@ -155,7 +155,7 @@ const MonthView = memo(
         {/* Calendar grid */}
         <div
           className={cn(
-            "flex-1 min-h-0 grid grid-cols-7 overflow-hidden divide-x divide-border/40 divide-y divide-border/40 border-b border-r border-border/40",
+            "flex-1 min-h-0 grid grid-cols-7 overflow-hidden divide-x divide-border/[0.08] divide-y divide-border/[0.08] border-b border-r border-border/[0.08]",
             numWeeks === 5 ? "grid-rows-5" : "grid-rows-6",
           )}
         >
