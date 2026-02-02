@@ -26,6 +26,7 @@ import {
   SORT_LABELS,
 } from "@/lib/types/sorting";
 import { useHaptic } from "@/lib/hooks/useHaptic";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 import { useHotkeys } from "react-hotkeys-hook";
 
@@ -50,11 +51,12 @@ export function TasksPageHeader({
 }: TasksPageHeaderProps) {
   const { openSheet } = useCompletedTasks();
   const { trigger } = useHaptic();
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   useHotkeys("shift+1", () => onViewModeChange("grid"), {
     preventDefault: true,
   });
-  useHotkeys("shift+2", () => onViewModeChange("board"), {
+  useHotkeys("shift+2", () => isDesktop && onViewModeChange("board"), {
     preventDefault: true,
   });
   useHotkeys("shift+3", () => onViewModeChange("list"), {
@@ -81,23 +83,25 @@ export function TasksPageHeader({
         >
           <LayoutGrid className="h-4 w-4" />
         </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          className={cn(
-            "h-full w-8 p-0 rounded-none transition-all duration-200 border-r border-input/50 last:border-r-0",
-            viewMode === "board"
-              ? "bg-background text-primary"
-              : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
-          )}
-          onClick={() => {
-            trigger(15);
-            onViewModeChange("board");
-          }}
-          title="Board View (Shift+2)"
-        >
-          <KanbanSquare className="h-4 w-4" />
-        </Button>
+        {isDesktop && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className={cn(
+              "h-full w-8 p-0 rounded-none transition-all duration-200 border-r border-input/50 last:border-r-0",
+              viewMode === "board"
+                ? "bg-background text-primary"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
+            )}
+            onClick={() => {
+              trigger(15);
+              onViewModeChange("board");
+            }}
+            title="Board View (Shift+2)"
+          >
+            <KanbanSquare className="h-4 w-4" />
+          </Button>
+        )}
         <Button
           variant="ghost"
           size="sm"

@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useTimer } from "@/components/TimerProvider";
 import { useHaptic } from "@/lib/hooks/useHaptic";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
+import { KanbanBoardCardButton } from "@/components/kanban";
 
 interface TaskMasonryGridProps {
   processedTasks: ProcessedTasks;
@@ -189,17 +190,18 @@ function PlayButton({ task }: { task: Task }) {
   };
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
+    <KanbanBoardCardButton
       onClick={handlePlayFocus}
       className={cn(
-        "shrink-0 text-muted-foreground hover:text-brand transition-seijaku-fast",
+        "shrink-0 text-muted-foreground hover:text-brand transition-seijaku",
         isDesktop ? "h-6 w-6 opacity-0 group-hover:opacity-100" : "h-8 w-8",
       )}
-      title="Start focus timer"
+      tooltip="Start focus timer"
     >
-      <Play className={cn(isDesktop ? "h-3.5 w-3.5" : "h-4 w-4")} />
-    </Button>
+      <Play
+        className={cn(isDesktop ? "h-3.5 w-3.5" : "h-4 w-4")}
+        strokeWidth={2.25}
+      />
+    </KanbanBoardCardButton>
   );
 }

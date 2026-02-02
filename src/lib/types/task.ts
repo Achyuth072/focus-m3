@@ -48,7 +48,7 @@ export interface CreateTaskInput {
 export interface UpdateTaskInput {
   id: string;
   content?: string;
-  description?: string;
+  description?: string | null;
   priority?: 1 | 2 | 3 | 4;
   due_date?: string | null;
   do_date?: string | null;

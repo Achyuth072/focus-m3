@@ -20,6 +20,7 @@ import {
   DraggableSyntheticListeners,
 } from "@dnd-kit/core";
 import { DragHandle } from "./DragHandle";
+import { KanbanBoardCardButton } from "@/components/kanban";
 
 interface TaskListRowProps {
   task: Task;
@@ -167,15 +168,13 @@ export function TaskListRow({
       {/* Desktop Actions - Positioned at right edge */}
       {isDesktop && (
         <div className="flex items-center gap-1 shrink-0">
-          <Button
-            variant="ghost"
-            size="icon"
+          <KanbanBoardCardButton
             onClick={handlePlayFocus}
-            className="h-6 w-6 text-muted-foreground hover:text-brand opacity-0 group-hover:opacity-100 transition-opacity"
-            title="Start focus timer"
+            className="h-6 w-6 text-muted-foreground hover:text-brand opacity-0 group-hover:opacity-100 transition-seijaku"
+            tooltip="Start focus timer"
           >
-            <Play className="h-3.5 w-3.5" />
-          </Button>
+            <Play className="h-3.5 w-3.5" strokeWidth={2.25} />
+          </KanbanBoardCardButton>
 
           <Button
             variant="ghost"
@@ -190,14 +189,13 @@ export function TaskListRow({
 
       {/* Mobile Play Action */}
       {!isDesktop && (
-        <Button
-          variant="ghost"
-          size="icon"
+        <KanbanBoardCardButton
           onClick={handlePlayFocus}
-          className="h-8 w-8 text-muted-foreground hover:text-brand transition-colors"
+          className="h-8 w-8 text-muted-foreground hover:text-brand transition-seijaku"
+          tooltip="Start focus timer"
         >
-          <Play className="h-4 w-4" />
-        </Button>
+          <Play className="h-4 w-4" strokeWidth={2.25} />
+        </KanbanBoardCardButton>
       )}
 
       {/* Mobile Expand Toggle - Outside metadata */}

@@ -23,11 +23,12 @@ import {
 } from "@/lib/hooks/useTaskMutations";
 import { useUiStore } from "@/lib/store/uiStore";
 import { useHaptic } from "@/lib/hooks/useHaptic";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useTaskViewData } from "@/lib/hooks/useTaskViewData";
 import { TaskListView } from "./TaskListView";
 import { TaskMasonryGrid } from "./TaskMasonryGrid";
-import { TaskKanbanBoard } from "./TaskKanbanBoard";
+import { IntegratedTaskKanbanBoard } from "./IntegratedTaskKanbanBoard";
 
 interface TaskListProps {
   sortBy?: SortOption;
@@ -57,6 +58,7 @@ export default function TaskList({
   const toggleMutation = useToggleTask();
   const { setSortBy, viewMode } = useUiStore();
   const { trigger } = useHaptic();
+  const isDesktop = useMediaQuery("(min-width: 768px)");
   // NOTE: uncertain intent — optimistic UI sync logic using ref to prevent sync loop after drag-and-drop.
   const justDragged = useRef(false);
 
@@ -251,8 +253,8 @@ export default function TaskList({
             projects={projectsData}
             onSelect={handleTaskClick}
           />
-        ) : viewMode === "board" ? (
-          <TaskKanbanBoard
+        ) : viewMode === "board" && isDesktop ? (
+          <IntegratedTaskKanbanBoard
             processedTasks={processedTasks}
             onSelect={handleTaskClick}
           />
