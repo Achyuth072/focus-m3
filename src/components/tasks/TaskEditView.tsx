@@ -77,6 +77,7 @@ interface TaskEditViewProps {
   onKeyDown: (e: React.KeyboardEvent) => void;
   errors?: FieldErrors<CreateTaskInput>;
   hideDialogHeader?: boolean;
+  mode?: "sheet" | "panel";
 }
 
 export function TaskEditView({
@@ -117,12 +118,18 @@ export function TaskEditView({
   onKeyDown,
   errors,
   hideDialogHeader = false,
+  mode = "sheet",
 }: TaskEditViewProps) {
   const scrollRef = useHorizontalScroll();
   const { trigger } = useHaptic();
 
   return (
-    <div className="flex flex-col h-auto max-h-[90dvh] w-full max-w-full overflow-hidden">
+    <div
+      className={cn(
+        "flex flex-col w-full max-w-full overflow-hidden transition-all",
+        mode === "sheet" ? "h-auto max-h-[90dvh]" : "h-full",
+      )}
+    >
       {!hideDialogHeader && (
         <ResponsiveDialogHeader className="px-4 pt-6 shrink-0">
           <ResponsiveDialogTitle className="type-h2">

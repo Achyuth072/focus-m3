@@ -98,7 +98,7 @@ export function TaskListRow({
           <div
             className={cn(
               "flex items-center gap-2 flex-wrap",
-              isDesktop ? "text-xs" : "mt-1 ml-0",
+              isDesktop ? "type-micro" : "mt-1 ml-0",
             )}
           >
             {task.due_date && (

@@ -13,6 +13,7 @@ import {
 } from "@dnd-kit/sortable";
 import TaskItem from "./TaskItem";
 import SortableTaskItem from "./SortableTaskItem";
+import { TaskSection } from "./TaskSection";
 import type { Task } from "@/lib/types/task";
 import type { ProcessedTasks } from "@/lib/hooks/useTaskViewData";
 
@@ -44,14 +45,11 @@ export function TaskListView({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="px-4 md:px-6 flex flex-col gap-2 pb-12 md:pb-8">
+      <div className="px-4 md:px-6 pb-12 md:pb-8 flex flex-col">
         {/* Active Tasks Grouped */}
         {groups ? (
           groups.map((group) => (
-            <div key={group.title} className="space-y-0 md:space-y-1">
-              <h3 className="type-h3 px-1 mt-6 first:mt-2 mb-2 lowercase tracking-tight text-foreground/70">
-                {group.title}
-              </h3>
+            <TaskSection key={group.title} title={group.title}>
               {group.tasks.map((task) => (
                 <TaskItem
                   key={task.id}
@@ -60,7 +58,7 @@ export function TaskListView({
                   isKeyboardSelected={task.id === keyboardSelectedId}
                 />
               ))}
-            </div>
+            </TaskSection>
           ))
         ) : (
           // Active Tasks Flat - with Drag & Drop
@@ -68,7 +66,7 @@ export function TaskListView({
             items={localTasks.map((t) => t.id)}
             strategy={verticalListSortingStrategy}
           >
-            <div className="space-y-0 md:space-y-1">
+            <TaskSection>
               {localTasks.map((task) => (
                 <SortableTaskItem
                   key={task.id}
@@ -77,47 +75,40 @@ export function TaskListView({
                   isKeyboardSelected={task.id === keyboardSelectedId}
                 />
               ))}
-            </div>
+            </TaskSection>
           </SortableContext>
         )}
 
         {/* This Evening Section */}
         {evening.length > 0 && (
-          <div className="pt-4">
-            <p className="text-xs font-medium text-muted-foreground px-1 mb-2 flex items-center gap-1.5">
-              <span className="text-sm">🌙</span>
-              This Evening ({evening.length})
-            </p>
-            <div className="space-y-0 md:space-y-1">
-              {evening.map((task) => (
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                  onSelect={handleTaskClick}
-                  isKeyboardSelected={task.id === keyboardSelectedId}
-                />
-              ))}
-            </div>
-          </div>
+          <TaskSection title="This Evening" count={evening.length} icon="🌙">
+            {evening.map((task) => (
+              <TaskItem
+                key={task.id}
+                task={task}
+                onSelect={handleTaskClick}
+                isKeyboardSelected={task.id === keyboardSelectedId}
+              />
+            ))}
+          </TaskSection>
         )}
 
         {/* Completed Section */}
         {completed.length > 0 && (
-          <div className="pt-4">
-            <p className="text-xs font-medium text-muted-foreground px-1 mb-2">
-              Completed ({completed.length})
-            </p>
-            <div className="space-y-0 md:space-y-1 opacity-60">
-              {completed.map((task) => (
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                  onSelect={handleTaskClick}
-                  isKeyboardSelected={task.id === keyboardSelectedId}
-                />
-              ))}
-            </div>
-          </div>
+          <TaskSection
+            title="Completed"
+            count={completed.length}
+            variant="muted"
+          >
+            {completed.map((task) => (
+              <TaskItem
+                key={task.id}
+                task={task}
+                onSelect={handleTaskClick}
+                isKeyboardSelected={task.id === keyboardSelectedId}
+              />
+            ))}
+          </TaskSection>
         )}
       </div>
     </DndContext>

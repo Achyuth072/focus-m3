@@ -140,7 +140,7 @@ function TaskItem({
   return (
     <div
       className={cn(
-        "group/item",
+        "group/item last:[&_.task-separator]:hidden",
         isDesktop && "hover:ring-1 hover:ring-border transition-all rounded-md",
         isDesktop && isExpanded && "pb-4",
       )}
@@ -232,7 +232,7 @@ function TaskItem({
 
         {/* Indented Separator (Mobile only) */}
         {!isDesktop && (
-          <div className="absolute bottom-0 left-[44px] right-0 h-[1px] bg-border" />
+          <div className="task-separator absolute bottom-0 left-[44px] right-0 h-[1px] bg-border/60" />
         )}
       </motion.div>
 

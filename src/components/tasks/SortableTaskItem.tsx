@@ -30,7 +30,11 @@ function SortableTaskItem({
 
   // Pass drag listeners and state to TaskItem for dedicated handle
   return (
-    <div ref={setNodeRef} style={style}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="last:[&_.task-separator]:hidden"
+    >
       <TaskItem
         task={task}
         onSelect={onSelect}
