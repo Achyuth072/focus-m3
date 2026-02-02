@@ -12,7 +12,7 @@ import {
   ResponsiveDialogDescription,
 } from "@/components/ui/responsive-dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useCreateProject } from "@/lib/hooks/useProjectMutations";
 import { useHaptic } from "@/lib/hooks/useHaptic";
@@ -87,9 +87,7 @@ export function CreateProjectDialog({
 
   return (
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
-      <ResponsiveDialogContent
-        className="sm:max-w-[400px] p-0 overflow-hidden"
-      >
+      <ResponsiveDialogContent className="sm:max-w-[400px] p-0 overflow-hidden">
         <form
           onSubmit={handleSubmit(onFormSubmit)}
           className="flex flex-col h-auto max-h-[90dvh]"
@@ -98,24 +96,34 @@ export function CreateProjectDialog({
             <ResponsiveDialogTitle className="type-h2">
               Create Project
             </ResponsiveDialogTitle>
-            <ResponsiveDialogDescription>
+            <ResponsiveDialogDescription className="sr-only">
               Organize your tasks into a new project.
             </ResponsiveDialogDescription>
           </ResponsiveDialogHeader>
 
           <div className="flex-1 overflow-y-auto min-h-0 px-4 py-4 space-y-4">
             <div className="grid gap-2">
-              <Label htmlFor="project-name">Name</Label>
-              <Input
+              <Label htmlFor="project-name" className="sr-only">
+                Project Name
+              </Label>
+              <Textarea
                 {...register("name")}
                 id="project-name"
                 placeholder="Work, Personal, School..."
                 autoFocus
                 className={cn(
-                  "h-12 sm:h-10 text-base",
+                  "text-xl sm:text-2xl font-semibold px-3 py-2 h-10 min-h-[40px] bg-transparent border-border focus-visible:ring-1 focus-visible:ring-ring shadow-sm resize-none placeholder:text-muted-foreground/30 tracking-tight leading-tight rounded-md transition-all",
                   errors.name &&
-                    "border-destructive focus-visible:ring-destructive",
+                    "text-destructive placeholder:text-destructive/50 border-destructive/20 focus-visible:ring-destructive",
                 )}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    if (isValid) {
+                      handleSubmit(onFormSubmit)();
+                    }
+                  }
+                }}
                 aria-invalid={!!errors.name}
                 aria-describedby={
                   errors.name ? "project-name-error" : undefined
@@ -124,7 +132,7 @@ export function CreateProjectDialog({
               {errors.name && (
                 <p
                   id="project-name-error"
-                  className="text-xs font-medium text-destructive"
+                  className="text-xs font-medium text-destructive mt-1"
                 >
                   {errors.name.message}
                 </p>

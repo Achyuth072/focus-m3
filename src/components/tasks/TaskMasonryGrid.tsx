@@ -4,12 +4,8 @@ import React, { useMemo, memo } from "react";
 import type { Task, Project } from "@/lib/types/task";
 import type { ProcessedTasks } from "@/lib/hooks/useTaskViewData";
 import { cn } from "@/lib/utils";
-import { Play } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useTimer } from "@/components/TimerProvider";
-import { useHaptic } from "@/lib/hooks/useHaptic";
-import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
-import { KanbanBoardCardButton } from "@/components/kanban";
+
+import { Masonry } from "@/components/ui/Masonry";
 
 interface TaskMasonryGridProps {
   processedTasks: ProcessedTasks;
@@ -47,56 +43,17 @@ export function TaskMasonryGrid({
 
   return (
     <div className="px-4 md:px-6 pb-12 md:pb-8">
-      {/* 
-          Grid layout with auto-rows to maintain masonry feel 
-          Kanso style: balanced void space (Ma)
-      */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Column 1 */}
-        <div className="flex flex-col gap-4">
-          {allNavigableTasks
-            .filter(
-              (_, i) =>
-                i % 3 === 0 || (allNavigableTasks.length < 3 && i % 2 === 0),
-            )
-            .map((task) => (
-              <TaskCard
-                key={task.id}
-                task={task}
-                projects={projects}
-                onSelect={onSelect}
-              />
-            ))}
-        </div>
-        {/* Column 2 */}
-        <div className="hidden sm:flex flex-col gap-4">
-          {allNavigableTasks
-            .filter((_, i) =>
-              allNavigableTasks.length >= 3 ? i % 3 === 1 : i % 2 === 1,
-            )
-            .map((task) => (
-              <TaskCard
-                key={task.id}
-                task={task}
-                projects={projects}
-                onSelect={onSelect}
-              />
-            ))}
-        </div>
-        {/* Column 3 */}
-        <div className="hidden lg:flex flex-col gap-4">
-          {allNavigableTasks
-            .filter((_, i) => i % 3 === 2)
-            .map((task) => (
-              <TaskCard
-                key={task.id}
-                task={task}
-                projects={projects}
-                onSelect={onSelect}
-              />
-            ))}
-        </div>
-      </div>
+      <Masonry
+        items={allNavigableTasks}
+        renderItem={(task) => (
+          <TaskCard
+            key={task.id}
+            task={task}
+            projects={projects}
+            onSelect={onSelect}
+          />
+        )}
+      />
     </div>
   );
 }
@@ -120,35 +77,22 @@ const TaskCard = memo(function TaskCard({
   return (
     <div
       className={cn(
-        "group relative bg-background border border-border/80 hover:border-muted-foreground/50 hover:bg-secondary/5 transition-seijaku rounded-xl p-4 cursor-pointer",
+        "group relative bg-background border border-border/80 hover:border-border hover:bg-secondary/5 transition-seijaku rounded-xl p-4 cursor-pointer",
       )}
       onClick={() => onSelect?.(task)}
     >
       <div className="flex flex-col gap-3">
-        <div className="flex items-start gap-2">
+        <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-0.5 flex-1 min-w-0">
             <h4
               className={cn(
-                "text-[15px] font-medium leading-normal",
+                "text-[15px] leading-relaxed",
                 task.is_completed && "line-through text-muted-foreground",
               )}
             >
               {task.content}
             </h4>
-            <PlayButton task={task} />
           </div>
-          <div
-            className={cn(
-              "shrink-0 h-4 w-4 rounded-sm border",
-              task.priority === 1
-                ? "border-red-500"
-                : task.priority === 2
-                  ? "border-orange-500"
-                  : task.priority === 3
-                    ? "border-blue-500"
-                    : "border-muted-foreground/30",
-            )}
-          />
         </div>
 
         {task.description && (
@@ -157,14 +101,14 @@ const TaskCard = memo(function TaskCard({
           </p>
         )}
 
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap min-h-4">
           {task.is_evening && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-brand/10 text-brand font-medium uppercase tracking-wider">
+            <span className="text-[11px] px-1.5 py-0.5 rounded-full bg-brand/10 text-brand font-medium uppercase tracking-wider leading-none">
               Evening
             </span>
           )}
           {projectName && (
-            <span className="text-[10px] text-muted-foreground/60 uppercase tracking-widest font-bold">
+            <span className="text-[11px] text-muted-foreground/50 uppercase tracking-widest font-semibold leading-none">
               #{projectName}
             </span>
           )}
@@ -173,34 +117,3 @@ const TaskCard = memo(function TaskCard({
     </div>
   );
 });
-
-// PlayButton component for starting focus timer
-function PlayButton({ task }: { task: Task }) {
-  const { start } = useTimer();
-  const router = useRouter();
-  const { trigger } = useHaptic();
-  const isDesktop = useMediaQuery("(min-width: 768px)");
-
-  const handlePlayFocus = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    trigger(50);
-    start(task.id);
-    router.push("/focus");
-  };
-
-  return (
-    <KanbanBoardCardButton
-      onClick={handlePlayFocus}
-      className={cn(
-        "shrink-0 text-muted-foreground hover:text-brand transition-seijaku",
-        isDesktop ? "h-6 w-6 opacity-0 group-hover:opacity-100" : "h-8 w-8",
-      )}
-      tooltip="Start focus timer"
-    >
-      <Play
-        className={cn(isDesktop ? "h-3.5 w-3.5" : "h-4 w-4")}
-        strokeWidth={2.25}
-      />
-    </KanbanBoardCardButton>
-  );
-}

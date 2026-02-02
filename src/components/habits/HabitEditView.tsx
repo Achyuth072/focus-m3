@@ -94,14 +94,20 @@ export function HabitEditView({
               onChange={(e) => setName(e.target.value)}
               onKeyDown={onKeyDown}
               className={cn(
-                "text-2xl font-semibold px-3 py-2 h-10 min-h-[40px] bg-transparent border-border focus-visible:ring-1 focus-visible:ring-ring shadow-sm resize-none placeholder:text-muted-foreground/30 tracking-tight leading-tight rounded-md transition-all",
+                "text-xl sm:text-2xl font-semibold px-3 py-2 h-10 min-h-[40px] bg-transparent border-border focus-visible:ring-1 focus-visible:ring-ring shadow-sm resize-none placeholder:text-muted-foreground/30 tracking-tight leading-tight rounded-md transition-all",
                 errors?.name &&
                   "text-destructive placeholder:text-destructive/50 border-destructive/20",
               )}
               aria-invalid={!!errors?.name}
+              aria-describedby={
+                errors?.name ? "habit-name-edit-error" : undefined
+              }
             />
             {errors?.name && (
-              <p className="text-xs font-medium text-destructive">
+              <p
+                id="habit-name-edit-error"
+                className="text-xs font-medium text-destructive mt-1"
+              >
                 {errors.name.message}
               </p>
             )}
