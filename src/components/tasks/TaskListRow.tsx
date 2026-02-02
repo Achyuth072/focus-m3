@@ -69,7 +69,7 @@ export function TaskListRow({
           onCheckedChange={handleComplete}
           className={cn(
             priorityColors[task.priority],
-            isDesktop ? "h-4 w-4 !rounded-sm" : "h-5 w-5 !rounded-md" // Mobile=8px(40%), Desktop=6px(37%)
+            isDesktop ? "h-4 w-4 !rounded-sm" : "h-5 w-5 !rounded-md", // Mobile=8px(40%), Desktop=6px(37%)
           )}
         />
       </div>
@@ -78,14 +78,14 @@ export function TaskListRow({
       <div
         className={cn(
           "flex-1 min-w-0",
-          isDesktop ? "flex flex-col gap-1" : "flex flex-col gap-0.5"
+          isDesktop ? "flex flex-col gap-1" : "flex flex-col gap-0.5",
         )}
       >
         <div className="flex items-center gap-2">
           <p
             className={cn(
               "type-body font-medium leading-tight truncate",
-              task.is_completed && "line-through text-muted-foreground"
+              task.is_completed && "line-through text-muted-foreground",
             )}
           >
             {task.content}
@@ -97,14 +97,14 @@ export function TaskListRow({
           <div
             className={cn(
               "flex items-center gap-2 flex-wrap",
-              isDesktop ? "text-xs" : "mt-1 ml-0"
+              isDesktop ? "text-xs" : "mt-1 ml-0",
             )}
           >
             {task.due_date && (
               <span
                 className={cn(
                   "type-ui flex items-center gap-1",
-                  isOverdue ? "text-destructive" : "text-muted-foreground"
+                  isOverdue ? "text-destructive" : "text-muted-foreground",
                 )}
               >
                 {!isDesktop && <Calendar className="h-3 w-3" />}
@@ -112,7 +112,7 @@ export function TaskListRow({
               </span>
             )}
             {task.do_date && (
-              <span className="type-ui flex items-center gap-1 text-green-600 dark:text-green-400 font-medium">
+              <span className="type-ui flex items-center gap-1 text-brand font-medium">
                 <CalendarClock className="h-3 w-3" />
                 {isToday(parseISO(task.do_date))
                   ? "Today"
@@ -120,7 +120,7 @@ export function TaskListRow({
               </span>
             )}
             {task.is_evening && (
-              <span className="type-ui flex items-center gap-1 text-purple-600 dark:text-purple-400 font-medium">
+              <span className="type-ui flex items-center gap-1 text-brand font-medium">
                 <Moon className="h-3 w-3 fill-current" />
                 Evening
               </span>
@@ -129,7 +129,7 @@ export function TaskListRow({
               <span
                 className={cn(
                   "type-ui flex items-center gap-1",
-                  priorityColors[task.priority]
+                  priorityColors[task.priority],
                 )}
               >
                 {!isDesktop && <Flag className="h-3 w-3" />}P{task.priority}
@@ -171,7 +171,7 @@ export function TaskListRow({
             variant="ghost"
             size="icon"
             onClick={handlePlayFocus}
-            className="h-6 w-6 text-muted-foreground hover:text-green-600 opacity-0 group-hover:opacity-100 transition-opacity"
+            className="h-6 w-6 text-muted-foreground hover:text-brand opacity-0 group-hover:opacity-100 transition-opacity"
             title="Start focus timer"
           >
             <Play className="h-3.5 w-3.5" />
@@ -194,7 +194,7 @@ export function TaskListRow({
           variant="ghost"
           size="icon"
           onClick={handlePlayFocus}
-          className="h-8 w-8 text-muted-foreground hover:text-green-600 transition-colors"
+          className="h-8 w-8 text-muted-foreground hover:text-brand transition-colors"
         >
           <Play className="h-4 w-4" />
         </Button>

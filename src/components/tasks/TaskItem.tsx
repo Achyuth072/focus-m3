@@ -180,7 +180,7 @@ function TaskItem({
             isDesktop
               ? "gap-2 px-2 py-3 rounded-md hover:bg-secondary/50 transition-seijaku"
               : viewMode === "board"
-                ? "p-2.5 rounded-xl border border-border/80 hover:border-border hover:bg-secondary/20 transition-all"
+                ? "px-4 py-3.5 rounded-xl border border-border/80 hover:border-border hover:bg-secondary/20 transition-all"
                 : "items-center gap-3 py-3.5 px-4 active:bg-secondary/20 transition-seijaku-fast",
             isKeyboardSelected && "ring-2 ring-primary bg-secondary/40 z-10",
           )}

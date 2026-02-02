@@ -49,7 +49,7 @@ export function TaskListView({
         {groups ? (
           groups.map((group) => (
             <div key={group.title} className="space-y-0 md:space-y-1">
-              <h3 className="type-h3 px-1 mt-6 first:mt-2 mb-2">
+              <h3 className="type-h3 px-1 mt-6 first:mt-2 mb-2 lowercase tracking-tight text-foreground/70">
                 {group.title}
               </h3>
               {group.tasks.map((task) => (

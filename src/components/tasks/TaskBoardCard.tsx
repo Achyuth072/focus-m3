@@ -52,7 +52,7 @@ export function TaskBoardCard({
 
         <p
           className={cn(
-            "type-body font-medium leading-tight text-sm flex-1",
+            "type-body font-medium leading-tight flex-1",
             task.is_completed && "line-through text-muted-foreground",
           )}
         >
@@ -65,7 +65,7 @@ export function TaskBoardCard({
           size="icon"
           onClick={handlePlayFocus}
           className={cn(
-            "shrink-0 text-muted-foreground hover:text-green-600 transition-colors",
+            "shrink-0 text-muted-foreground hover:text-brand transition-colors",
             isDesktop
               ? "h-6 w-6 opacity-0 group-hover/item:opacity-100"
               : "h-8 w-8",
@@ -104,7 +104,7 @@ export function TaskBoardCard({
             </span>
           )}
           {task.is_evening && (
-            <Moon className="h-3 w-3 fill-current text-purple-500/80" />
+            <Moon className="h-3 w-3 fill-current text-brand" />
           )}
         </div>
       </div>

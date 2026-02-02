@@ -244,7 +244,7 @@ export default function TaskList({
 
   return (
     <>
-      <div className="flex-1 h-full overflow-y-auto scrollbar-thin">
+      <div className="flex-1 h-full overflow-y-auto scrollbar-hide">
         {viewMode === "grid" ? (
           <TaskMasonryGrid
             processedTasks={processedTasks}

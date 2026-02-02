@@ -80,7 +80,7 @@ export function TaskKanbanBoard({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex h-full overflow-x-auto pb-12 md:pb-6 px-4 md:px-6 gap-3 md:gap-6 snap-x snap-mandatory">
+      <div className="flex h-full overflow-x-auto pb-12 md:pb-6 px-4 md:px-6 gap-8 snap-x snap-mandatory scrollbar-hide">
         {boardColumns.map((group) => (
           <KanbanColumn key={group.title} group={group} onSelect={onSelect} />
         ))}
@@ -123,12 +123,12 @@ const KanbanColumn = memo(function KanbanColumn({
       ref={setNodeRef}
       className="flex-shrink-0 w-[90vw] md:w-[320px] snap-center h-full flex flex-col"
     >
-      <div className="flex flex-col max-h-full bg-secondary/10 rounded-2xl border border-border p-2 overflow-hidden">
+      <div className="flex flex-col max-h-full bg-secondary/10 rounded-2xl border border-border/60 px-3 py-2.5 overflow-hidden shadow-sm shadow-black/[0.02]">
         <div className="flex items-center justify-between mb-4 px-1 flex-shrink-0">
-          <h3 className="type-ui font-bold text-foreground/80 lowercase tracking-tight">
+          <h3 className="type-h3 lowercase tracking-tight text-foreground/70">
             {group.title}
           </h3>
-          <span className="text-[10px] bg-muted px-1.5 py-0.5 rounded-full font-bold opacity-60">
+          <span className="text-[11px] font-bold opacity-40 tabular-nums">
             {group.tasks.length}
           </span>
         </div>
@@ -148,7 +148,7 @@ const KanbanColumn = memo(function KanbanColumn({
                 />
               ))
             ) : (
-              <div className="h-20 flex items-center justify-center border-2 border-dashed border-border/20 rounded-xl opacity-0 hover:opacity-100 transition-opacity">
+              <div className="h-20 flex items-center justify-center border-2 border-dashed border-border/20 rounded-xl opacity-0 hover:opacity-100 transition-seijaku-fast">
                 <span className="text-xs text-muted-foreground">Drop here</span>
               </div>
             )}

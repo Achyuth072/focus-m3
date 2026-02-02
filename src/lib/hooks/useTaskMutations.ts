@@ -16,7 +16,7 @@ export function useCreateTask() {
 
   return useMutation({
     mutationFn: async (
-      input: CreateTaskInput & { _clientId?: string }
+      input: CreateTaskInput & { _clientId?: string },
     ): Promise<Task> => {
       // Guest Mode
       if (isGuestMode) {
@@ -109,7 +109,7 @@ export function useCreateTask() {
 
       queryClient.setQueryData<Task[]>(
         ["tasks", { projectId: undefined, showCompleted: false, isGuestMode }],
-        (old) => [optimisticTask, ...(old || [])]
+        (old) => [optimisticTask, ...(old || [])],
       );
 
       return { previousTasks };
@@ -121,7 +121,7 @@ export function useCreateTask() {
             "tasks",
             { projectId: undefined, showCompleted: false, isGuestMode },
           ],
-          context.previousTasks
+          context.previousTasks,
         );
       }
     },
@@ -188,7 +188,7 @@ export function useToggleTask() {
           const completedDate = new Date();
           const nextDueDate = calculateNextDueDate(
             completedDate,
-            recurrenceRule
+            recurrenceRule,
           );
 
           newRecurringTask = mockStore.addTask({
@@ -294,8 +294,8 @@ export function useToggleTask() {
                 is_completed,
                 completed_at: is_completed ? new Date().toISOString() : null,
               }
-            : task
-        )
+            : task,
+        ),
       );
 
       return { previousTasks };
@@ -307,7 +307,7 @@ export function useToggleTask() {
             "tasks",
             { projectId: undefined, showCompleted: false, isGuestMode },
           ],
-          context.previousTasks
+          context.previousTasks,
         );
       }
     },
@@ -400,7 +400,7 @@ export function useDeleteTask() {
       // Optimistically remove from ALL task caches
       for (const [queryKey] of allTaskQueries) {
         queryClient.setQueryData<Task[]>(queryKey, (old) =>
-          old?.filter((task) => task.id !== id)
+          old?.filter((task) => task.id !== id),
         );
       }
 
@@ -535,7 +535,7 @@ export function useReorderTasks() {
               return null;
             })
             .filter((t): t is Task => !!t);
-        }
+        },
       );
 
       return { previousTasks };
@@ -544,7 +544,7 @@ export function useReorderTasks() {
       if (context?.previousTasks) {
         queryClient.setQueryData(
           ["tasks", { projectId: undefined, showCompleted: false }],
-          context.previousTasks
+          context.previousTasks,
         );
       }
     },
@@ -600,7 +600,7 @@ export function useClearCompletedTasks() {
             return oldData.filter((task: Task) => !task.is_completed);
           }
           return oldData;
-        }
+        },
       );
 
       return { previousTasks };

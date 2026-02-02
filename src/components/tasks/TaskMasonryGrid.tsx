@@ -120,7 +120,7 @@ const TaskCard = memo(function TaskCard({
   return (
     <div
       className={cn(
-        "group relative bg-background border border-border/80 hover:border-muted-foreground/50 hover:bg-secondary/5 transition-all rounded-xl p-4 cursor-pointer",
+        "group relative bg-background border border-border/80 hover:border-muted-foreground/50 hover:bg-secondary/5 transition-seijaku rounded-xl p-4 cursor-pointer",
       )}
       onClick={() => onSelect?.(task)}
     >
@@ -129,7 +129,7 @@ const TaskCard = memo(function TaskCard({
           <div className="flex items-center gap-0.5 flex-1 min-w-0">
             <h4
               className={cn(
-                "text-sm font-medium leading-normal",
+                "text-[15px] font-medium leading-normal",
                 task.is_completed && "line-through text-muted-foreground",
               )}
             >
@@ -159,7 +159,7 @@ const TaskCard = memo(function TaskCard({
 
         <div className="flex items-center gap-2 flex-wrap">
           {task.is_evening && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-medium uppercase tracking-wider">
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-brand/10 text-brand font-medium uppercase tracking-wider">
               Evening
             </span>
           )}
@@ -194,7 +194,7 @@ function PlayButton({ task }: { task: Task }) {
       size="icon"
       onClick={handlePlayFocus}
       className={cn(
-        "shrink-0 text-muted-foreground hover:text-green-600 transition-all",
+        "shrink-0 text-muted-foreground hover:text-brand transition-seijaku-fast",
         isDesktop ? "h-6 w-6 opacity-0 group-hover:opacity-100" : "h-8 w-8",
       )}
       title="Start focus timer"
