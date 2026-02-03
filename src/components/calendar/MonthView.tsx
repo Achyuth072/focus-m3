@@ -47,14 +47,14 @@ const MonthDayCell = memo(
       <div
         onClick={() => onDateClick?.(day)}
         className={cn(
-          "relative p-1 md:p-2 flex flex-col h-full md:min-h-[120px]",
+          "relative p-1 pb-0.5 md:p-2 md:pb-1 flex flex-col h-full md:min-h-[120px]",
           "cursor-pointer transition-colors",
           !isCurrentMonth && "bg-muted/5 opacity-40",
           isCurrentDay ? "bg-brand/15 hover:bg-brand/25" : "hover:bg-accent/30",
         )}
       >
         {/* Date number */}
-        <div className="flex items-center justify-between mb-0.5 md:mb-1 shrink-0">
+        <div className="flex items-center justify-between mb-0.5 md:mb-0.5 shrink-0">
           <span
             className={cn(
               "text-xs md:text-sm font-medium transition-all",

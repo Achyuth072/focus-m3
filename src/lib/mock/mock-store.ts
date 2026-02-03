@@ -6,7 +6,7 @@
 import type { Task, Project } from "@/lib/types/task";
 import type { Habit, HabitEntry } from "@/lib/types/habit";
 
-const STORAGE_KEY = "kanso_guest_data_v6";
+const STORAGE_KEY = "kanso_guest_data_v7";
 
 interface FocusLog {
   id: string;
@@ -103,6 +103,7 @@ class MockStore {
       projectId: string,
       priority: 1 | 2 | 3 | 4 = 4,
       isEvening = false,
+      parentId: string | null = null,
     ) => {
       const date = new Date(now.getTime() + dayOffset * oneDay);
 
@@ -136,11 +137,10 @@ class MockStore {
         due_date: dueDate,
         do_date: null,
         is_evening: isEvening,
-        parent_id: null,
+        parent_id: parentId,
         recurrence: null,
         google_event_id: null,
         google_etag: null,
-        // Ensure fields match interface
       });
 
       // Add focus log if completed (simulate work done)
@@ -158,6 +158,8 @@ class MockStore {
           created_at: dueDate,
         });
       }
+
+      return taskId;
     };
 
     // Generate Past 365 Days (History for Stats)
@@ -171,6 +173,9 @@ class MockStore {
       if (monthOffset > 4) probability = 0.5;
       if (monthOffset > 8) probability = 0.35;
 
+      // Special case: High density in the last 30 days
+      if (Math.abs(i) <= 30) probability = 0.85;
+
       // Weekends still have less activity but not empty
       if (dayOfWeek === 0 || dayOfWeek === 6) {
         probability *= 0.4;
@@ -178,8 +183,9 @@ class MockStore {
 
       if (Math.random() > probability) continue;
 
-      // On active days, generate 1-3 tasks
-      const taskCount = Math.floor(Math.random() * 3) + 1;
+      // On active days, generate 1-3 tasks, but more in recent month
+      const maxTasks = Math.abs(i) <= 30 ? 6 : 3;
+      const taskCount = Math.floor(Math.random() * maxTasks) + 1;
       for (let t = 0; t < taskCount; t++) {
         const isEvening = Math.random() > 0.7;
         createTask(
@@ -196,20 +202,38 @@ class MockStore {
       }
     }
 
-    // Generate Today & Future 14 Days
-    for (let i = 0; i <= 14; i++) {
+    // Generate Today & Future 30 Days
+    for (let i = 0; i <= 30; i++) {
       // Today specific
       if (i === 0) {
+        const parentId = createTask("Big Project Launch 🚀", 0, pWork, 1);
+        createTask("Feature Cleanup", 0, pWork, 2, false, parentId);
+        createTask("UI Polishing", 0, pWork, 3, false, parentId);
+        createTask("Mobile Testing", 0, pWork, 2, false, parentId);
+
         createTask("Review PRs", 0, pWork, 1);
         createTask("Team Sync", 0, pWork, 2);
         createTask("Call Mom", 0, pPersonal, 3, true);
+        createTask("Workout @ Gym", 0, pPersonal, 2);
+        createTask("Grocery Shopping", 0, pPersonal, 4);
+        createTask("Water Plants", 0, pPersonal, 4, true);
         continue;
       }
 
-      if (Math.random() > 0.3) {
-        createTask("Project Sync", i, pWork, 2);
-        createTask("Focus Time", i, pWork, 1);
+      // Random high density days in the next 30 days
+      const isHighDensity = Math.random() > 0.8;
+      const count = isHighDensity ? 7 : Math.random() > 0.4 ? 2 : 0;
+
+      for (let t = 0; t < count; t++) {
+        createTask(
+          t % 2 === 0 ? "Project Task" : "Personal Goal",
+          i,
+          t % 2 === 0 ? pWork : pPersonal,
+          (Math.floor(Math.random() * 3) + 1) as 1 | 2 | 3 | 4,
+          Math.random() > 0.7,
+        );
       }
+
       if (i % 3 === 0) createTask("Write Blog Post", i, pSide, 2);
       if (i % 7 === 0) createTask("Weekly Planning", i, pPersonal, 1);
     }
@@ -340,7 +364,9 @@ class MockStore {
     return this.data.tasks.find((t) => t.id === id) || null;
   }
 
-  addTask(task: Omit<Task, "id" | "user_id" | "created_at" | "updated_at">): Task {
+  addTask(
+    task: Omit<Task, "id" | "user_id" | "created_at" | "updated_at">,
+  ): Task {
     const now = new Date().toISOString();
     const newTask: Task = {
       ...task,
@@ -461,7 +487,9 @@ class MockStore {
     return [...this.data.habit_entries];
   }
 
-  addHabit(habit: Omit<Habit, "id" | "user_id" | "created_at" | "updated_at">): Habit {
+  addHabit(
+    habit: Omit<Habit, "id" | "user_id" | "created_at" | "updated_at">,
+  ): Habit {
     const now = new Date().toISOString();
     const newHabit: Habit = {
       ...habit,
