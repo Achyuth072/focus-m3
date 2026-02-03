@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { DeleteConfirmationDialog } from "@/components/ui/DeleteConfirmationDialog";
 import { useDeleteTask, useToggleTask } from "@/lib/hooks/useTaskMutations";
 import {
@@ -115,7 +115,8 @@ function TaskItem({
     <div
       className={cn(
         "group/item last:[&_.task-separator]:hidden",
-        isDesktop && "hover:ring-1 hover:ring-border transition-all rounded-md",
+        isDesktop &&
+          "border border-transparent hover:border-border/60 transition-all rounded-md p-[1px]",
         isDesktop && isExpanded && "pb-4",
       )}
     >
@@ -190,25 +191,29 @@ function TaskItem({
       )}
 
       {/* Expanded Subtasks */}
-      {isExpanded && (
-        <motion.div
-          initial={{ height: 0, opacity: 0 }}
-          animate={{ height: "auto", opacity: 1 }}
-          exit={{ height: 0, opacity: 0 }}
-          transition={{
-            type: "spring",
-            mass: 1,
-            stiffness: 280,
-            damping: 60,
-          }}
-          className={cn(
-            "mr-1 mt-1 border-l-2 border-brand/30 pl-4 transition-colors",
-            isDesktop ? "ml-10" : "ml-11",
-          )}
-        >
-          <SubtaskList taskId={task.id} projectId={task.project_id} />
-        </motion.div>
-      )}
+      <AnimatePresence initial={false}>
+        {isExpanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{
+              type: "spring",
+              stiffness: 500,
+              damping: 35,
+              mass: 0.5,
+            }}
+            className={cn(
+              "mr-1 border-l-2 border-brand/30 pl-4 transition-colors overflow-hidden",
+              isDesktop ? "ml-10" : "ml-11",
+            )}
+          >
+            <div className="pt-1">
+              <SubtaskList taskId={task.id} projectId={task.project_id} />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <DeleteConfirmationDialog
         isOpen={showDeleteDialog}

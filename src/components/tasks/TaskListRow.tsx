@@ -109,11 +109,13 @@ export function TaskListRow({
               onClick={toggleExpand}
               className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors shrink-0"
             >
-              {isExpanded ? (
-                <ChevronDown className="h-4 w-4 text-brand" strokeWidth={3} />
-              ) : (
-                <ChevronRight className="h-4 w-4" strokeWidth={3} />
-              )}
+              <ChevronRight
+                className={cn(
+                  "h-4 w-4 transition-all duration-200",
+                  isExpanded && "rotate-90 text-brand",
+                )}
+                strokeWidth={3}
+              />
             </Button>
           )}
         </div>
@@ -182,11 +184,13 @@ export function TaskListRow({
                   !isExpanded && "opacity-0 group-hover:opacity-100",
                 )}
               >
-                {isExpanded ? (
-                  <ChevronDown className="h-4 w-4 text-brand" strokeWidth={3} />
-                ) : (
-                  <ChevronRight className="h-4 w-4" strokeWidth={3} />
-                )}
+                <ChevronRight
+                  className={cn(
+                    "h-4 w-4 transition-all duration-200",
+                    isExpanded && "rotate-90 text-brand",
+                  )}
+                  strokeWidth={3}
+                />
               </Button>
             ) : null}
           </div>
