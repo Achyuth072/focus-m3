@@ -11,7 +11,7 @@ import {
   KanbanBoardColumnListItem,
   type KanbanBoardDropDirection,
 } from "@/components/kanban";
-import { useJsLoaded } from "@/hooks/use-js-loaded";
+import { useJsLoaded } from "@/lib/hooks/use-js-loaded";
 import type { ProcessedTasks, TaskGroup } from "@/lib/hooks/useTaskViewData";
 import type { Task } from "@/lib/types/task";
 import { IntegratedTaskCard } from "./IntegratedTaskCard";
