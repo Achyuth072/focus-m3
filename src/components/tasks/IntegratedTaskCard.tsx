@@ -28,6 +28,7 @@ export function IntegratedTaskCard({
   return (
     <KanbanBoardCard
       data={task}
+      asChild
       className="p-3 bg-background border border-border/80 hover:border-border transition-all"
     >
       <div className="flex flex-col gap-3 w-full text-left">

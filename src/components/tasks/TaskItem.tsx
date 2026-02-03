@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, useMotionValue, useTransform, PanInfo } from "framer-motion";
+import { motion } from "framer-motion";
 import { DeleteConfirmationDialog } from "@/components/ui/DeleteConfirmationDialog";
 import { useDeleteTask, useToggleTask } from "@/lib/hooks/useTaskMutations";
 import {
@@ -30,11 +30,10 @@ interface TaskItemProps {
   isDragging?: boolean;
   isKeyboardSelected?: boolean;
   viewMode?: "list" | "grid" | "board";
+  dragActivatorRef?: (element: HTMLElement | null) => void;
 }
 
-// Mobile-optimized threshold: require 40% of typical mobile screen width (~150px on small devices)
-const SWIPE_THRESHOLD = 150;
-const SCHEDULE_SWIPE_THRESHOLD = 100; // Slightly easier threshold for schedule
+import { SwipeableTaskContent } from "./SwipeableTaskContent";
 
 function TaskItem({
   task,
@@ -44,12 +43,14 @@ function TaskItem({
   isDragging = false,
   isKeyboardSelected = false,
   viewMode = "list",
+  dragActivatorRef,
 }: TaskItemProps) {
   const [_isChecking, setIsChecking] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(false);
   const [isSwipeDragging, setIsSwipeDragging] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isHandleActive, setIsHandleActive] = useState(false);
 
   const deleteMutation = useDeleteTask();
   const toggleMutation = useToggleTask();
@@ -66,21 +67,8 @@ function TaskItem({
     router.push("/focus");
   };
 
-  const x = useMotionValue(0);
-  const background = useTransform(
-    x,
-    [-SWIPE_THRESHOLD, -50, 0, 50, SCHEDULE_SWIPE_THRESHOLD],
-    [
-      "hsl(0 84.2% 60.2%)",
-      "hsl(0 84.2% 60.2% / 0.3)",
-      "transparent",
-      "hsl(142 76% 36% / 0.3)",
-      "hsl(142 76% 36%)",
-    ],
-  );
-
   const handleComplete = (checked: boolean) => {
-    trigger(checked ? [10, 50] : 15); // Double tick/thud for completion, light for uncheck
+    trigger(checked ? [10, 50] : 15);
     setIsChecking(true);
     toggleMutation.mutate(
       { id: task.id, is_completed: checked },
@@ -88,30 +76,6 @@ function TaskItem({
         onSettled: () => setIsChecking(false),
       },
     );
-  };
-
-  const handleDragStart = () => {
-    setIsSwipeDragging(true);
-  };
-
-  const handleDragEnd = (
-    _: MouseEvent | TouchEvent | PointerEvent,
-    info: PanInfo,
-  ) => {
-    setIsSwipeDragging(false);
-    if (info.offset.x < -SWIPE_THRESHOLD) {
-      // Left swipe: Delete
-      trigger(50);
-      setPendingDelete(true);
-      setShowDeleteDialog(true);
-    } else if (info.offset.x > SCHEDULE_SWIPE_THRESHOLD) {
-      // Right swipe: Edit
-      trigger(50);
-      if (onSelect) {
-        onSelect(task);
-      }
-    }
-    // Snap back is handled by dragSnapToOrigin
   };
 
   const handleConfirmDelete = () => {
@@ -137,6 +101,16 @@ function TaskItem({
     isPast(parseISO(task.due_date!)) &&
     !isToday(parseISO(task.due_date!));
 
+  const contentClassName = cn(
+    "relative flex group items-center bg-background cursor-pointer",
+    isDesktop
+      ? "gap-2 px-2 py-3 rounded-md hover:bg-secondary/50 transition-seijaku"
+      : viewMode === "board"
+        ? "px-4 py-3.5 rounded-xl border border-border/80 hover:border-border hover:bg-secondary/20 transition-all"
+        : "items-center gap-3 py-3.5 px-4 active:bg-secondary/20 transition-seijaku-fast",
+    isKeyboardSelected && "ring-2 ring-primary bg-secondary/40 z-10",
+  );
+
   return (
     <div
       className={cn(
@@ -145,96 +119,75 @@ function TaskItem({
         isDesktop && isExpanded && "pb-4",
       )}
     >
-      <motion.div
-        style={{ background }}
-        className={cn("relative", isDesktop ? "rounded-md" : "overflow-hidden")}
-      >
-        {/* Swipe indicators - only visible during drag */}
-        {isSwipeDragging && (
-          <>
-            <div className="absolute inset-y-0 right-0 flex items-center justify-end pr-4 text-white">
-              <Trash2 className="h-5 w-5" />
-            </div>
-            <div className="absolute inset-y-0 left-0 flex items-center justify-start pl-4 text-white">
-              <Pencil className="h-5 w-5" />
-            </div>
-          </>
-        )}
-
-        {/* Main content */}
-        <motion.div
-          style={{ x }}
-          drag={isDesktop || isDragging || viewMode === "board" ? false : "x"} // Disable swipe during drag or in board view
-          dragDirectionLock
-          dragConstraints={{
-            left: -SWIPE_THRESHOLD * 1.2,
-            right: SCHEDULE_SWIPE_THRESHOLD * 1.2,
+      {viewMode === "board" ? (
+        /* Fast path for Board View: No motion hooks or wrappers */
+        <div className={contentClassName} onClick={() => onSelect?.(task)}>
+          <TaskBoardCard
+            task={task}
+            project={
+              project ? { color: project.color, name: project.name } : undefined
+            }
+            isOverdue={isOverdue}
+            isDesktop={isDesktop}
+            handleComplete={handleComplete}
+            handlePlayFocus={handlePlayFocus}
+            dragListeners={dragListeners}
+            dragAttributes={dragAttributes}
+            dragActivatorRef={dragActivatorRef}
+          />
+        </div>
+      ) : (
+        <SwipeableTaskContent
+          isDesktop={isDesktop}
+          isDragging={isDragging}
+          viewMode={viewMode}
+          isHandleActive={isHandleActive}
+          onSwipeLeft={() => {
+            trigger(50);
+            setPendingDelete(true);
+            setShowDeleteDialog(true);
           }}
-          dragElastic={{ left: 0.2, right: 0.2 }}
-          dragMomentum={false}
-          dragSnapToOrigin={true}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-          className={cn(
-            "relative flex group items-center bg-background cursor-pointer",
-            isDesktop
-              ? "gap-2 px-2 py-3 rounded-md hover:bg-secondary/50 transition-seijaku"
-              : viewMode === "board"
-                ? "px-4 py-3.5 rounded-xl border border-border/80 hover:border-border hover:bg-secondary/20 transition-all"
-                : "items-center gap-3 py-3.5 px-4 active:bg-secondary/20 transition-seijaku-fast",
-            isKeyboardSelected && "ring-2 ring-primary bg-secondary/40 z-10",
-          )}
+          onSwipeRight={() => {
+            trigger(50);
+            onSelect?.(task);
+          }}
+          onSwipeStart={() => setIsSwipeDragging(true)}
+          onSwipeEnd={() => setIsSwipeDragging(false)}
+          className={contentClassName}
           onClick={() => {
             if (!isSwipeDragging && onSelect) {
               onSelect(task);
             }
           }}
         >
-          {viewMode === "board" ? (
-            <TaskBoardCard
-              task={task}
-              project={
-                project
-                  ? { color: project.color, name: project.name }
-                  : undefined
-              }
-              isOverdue={isOverdue}
-              isDesktop={isDesktop}
-              handleComplete={handleComplete}
-              handlePlayFocus={handlePlayFocus}
-              dragListeners={dragListeners}
-              dragAttributes={dragAttributes}
-            />
-          ) : (
-            <TaskListRow
-              task={task}
-              isDesktop={isDesktop}
-              isExpanded={isExpanded}
-              toggleExpand={toggleExpand}
-              handleComplete={handleComplete}
-              handlePlayFocus={handlePlayFocus}
-              onDeleteRequest={(e) => {
-                e.stopPropagation();
-                setPendingDelete(true);
-                setShowDeleteDialog(true);
-              }}
-              project={
-                project
-                  ? { color: project.color, name: project.name }
-                  : undefined
-              }
-              isOverdue={isOverdue}
-              dragListeners={dragListeners}
-              dragAttributes={dragAttributes}
-            />
+          <TaskListRow
+            task={task}
+            isDesktop={isDesktop}
+            isExpanded={isExpanded}
+            toggleExpand={toggleExpand}
+            handleComplete={handleComplete}
+            handlePlayFocus={handlePlayFocus}
+            onDeleteRequest={(e) => {
+              e.stopPropagation();
+              setPendingDelete(true);
+              setShowDeleteDialog(true);
+            }}
+            project={
+              project ? { color: project.color, name: project.name } : undefined
+            }
+            isOverdue={isOverdue}
+            dragListeners={dragListeners}
+            dragAttributes={dragAttributes}
+            onHandlePointerDown={() => setIsHandleActive(true)}
+            onHandlePointerUp={() => setIsHandleActive(false)}
+            dragActivatorRef={dragActivatorRef}
+          />
+          {/* Indented Separator (Mobile only) */}
+          {!isDesktop && (
+            <div className="task-separator absolute bottom-0 left-[44px] right-0 h-[1px] bg-border/60" />
           )}
-        </motion.div>
-
-        {/* Indented Separator (Mobile only) */}
-        {!isDesktop && (
-          <div className="task-separator absolute bottom-0 left-[44px] right-0 h-[1px] bg-border/60" />
-        )}
-      </motion.div>
+        </SwipeableTaskContent>
+      )}
 
       {/* Expanded Subtasks */}
       {isExpanded && (

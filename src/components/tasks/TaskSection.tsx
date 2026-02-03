@@ -10,6 +10,7 @@ interface TaskSectionProps {
   children: React.ReactNode;
   variant?: "default" | "muted";
   className?: string;
+  id?: string;
 }
 
 /**
@@ -27,9 +28,10 @@ export function TaskSection({
   children,
   variant = "default",
   className,
+  id,
 }: TaskSectionProps) {
   return (
-    <div className={cn("mt-8 first:mt-2", className)}>
+    <div id={id} className={cn("mt-8 first:mt-2", className)}>
       {title && (
         <div className="flex items-baseline gap-2 px-1 mb-2">
           <h3

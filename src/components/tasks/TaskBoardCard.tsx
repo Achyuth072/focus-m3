@@ -20,6 +20,7 @@ interface TaskBoardCardProps {
   handlePlayFocus: (e: React.MouseEvent) => void;
   dragListeners?: DraggableSyntheticListeners;
   dragAttributes?: DraggableAttributes;
+  dragActivatorRef?: (element: HTMLElement | null) => void;
 }
 
 export function TaskBoardCard({
@@ -31,12 +32,14 @@ export function TaskBoardCard({
   handlePlayFocus,
   dragListeners,
   dragAttributes,
+  dragActivatorRef,
 }: TaskBoardCardProps) {
   return (
     <div className="flex flex-col gap-3 w-full" data-testid="task-board-card">
       {/* Header: Grip, Checkbox, Content */}
       <div className="flex items-start gap-2">
         <DragHandle
+          ref={dragActivatorRef}
           dragListeners={dragListeners}
           dragAttributes={dragAttributes}
           variant="desktop"

@@ -5,10 +5,14 @@ import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import {
   KeyboardSensor,
   PointerSensor,
-  TouchSensor,
   useSensor,
   useSensors,
   DragEndEvent,
+  DragStartEvent,
+  DragOverlay,
+  defaultDropAnimationSideEffects,
+  closestCenter,
+  DndContext,
 } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { useTasks } from "@/lib/hooks/useTasks";
@@ -18,6 +22,7 @@ import type { Task } from "@/lib/types/task";
 import { SortOption, GroupOption } from "@/lib/types/sorting";
 import {
   useReorderTasks,
+  useUpdateTask,
   useDeleteTask,
   useToggleTask,
 } from "@/lib/hooks/useTaskMutations";
@@ -29,6 +34,7 @@ import { useTaskViewData } from "@/lib/hooks/useTaskViewData";
 import { TaskListView } from "./TaskListView";
 import { TaskMasonryGrid } from "./TaskMasonryGrid";
 import { IntegratedTaskKanbanBoard } from "./IntegratedTaskKanbanBoard";
+import TaskItem from "./TaskItem";
 
 interface TaskListProps {
   sortBy?: SortOption;
@@ -45,15 +51,18 @@ export default function TaskList({
   filter,
   onTaskSelect,
 }: TaskListProps) {
-  const { data: tasks, isLoading } = useTasks({ projectId, filter });
+  const { data: tasks = [], isLoading } = useTasks({ projectId, filter });
   const { data: projectsData } = useProjects();
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [localTasks, setLocalTasks] = useState<Task[]>([]);
+  const [localEveningTasks, setLocalEveningTasks] = useState<Task[]>([]);
+  const [activeId, setActiveId] = useState<string | null>(null);
   const [keyboardSelectedId, setKeyboardSelectedId] = useState<string | null>(
     null,
   );
 
   const reorderMutation = useReorderTasks();
+  const updateMutation = useUpdateTask(); // Add useUpdateTask
   const deleteMutation = useDeleteTask();
   const toggleMutation = useToggleTask();
   const { setSortBy, viewMode } = useUiStore();
@@ -62,17 +71,11 @@ export default function TaskList({
   // NOTE: uncertain intent — optimistic UI sync logic using ref to prevent sync loop after drag-and-drop.
   const justDragged = useRef(false);
 
-  // Configure sensors with activation constraints to avoid conflicts with swipe
+  // Configure sensors - TouchSensor removed for instant activation on mobile (isolated to handle)
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8, // 8px movement required before drag starts
-      },
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 250, // 250ms hold required on touch devices
-        tolerance: 5,
+        distance: 5, // 5px movement required - prevents accidental clicks but feels instant
       },
     }),
     useSensor(KeyboardSensor, {
@@ -93,9 +96,9 @@ export default function TaskList({
       justDragged.current = false;
       return; // Skip sync - keep optimistic order
     }
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setLocalTasks(processedTasks.active);
-  }, [processedTasks.active]);
+    setLocalTasks(processedTasks?.active || []);
+    setLocalEveningTasks(processedTasks?.evening || []);
+  }, [processedTasks?.active, processedTasks?.evening]);
 
   const handleTaskClick = useCallback(
     (task: Task) => {
@@ -108,52 +111,96 @@ export default function TaskList({
     [onTaskSelect],
   );
 
-  const handleDragStart = () => {
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
     trigger(15);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    setActiveId(null);
 
-    if (!over || active.id === over.id) return;
+    if (!over) return;
+    if (active.id === over.id) return;
 
-    const oldIndex = localTasks.findIndex((task) => task.id === active.id);
-    const newIndex = localTasks.findIndex((task) => task.id === over.id);
+    const findTask = (id: string) =>
+      localTasks.find((t) => t.id === id) ||
+      localEveningTasks.find((t) => t.id === id);
 
-    if (oldIndex === -1 || newIndex === -1) return;
+    const activeTask = findTask(active.id as string);
+    const overTask = findTask(over.id as string);
 
-    // Haptic feedback on successful drop
-    trigger(50);
+    if (!activeTask) return;
 
-    // Mark as just dragged to skip sync overwrite
-    justDragged.current = true;
+    // Determine destination section
+    const isOverEvening =
+      over.id === "evening-section" || // Drop on placeholder/header
+      (overTask && overTask.is_evening); // Drop over a task already in evening
 
-    // Auto-switch to custom sort if not already
-    if (sortBy !== "custom") {
-      setSortBy("custom");
+    const shouldBeInEvening = !!isOverEvening;
+
+    // Handle cross-section movement
+    if (activeTask.is_evening !== shouldBeInEvening) {
+      trigger(50);
+      justDragged.current = true;
+
+      // Optimistic state update
+      if (shouldBeInEvening) {
+        // Move to evening
+        setLocalTasks((prev) => prev.filter((t) => t.id !== activeTask.id));
+        setLocalEveningTasks((prev) => [
+          ...prev,
+          { ...activeTask, is_evening: true },
+        ]);
+        updateMutation.mutate({ id: activeTask.id, is_evening: true });
+      } else {
+        // Move to active
+        setLocalEveningTasks((prev) =>
+          prev.filter((t) => t.id !== activeTask.id),
+        );
+        setLocalTasks((prev) => [
+          ...prev,
+          { ...activeTask, is_evening: false },
+        ]);
+        updateMutation.mutate({ id: activeTask.id, is_evening: false });
+      }
+      return;
     }
 
-    // Optimistic update
-    const reordered = arrayMove(localTasks, oldIndex, newIndex);
-    setLocalTasks(reordered);
+    // Same-section reordering
+    const currentList = activeTask.is_evening ? localEveningTasks : localTasks;
+    const oldIndex = currentList.findIndex((task) => task.id === active.id);
+    const newIndex = currentList.findIndex((task) => task.id === over.id);
 
-    // Persist to database - update ALL tasks in the collection to ensure correct day_order
-    reorderMutation.mutate(reordered.map((t) => t.id));
+    if (oldIndex !== -1 && newIndex !== -1) {
+      trigger(50);
+      justDragged.current = true;
+
+      const reordered = arrayMove(currentList, oldIndex, newIndex);
+      if (activeTask.is_evening) {
+        setLocalEveningTasks(reordered);
+      } else {
+        setLocalTasks(reordered);
+      }
+
+      if (sortBy !== "custom") setSortBy("custom");
+      reorderMutation.mutate(reordered.map((t) => t.id));
+    }
   };
 
   // --- Keyboard Navigation ---
 
   const navigableTasks = useMemo(() => {
     const list: Task[] = [];
-    if (processedTasks.groups) {
+    if (processedTasks?.groups) {
       processedTasks.groups.forEach((g) => list.push(...g.tasks));
     } else {
       list.push(...localTasks);
     }
     // Add evening
-    list.push(...processedTasks.evening);
+    list.push(...(processedTasks?.evening || []));
     // Add completed
-    list.push(...processedTasks.completed);
+    list.push(...(processedTasks?.completed || []));
     return list;
   }, [processedTasks, localTasks]);
 
@@ -260,15 +307,57 @@ export default function TaskList({
           />
         ) : (
           <div className="space-y-2">
-            <TaskListView
-              processedTasks={processedTasks}
-              localTasks={localTasks}
+            <DndContext
               sensors={sensors}
-              handleDragStart={handleDragStart}
-              handleDragEnd={handleDragEnd}
-              handleTaskClick={handleTaskClick}
-              keyboardSelectedId={keyboardSelectedId}
-            />
+              collisionDetection={closestCenter}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+            >
+              <TaskListView
+                processedTasks={processedTasks}
+                localTasks={localTasks}
+                localEveningTasks={localEveningTasks}
+                handleTaskClick={handleTaskClick}
+                keyboardSelectedId={keyboardSelectedId}
+              />
+
+              <DragOverlay
+                dropAnimation={{
+                  duration: isDesktop ? 250 : 50, // Faster snap on mobile to reduce perceived delay
+                  sideEffects: defaultDropAnimationSideEffects({
+                    styles: {
+                      active: {
+                        opacity: "0.5",
+                      },
+                    },
+                  }),
+                }}
+              >
+                {activeId
+                  ? (() => {
+                      const currentActiveId = activeId as string;
+                      const draggingTask =
+                        localTasks.find((t) => t.id === currentActiveId) ||
+                        localEveningTasks.find(
+                          (t) => t.id === currentActiveId,
+                        ) ||
+                        tasks.find((t) => t.id === currentActiveId);
+
+                      if (!draggingTask) return null;
+
+                      return (
+                        <div className="opacity-90 shadow-2xl scale-[1.02] origin-left transition-transform duration-200">
+                          <TaskItem
+                            task={draggingTask}
+                            onSelect={() => {}}
+                            isDragging
+                          />
+                        </div>
+                      );
+                    })()
+                  : null}
+              </DragOverlay>
+            </DndContext>
           </div>
         )}
       </div>

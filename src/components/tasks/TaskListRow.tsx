@@ -34,6 +34,9 @@ interface TaskListRowProps {
   isOverdue: boolean;
   dragListeners?: DraggableSyntheticListeners;
   dragAttributes?: DraggableAttributes;
+  onHandlePointerDown?: () => void;
+  onHandlePointerUp?: () => void;
+  dragActivatorRef?: (element: HTMLElement | null) => void;
 }
 
 export function TaskListRow({
@@ -48,6 +51,9 @@ export function TaskListRow({
   isOverdue,
   dragListeners,
   dragAttributes,
+  onHandlePointerDown,
+  onHandlePointerUp,
+  dragActivatorRef,
 }: TaskListRowProps) {
   return (
     <div
@@ -55,9 +61,12 @@ export function TaskListRow({
       data-testid="task-list-row"
     >
       <DragHandle
+        ref={dragActivatorRef}
         dragListeners={dragListeners}
         dragAttributes={dragAttributes}
         variant={isDesktop ? "desktop" : "mobile"}
+        onPointerDown={onHandlePointerDown}
+        onPointerUp={onHandlePointerUp}
       />
 
       {/* Checkbox */}

@@ -698,17 +698,22 @@ export function KanbanBoardColumnButton({
 Card
 */
 
-export type KanbanBoardCardProps<T extends { id: string } = { id: string }> = {
-  /**
-   * A string representing the data to add to the DataTransfer.
-   * @see https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer/setData#data
-   */
-  data: T;
-  /**
-   * Whether the card is being moved with the keyboard.
-   */
-  isActive?: boolean;
-};
+export type KanbanBoardCardProps<T extends { id: string } = { id: string }> =
+  ComponentProps<"div"> & {
+    /**
+     * A string representing the data to add to the DataTransfer.
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer/setData#data
+     */
+    data: T;
+    /**
+     * Whether the card is being moved with the keyboard.
+     */
+    isActive?: boolean;
+    /**
+     * Whether the component should render as its child.
+     */
+    asChild?: boolean;
+  };
 
 const kanbanBoardCardClassNames =
   "rounded-lg border border-border bg-background p-3 text-start text-foreground shadow-sm";
@@ -717,14 +722,17 @@ export function KanbanBoardCard({
   className,
   data,
   isActive = false,
+  asChild = false,
   ref,
   ...props
-}: ComponentProps<"button"> & KanbanBoardCardProps) {
+}: KanbanBoardCardProps) {
   const [isDragging, setIsDragging] = useState(false);
   const { draggableDescribedById, onDragStart } = useDndEvents();
 
+  const Comp = asChild ? Slot : "div";
+
   return (
-    <button
+    <Comp
       aria-describedby={draggableDescribedById}
       aria-roledescription="draggable"
       className={cn(
@@ -745,7 +753,7 @@ export function KanbanBoardCard({
           JSON.stringify(data),
         );
         // Remove outline from the card when dragging.
-        event.currentTarget.blur();
+        (event.currentTarget as HTMLElement).blur();
 
         onDragStart(data.id);
       }}
