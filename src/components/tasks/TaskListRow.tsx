@@ -91,6 +91,22 @@ export function TaskListRow({
           >
             {task.content}
           </p>
+
+          {/* Mobile Expand Toggle - Now next to content */}
+          {!isDesktop && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleExpand}
+              className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors shrink-0"
+            >
+              {isExpanded ? (
+                <ChevronDown className="h-4 w-4 text-brand" strokeWidth={3} />
+              ) : (
+                <ChevronRight className="h-4 w-4" strokeWidth={3} />
+              )}
+            </Button>
+          )}
         </div>
 
         {/* Metadata row */}
@@ -152,10 +168,13 @@ export function TaskListRow({
                 variant="ghost"
                 size="icon"
                 onClick={toggleExpand}
-                className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors opacity-0 group-hover:opacity-100 ml-1"
+                className={cn(
+                  "h-5 w-5 text-muted-foreground hover:text-foreground transition-colors ml-1",
+                  !isExpanded && "opacity-0 group-hover:opacity-100",
+                )}
               >
                 {isExpanded ? (
-                  <ChevronDown className="h-4 w-4" strokeWidth={3} />
+                  <ChevronDown className="h-4 w-4 text-brand" strokeWidth={3} />
                 ) : (
                   <ChevronRight className="h-4 w-4" strokeWidth={3} />
                 )}
@@ -196,22 +215,6 @@ export function TaskListRow({
         >
           <Play className="h-4 w-4" strokeWidth={2.25} />
         </KanbanBoardCardButton>
-      )}
-
-      {/* Mobile Expand Toggle - Outside metadata */}
-      {!isDesktop && (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleExpand}
-          className="h-5 w-5 -mt-0.5 text-muted-foreground hover:text-foreground transition-colors"
-        >
-          {isExpanded ? (
-            <ChevronDown className="h-4 w-4" />
-          ) : (
-            <ChevronRight className="h-4 w-4" />
-          )}
-        </Button>
       )}
     </div>
   );

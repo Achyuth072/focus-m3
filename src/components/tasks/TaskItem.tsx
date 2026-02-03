@@ -242,7 +242,16 @@ function TaskItem({
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: "auto", opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
-          className="ml-11 mr-1 mt-2 border-l-2 border-muted pl-4"
+          transition={{
+            type: "spring",
+            mass: 1,
+            stiffness: 280,
+            damping: 60,
+          }}
+          className={cn(
+            "mr-1 mt-1 border-l-2 border-brand/30 pl-4 transition-colors",
+            isDesktop ? "ml-10" : "ml-11",
+          )}
         >
           <SubtaskList taskId={task.id} projectId={task.project_id} />
         </motion.div>

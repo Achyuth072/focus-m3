@@ -135,6 +135,9 @@ export default function TaskSheet({
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setDraftSubtasks([]);
         setIsPreviewMode(!!initialTask.description);
+        // We'll let the SubtaskList handle its own loading, but we can
+        // default showSubtasks to true if it's an existing task to ensure visibility
+        setShowSubtasks(true);
       } else {
         reset({
           content: initialContent || "",
@@ -160,62 +163,69 @@ export default function TaskSheet({
   ]);
 
   // Handlers
-  const onFormSubmit = (data: CreateTaskInput) => {
+  const onFormSubmit = async (data: CreateTaskInput) => {
     trigger(50); // Haptic feedback on save
 
-    if (initialTask) {
-      updateMutation.mutate({
-        ...data,
-        id: initialTask.id,
-        due_date:
-          data.due_date instanceof Date
-            ? data.due_date.toISOString()
-            : data.due_date || null,
-        do_date:
-          data.do_date instanceof Date
-            ? data.do_date.toISOString()
-            : data.do_date || null,
-      });
-    } else {
-      // Build the create input with correct types
-      const createInput = {
-        content: data.content,
-        description: data.description,
-        priority: data.priority,
-        due_date:
-          data.due_date instanceof Date
-            ? data.due_date.toISOString()
-            : typeof data.due_date === "string"
-              ? data.due_date
-              : undefined,
-        do_date:
-          data.do_date instanceof Date
-            ? data.do_date.toISOString()
-            : typeof data.do_date === "string"
-              ? data.do_date
-              : undefined,
-        is_evening: data.is_evening,
-        project_id: data.project_id ?? undefined,
-        parent_id: data.parent_id,
-        recurrence: recurrence,
-      };
+    try {
+      if (initialTask) {
+        await updateMutation.mutateAsync({
+          ...data,
+          id: initialTask.id,
+          due_date:
+            data.due_date instanceof Date
+              ? data.due_date.toISOString()
+              : data.due_date || null,
+          do_date:
+            data.do_date instanceof Date
+              ? data.do_date.toISOString()
+              : data.do_date || null,
+        });
+      } else {
+        // Build the create input with correct types
+        const createInput = {
+          content: data.content,
+          description: data.description,
+          priority: data.priority,
+          due_date:
+            data.due_date instanceof Date
+              ? data.due_date.toISOString()
+              : typeof data.due_date === "string"
+                ? data.due_date
+                : undefined,
+          do_date:
+            data.do_date instanceof Date
+              ? data.do_date.toISOString()
+              : typeof data.do_date === "string"
+                ? data.do_date
+                : undefined,
+          is_evening: data.is_evening,
+          project_id: data.project_id ?? undefined,
+          parent_id: data.parent_id,
+          recurrence: recurrence,
+        };
 
-      createMutation.mutate(createInput, {
-        onSuccess: (parentTask) => {
-          draftSubtasks.forEach((sContent) => {
-            createMutation.mutate({
-              content: sContent,
-              project_id: parentTask.project_id || undefined,
-              parent_id: parentTask.id,
-              priority: 4,
-            });
-          });
-          setDraftSubtasks([]);
-        },
-      });
+        const parentTask = await createMutation.mutateAsync(createInput);
+
+        // Create subtasks sequentially or in parallel? Parallel is faster.
+        if (draftSubtasks.length > 0) {
+          await Promise.all(
+            draftSubtasks.map((sContent) =>
+              createMutation.mutateAsync({
+                content: sContent,
+                project_id: parentTask.project_id || undefined,
+                parent_id: parentTask.id,
+                priority: 4,
+              }),
+            ),
+          );
+        }
+        setDraftSubtasks([]);
+      }
+      onClose();
+    } catch (error) {
+      console.error("Failed to save task:", error);
+      // Toast is handled by mutations usually, but we keep the dialog open on error
     }
-
-    onClose();
   };
 
   const handleDelete = () => {
@@ -244,9 +254,7 @@ export default function TaskSheet({
 
   return (
     <ResponsiveDialog open={open} onOpenChange={onClose}>
-      <ResponsiveDialogContent
-        className="w-full sm:max-w-lg gap-0 rounded-lg p-0 overflow-hidden"
-      >
+      <ResponsiveDialogContent className="w-full sm:max-w-lg gap-0 rounded-lg p-0 overflow-hidden">
         <div className="overflow-y-auto max-h-[85vh] scrollbar-thin">
           {isCreationMode ? (
             <TaskCreateView
