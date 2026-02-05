@@ -96,7 +96,9 @@ export default function TaskList({
       justDragged.current = false;
       return; // Skip sync - keep optimistic order
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLocalTasks(processedTasks?.active || []);
+     
     setLocalEveningTasks(processedTasks?.evening || []);
   }, [processedTasks?.active, processedTasks?.evening]);
 

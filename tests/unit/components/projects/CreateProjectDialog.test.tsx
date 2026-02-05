@@ -25,12 +25,12 @@ describe("CreateProjectDialog", () => {
   it("renders correctly when open", () => {
     render(<CreateProjectDialog open={true} onOpenChange={vi.fn()} />);
     expect(screen.getByText("Create Project")).toBeInTheDocument();
-    expect(screen.getByLabelText("Name")).toBeInTheDocument();
+    expect(screen.getByLabelText("Project Name")).toBeInTheDocument();
   });
 
   it("shows validation error when name is empty and touched", async () => {
     render(<CreateProjectDialog open={true} onOpenChange={vi.fn()} />);
-    const input = screen.getByLabelText("Name");
+    const input = screen.getByLabelText("Project Name");
 
     fireEvent.change(input, { target: { value: "a" } });
     fireEvent.change(input, { target: { value: "" } });
@@ -47,7 +47,7 @@ describe("CreateProjectDialog", () => {
     const onOpenChange = vi.fn();
     render(<CreateProjectDialog open={true} onOpenChange={onOpenChange} />);
 
-    const input = screen.getByLabelText("Name");
+    const input = screen.getByLabelText("Project Name");
     fireEvent.change(input, { target: { value: "New Project" } });
 
     const submitButton = screen.getByRole("button", { name: /create/i });

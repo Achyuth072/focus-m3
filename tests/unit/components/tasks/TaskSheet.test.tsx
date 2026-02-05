@@ -6,14 +6,33 @@ import {
   useCreateTask,
   useUpdateTask,
   useDeleteTask,
+  useToggleTask,
 } from "@/lib/hooks/useTaskMutations";
 import { useInboxProject } from "@/lib/hooks/useTasks";
 import { useProjects } from "@/lib/hooks/useProjects";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+});
+
+const renderWithQuery = (ui: React.ReactElement) => {
+  return render(
+    <QueryClientProvider client={queryClient}>
+      {ui}
+    </QueryClientProvider>
+  );
+};
 
 vi.mock("@/lib/hooks/useTaskMutations", () => ({
   useCreateTask: vi.fn(),
   useUpdateTask: vi.fn(),
   useDeleteTask: vi.fn(),
+  useToggleTask: vi.fn(),
 }));
 
 vi.mock("@/lib/hooks/useTasks", () => ({
@@ -41,14 +60,22 @@ describe("TaskSheet", () => {
     vi.clearAllMocks();
     (useCreateTask as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
       mutate: mockCreateMutate,
+      mutateAsync: mockCreateMutate,
       isPending: false,
     });
     (useUpdateTask as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
       mutate: mockUpdateMutate,
+      mutateAsync: mockUpdateMutate,
       isPending: false,
     });
     (useDeleteTask as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
       mutate: mockDeleteMutate,
+      mutateAsync: mockDeleteMutate,
+      isPending: false,
+    });
+    (useToggleTask as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
+      mutate: vi.fn(),
+      mutateAsync: vi.fn(),
       isPending: false,
     });
     (useInboxProject as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
@@ -60,7 +87,7 @@ describe("TaskSheet", () => {
   });
 
   it('renders "New Task" header in creation mode', () => {
-    render(<TaskSheet open={true} onClose={() => {}} />);
+    renderWithQuery(<TaskSheet open={true} onClose={() => {}} />);
     expect(screen.getByText("New Task")).toBeInTheDocument();
   });
 
@@ -71,12 +98,12 @@ describe("TaskSheet", () => {
       priority: 4,
       is_completed: false,
     } as unknown as Task;
-    render(<TaskSheet open={true} onClose={() => {}} initialTask={mockTask} />);
+    renderWithQuery(<TaskSheet open={true} onClose={() => {}} initialTask={mockTask} />);
     expect(screen.getByText("Edit Task")).toBeInTheDocument();
   });
 
   it("validates: shows error for content > 500 chars", async () => {
-    render(<TaskSheet open={true} onClose={() => {}} />);
+    renderWithQuery(<TaskSheet open={true} onClose={() => {}} />);
     const input = screen.getByPlaceholderText("What needs to be done?");
 
     fireEvent.change(input, { target: { value: "a".repeat(501) } });
@@ -94,7 +121,7 @@ describe("TaskSheet", () => {
       is_completed: false,
     } as unknown as Task;
 
-    render(<TaskSheet open={true} onClose={() => {}} initialTask={mockTask} />);
+    renderWithQuery(<TaskSheet open={true} onClose={() => {}} initialTask={mockTask} />);
 
     // Verify we're in edit mode
     expect(screen.getByText("Edit Task")).toBeInTheDocument();

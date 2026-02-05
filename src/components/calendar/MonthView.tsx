@@ -156,6 +156,9 @@ const MonthView = memo(
         <div
           className={cn(
             "flex-1 min-h-0 grid grid-cols-7 overflow-y-auto md:overflow-hidden divide-x divide-border/[0.08] divide-y divide-border/[0.08] border-b border-r border-border/[0.08]",
+            numWeeks === 4 && "grid-rows-4",
+            numWeeks === 5 && "grid-rows-5",
+            numWeeks === 6 && "grid-rows-6",
           )}
           style={{ gridTemplateRows: `repeat(${numWeeks}, minmax(0, 1fr))` }}
         >

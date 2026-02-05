@@ -9,7 +9,6 @@ import {
   DraggableSyntheticListeners,
 } from "@dnd-kit/core";
 import { isToday, isPast, parseISO } from "date-fns";
-import { Trash2, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/lib/types/task";
 import SubtaskList from "./SubtaskList";

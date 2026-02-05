@@ -1,12 +1,6 @@
 "use client";
 
 import {
-  DndContext,
-  closestCenter,
-  DragEndEvent,
-  DragStartEvent,
-  SensorDescriptor,
-  SensorOptions,
   useDroppable,
 } from "@dnd-kit/core";
 import {
@@ -47,7 +41,7 @@ export function TaskListView({
   keyboardSelectedId,
 }: TaskListViewProps) {
   const { groups, completed } = processedTasks;
-  const evening = localEveningTasks;
+  const evening = localEveningTasks || [];
 
   return (
     <div className="px-4 md:px-6 pb-12 md:pb-8 flex flex-col">
