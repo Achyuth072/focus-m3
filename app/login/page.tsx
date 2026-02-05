@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { MagicLinkAuth } from "@/components/auth/MagicLinkAuth";
-import { ChevronRight } from "lucide-react";
+import { UserCircle } from "lucide-react";
 
 const slideUp = {
   initial: { opacity: 0, y: 20 },
@@ -111,7 +111,7 @@ function LoginContent() {
                 onClick={handleGuestSignIn}
                 className="flex items-center justify-center gap-2 h-11 bg-background/50 border-border hover:bg-accent transition-all duration-200"
               >
-                <ChevronRight className="h-4 w-4" />
+                <UserCircle className="h-4 w-4" />
                 <span className="text-sm font-medium">Guest</span>
               </Button>
             </div>
