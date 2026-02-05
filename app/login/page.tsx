@@ -46,7 +46,7 @@ function LoginContent() {
       <motion.div {...slideUp} className="max-w-md w-full">
         <div className="p-8 rounded-2xl border border-border bg-card shadow-sm">
           <div className="flex flex-col items-center gap-8">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
               <span className="text-3xl font-bold">K</span>
             </div>
 

@@ -56,7 +56,7 @@ export function MagicLinkAuth() {
                 Email address
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="email"
                   type="email"
@@ -82,10 +82,10 @@ export function MagicLinkAuth() {
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Sending Link...
+                  Continuing...
                 </>
               ) : (
-                "Send Magic Link"
+                "Continue"
               )}
             </Button>
           </motion.form>
