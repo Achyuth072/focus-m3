@@ -8,7 +8,7 @@ import {
   useCallback,
 } from "react";
 import { createClient } from "@/lib/supabase/client";
-import type { User, Session } from "@supabase/supabase-js";
+import type { User, Session, AuthError } from "@supabase/supabase-js";
 
 type AuthContextType = {
   user: User | null;
@@ -16,7 +16,7 @@ type AuthContextType = {
   loading: boolean;
   isGuestMode: boolean;
   signInWithGoogle: () => Promise<void>;
-  signInWithMagicLink: (email: string) => Promise<{ error: unknown }>;
+  signInWithMagicLink: (email: string) => Promise<{ error: AuthError | null }>;
   signInAsGuest: () => void;
   signOut: () => Promise<void>;
 };
