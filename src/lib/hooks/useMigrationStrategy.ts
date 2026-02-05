@@ -194,6 +194,7 @@ export function useMigrationStrategy() {
           (t: Task) => t.parent_id !== null,
         );
         for (const st of subtasks) {
+          if (!st.parent_id) continue;
           const newTaskId = taskMap.get(st.id);
           const newParentId = taskMap.get(st.parent_id);
           if (newTaskId && newParentId) {
