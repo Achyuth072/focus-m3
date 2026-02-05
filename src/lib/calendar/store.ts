@@ -32,7 +32,7 @@ interface CalendarStore {
 export const useCalendarStore = create<CalendarStore>((set, get) => ({
   // Initial state
   currentDate: new Date(),
-  view: "week",
+  view: "month",
   events: [],
 
   // Actions
@@ -107,7 +107,7 @@ export const useCalendarStore = create<CalendarStore>((set, get) => ({
   updateEvent: (id, updates) =>
     set((state) => ({
       events: state.events.map((event) =>
-        event.id === id ? { ...event, ...updates } : event
+        event.id === id ? { ...event, ...updates } : event,
       ),
     })),
 
