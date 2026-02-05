@@ -256,35 +256,48 @@ export default function SettingsPage() {
 
                 <div className="space-y-3">
                   <div className="p-4 rounded-lg border border-blue-500/20 bg-blue-500/5">
-                    <p className="text-xs text-muted-foreground mb-3">
-                      Your data is stored locally in your browser. Use these
-                      controls to manage your demo data.
+                    <p className="text-xs text-muted-foreground mb-4">
+                      Your data is stored locally in your browser. Sign in to
+                      sync your data across devices and ensure it&apos;s never
+                      lost.
                     </p>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col gap-2">
                       <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1"
+                        className="w-full bg-primary hover:opacity-90 transition-all font-semibold"
                         onClick={() => {
-                          trigger(50);
-                          handleResetDemo();
+                          trigger(25);
+                          router.push("/login");
                         }}
                       >
-                        <RotateCcw className="h-4 w-4 mr-2" />
-                        Reset Demo
+                        <User className="h-4 w-4 mr-2" />
+                        Sync to Account
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1 text-destructive hover:text-destructive"
-                        onClick={() => {
-                          trigger(50);
-                          handleClearData();
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Clear Data
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => {
+                            trigger(50);
+                            handleResetDemo();
+                          }}
+                        >
+                          <RotateCcw className="h-4 w-4 mr-2" />
+                          Reset Demo
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 text-destructive hover:text-destructive"
+                          onClick={() => {
+                            trigger(50);
+                            handleClearData();
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Clear Data
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>

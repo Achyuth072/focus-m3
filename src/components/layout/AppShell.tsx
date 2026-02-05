@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useLayoutEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useAuth } from "@/components/AuthProvider";
 import { CompletedTasksProvider } from "@/components/CompletedTasksProvider";
@@ -27,6 +27,8 @@ import {
   useHabitActions,
 } from "@/components/habits/HabitActionsProvider";
 import { GlobalHotkeys } from "@/components/layout/GlobalHotkeys";
+import { useMigrationStrategy } from "@/lib/hooks/useMigrationStrategy";
+import { LoaderOverlay } from "@/components/ui/loader-overlay";
 
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
@@ -63,6 +65,7 @@ interface AppShellProps {
 
 function AppShellContent({ children }: AppShellProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const isFocus = pathname === "/focus";
   const hideMobileNav = pathname === "/focus" || pathname === "/settings";
   const isTasksPage = pathname === "/";
@@ -142,7 +145,16 @@ function AppShellContent({ children }: AppShellProps) {
                         Guest Mode
                       </span>
                       <span className="text-[11px] text-muted-foreground font-normal">
-                        Data stored locally on this device
+                        Data stored locally.{" "}
+                        <button
+                          onClick={() => {
+                            dismissBanner();
+                            router.push("/login");
+                          }}
+                          className="text-brand font-semibold hover:underline cursor-pointer inline"
+                        >
+                          Sync now
+                        </button>
                       </span>
                     </div>
                   </div>
@@ -231,6 +243,7 @@ function AppShellContent({ children }: AppShellProps) {
 
 export default function AppShell({ children }: AppShellProps) {
   const { user, loading } = useAuth();
+  const { isMigrating } = useMigrationStrategy();
   const pathname = usePathname();
   const isLoginPage = pathname === "/login";
 
@@ -247,6 +260,7 @@ export default function AppShell({ children }: AppShellProps) {
           </PiPProvider>
         </HabitActionsProvider>
       </TaskActionsProvider>
+      {isMigrating && <LoaderOverlay message="Migrating guest data..." />}
     </ProjectActionsProvider>
   );
 }
