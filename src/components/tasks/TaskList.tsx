@@ -98,9 +98,9 @@ export default function TaskList({
     }
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLocalTasks(processedTasks?.active || []);
-     
+
     setLocalEveningTasks(processedTasks?.evening || []);
-  }, [processedTasks?.active, processedTasks?.evening]);
+  }, [processedTasks]);
 
   const handleTaskClick = useCallback(
     (task: Task) => {
