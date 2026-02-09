@@ -1,9 +1,9 @@
 import { renderHook, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, Mock } from "vitest";
 import { useMigrationStrategy } from "@/lib/hooks/useMigrationStrategy";
 import { useAuth } from "@/components/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
-import { toast } from "sonner";
+import type { User } from "@supabase/supabase-js";
 
 vi.mock("@/components/AuthProvider", () => ({
   useAuth: vi.fn(),
@@ -20,9 +20,18 @@ vi.mock("sonner", () => ({
   },
 }));
 
+type MockSupabaseBuilder = Promise<{ data: unknown; error: unknown }> & {
+  from: Mock;
+  select: Mock;
+  insert: Mock;
+  update: Mock;
+  eq: Mock;
+  single: Mock;
+};
+
 describe("useMigrationStrategy", () => {
-  let mockSupabase: any;
-  const mockUser = { id: "real-user-id" };
+  let mockSupabase: MockSupabaseBuilder;
+  const mockUser = { id: "real-user-id" } as unknown as User;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -30,9 +39,9 @@ describe("useMigrationStrategy", () => {
     vi.stubGlobal("location", { reload: vi.fn() });
 
     // Helper to create a promise that also has chainable methods
-    const createMockBuilder = (data: any = [], error: any = null) => {
+    const createMockBuilder = (data: unknown = [], error: unknown = null) => {
       const promise = Promise.resolve({ data, error });
-      const builder: any = promise;
+      const builder = promise as unknown as MockSupabaseBuilder;
       builder.from = vi.fn(() => builder);
       builder.select = vi.fn(() => builder);
       builder.insert = vi.fn(() => builder);
@@ -43,10 +52,10 @@ describe("useMigrationStrategy", () => {
     };
 
     mockSupabase = createMockBuilder();
-    (createClient as any).mockReturnValue(mockSupabase);
+    vi.mocked(createClient).mockReturnValue(mockSupabase as unknown as ReturnType<typeof createClient>);
   });
 
-  const setupMockSequence = (results: { data: any; error?: any }[]) => {
+  const setupMockSequence = (results: { data: unknown; error?: unknown }[]) => {
     let index = 0;
     const createBuilder = () => {
       const result = results[index++] || { data: [], error: null };
@@ -54,7 +63,7 @@ describe("useMigrationStrategy", () => {
         data: result.data,
         error: result.error || null,
       });
-      const builder: any = promise;
+      const builder = promise as unknown as MockSupabaseBuilder;
       builder.from = vi.fn(createBuilder);
       builder.select = vi.fn(() => builder);
       builder.insert = vi.fn(() => builder);
@@ -79,7 +88,16 @@ describe("useMigrationStrategy", () => {
         focus_logs: [],
       }),
     );
-    (useAuth as any).mockReturnValue({ user: mockUser, isGuestMode: false });
+    vi.mocked(useAuth).mockReturnValue({
+      user: mockUser,
+      isGuestMode: false,
+      signOut: vi.fn(),
+      session: null,
+      loading: false,
+      signInWithGoogle: vi.fn(),
+      signInWithMagicLink: vi.fn(),
+      signInAsGuest: vi.fn(),
+    });
 
     setupMockSequence([
       { data: [{ id: "p1" }, { id: "p2" }] }, // Project check
@@ -109,7 +127,16 @@ describe("useMigrationStrategy", () => {
     localStorage.setItem("kanso_guest_mode", "true");
     localStorage.setItem("kanso_guest_data_v7", JSON.stringify(guestData));
 
-    (useAuth as any).mockReturnValue({ user: mockUser, isGuestMode: false });
+    vi.mocked(useAuth).mockReturnValue({
+      user: mockUser,
+      isGuestMode: false,
+      signOut: vi.fn(),
+      session: null,
+      loading: false,
+      signInWithGoogle: vi.fn(),
+      signInWithMagicLink: vi.fn(),
+      signInAsGuest: vi.fn(),
+    });
 
     setupMockSequence([
       { data: [] }, // Initial project check
@@ -156,7 +183,16 @@ describe("useMigrationStrategy", () => {
     localStorage.setItem("kanso_guest_mode", "true");
     localStorage.setItem("kanso_guest_data_v7", JSON.stringify(guestData));
 
-    (useAuth as any).mockReturnValue({ user: mockUser, isGuestMode: false });
+    vi.mocked(useAuth).mockReturnValue({
+      user: mockUser,
+      isGuestMode: false,
+      signOut: vi.fn(),
+      session: null,
+      loading: false,
+      signInWithGoogle: vi.fn(),
+      signInWithMagicLink: vi.fn(),
+      signInAsGuest: vi.fn(),
+    });
 
     setupMockSequence([
       { data: [] }, // Initial check
@@ -169,7 +205,7 @@ describe("useMigrationStrategy", () => {
       { data: {} }, // Task update
     ]);
 
-    const { result } = renderHook(() => useMigrationStrategy());
+    renderHook(() => useMigrationStrategy());
 
     await waitFor(
       () => {
@@ -181,3 +217,5 @@ describe("useMigrationStrategy", () => {
     );
   });
 });
+
+
