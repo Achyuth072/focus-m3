@@ -1,130 +1,49 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
-import { mockStore } from "@/lib/mock/mock-store";
-import type { Habit, HabitEntry, HabitWithEntries } from "@/lib/types/habit";
+import { handleMutationError } from "@/lib/utils/mutation-error";
+import type { HabitEntry, HabitWithEntries } from "@/lib/types/habit";
 
-interface CreateHabitInput {
-  name: string;
-  description?: string;
-  color?: string;
-  icon?: string;
-  start_date?: string;
-}
-
-interface UpdateHabitInput {
-  id: string;
-  name?: string;
-  description?: string;
-  color?: string;
-  icon?: string;
-}
-
-interface MarkHabitCompleteInput {
-  habitId: string;
-  date: string; // ISO 8601 date (YYYY-MM-DD)
-  value?: number; // 0 = skip, 1 = complete (default)
-}
+import { habitMutations } from "@/lib/mutations/habit";
 
 export function useCreateHabit() {
   const queryClient = useQueryClient();
-  const supabase = createClient();
-  const { isGuestMode } = useAuth();
 
   return useMutation({
-    mutationFn: async (input: CreateHabitInput): Promise<Habit> => {
-      if (isGuestMode) {
-        return mockStore.addHabit({
-          name: input.name,
-          description: input.description || null,
-          color: input.color || "#4B6CB7",
-          icon: input.icon || null,
-          archived_at: null,
-          start_date:
-            input.start_date || new Date().toISOString().split("T")[0],
-        });
-      }
-
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
-      const { data, error } = await supabase
-        .from("habits")
-        .insert({
-          user_id: user.id,
-          name: input.name,
-          description: input.description || null,
-          color: input.color || "#4B6CB7",
-          icon: input.icon || null,
-          start_date:
-            input.start_date || new Date().toISOString().split("T")[0],
-        })
-        .select()
-        .single();
-
-      if (error) throw new Error(error.message);
-      return data as Habit;
-    },
+    mutationKey: ["createHabit"],
+    mutationFn: habitMutations.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["habits"] });
+    },
+    onError: (err) => {
+      handleMutationError(err);
     },
   });
 }
 
 export function useUpdateHabit() {
   const queryClient = useQueryClient();
-  const supabase = createClient();
-  const { isGuestMode } = useAuth();
 
   return useMutation({
-    mutationFn: async (input: UpdateHabitInput): Promise<Habit> => {
-      if (isGuestMode) {
-        const { id, ...updates } = input;
-        const result = mockStore.updateHabit(id, updates);
-        if (!result) throw new Error("Habit not found");
-        return result;
-      }
-
-      const { id, ...updates } = input;
-      const { data, error } = await supabase
-        .from("habits")
-        .update(updates)
-        .eq("id", id)
-        .select()
-        .single();
-
-      if (error) throw new Error(error.message);
-      return data as Habit;
-    },
+    mutationKey: ["updateHabit"],
+    mutationFn: habitMutations.update,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["habits"] });
+    },
+    onError: (err) => {
+      handleMutationError(err);
     },
   });
 }
 
 export function useDeleteHabit() {
   const queryClient = useQueryClient();
-  const supabase = createClient();
   const { isGuestMode } = useAuth();
 
   return useMutation({
-    mutationFn: async (habitId: string): Promise<void> => {
-      if (isGuestMode) {
-        const success = mockStore.deleteHabit(habitId);
-        if (!success) throw new Error("Habit not found");
-        return;
-      }
-
-      const { error } = await supabase
-        .from("habits")
-        .delete()
-        .eq("id", habitId);
-      if (error) throw new Error(error.message);
-    },
+    mutationKey: ["deleteHabit"],
+    mutationFn: habitMutations.delete,
     onMutate: async (habitId) => {
       await queryClient.cancelQueries({ queryKey: ["habits"] });
 
@@ -141,13 +60,14 @@ export function useDeleteHabit() {
 
       return { previousHabits };
     },
-    onError: (_err, _vars, context) => {
+    onError: (err, _vars, context) => {
       if (context?.previousHabits) {
         queryClient.setQueryData(
           ["habits", { includeArchived: false, isGuestMode }],
           context.previousHabits,
         );
       }
+      handleMutationError(err);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["habits"] });
@@ -157,40 +77,11 @@ export function useDeleteHabit() {
 
 export function useMarkHabitComplete() {
   const queryClient = useQueryClient();
-  const supabase = createClient();
   const { isGuestMode } = useAuth();
 
   return useMutation({
-    mutationFn: async (input: MarkHabitCompleteInput): Promise<HabitEntry> => {
-      if (isGuestMode) {
-        const { habitId, date } = input;
-        const entry = mockStore.toggleHabitEntry(habitId, date);
-        // Note: Returns null if removed, but mutationFn expects HabitEntry.
-        // For guest mode optimistic updates, we just need to settle.
-        return entry || ({ habit_id: habitId, date, value: 0 } as HabitEntry);
-      }
-
-      const { habitId, date, value = 1 } = input;
-
-      // Upsert: Insert or update the entry for this habit+date
-      const { data, error } = await supabase
-        .from("habit_entries")
-        .upsert(
-          {
-            habit_id: habitId,
-            date,
-            value,
-          },
-          {
-            onConflict: "habit_id,date",
-          },
-        )
-        .select()
-        .single();
-
-      if (error) throw new Error(error.message);
-      return data as HabitEntry;
-    },
+    mutationKey: ["markHabitComplete"],
+    mutationFn: habitMutations.markComplete,
     onMutate: async ({ habitId, date, value = 1 }) => {
       await queryClient.cancelQueries({ queryKey: ["habits"] });
 
@@ -237,13 +128,14 @@ export function useMarkHabitComplete() {
 
       return { previousHabits };
     },
-    onError: (_err, _vars, context) => {
+    onError: (err, _vars, context) => {
       if (context?.previousHabits) {
         queryClient.setQueryData(
           ["habits", { includeArchived: false, isGuestMode }],
           context.previousHabits,
         );
       }
+      handleMutationError(err);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["habits"] });

@@ -163,69 +163,64 @@ export default function TaskSheet({
   ]);
 
   // Handlers
-  const onFormSubmit = async (data: CreateTaskInput) => {
+  const onFormSubmit = (data: CreateTaskInput) => {
     trigger(50); // Haptic feedback on save
 
-    try {
-      if (initialTask) {
-        await updateMutation.mutateAsync({
-          ...data,
-          id: initialTask.id,
-          due_date:
-            data.due_date instanceof Date
-              ? data.due_date.toISOString()
-              : data.due_date || null,
-          do_date:
-            data.do_date instanceof Date
-              ? data.do_date.toISOString()
-              : data.do_date || null,
+    if (initialTask) {
+      updateMutation.mutate({
+        ...data,
+        id: initialTask.id,
+        due_date:
+          data.due_date instanceof Date
+            ? data.due_date.toISOString()
+            : data.due_date || null,
+        do_date:
+          data.do_date instanceof Date
+            ? data.do_date.toISOString()
+            : data.do_date || null,
+      });
+    } else {
+      // Build the create input with correct types
+      const clientId = crypto.randomUUID();
+      const createInput = {
+        content: data.content,
+        description: data.description,
+        priority: data.priority,
+        due_date:
+          data.due_date instanceof Date
+            ? data.due_date.toISOString()
+            : typeof data.due_date === "string"
+              ? data.due_date
+              : undefined,
+        do_date:
+          data.do_date instanceof Date
+            ? data.do_date.toISOString()
+            : typeof data.do_date === "string"
+              ? data.do_date
+              : undefined,
+        is_evening: data.is_evening,
+        project_id: data.project_id ?? undefined,
+        parent_id: data.parent_id,
+        recurrence: recurrence,
+        _clientId: clientId,
+      };
+
+      createMutation.mutate(createInput);
+
+      // Create subtasks using the optimistic parent ID
+      if (draftSubtasks.length > 0) {
+        draftSubtasks.forEach((sContent) => {
+          createMutation.mutate({
+            content: sContent,
+            project_id: createInput.project_id || undefined,
+            parent_id: clientId,
+            priority: 4,
+          });
         });
-      } else {
-        // Build the create input with correct types
-        const createInput = {
-          content: data.content,
-          description: data.description,
-          priority: data.priority,
-          due_date:
-            data.due_date instanceof Date
-              ? data.due_date.toISOString()
-              : typeof data.due_date === "string"
-                ? data.due_date
-                : undefined,
-          do_date:
-            data.do_date instanceof Date
-              ? data.do_date.toISOString()
-              : typeof data.do_date === "string"
-                ? data.do_date
-                : undefined,
-          is_evening: data.is_evening,
-          project_id: data.project_id ?? undefined,
-          parent_id: data.parent_id,
-          recurrence: recurrence,
-        };
-
-        const parentTask = await createMutation.mutateAsync(createInput);
-
-        // Create subtasks sequentially or in parallel? Parallel is faster.
-        if (draftSubtasks.length > 0) {
-          await Promise.all(
-            draftSubtasks.map((sContent) =>
-              createMutation.mutateAsync({
-                content: sContent,
-                project_id: parentTask.project_id || undefined,
-                parent_id: parentTask.id,
-                priority: 4,
-              }),
-            ),
-          );
-        }
-        setDraftSubtasks([]);
       }
-      onClose();
-    } catch (error) {
-      console.error("Failed to save task:", error);
-      // Toast is handled by mutations usually, but we keep the dialog open on error
+      setDraftSubtasks([]);
     }
+    onClose();
   };
 
   const handleDelete = () => {
@@ -305,7 +300,7 @@ export default function TaskSheet({
             />
           ) : (
             <TaskEditView
-              initialTask={initialTask!}
+              initialTask={effectiveTask!}
               content={content}
               setContent={(v) =>
                 setValue("content", v, { shouldValidate: true })
@@ -367,7 +362,7 @@ export default function TaskSheet({
         onClose={() => setShowDeleteDialog(false)}
         onConfirm={handleConfirmDelete}
         title="Delete Task"
-        description={`Are you sure you want to delete "${initialTask?.content}"? This action cannot be undone.`}
+        description={`Are you sure you want to delete "${effectiveTask?.content}"? This action cannot be undone.`}
       />
     </ResponsiveDialog>
   );

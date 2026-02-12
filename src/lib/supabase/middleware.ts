@@ -19,15 +19,15 @@ export async function updateSession(request: NextRequest) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
+            request.cookies.set(name, value),
           );
           supabaseResponse = NextResponse.next({ request });
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            supabaseResponse.cookies.set(name, value, options),
           );
         },
       },
-    }
+    },
   );
 
   const {
@@ -46,6 +46,17 @@ export async function updateSession(request: NextRequest) {
   // Handle auth errors (e.g., "Refresh Token Not Found")
   // Only redirect to login if NOT already on a public route
   if (error && !isPublicRoute && !isGuest) {
+    // 🛡️ Network Resilience: If offline, don't redirect to login.
+    // Redirecting while offline creates an infinite loop.
+    const isNetworkError =
+      error.message?.toLowerCase().includes("fetch") ||
+      error.status === 0 ||
+      !error.status;
+
+    if (isNetworkError) {
+      return supabaseResponse;
+    }
+
     await supabase.auth.signOut();
     return NextResponse.redirect(new URL("/login", request.url));
   }

@@ -1,6 +1,6 @@
-import { defaultCache } from "@serwist/next/worker";
+import { defaultCache, PAGES_CACHE_NAME } from "@serwist/next/worker";
 import type { PrecacheEntry, SerwistGlobalConfig } from "serwist";
-import { Serwist } from "serwist";
+import { Serwist, NetworkFirst } from "serwist";
 
 // This declares the value of `injectionPoint` to TypeScript.
 // `injectionPoint` is the string that will be replaced by the
@@ -14,12 +14,70 @@ declare global {
 
 declare const self: ServiceWorkerGlobalScope;
 
+// ⚡ Offline Resilience: Patch defaultCache to add a 3s timeout to navigation/pages.
+// Without this, the browser waits for the full TCP timeout (~3.3 min) before serving cache.
+const patchedCache = defaultCache.map((entry) => {
+  const handler = entry.handler;
+  // Check if handler is a strategy object with a cacheName (like NetworkFirst)
+  if (handler && typeof handler !== "function" && "cacheName" in handler) {
+    const strategy = handler as any;
+    if (
+      strategy.cacheName === PAGES_CACHE_NAME.html ||
+      strategy.cacheName === PAGES_CACHE_NAME.rsc ||
+      strategy.cacheName === PAGES_CACHE_NAME.rscPrefetch ||
+      strategy.cacheName === "others"
+    ) {
+      return {
+        ...entry,
+        handler: new NetworkFirst({
+          cacheName: strategy.cacheName,
+          plugins: strategy.plugins,
+          networkTimeoutSeconds: 3,
+        }),
+      };
+    }
+  }
+  return entry;
+});
+
+// Replace the final catch-all NetworkOnly (matcher: /.*/i) with a 10s NetworkFirst
+const finalCache = [
+  ...patchedCache.filter((e) => {
+    // Keep everything except the catch-all NetworkOnly rule
+    const isCatchAll =
+      e.matcher instanceof RegExp &&
+      e.matcher.source === ".*" &&
+      e.matcher.flags.includes("i");
+    return !isCatchAll;
+  }),
+  {
+    matcher: /.*/i,
+    method: "GET",
+    handler: new NetworkFirst({
+      cacheName: "others",
+      networkTimeoutSeconds: 10,
+    }),
+  },
+];
+
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
   skipWaiting: true,
   clientsClaim: true,
-  navigationPreload: true,
-  runtimeCaching: defaultCache,
+  navigationPreload: false,
+  runtimeCaching: finalCache as any,
+  // 🛡️ Offline Fallback: Serve the precached /~offline page when navigations fail.
+  // Content is served directly (no redirect) to avoid infinite loops.
+  fallbacks: {
+    entries: [
+      {
+        url: "/~offline",
+        matcher({ request }) {
+          return request.destination === "document";
+        },
+      },
+    ],
+  },
 });
 
 serwist.addEventListeners();
@@ -62,7 +120,7 @@ self.addEventListener("push", (event) => {
     self.registration.showNotification(title, {
       body,
       ...options,
-    })
+    }),
   );
 });
 
@@ -87,6 +145,6 @@ self.addEventListener("notificationclick", (event) => {
       if (self.clients.openWindow) {
         return self.clients.openWindow("/");
       }
-    })()
+    })(),
   );
 });

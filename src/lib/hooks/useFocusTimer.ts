@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import { focusMutations } from "@/lib/mutations/focus";
 import { useUiStore } from "@/lib/store/uiStore";
 import type { TimerMode, TimerState, TimerSettings } from "@/lib/types/timer";
 import {
@@ -83,7 +84,7 @@ export function useFocusTimer() {
 
   // NOTE: uncertain intent — lazy initialization to ensure SSR safety and state persistence on mount.
   const [settings, setSettingsState] = useState<TimerSettings>(() =>
-    loadSettings()
+    loadSettings(),
   );
 
   const [state, setState] = useState<TimerState>(() => {
@@ -132,45 +133,19 @@ export function useFocusTimer() {
     }
   }, [state]);
 
-  const logFocusSession = useCallback(
-    async (taskId: string, durationSeconds: number) => {
-      try {
-        if (isGuestMode) {
-          mockStore.addFocusLog({
-            task_id: taskId,
-            user_id: "guest",
-            start_time: new Date(
-              Date.now() - durationSeconds * 1000
-            ).toISOString(),
-            end_time: new Date().toISOString(),
-            duration_seconds: durationSeconds,
-          });
-          queryClient.invalidateQueries({ queryKey: ["stats-dashboard"] });
-          return;
-        }
-
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (!user) return;
-
-        await supabase.from("focus_logs").insert({
-          task_id: taskId,
-          user_id: user.id,
-          start_time: new Date(
-            Date.now() - durationSeconds * 1000
-          ).toISOString(),
-          end_time: new Date().toISOString(),
-          duration_seconds: durationSeconds,
-        });
-
-        // Invalidate stats to trigger immediate update
-        queryClient.invalidateQueries({ queryKey: ["stats-dashboard"] });
-      } catch (err) {
-        console.error("Failed to log focus session:", err);
-      }
+  const { mutate: logFocusSessionMutation } = useMutation({
+    mutationKey: ["logFocusSession"],
+    mutationFn: focusMutations.logSession,
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["stats-dashboard"] });
     },
-    [supabase, queryClient, isGuestMode]
+  });
+
+  const logFocusSession = useCallback(
+    (taskId: string, durationSeconds: number) => {
+      logFocusSessionMutation({ task_id: taskId, durationSeconds });
+    },
+    [logFocusSessionMutation],
   );
 
   const handleCancelNotification = useCallback(async () => {
@@ -219,7 +194,7 @@ export function useFocusTimer() {
         startedAt: settings.autoStartFocus ? Date.now() : null,
       };
     },
-    [settings]
+    [settings],
   );
 
   /**
@@ -304,7 +279,7 @@ export function useFocusTimer() {
                   : "Your break is over. Time to focus!",
               tag: "timer-notification",
               renotify: true,
-            } as NotificationOptions
+            } as NotificationOptions,
           );
         }
       }
@@ -319,7 +294,7 @@ export function useFocusTimer() {
       trigger,
       pathname,
       showNotification,
-    ]
+    ],
   );
 
   const reconcileTimerState = useCallback(() => {
@@ -355,7 +330,7 @@ export function useFocusTimer() {
               : "The timer is ready for your next session.",
           duration: 4000,
           icon: null,
-        }
+        },
       );
     } else {
       // Still running, sync remaining seconds
@@ -478,7 +453,7 @@ export function useFocusTimer() {
         startedAt: Date.now(),
       }));
     },
-    [play, isGuestMode, state.remainingSeconds, state.activeTaskId, state.mode]
+    [play, isGuestMode, state.remainingSeconds, state.activeTaskId, state.mode],
   );
 
   const pause = useCallback(() => {

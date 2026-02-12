@@ -78,9 +78,9 @@ export function CreateProjectDialog({
   const { trigger } = useHaptic();
   const scrollRef = useHorizontalScroll();
 
-  const onFormSubmit = async (data: CreateProjectInput) => {
+  const onFormSubmit = (data: CreateProjectInput) => {
     trigger(50);
-    await createProject.mutateAsync(data);
+    createProject.mutate(data);
     reset();
     onOpenChange(false);
   };
