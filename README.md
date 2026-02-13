@@ -14,12 +14,13 @@ Kanso is a **Zen-Modernist** task management and focus tool. It fuses the Japane
 
 ## Features
 
-- **Macro & Micro Views**: Switch between Masonry Grid, Kanban Board, and List views instantly with `Shift+1/2/3`.
+- **Macro & Micro Views**: Switch between Masonry Grid, Kanban Board (Desktop), and List views instantly with `Shift+1/2/3`.
 - **Visual Activity Heatmap**: GitHub-style consistency chart tracking both focus minutes and habit repetitions.
 - **Habit Mastery**: Dedicated habit tracking system with CRUD management and longevity insights.
 - **Calendar Precision**: Vertical schedule with real-time indicators and programmatic auto-scroll to "Now."
 - **Guest Mode**: A 100% private, zero-footprint demo experience anchored in `localStorage`.
-- **Offline-First**: Powered by TanStack Query persistence and IndexedDB, ensuring total reliability without network.
+- **Absolute Resilience**: Offline-first via a **Tri-Layer Defense** (Service Worker timeouts, network-resilient middleware, and IndexedDB persistence).
+- **Migration Engine**: Idempotent and resilient data transition from Guest Mode to cloud accounts.
 - **PWA Excellence**: Native-grade mobile experience with swipe-to-edit/delete gestures and "Seijaku" haptics.
 - **Command Menu**: Global `Ctrl+K` palette for instant navigation and action execution.
 - **Focus Timer**: PiP-enabled Pomodoro engine with real-time stats synchronization.
@@ -31,8 +32,9 @@ Press **Shift + H** to see the full list of keyboard shortcuts.
 
 ## Built with
 
-- **Next.js 15 (App Router)** and **Supabase (PostgreSQL/Realtime)**
-- **TanStack Query v5** (Persistence via IndexedDB) and **Zustand**
+- **Next.js 16.1.0 (App Router)** and **Supabase (PostgreSQL/Realtime/SSR)**
+- **TanStack Query v5.90+** (Persistence via IndexedDB) and **Zustand**
+- **React 19.2.3** (Pre-optimized for Concurrent Mode)
 - **Tailwind CSS v4** and **Shadcn UI** (Radical Minimalism)
 - **Framer Motion** and **dnd-kit** for physical interactions
 - **Serwist** for Typed Service Worker & PWA support
