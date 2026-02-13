@@ -1,6 +1,6 @@
 import { defaultCache, PAGES_CACHE_NAME } from "@serwist/next/worker";
 import type { PrecacheEntry, SerwistGlobalConfig } from "serwist";
-import { Serwist, NetworkFirst } from "serwist";
+import { Serwist, NetworkFirst, type RuntimeCaching, type SerwistPlugin } from "serwist";
 
 // This declares the value of `injectionPoint` to TypeScript.
 // `injectionPoint` is the string that will be replaced by the
@@ -14,13 +14,18 @@ declare global {
 
 declare const self: ServiceWorkerGlobalScope;
 
+interface StrategyWithCacheName {
+  cacheName: string;
+  plugins?: SerwistPlugin[];
+}
+
 // ⚡ Offline Resilience: Patch defaultCache to add a 3s timeout to navigation/pages.
 // Without this, the browser waits for the full TCP timeout (~3.3 min) before serving cache.
 const patchedCache = defaultCache.map((entry) => {
   const handler = entry.handler;
   // Check if handler is a strategy object with a cacheName (like NetworkFirst)
   if (handler && typeof handler !== "function" && "cacheName" in handler) {
-    const strategy = handler as any;
+    const strategy = handler as unknown as StrategyWithCacheName;
     if (
       strategy.cacheName === PAGES_CACHE_NAME.html ||
       strategy.cacheName === PAGES_CACHE_NAME.rsc ||
@@ -41,7 +46,7 @@ const patchedCache = defaultCache.map((entry) => {
 });
 
 // Replace the final catch-all NetworkOnly (matcher: /.*/i) with a 10s NetworkFirst
-const finalCache = [
+const finalCache: RuntimeCaching[] = [
   ...patchedCache.filter((e) => {
     // Keep everything except the catch-all NetworkOnly rule
     const isCatchAll =
@@ -65,7 +70,7 @@ const serwist = new Serwist({
   skipWaiting: true,
   clientsClaim: true,
   navigationPreload: false,
-  runtimeCaching: finalCache as any,
+  runtimeCaching: finalCache,
   // 🛡️ Offline Fallback: Serve the precached /~offline page when navigations fail.
   // Content is served directly (no redirect) to avoid infinite loops.
   fallbacks: {

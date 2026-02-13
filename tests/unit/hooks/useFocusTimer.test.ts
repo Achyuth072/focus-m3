@@ -5,6 +5,7 @@ import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 // Mock dependencies
 vi.mock("@tanstack/react-query", () => ({
   useQueryClient: vi.fn(() => ({ invalidateQueries: vi.fn() })),
+  useMutation: vi.fn(() => ({ mutate: vi.fn() })),
 }));
 
 vi.mock("@/lib/supabase/client", () => ({

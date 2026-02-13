@@ -6,13 +6,11 @@ import React from "react";
 // Mock framer-motion to avoid animation delays in tests
 vi.mock("framer-motion", () => ({
   motion: {
-    div: ({ children, ...props }: any) => {
-      // Filter out framer-motion specific props to avoid React warnings in logs
-      const { initial, animate, exit, ...rest } = props;
-      return <div {...rest}>{children}</div>;
+    div: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
+      return <div {...props}>{children}</div>;
     },
   },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 describe("OfflineIndicator", () => {
@@ -45,7 +43,7 @@ describe("OfflineIndicator", () => {
     render(<OfflineIndicator />);
     expect(screen.getByText(/You are offline/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/Changes will be saved once you reconnect/i),
+      screen.getByText(/Changes will sync when back online/i),
     ).toBeInTheDocument();
   });
 

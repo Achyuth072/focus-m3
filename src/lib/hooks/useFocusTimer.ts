@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createClient } from "@/lib/supabase/client";
 import { focusMutations } from "@/lib/mutations/focus";
 import { useUiStore } from "@/lib/store/uiStore";
 import type { TimerMode, TimerState, TimerSettings } from "@/lib/types/timer";
@@ -13,7 +12,6 @@ import {
 } from "@/lib/types/timer";
 import { useFocusHistoryStore } from "@/lib/store/focusHistoryStore";
 import { useAuth } from "@/components/AuthProvider";
-import { mockStore } from "@/lib/mock/mock-store";
 import { useFocusSounds } from "@/lib/hooks/useFocusSounds";
 import { usePathname } from "next/navigation";
 import { usePushNotifications } from "@/lib/hooks/usePushNotifications";
@@ -111,7 +109,6 @@ export function useFocusTimer() {
   const notificationIdRef = useRef<string | null>(null);
   const lastReconciledStartedAtRef = useRef<number | null>(null); // Guard against multiple reconciliations of the same session
   const stateRef = useRef(state); // Always have latest state access for reconciliation without breaking dependencies
-  const supabase = createClient();
   const { isGuestMode } = useAuth();
   const { play } = useFocusSounds();
   const { trigger } = useHaptic();

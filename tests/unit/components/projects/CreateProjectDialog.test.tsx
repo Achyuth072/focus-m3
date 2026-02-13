@@ -3,10 +3,10 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { CreateProjectDialog } from "@/components/projects/CreateProjectDialog";
 
 // Mock hooks
-const mockMutateAsync = vi.fn();
+const mockMutate = vi.fn();
 vi.mock("@/lib/hooks/useProjectMutations", () => ({
   useCreateProject: () => ({
-    mutateAsync: mockMutateAsync,
+    mutate: mockMutate,
     isPending: false,
   }),
 }));
@@ -61,7 +61,7 @@ describe("CreateProjectDialog", () => {
 
     await waitFor(
       () => {
-        expect(mockMutateAsync).toHaveBeenCalledWith({
+        expect(mockMutate).toHaveBeenCalledWith({
           name: "New Project",
           color: "#2196F3",
           view_style: "list",

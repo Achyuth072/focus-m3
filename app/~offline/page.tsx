@@ -15,10 +15,10 @@ export default function OfflinePage() {
         <WifiOff className="w-12 h-12 text-muted-foreground" />
       </div>
 
-      <h1 className="text-2xl font-bold mb-2">You're Offline</h1>
+      <h1 className="text-2xl font-bold mb-2">You&apos;re Offline</h1>
       <p className="text-muted-foreground mb-8 max-w-sm">
-        It looks like you've lost your internet connection. Kanso is designed to
-        work offline, but this page hasn't been cached yet.
+        It looks like you&apos;ve lost your internet connection. Kanso is designed to
+        work offline, but this page hasn&apos;t been cached yet.
       </p>
 
       <div className="flex flex-col sm:flex-row gap-4">
@@ -40,7 +40,7 @@ export default function OfflinePage() {
       </div>
 
       <p className="mt-12 text-sm text-muted-foreground">
-        Once you're back online, your changes will sync automatically.
+        Once you&apos;re back online, your changes will sync automatically.
       </p>
     </div>
   );

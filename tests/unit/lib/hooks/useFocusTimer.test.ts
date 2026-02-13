@@ -6,6 +6,7 @@ import { DEFAULT_TIMER_SETTINGS } from "@/lib/types/timer";
 // Mock dependencies
 vi.mock("@tanstack/react-query", () => ({
   useQueryClient: () => ({ invalidateQueries: vi.fn() }),
+  useMutation: () => ({ mutate: vi.fn() }),
 }));
 
 vi.mock("@/lib/supabase/client", () => ({

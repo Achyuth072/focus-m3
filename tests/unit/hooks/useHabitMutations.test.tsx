@@ -30,6 +30,7 @@ describe("useHabitMutations", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    localStorage.clear();
     queryClient = new QueryClient({
       defaultOptions: {
         mutations: { retry: false },
@@ -68,6 +69,10 @@ describe("useHabitMutations", () => {
 
         mockCreateClient.mockReturnValue({
           auth: {
+            getSession: vi.fn().mockResolvedValue({
+              data: { session: { user: mockUser } },
+              error: null,
+            }),
             getUser: vi
               .fn()
               .mockResolvedValue({ data: { user: mockUser }, error: null }),
@@ -107,6 +112,7 @@ describe("useHabitMutations", () => {
       it("should create habit successfully in guest mode", async () => {
         // Given: User in guest mode
         mockUseAuth.mockReturnValue({ isGuestMode: true } as any);
+        localStorage.setItem("kanso_guest_mode", "true");
 
         const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
 

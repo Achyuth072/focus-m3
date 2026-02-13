@@ -113,7 +113,12 @@ export const taskMutations = {
           is_evening: updatedTask.is_evening || false,
           recurrence: recurrenceRule,
           is_completed: false,
-        } as any);
+          completed_at: null,
+          day_order: 0,
+          google_event_id: null,
+          google_etag: null,
+          parent_id: null,
+        } as Task);
       }
 
       return { task: updatedTask, newRecurringTask };
