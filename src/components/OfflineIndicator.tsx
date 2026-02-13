@@ -3,6 +3,7 @@
 import { WifiOff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useIsOnline } from "@/lib/hooks/useIsOnline";
+import { cn } from "@/lib/utils";
 
 export function OfflineIndicator() {
   const isOnline = useIsOnline();
@@ -11,21 +12,31 @@ export function OfflineIndicator() {
     <AnimatePresence>
       {!isOnline && (
         <motion.div
-          initial={{ y: 20, opacity: 0, x: "-50%" }}
-          animate={{ y: 0, opacity: 1, x: "-50%" }}
-          exit={{ y: 20, opacity: 0, x: "-50%" }}
-          className="fixed bottom-24 left-1/2 z-[100] w-[min(90vw,400px)] pointer-events-none"
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 20, opacity: 0 }}
+          transition={{
+            type: "spring",
+            mass: 1,
+            stiffness: 280,
+            damping: 60,
+          }}
+          className={cn(
+            "fixed z-50 pointer-events-none flex justify-center",
+            "left-0 right-0 px-4 bottom-[calc(4.5rem+env(safe-area-inset-bottom)+16px)]", // Mobile: Bottom Center above nav
+            "md:left-[calc(var(--sidebar-width)+24px)] md:bottom-6 md:top-auto md:right-auto md:px-0 md:justify-start", // Desktop: Bottom Left of content
+          )}
         >
-          <div className="bg-destructive text-destructive-foreground px-4 py-3 rounded-2xl shadow-2xl flex items-center justify-center gap-3 border border-white/10 backdrop-blur-xl bg-opacity-95 pointer-events-auto">
-            <div className="bg-white/20 p-1.5 rounded-lg">
+          <div className="bg-card text-foreground py-2 px-4 rounded-lg border border-border/80 pointer-events-auto flex items-center gap-3 shadow-none">
+            <div className="flex-shrink-0 w-8 h-8 rounded-md bg-muted flex items-center justify-center text-muted-foreground">
               <WifiOff className="w-4 h-4" />
             </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold leading-tight">
+            <div className="flex flex-col leading-tight">
+              <span className="text-[13px] font-semibold tracking-tight">
                 You are offline
               </span>
-              <span className="text-[11px] opacity-80 leading-tight">
-                Changes will be saved once you reconnect
+              <span className="text-[11px] text-muted-foreground font-normal">
+                Changes will sync when back online
               </span>
             </div>
           </div>

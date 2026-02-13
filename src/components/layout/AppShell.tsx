@@ -42,6 +42,11 @@ const CommandMenu = dynamic(
   () => import("@/components/command-menu").then((mod) => mod.CommandMenu),
   { ssr: false },
 );
+const OfflineIndicator = dynamic(
+  () =>
+    import("@/components/OfflineIndicator").then((mod) => mod.OfflineIndicator),
+  { ssr: false },
+);
 const ShortcutsHelp = dynamic(
   () =>
     import("@/components/ui/ShortcutsHelp").then((mod) => mod.ShortcutsHelp),
@@ -137,7 +142,7 @@ function AppShellContent({ children }: AppShellProps) {
                   "md:left-[var(--sidebar-width)] md:px-0 md:top-4 md:right-6 md:justify-end", // Desktop: Floating top-right banner
                 )}
               >
-                <div className="pointer-events-auto flex items-center justify-between w-full max-w-[500px] md:w-[350px] bg-sidebar border border-border text-foreground text-[13px] font-medium py-2.5 px-4 rounded-xl shadow-2xl shadow-black/5 backdrop-blur-md">
+                <div className="pointer-events-auto flex items-center justify-between w-full max-w-[500px] md:w-[350px] bg-card border border-border/80 text-foreground text-[13px] font-medium py-2.5 px-4 rounded-lg shadow-none">
                   <div className="flex items-center gap-3">
                     <div className="flex-shrink-0 w-2 h-2 rounded-full bg-brand shadow-[0_0_8px_hsl(var(--brand)/0.3)]" />
                     <div className="flex flex-col leading-tight">
@@ -236,6 +241,9 @@ function AppShellContent({ children }: AppShellProps) {
 
         {/* Floating Timer - shows when timer is active and not on focus page */}
         <FloatingTimer />
+
+        {/* Global System States */}
+        <OfflineIndicator />
       </SidebarProvider>
     </CompletedTasksProvider>
   );

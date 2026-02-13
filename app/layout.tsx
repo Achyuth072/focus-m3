@@ -6,7 +6,6 @@ import QueryProvider from "@/components/QueryProvider";
 import { TimerProvider } from "@/components/TimerProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import AppShell from "@/components/layout/AppShell";
-import { OfflineIndicator } from "@/components/OfflineIndicator";
 import { Toaster } from "sonner";
 
 const inter = Inter({
@@ -62,7 +61,6 @@ export default function RootLayout({
             <AuthProvider>
               <TimerProvider>
                 <AppShell>{children}</AppShell>
-                <OfflineIndicator />
               </TimerProvider>
             </AuthProvider>
           </QueryProvider>
