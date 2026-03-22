@@ -268,17 +268,16 @@ const TaskCardWrapper = React.memo(function TaskCardWrapper({
   }, [task.due_date]);
 
   return (
-    <div onClick={() => onSelect?.(task)} className="cursor-pointer group/card">
-      <IntegratedTaskCard
-        task={task}
-        project={
-          project ? { color: project.color, name: project.name } : undefined
-        }
-        isOverdue={isOverdue}
-        isDesktop={isDesktop}
-        handleComplete={handleComplete}
-        handlePlayFocus={handlePlayFocus}
-      />
-    </div>
+    <IntegratedTaskCard
+      task={task}
+      project={
+        project ? { color: project.color, name: project.name } : undefined
+      }
+      isOverdue={isOverdue}
+      isDesktop={isDesktop}
+      handleComplete={handleComplete}
+      handlePlayFocus={handlePlayFocus}
+      onClick={() => onSelect?.(task)}
+    />
   );
 });

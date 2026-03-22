@@ -118,7 +118,13 @@ describe("useProfile", () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     await result.current.updateSettings.mutateAsync({
-      notifications: { morning_briefing: false } as Record<string, boolean>,
+      notifications: {
+        morning_briefing: false,
+        evening_plan: true,
+        due_date_alerts: true,
+        do_date_alerts: true,
+        timer_alerts: true,
+      },
     });
 
     expect(mockQuery.update).toHaveBeenCalledWith(
@@ -129,7 +135,7 @@ describe("useProfile", () => {
             evening_plan: true,
           }),
         }),
-      })
+      }),
     );
   });
 

@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
 interface TaskActionsContextValue {
   isAddTaskOpen: boolean;
@@ -17,11 +17,11 @@ export function TaskActionsProvider({ children }: { children: ReactNode }) {
   const closeAddTask = () => setIsAddTaskOpen(false);
 
   return (
-    <TaskActionsContext.Provider 
-      value={{ 
+    <TaskActionsContext.Provider
+      value={{
         isAddTaskOpen,
-        openAddTask, 
-        closeAddTask 
+        openAddTask,
+        closeAddTask,
       }}
     >
       {children}
@@ -32,7 +32,7 @@ export function TaskActionsProvider({ children }: { children: ReactNode }) {
 export function useTaskActions() {
   const context = useContext(TaskActionsContext);
   if (!context) {
-    throw new Error('useTaskActions must be used within a TaskActionsProvider');
+    throw new Error("useTaskActions must be used within a TaskActionsProvider");
   }
   return context;
 }

@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
 interface ProjectActionsContextValue {
   isCreateProjectOpen: boolean;
@@ -8,7 +8,9 @@ interface ProjectActionsContextValue {
   closeCreateProject: () => void;
 }
 
-const ProjectActionsContext = createContext<ProjectActionsContextValue | null>(null);
+const ProjectActionsContext = createContext<ProjectActionsContextValue | null>(
+  null,
+);
 
 export function ProjectActionsProvider({ children }: { children: ReactNode }) {
   const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
@@ -17,11 +19,11 @@ export function ProjectActionsProvider({ children }: { children: ReactNode }) {
   const closeCreateProject = () => setIsCreateProjectOpen(false);
 
   return (
-    <ProjectActionsContext.Provider 
-      value={{ 
+    <ProjectActionsContext.Provider
+      value={{
         isCreateProjectOpen,
-        openCreateProject, 
-        closeCreateProject 
+        openCreateProject,
+        closeCreateProject,
       }}
     >
       {children}
@@ -32,7 +34,9 @@ export function ProjectActionsProvider({ children }: { children: ReactNode }) {
 export function useProjectActions() {
   const context = useContext(ProjectActionsContext);
   if (!context) {
-    throw new Error('useProjectActions must be used within a ProjectActionsProvider');
+    throw new Error(
+      "useProjectActions must be used within a ProjectActionsProvider",
+    );
   }
   return context;
 }

@@ -41,12 +41,15 @@ export function TaskKanbanBoard({
     return [
       { title: "Tasks", tasks: active },
       { title: "This Evening", tasks: evening },
-    ].filter((c) => c.tasks.length > 0 || groups !== null);
+    ].filter((c) => (c.tasks?.length ?? 0) > 0 || groups !== null);
   }, [groups, active, evening]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 },
+      activationConstraint: {
+        delay: 150,
+        tolerance: 5,
+      },
     }),
   );
 
@@ -98,7 +101,7 @@ export function TaskKanbanBoard({
         }}
       >
         {activeTask ? (
-          <div className="w-[90vw] md:w-[320px] rotate-2 scale-105 shadow-xl rounded-xl overflow-hidden pointer-events-none">
+          <div className="w-[90vw] md:w-[320px] rotate-2 scale-105 shadow-xl pointer-events-none">
             <TaskItem task={activeTask} viewMode="board" />
           </div>
         ) : null}
@@ -119,25 +122,25 @@ const KanbanColumn = memo(function KanbanColumn({
   });
 
   return (
-    <div
+    <section
       ref={setNodeRef}
       className="flex-shrink-0 w-[90vw] md:w-[320px] snap-center h-full flex flex-col"
     >
-      <div className="flex flex-col max-h-full bg-secondary/10 rounded-2xl border border-border/60 px-3 py-2.5 overflow-hidden shadow-sm shadow-black/[0.02]">
-        <div className="flex items-center justify-between mb-4 px-1 flex-shrink-0">
+      <div className="flex flex-col max-h-full bg-secondary/10 rounded-2xl border border-border/60 overflow-hidden shadow-sm shadow-black/[0.02]">
+        <header className="flex items-center justify-between px-4 py-3.5 flex-shrink-0">
           <h3 className="type-h3 lowercase tracking-tight text-foreground/70">
             {group.title}
           </h3>
           <span className="text-[11px] font-bold opacity-40 tabular-nums">
             {group.tasks.length}
           </span>
-        </div>
+        </header>
 
         <SortableContext
           items={group.tasks.map((t) => t.id)}
           strategy={verticalListSortingStrategy}
         >
-          <div className="flex-1 space-y-2 overflow-y-auto px-1 -mx-1 py-1 -my-1 scrollbar-hide">
+          <div className="flex-1 space-y-2 overflow-y-auto px-3 pb-4 scrollbar-hide">
             {group.tasks.length > 0 ? (
               group.tasks.map((task) => (
                 <SortableTaskItem
@@ -155,6 +158,6 @@ const KanbanColumn = memo(function KanbanColumn({
           </div>
         </SortableContext>
       </div>
-    </div>
+    </section>
   );
 });

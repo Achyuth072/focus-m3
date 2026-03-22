@@ -5,18 +5,9 @@
 
 import type { Task, Project } from "@/lib/types/task";
 import type { Habit, HabitEntry } from "@/lib/types/habit";
+import type { FocusLog } from "@/lib/types/focus";
 
 const STORAGE_KEY = "kanso_guest_data_v7";
-
-interface FocusLog {
-  id: string;
-  user_id: string;
-  task_id: string | null;
-  start_time: string;
-  end_time: string | null;
-  duration_seconds: number;
-  created_at: string;
-}
 
 interface GuestData {
   tasks: Task[];

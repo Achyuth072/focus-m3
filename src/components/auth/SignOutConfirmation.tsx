@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
+import React from "react";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,7 +11,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from "@/components/ui/alert-dialog";
 import {
   Drawer,
   DrawerClose,
@@ -20,11 +20,11 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from '@/components/ui/drawer';
-import { Button } from '@/components/ui/button';
-import { LogOut } from 'lucide-react';
-import { useHaptic } from '@/lib/hooks/useHaptic';
-import { useBackNavigation } from '@/lib/hooks/useBackNavigation';
+} from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
+import { LogOut } from "lucide-react";
+import { useHaptic } from "@/lib/hooks/useHaptic";
+import { useBackNavigation } from "@/lib/hooks/useBackNavigation";
 
 interface SignOutConfirmationProps {
   isOpen: boolean;
@@ -37,7 +37,7 @@ export function SignOutConfirmation({
   onClose,
   onConfirm,
 }: SignOutConfirmationProps) {
-  const isDesktop = useMediaQuery('(min-width: 768px)');
+  const isDesktop = useMediaQuery("(min-width: 768px)");
   const { trigger } = useHaptic();
 
   // Handle back navigation on mobile to close drawer instead of navigating away
@@ -53,11 +53,17 @@ export function SignOutConfirmation({
               Sign Out
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to sign out? You will need to log in again to access your tasks.
+              Are you sure you want to sign out? You will need to log in again
+              to access your tasks.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => trigger(10)} className="hover:bg-accent/60 transition-colors">Cancel</AlertDialogCancel>
+            <AlertDialogCancel
+              onClick={() => trigger(10)}
+              className="hover:bg-accent/60 transition-colors"
+            >
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 trigger(50);
@@ -82,7 +88,8 @@ export function SignOutConfirmation({
             Sign Out
           </DrawerTitle>
           <DrawerDescription>
-            Are you sure you want to sign out? You will need to log in again to access your tasks.
+            Are you sure you want to sign out? You will need to log in again to
+            access your tasks.
           </DrawerDescription>
         </DrawerHeader>
         <DrawerFooter className="pt-2">
@@ -97,7 +104,11 @@ export function SignOutConfirmation({
             Sign Out
           </Button>
           <DrawerClose asChild>
-            <Button variant="outline" className="w-full" onClick={() => trigger(10)}>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => trigger(10)}
+            >
               Cancel
             </Button>
           </DrawerClose>

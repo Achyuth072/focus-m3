@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { FocusSettingsDialog } from "@/components/FocusSettingsDialog";
 
@@ -88,9 +94,11 @@ describe("FocusSettingsDialog", () => {
     vi.clearAllMocks();
   });
 
-  it("renders settings fields when open", () => {
+  it("renders settings fields when open", async () => {
     render(<FocusSettingsDialog />);
-    fireEvent.click(screen.getByText("Adjust Settings"));
+    await act(async () => {
+      fireEvent.click(screen.getByText("Adjust Settings"));
+    });
 
     expect(screen.getByLabelText("Focus Duration")).toBeInTheDocument();
     expect(screen.getByLabelText("Short Break")).toBeInTheDocument();
@@ -98,14 +106,18 @@ describe("FocusSettingsDialog", () => {
 
   it("shows error for invalid duration", async () => {
     render(<FocusSettingsDialog />);
-    fireEvent.click(screen.getByText("Adjust Settings"));
+    await act(async () => {
+      fireEvent.click(screen.getByText("Adjust Settings"));
+    });
 
     const input = screen.getByLabelText("Focus Duration");
-    fireEvent.change(input, { target: { value: "0" } });
+    await act(async () => {
+      fireEvent.change(input, { target: { value: "0" } });
+    });
 
     await waitFor(() => {
       expect(
-        screen.getByText("Focus duration must be at least 1 minute")
+        screen.getByText("Focus duration must be at least 1 minute"),
       ).toBeInTheDocument();
     });
 
@@ -114,10 +126,14 @@ describe("FocusSettingsDialog", () => {
 
   it("submits updated settings correctly", async () => {
     render(<FocusSettingsDialog />);
-    fireEvent.click(screen.getByText("Adjust Settings"));
+    await act(async () => {
+      fireEvent.click(screen.getByText("Adjust Settings"));
+    });
 
     const input = screen.getByLabelText("Focus Duration");
-    fireEvent.change(input, { target: { value: "30" } });
+    await act(async () => {
+      fireEvent.change(input, { target: { value: "30" } });
+    });
 
     const saveButton = screen.getByText("Save Changes");
 
@@ -126,13 +142,15 @@ describe("FocusSettingsDialog", () => {
       expect(saveButton).not.toBeDisabled();
     });
 
-    fireEvent.click(saveButton);
+    await act(async () => {
+      fireEvent.click(saveButton);
+    });
 
     await waitFor(() => {
       expect(mockUpdateSettings).toHaveBeenCalledWith(
         expect.objectContaining({
           focusDuration: 30,
-        })
+        }),
       );
       // Verify haptic feedback (TC-C-01: Major action thud)
       expect(mockHapticTrigger).toHaveBeenCalledWith(50);

@@ -2,7 +2,11 @@ import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { IntegratedTaskKanbanBoard } from "@/components/tasks/IntegratedTaskKanbanBoard";
 import { useJsLoaded } from "@/lib/hooks/use-js-loaded";
-import { useUpdateTask, useToggleTask, useReorderTasks } from "@/lib/hooks/useTaskMutations";
+import {
+  useUpdateTask,
+  useToggleTask,
+  useReorderTasks,
+} from "@/lib/hooks/useTaskMutations";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import type { ProcessedTasks } from "@/lib/hooks/useTaskViewData";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -48,10 +52,13 @@ vi.mock("@/components/TimerProvider", () => ({
 
 // Mock dnd-kit components that are used inside kanban.tsx
 vi.mock("@dnd-kit/core", async () => {
-  const actual = await vi.importActual<Record<string, unknown>>("@dnd-kit/core");
+  const actual =
+    await vi.importActual<Record<string, unknown>>("@dnd-kit/core");
   return {
     ...actual,
-    DndContext: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+    DndContext: ({ children }: { children: React.ReactNode }) => (
+      <div>{children}</div>
+    ),
     useSensor: vi.fn(),
     useSensors: vi.fn(),
     PointerSensor: vi.fn(),
@@ -118,11 +125,23 @@ describe("IntegratedTaskKanbanBoard", () => {
     vi.clearAllMocks();
     vi.mocked(useJsLoaded).mockReturnValue(true);
     vi.mocked(useMediaQuery).mockReturnValue(true);
-    vi.mocked(useUpdateTask).mockReturnValue({ mutate: vi.fn() } as unknown as ReturnType<typeof useUpdateTask>);
-    vi.mocked(useToggleTask).mockReturnValue({ mutate: vi.fn() } as unknown as ReturnType<typeof useToggleTask>);
-    vi.mocked(useReorderTasks).mockReturnValue({ mutate: vi.fn() } as unknown as ReturnType<typeof useReorderTasks>);
-    vi.mocked(useProjects).mockReturnValue({ data: [], isLoading: false } as unknown as ReturnType<typeof useProjects>);
-    vi.mocked(useProject).mockReturnValue({ data: null, isLoading: false } as unknown as ReturnType<typeof useProject>);
+    vi.mocked(useUpdateTask).mockReturnValue({
+      mutate: vi.fn(),
+    } as unknown as ReturnType<typeof useUpdateTask>);
+    vi.mocked(useToggleTask).mockReturnValue({
+      mutate: vi.fn(),
+    } as unknown as ReturnType<typeof useToggleTask>);
+    vi.mocked(useReorderTasks).mockReturnValue({
+      mutate: vi.fn(),
+    } as unknown as ReturnType<typeof useReorderTasks>);
+    vi.mocked(useProjects).mockReturnValue({
+      data: [],
+      isLoading: false,
+    } as unknown as ReturnType<typeof useProjects>);
+    vi.mocked(useProject).mockReturnValue({
+      data: null,
+      isLoading: false,
+    } as unknown as ReturnType<typeof useProject>);
   });
 
   it("renders columns and tasks correctly", () => {

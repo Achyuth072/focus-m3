@@ -48,7 +48,7 @@ export function useCalendarEvents() {
           projects (
             color
           )
-        `
+        `,
         )
         .not("due_date", "is", null);
 

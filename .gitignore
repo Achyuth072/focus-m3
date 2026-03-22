@@ -61,3 +61,7 @@ node_modules/
 
 # Supabase
 /supabase/.temp
+
+# Test logs
+tests/unit/*.txt
+

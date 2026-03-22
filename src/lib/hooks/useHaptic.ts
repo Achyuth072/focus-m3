@@ -7,7 +7,7 @@ import { useMediaQuery } from "./useMediaQuery";
 export function useHaptic() {
   const { hapticsEnabled } = useUiStore();
   const isPhone = useMediaQuery(
-    "(max-width: 640px) or ((hover: none) and (pointer: coarse))"
+    "(max-width: 640px) or ((hover: none) and (pointer: coarse))",
   );
 
   const trigger = useCallback(
@@ -21,7 +21,7 @@ export function useHaptic() {
         navigator.vibrate(pattern);
       }
     },
-    [hapticsEnabled, isPhone]
+    [hapticsEnabled, isPhone],
   );
 
   return {

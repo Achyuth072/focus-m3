@@ -20,7 +20,7 @@ export default function AddTaskFab({ onClick }: AddTaskFabProps) {
       onClick={onClick}
       className={cn(
         buttonVariants({ size: "lg" }),
-        "fixed bottom-[calc(76px+env(safe-area-inset-bottom))] right-6 h-14 w-14 rounded-xl shadow-lg md:hidden cursor-pointer",
+        "fixed bottom-[calc(76px+env(safe-area-inset-bottom))] right-6 h-14 w-14 rounded-xl shadow-lg md:hidden cursor-pointer z-50",
       )}
     >
       <Plus className="h-6 w-6" />

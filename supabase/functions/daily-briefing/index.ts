@@ -15,17 +15,17 @@ serve(async (req) => {
   try {
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
     );
 
     // 1. Identify users for MORNING BRIEFING (8 AM)
     const { data: morningUsers, error: morningError } = await supabaseAdmin.rpc(
-      "get_users_for_morning_briefing"
+      "get_users_for_morning_briefing",
     );
 
     // 2. Identify users for EVENING PLAN (6 PM)
     const { data: eveningUsers, error: eveningError } = await supabaseAdmin.rpc(
-      "get_users_for_evening_plan"
+      "get_users_for_evening_plan",
     );
 
     if (morningError)

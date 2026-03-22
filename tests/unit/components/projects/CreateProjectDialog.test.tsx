@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { CreateProjectDialog } from "@/components/projects/CreateProjectDialog";
 
@@ -32,8 +38,12 @@ describe("CreateProjectDialog", () => {
     render(<CreateProjectDialog open={true} onOpenChange={vi.fn()} />);
     const input = screen.getByLabelText("Project Name");
 
-    fireEvent.change(input, { target: { value: "a" } });
-    fireEvent.change(input, { target: { value: "" } });
+    await act(async () => {
+      fireEvent.change(input, { target: { value: "a" } });
+    });
+    await act(async () => {
+      fireEvent.change(input, { target: { value: "" } });
+    });
 
     await waitFor(() => {
       expect(screen.getByText("Project name is required")).toBeInTheDocument();
@@ -48,7 +58,9 @@ describe("CreateProjectDialog", () => {
     render(<CreateProjectDialog open={true} onOpenChange={onOpenChange} />);
 
     const input = screen.getByLabelText("Project Name");
-    fireEvent.change(input, { target: { value: "New Project" } });
+    await act(async () => {
+      fireEvent.change(input, { target: { value: "New Project" } });
+    });
 
     const submitButton = screen.getByRole("button", { name: /create/i });
 
@@ -57,7 +69,9 @@ describe("CreateProjectDialog", () => {
       expect(submitButton).not.toBeDisabled();
     });
 
-    fireEvent.click(submitButton);
+    await act(async () => {
+      fireEvent.click(submitButton);
+    });
 
     await waitFor(
       () => {
@@ -68,7 +82,7 @@ describe("CreateProjectDialog", () => {
         });
         expect(onOpenChange).toHaveBeenCalledWith(false);
       },
-      { timeout: 3000 }
+      { timeout: 3000 },
     );
   });
 
@@ -76,7 +90,9 @@ describe("CreateProjectDialog", () => {
     render(<CreateProjectDialog open={true} onOpenChange={vi.fn()} />);
 
     const berryColor = screen.getByLabelText("Berry");
-    fireEvent.click(berryColor);
+    await act(async () => {
+      fireEvent.click(berryColor);
+    });
 
     expect(berryColor).toHaveAttribute("aria-checked", "true");
   });

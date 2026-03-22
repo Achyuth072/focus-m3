@@ -27,9 +27,11 @@ export function useFocusSounds() {
 
   const getAudioContext = useCallback(() => {
     if (!audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext ||
+      audioContextRef.current = new (
+        window.AudioContext ||
         (window as typeof window & { webkitAudioContext: typeof AudioContext })
-          .webkitAudioContext)();
+          .webkitAudioContext
+      )();
     }
     return audioContextRef.current;
   }, []);
@@ -39,7 +41,7 @@ export function useFocusSounds() {
       frequency: number,
       duration: number,
       delay: number = 0,
-      type: OscillatorType = "sine"
+      type: OscillatorType = "sine",
     ) => {
       const ctx = getAudioContext();
       const now = ctx.currentTime + delay;
@@ -63,7 +65,7 @@ export function useFocusSounds() {
       osc.start(now);
       osc.stop(now + duration);
     },
-    [getAudioContext]
+    [getAudioContext],
   );
 
   const playChord = useCallback(
@@ -72,7 +74,7 @@ export function useFocusSounds() {
         playNote(note.frequency, note.duration, note.delay || 0, type);
       });
     },
-    [playNote]
+    [playNote],
   );
 
   const play = useCallback(
@@ -96,7 +98,7 @@ export function useFocusSounds() {
               { frequency: 783.99, duration: 1.2, delay: 0.1 }, // G5
               { frequency: 987.77, duration: 1.4, delay: 0.15 }, // B5
             ],
-            "triangle" // Warmer tone for reward
+            "triangle", // Warmer tone for reward
           );
           break;
 
@@ -127,7 +129,7 @@ export function useFocusSounds() {
           break;
       }
     },
-    [playChord]
+    [playChord],
   );
 
   return { play };

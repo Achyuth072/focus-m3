@@ -1,6 +1,11 @@
 import { defaultCache, PAGES_CACHE_NAME } from "@serwist/next/worker";
 import type { PrecacheEntry, SerwistGlobalConfig } from "serwist";
-import { Serwist, NetworkFirst, type RuntimeCaching, type SerwistPlugin } from "serwist";
+import {
+  Serwist,
+  NetworkFirst,
+  type RuntimeCaching,
+  type SerwistPlugin,
+} from "serwist";
 
 // This declares the value of `injectionPoint` to TypeScript.
 // `injectionPoint` is the string that will be replaced by the

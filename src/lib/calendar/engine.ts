@@ -48,7 +48,7 @@ function clampToDay(event: CalendarEvent, day: Date): CalendarEvent {
  */
 export function layoutDayEvents(
   events: CalendarEvent[],
-  day: Date
+  day: Date,
 ): PositionedEvent[] {
   // Filter events for this day and clamp to day boundaries
   const dayEvents = events
@@ -79,7 +79,7 @@ export function layoutDayEvents(
     // Calculate height: fit in slot, but clamp between min and max
     const height = Math.min(
       MAX_ROW_HEIGHT_PERCENT,
-      Math.max(MIN_ROW_HEIGHT_PERCENT, SLOT_HEIGHT_PERCENT / count)
+      Math.max(MIN_ROW_HEIGHT_PERCENT, SLOT_HEIGHT_PERCENT / count),
     );
 
     // Add a tiny gap between items unless they are very compressed
@@ -117,7 +117,7 @@ export function getDayRange(start: Date, days: number): Date[] {
  */
 export function layoutDayRange(
   events: CalendarEvent[],
-  days: Date[]
+  days: Date[],
 ): DayColumn[] {
   return days.map((day) => ({
     date: day,

@@ -11,7 +11,9 @@ vi.mock("@/lib/hooks/useHaptic", () => ({
 
 // Mock Popover to simplify testing
 vi.mock("@/components/ui/popover", () => ({
-  Popover: ({ children }: { children: React.ReactNode }) => <div data-testid="popover">{children}</div>,
+  Popover: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="popover">{children}</div>
+  ),
   PopoverTrigger: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="popover-trigger">{children}</div>
   ),

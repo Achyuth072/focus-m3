@@ -1,4 +1,4 @@
-import { renderHook } from "@testing-library/react";
+import { renderHook, act } from "@testing-library/react";
 import { usePushNotifications } from "@/lib/hooks/usePushNotifications";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
@@ -52,10 +52,12 @@ describe("usePushNotifications", () => {
   // Given: The hook is rendered
   // When:  Dependencies are hoisted incorrectly
   // Then:  It should throw a ReferenceError (which we catch here to verify failure)
-  it("TC-HOOK-01: should should not throw ReferenceError on mount", () => {
-    expect(() => {
-      renderHook(() => usePushNotifications());
-    }).not.toThrow();
+  it("TC-HOOK-01: should should not throw ReferenceError on mount", async () => {
+    await act(async () => {
+      expect(() => {
+        renderHook(() => usePushNotifications());
+      }).not.toThrow();
+    });
   });
 
   // Given: VAPID public key is missing
@@ -69,16 +71,13 @@ describe("usePushNotifications", () => {
     const { result } = renderHook(() => usePushNotifications());
 
     // Trigger subscription (need permission granted in mock)
-    // Note: In our mock setup, permission is already granted.
-    // But subscribeToPush won't run auto because we don't have isSupported fully working in test env?
-    // Actually we need to call it manually or wait for effect.
-    // For this unit test, let's call it direct if possible, returning 'result.current.subscribeToPush'
-
     // We need to await the result
-    const sub = await result.current.subscribeToPush();
+    const sub = await act(async () => {
+      return await result.current.subscribeToPush();
+    });
 
     expect(sub).toBeNull();
-    // Verify error logging (we'll implement this in the code next)
+    // Verify error logging
     expect(consoleSpy).toHaveBeenCalledWith("VAPID public key not configured");
 
     consoleSpy.mockRestore();
@@ -95,8 +94,6 @@ describe("usePushNotifications", () => {
       toJSON: () => ({}),
     };
 
-    // We need to redefine the mock property for this specific test or update it
-    // Since Object.defineProperty is on window/navigator, we can update the return value
     const getSubscriptionSpy = vi.fn().mockResolvedValue(mockSub);
 
     Object.defineProperty(navigator, "serviceWorker", {
@@ -111,13 +108,13 @@ describe("usePushNotifications", () => {
       writable: true,
     });
 
-    renderHook(() => usePushNotifications());
-
-    // Wait for effects
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await act(async () => {
+      renderHook(() => usePushNotifications());
+      // Wait for effects
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    });
 
     // Verify sync was called
-    // We need to import the mocked module to check expectation
     const { syncPushSubscription } = await import("@/lib/push-api");
     expect(syncPushSubscription).toHaveBeenCalledWith(mockSub);
   });
@@ -155,10 +152,12 @@ describe("usePushNotifications", () => {
     const { result } = renderHook(() => usePushNotifications());
 
     // Directly call subscribeToPush with permission override
-    const sub = await result.current.subscribeToPush("granted");
-
-    // Wait for async operations
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    const sub = await act(async () => {
+      const res = await result.current.subscribeToPush("granted");
+      // Wait for async operations
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      return res;
+    });
 
     // Verify push subscription was created
     expect(subscribeSpy).toHaveBeenCalled();
@@ -190,11 +189,11 @@ describe("usePushNotifications", () => {
     const { result } = renderHook(() => usePushNotifications());
 
     // Act
-    await result.current.unsubscribe();
+    await act(async () => {
+      await result.current.unsubscribe();
+    });
 
     // Assert
-    // It might return false because no actual subscription was removed,
-    // BUT we expect setNotificationsEnabled to be called with false
     expect(mockSetNotificationsEnabled).toHaveBeenCalledWith(false);
   });
 });

@@ -58,7 +58,7 @@ describe("Push Notification API Routes", () => {
       expect(body.success).toBe(true);
       expect(mockSupabase.upsert).toHaveBeenCalledWith(
         expect.objectContaining({ user_id: "user-123" }),
-        { onConflict: "user_id" }
+        { onConflict: "user_id" },
       );
     });
 
@@ -125,7 +125,11 @@ describe("Push Notification API Routes", () => {
         data: { subscription: { endpoint: "https://test.com" } },
         error: null,
       });
-      vi.mocked(webpush.sendNotification).mockResolvedValue({ statusCode: 200, headers: {}, body: "" });
+      vi.mocked(webpush.sendNotification).mockResolvedValue({
+        statusCode: 200,
+        headers: {},
+        body: "",
+      });
 
       const request = new Request("http://localhost/api/push/send", {
         method: "POST",

@@ -133,7 +133,7 @@ describe("Timer API Routes (/api/timer)", () => {
       // DELETE request in route.ts uses .update().eq().eq()
       // Since it's awaited at root (no single()), we use mockQuery.then
       mockQuery.then.mockImplementationOnce((resolve) =>
-        resolve({ error: null })
+        resolve({ error: null }),
       );
 
       const request = new Request("http://localhost/api/timer/start", {

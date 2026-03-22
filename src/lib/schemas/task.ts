@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const PrioritySchema = z.union([
+const PrioritySchema = z.union([
   z.literal(1),
   z.literal(2),
   z.literal(3),

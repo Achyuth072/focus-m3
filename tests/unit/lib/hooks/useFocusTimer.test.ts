@@ -13,7 +13,7 @@ vi.mock("@/lib/supabase/client", () => ({
   createClient: () => ({
     auth: {
       getUser: vi.fn(() =>
-        Promise.resolve({ data: { user: { id: "test-user" } } })
+        Promise.resolve({ data: { user: { id: "test-user" } } }),
       ),
     },
     from: vi.fn(() => ({
@@ -50,7 +50,7 @@ vi.mock("@/lib/hooks/usePushNotifications", () => ({
 
 vi.mock("@/lib/timer-api", () => ({
   scheduleTimerNotification: vi.fn(() =>
-    Promise.resolve({ success: true, notificationId: "test-id" })
+    Promise.resolve({ success: true, notificationId: "test-id" }),
   ),
   cancelTimerNotification: vi.fn(() => Promise.resolve({ success: true })),
 }));
@@ -76,7 +76,7 @@ describe("useFocusTimer", () => {
     expect(result.current.state.mode).toBe("focus");
     expect(result.current.state.isRunning).toBe(false);
     expect(result.current.state.remainingSeconds).toBe(
-      DEFAULT_TIMER_SETTINGS.focusDuration * 60
+      DEFAULT_TIMER_SETTINGS.focusDuration * 60,
     );
   });
 
@@ -108,7 +108,7 @@ describe("useFocusTimer", () => {
     expect(result.current.state.mode).toBe("focus");
     expect(result.current.state.isRunning).toBe(false);
     expect(result.current.state.remainingSeconds).toBe(
-      DEFAULT_TIMER_SETTINGS.focusDuration * 60
+      DEFAULT_TIMER_SETTINGS.focusDuration * 60,
     );
   });
 

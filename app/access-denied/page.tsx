@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { ShieldAlert } from 'lucide-react';
+import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { ShieldAlert } from "lucide-react";
 
 const slideUp = {
   initial: { opacity: 0, y: 20 },
@@ -22,15 +22,15 @@ export default function AccessDeniedPage() {
             <ShieldAlert className="h-10 w-10 text-destructive" />
           </div>
         </div>
-        
+
         <h1 className="text-3xl font-semibold">Private Access Only</h1>
-        
+
         <p className="text-muted-foreground max-w-md">
-          This app is for personal use only. If you believe you should have access,
-          contact the owner.
+          This app is for personal use only. If you believe you should have
+          access, contact the owner.
         </p>
-        
-        <Button variant="outline" onClick={() => router.push('/login')}>
+
+        <Button variant="outline" onClick={() => router.push("/login")}>
           Back to Login
         </Button>
       </motion.div>

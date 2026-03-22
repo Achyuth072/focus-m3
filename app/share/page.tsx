@@ -1,9 +1,8 @@
-'use client';
+"use client";
 
-
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import TaskSheet from '@/components/tasks/TaskSheet';
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import TaskSheet from "@/components/tasks/TaskSheet";
 
 function SharePageContent() {
   const router = useRouter();
@@ -13,18 +12,18 @@ function SharePageContent() {
 
   // Derive shared content from URL params - no setState needed
   const sharedContent = useMemo(() => {
-    const title = searchParams.get('title') || '';
-    const text = searchParams.get('text') || '';
-    const url = searchParams.get('url') || '';
+    const title = searchParams.get("title") || "";
+    const text = searchParams.get("text") || "";
+    const url = searchParams.get("url") || "";
 
     // Combine shared data into task content
-    let content = '';
+    let content = "";
     if (title) {
       content = title;
     } else if (text) {
       content = text;
     }
-    
+
     // Append URL if present
     if (url) {
       content = content ? `${content}\n${url}` : url;
@@ -41,14 +40,14 @@ function SharePageContent() {
     } else if (!hasRedirected.current) {
       // No content shared, redirect to home
       hasRedirected.current = true;
-      router.push('/');
+      router.push("/");
     }
   }, [sharedContent, router]);
 
   const handleClose = () => {
     setIsOpen(false);
     // Small delay to allow close animation
-    setTimeout(() => router.push('/'), 150);
+    setTimeout(() => router.push("/"), 150);
   };
 
   return (

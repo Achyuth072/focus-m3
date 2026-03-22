@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { HabitSheet } from "@/components/habits/HabitSheet";
 import {
@@ -59,7 +65,7 @@ describe("HabitSheet", () => {
   // Given: An initial habit is provided
   // When: Rendering HabitSheet
   // Then: "Edit Habit" should be displayed and form populated
-  it('renders "Edit Habit" header in edit mode', () => {
+  it('renders "Edit Habit" header in edit mode', async () => {
     const mockHabit = {
       id: "1",
       name: "Exercise",
@@ -67,9 +73,13 @@ describe("HabitSheet", () => {
       color: "#4B6CB7",
       icon: "Flame",
     } as unknown as Habit;
-    render(
-      <HabitSheet open={true} onClose={() => {}} initialHabit={mockHabit} />,
-    );
+
+    await act(async () => {
+      render(
+        <HabitSheet open={true} onClose={() => {}} initialHabit={mockHabit} />,
+      );
+    });
+
     expect(screen.getByText("Edit Habit")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Habit name")).toHaveValue("Exercise");
   });
@@ -81,14 +91,18 @@ describe("HabitSheet", () => {
     render(<HabitSheet open={true} onClose={() => {}} />);
 
     const nameInput = screen.getByPlaceholderText("Habit name");
-    fireEvent.change(nameInput, { target: { value: "New Habit Name" } });
+    await act(async () => {
+      fireEvent.change(nameInput, { target: { value: "New Habit Name" } });
+    });
 
     const submitButton = screen.getByLabelText(/start habit/i);
     await waitFor(() => {
       expect(submitButton).not.toBeDisabled();
     });
 
-    fireEvent.click(submitButton);
+    await act(async () => {
+      fireEvent.click(submitButton);
+    });
 
     await waitFor(() => {
       expect(mockCreateMutate).toHaveBeenCalledWith(
@@ -114,7 +128,9 @@ describe("HabitSheet", () => {
     );
 
     const deleteBtn = screen.getByTitle(/delete habit/i);
-    fireEvent.click(deleteBtn);
+    await act(async () => {
+      fireEvent.click(deleteBtn);
+    });
 
     // Check for confirmation dialog content
     expect(
@@ -122,7 +138,9 @@ describe("HabitSheet", () => {
     ).toBeInTheDocument();
 
     const confirmBtn = screen.getByRole("button", { name: /delete/i });
-    fireEvent.click(confirmBtn);
+    await act(async () => {
+      fireEvent.click(confirmBtn);
+    });
 
     expect(mockDeleteMutate).toHaveBeenCalledWith("1");
   });

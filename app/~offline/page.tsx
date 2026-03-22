@@ -17,8 +17,8 @@ export default function OfflinePage() {
 
       <h1 className="text-2xl font-bold mb-2">You&apos;re Offline</h1>
       <p className="text-muted-foreground mb-8 max-w-sm">
-        It looks like you&apos;ve lost your internet connection. Kanso is designed to
-        work offline, but this page hasn&apos;t been cached yet.
+        It looks like you&apos;ve lost your internet connection. Kanso is
+        designed to work offline, but this page hasn&apos;t been cached yet.
       </p>
 
       <div className="flex flex-col sm:flex-row gap-4">

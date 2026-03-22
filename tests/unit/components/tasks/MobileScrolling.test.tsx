@@ -85,6 +85,14 @@ vi.mock("@/components/tasks/SortableTaskItem", () => ({
   default: () => <div data-testid="sortable-task-item" />,
 }));
 
+// Mock useProjects hook
+vi.mock("@/lib/hooks/useProjects", () => ({
+  useProjects: () => ({
+    data: [],
+    isLoading: false,
+  }),
+}));
+
 describe("Mobile Scrolling Padding", () => {
   const mockProcessedTasks = {
     active: [{ id: "1", content: "Test Task" } as Task],
@@ -120,10 +128,8 @@ describe("Mobile Scrolling Padding", () => {
     const { container } = render(
       <TaskListView
         processedTasks={mockProcessedTasks}
-        localTasks={mockProcessedTasks.active}
-        sensors={[]}
-        handleDragStart={vi.fn()}
-        handleDragEnd={vi.fn()}
+        activeTasks={mockProcessedTasks.active}
+        eveningTasks={mockProcessedTasks.evening}
         handleTaskClick={vi.fn()}
         keyboardSelectedId={null}
       />,

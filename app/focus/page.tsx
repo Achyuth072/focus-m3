@@ -42,7 +42,7 @@ export default function FocusPage() {
   const todaySessionsCount = useMemo(() => {
     const today = new Date().toDateString();
     return sessions.filter(
-      (s) => new Date(s.completedAt).toDateString() === today
+      (s) => new Date(s.completedAt).toDateString() === today,
     ).length;
   }, [sessions]);
 
@@ -65,8 +65,8 @@ export default function FocusPage() {
     state.mode === "focus"
       ? settings.focusDuration * 60
       : state.mode === "shortBreak"
-      ? settings.shortBreakDuration * 60
-      : settings.longBreakDuration * 60;
+        ? settings.shortBreakDuration * 60
+        : settings.longBreakDuration * 60;
 
   const progress =
     ((totalSeconds - state.remainingSeconds) / totalSeconds) * 100;
@@ -101,7 +101,7 @@ export default function FocusPage() {
         whileTap={isPhone ? { scale: 0.95 } : {}}
         className={cn(
           buttonVariants({ variant: "ghost", size: "icon" }),
-          "absolute top-4 left-4 h-14 w-14 rounded-full hover:bg-secondary/50 active:scale-95 active:bg-secondary/30 transition-seijaku cursor-pointer"
+          "absolute top-4 left-4 h-14 w-14 rounded-full hover:bg-secondary/50 active:scale-95 active:bg-secondary/30 transition-seijaku cursor-pointer",
         )}
       >
         <X className="h-6 w-6" />
@@ -115,7 +115,7 @@ export default function FocusPage() {
           whileTap={isPhone ? { scale: 0.95 } : {}}
           className={cn(
             buttonVariants({ variant: "ghost", size: "icon" }),
-            "absolute top-4 right-4 h-14 w-14 rounded-full hover:bg-secondary/50 active:scale-95 active:bg-secondary/30 transition-seijaku cursor-pointer"
+            "absolute top-4 right-4 h-14 w-14 rounded-full hover:bg-secondary/50 active:scale-95 active:bg-secondary/30 transition-seijaku cursor-pointer",
           )}
           title={
             isPiPActive ? "Close Picture-in-Picture" : "Open Picture-in-Picture"
@@ -165,8 +165,8 @@ export default function FocusPage() {
                       settings.sessionsBeforeLongBreak
                     }`
                   : state.mode === "longBreak"
-                  ? "Cycle Complete"
-                  : `Break after Session ${state.completedSessions}`}
+                    ? "Cycle Complete"
+                    : `Break after Session ${state.completedSessions}`}
               </p>
 
               <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/30 border border-secondary/50">
@@ -183,7 +183,7 @@ export default function FocusPage() {
               <motion.button
                 className={cn(
                   buttonVariants({ variant: "ghost", size: "icon" }),
-                  "h-14 w-14 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-seijaku cursor-pointer"
+                  "h-14 w-14 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-seijaku cursor-pointer",
                 )}
                 onTapStart={() => trigger(50)}
                 whileTap={isPhone ? { scale: 0.95 } : {}}
@@ -199,7 +199,7 @@ export default function FocusPage() {
               <motion.button
                 className={cn(
                   buttonVariants({ variant: "default", size: "icon" }),
-                  "h-20 w-20 rounded-full transition-seijaku hover:scale-105 active:scale-95 active:opacity-90 cursor-pointer"
+                  "h-20 w-20 rounded-full transition-seijaku hover:scale-105 active:scale-95 active:opacity-90 cursor-pointer",
                 )}
                 onTapStart={() => trigger(50)}
                 whileTap={isPhone ? { scale: 0.95 } : {}}
@@ -216,7 +216,7 @@ export default function FocusPage() {
               <motion.button
                 className={cn(
                   buttonVariants({ variant: "ghost", size: "icon" }),
-                  "h-14 w-14 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-seijaku cursor-pointer"
+                  "h-14 w-14 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-seijaku cursor-pointer",
                 )}
                 onTapStart={() => trigger(50)}
                 whileTap={isPhone ? { scale: 0.95 } : {}}

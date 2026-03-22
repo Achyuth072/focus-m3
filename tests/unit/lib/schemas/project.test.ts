@@ -21,7 +21,7 @@ describe("CreateProjectSchema", () => {
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.flatten().fieldErrors.name).toContain(
-        "Project name is required"
+        "Project name is required",
       );
     }
   });
@@ -44,7 +44,7 @@ describe("CreateProjectSchema", () => {
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.flatten().fieldErrors.color).toContain(
-        "Invalid hex color"
+        "Invalid hex color",
       );
     }
   });

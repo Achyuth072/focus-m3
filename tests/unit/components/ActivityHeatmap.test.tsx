@@ -39,6 +39,7 @@ describe("ActivityHeatmap", () => {
       isLoading: true,
       maxValue: { combined: 0, focus: 0, tasks: 0 },
       activeDays: 0,
+      totalDays: 0,
     });
     render(<ActivityHeatmap />);
     const skeletons = document.querySelectorAll(".animate-pulse");
@@ -51,6 +52,7 @@ describe("ActivityHeatmap", () => {
       isLoading: false,
       maxValue: { combined: 10, focus: 8, tasks: 4 },
       activeDays: 1,
+      totalDays: 365,
     });
     render(<ActivityHeatmap />);
     expect(mockPaint).toHaveBeenCalled();
@@ -64,6 +66,7 @@ describe("ActivityHeatmap", () => {
       isLoading: false,
       maxValue: { combined: 1, focus: 1, tasks: 1 },
       activeDays: 0,
+      totalDays: 365,
     });
     const { unmount } = render(<ActivityHeatmap />);
     unmount();

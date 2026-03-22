@@ -139,11 +139,11 @@ export function CompletedTasksSheet({
   const completedTasks = tasks.filter((task) => task.is_completed);
 
   const filteredCompletedTasks = completedTasks.filter((task) =>
-    task.content.toLowerCase().includes(searchQuery.toLowerCase())
+    task.content.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const { today, yesterday, thisWeek, older } = groupTasksByDate(
-    filteredCompletedTasks
+    filteredCompletedTasks,
   );
 
   const isSearching = searchQuery.length > 0;

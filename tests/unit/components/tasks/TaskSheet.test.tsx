@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import TaskSheet from "@/components/tasks/TaskSheet";
 import type { Task } from "@/lib/types/task";
@@ -22,9 +28,7 @@ const queryClient = new QueryClient({
 
 const renderWithQuery = (ui: React.ReactElement) => {
   return render(
-    <QueryClientProvider client={queryClient}>
-      {ui}
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>,
   );
 };
 
@@ -86,27 +90,37 @@ describe("TaskSheet", () => {
     });
   });
 
-  it('renders "New Task" header in creation mode', () => {
-    renderWithQuery(<TaskSheet open={true} onClose={() => {}} />);
+  it('renders "New Task" header in creation mode', async () => {
+    await act(async () => {
+      renderWithQuery(<TaskSheet open={true} onClose={() => {}} />);
+    });
     expect(screen.getByText("New Task")).toBeInTheDocument();
   });
 
-  it('renders "Edit Task" header in edit mode', () => {
+  it('renders "Edit Task" header in edit mode', async () => {
     const mockTask = {
       id: "1",
       content: "Existing Task",
       priority: 4,
       is_completed: false,
     } as unknown as Task;
-    renderWithQuery(<TaskSheet open={true} onClose={() => {}} initialTask={mockTask} />);
+    await act(async () => {
+      renderWithQuery(
+        <TaskSheet open={true} onClose={() => {}} initialTask={mockTask} />,
+      );
+    });
     expect(screen.getByText("Edit Task")).toBeInTheDocument();
   });
 
   it("validates: shows error for content > 500 chars", async () => {
-    renderWithQuery(<TaskSheet open={true} onClose={() => {}} />);
+    await act(async () => {
+      renderWithQuery(<TaskSheet open={true} onClose={() => {}} />);
+    });
     const input = screen.getByPlaceholderText("What needs to be done?");
 
-    fireEvent.change(input, { target: { value: "a".repeat(501) } });
+    await act(async () => {
+      fireEvent.change(input, { target: { value: "a".repeat(501) } });
+    });
 
     // Wait for the async validation and UI update
     const error = await screen.findByText(/500/i);
@@ -121,14 +135,20 @@ describe("TaskSheet", () => {
       is_completed: false,
     } as unknown as Task;
 
-    renderWithQuery(<TaskSheet open={true} onClose={() => {}} initialTask={mockTask} />);
+    await act(async () => {
+      renderWithQuery(
+        <TaskSheet open={true} onClose={() => {}} initialTask={mockTask} />,
+      );
+    });
 
     // Verify we're in edit mode
     expect(screen.getByText("Edit Task")).toBeInTheDocument();
 
     // Change content
     const input = screen.getByPlaceholderText("What needs to be done?");
-    fireEvent.change(input, { target: { value: "Updated Task Content" } });
+    await act(async () => {
+      fireEvent.change(input, { target: { value: "Updated Task Content" } });
+    });
 
     // Find the save button and wait for it to become enabled (validation is async)
     const saveButton = screen.getByRole("button", { name: /save/i });
@@ -137,14 +157,16 @@ describe("TaskSheet", () => {
     });
 
     // Submit form (Save)
-    fireEvent.click(saveButton);
+    await act(async () => {
+      fireEvent.click(saveButton);
+    });
 
     await waitFor(() => {
       expect(mockUpdateMutate).toHaveBeenCalledWith(
         expect.objectContaining({
           id: "1",
           content: "Updated Task Content",
-        })
+        }),
       );
       // Verify signature haptic for task update
       expect(mockHapticTrigger).toHaveBeenCalledWith([10, 50]);

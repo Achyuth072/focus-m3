@@ -83,7 +83,7 @@ export function DrumPicker({
         if (now - lastHapticTime.current > 15) {
           const intensity = Math.min(
             10,
-            Math.max(1, Math.floor(Math.abs(velocity) / 100))
+            Math.max(1, Math.floor(Math.abs(velocity) / 100)),
           );
           trigger(intensity);
           lastHapticTime.current = now;
@@ -133,7 +133,7 @@ export function DrumPicker({
       ref={containerRef}
       className={cn(
         "relative flex flex-col overflow-hidden rounded-xl cursor-grab active:cursor-grabbing touch-none select-none",
-        className
+        className,
       )}
       style={{ height, perspective: 1000 }}
       onPointerDown={(e) => {

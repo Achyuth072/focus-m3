@@ -12,7 +12,7 @@ test.describe("Focus Settings (Guest Mode)", () => {
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   });
 
-  test.skip("should persist focus duration changes", async ({ page }) => {
+  test("should persist focus duration changes", async ({ page }) => {
     const settingsBtn = page.getByRole("button", { name: "Settings" });
 
     if (await settingsBtn.isVisible()) {
@@ -24,7 +24,7 @@ test.describe("Focus Settings (Guest Mode)", () => {
     }
 
     await expect(
-      page.getByRole("heading", { name: /settings/i }).first()
+      page.getByRole("heading", { name: /settings/i }).first(),
     ).toBeVisible();
 
     const slider = page.getByRole("slider", { name: "Focus Duration" });

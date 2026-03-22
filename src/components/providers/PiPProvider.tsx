@@ -24,7 +24,7 @@ export function PiPProvider({ children }: { children: ReactNode }) {
       {pip.pipWindow &&
         createPortal(
           <PiPTimer onClose={pip.closePiP} />,
-          pip.pipWindow.document.body
+          pip.pipWindow.document.body,
         )}
     </PiPContext.Provider>
   );

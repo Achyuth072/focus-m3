@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     if (subError || !subData) {
       return NextResponse.json(
         { error: "User not subscribed or subscription not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -56,13 +56,13 @@ export async function POST(request: Request) {
 
         return NextResponse.json(
           { error: "Subscription expired and has been removed" },
-          { status: 410 }
+          { status: 410 },
         );
       }
 
       return NextResponse.json(
         { error: "Failed to send push notification" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 

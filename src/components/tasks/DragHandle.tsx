@@ -12,6 +12,7 @@ interface DragHandleProps {
   variant?: "desktop" | "mobile";
   onPointerDown?: () => void;
   onPointerUp?: () => void;
+  className?: string;
 }
 
 export const DragHandle = React.forwardRef<HTMLDivElement, DragHandleProps>(
@@ -22,6 +23,7 @@ export const DragHandle = React.forwardRef<HTMLDivElement, DragHandleProps>(
       variant = "desktop",
       onPointerDown,
       onPointerUp,
+      className,
     },
     ref,
   ) => {
@@ -49,6 +51,7 @@ export const DragHandle = React.forwardRef<HTMLDivElement, DragHandleProps>(
           !isDesktop &&
             "after:absolute after:-inset-3 after:content-[''] after:z-10",
           isDesktop ? "opacity-0 group-hover:opacity-100" : "shrink-0",
+          className,
         )}
         style={isDesktop ? undefined : { touchAction: "none" }}
       >

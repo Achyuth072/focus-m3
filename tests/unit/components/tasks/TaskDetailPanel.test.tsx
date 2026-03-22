@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { TaskDetailPanel } from "@/components/tasks/TaskDetailPanel";
 import type { Task } from "@/lib/types/task";
@@ -81,19 +87,23 @@ describe("TaskDetailPanel", () => {
     });
   });
 
-  it("TD-N-01: Renders task content correctly", () => {
+  it("TD-N-01: Renders task content correctly", async () => {
     // Given: A task is provided
     // When: Rendering the panel
-    render(<TaskDetailPanel task={mockTask} />);
+    await act(async () => {
+      render(<TaskDetailPanel task={mockTask} />);
+    });
 
     // Then: Content and description should be visible
     expect(screen.getByDisplayValue("Test Task")).toBeInTheDocument();
   });
 
-  it("TD-N-02: Handles null task gracefully", () => {
+  it("TD-N-02: Handles null task gracefully", async () => {
     // Given: No task is provided
     // When: Rendering the panel
-    render(<TaskDetailPanel task={null} />);
+    await act(async () => {
+      render(<TaskDetailPanel task={null} />);
+    });
 
     // Then: Empty state placeholder should be visible
     expect(
@@ -103,11 +113,15 @@ describe("TaskDetailPanel", () => {
 
   it("TD-N-03: Calls update mutation when saving", async () => {
     // Given: A task is provided
-    render(<TaskDetailPanel task={mockTask} />);
+    await act(async () => {
+      render(<TaskDetailPanel task={mockTask} />);
+    });
     const input = screen.getByDisplayValue("Test Task");
 
     // When: Changing content and submitting
-    fireEvent.change(input, { target: { value: "Updated Task" } });
+    await act(async () => {
+      fireEvent.change(input, { target: { value: "Updated Task" } });
+    });
 
     // Wait for validation to complete and save button to enable
     const saveButton = screen.getByRole("button", { name: /save/i });
@@ -115,7 +129,9 @@ describe("TaskDetailPanel", () => {
       expect(saveButton).not.toBeDisabled();
     });
 
-    fireEvent.click(saveButton);
+    await act(async () => {
+      fireEvent.click(saveButton);
+    });
 
     // Then: update mutation should be called
     await waitFor(() => {
@@ -130,27 +146,37 @@ describe("TaskDetailPanel", () => {
 
   it("TD-N-04: Calls delete mutation on confirmation", async () => {
     // Given: A task is provided
-    render(<TaskDetailPanel task={mockTask} />);
+    await act(async () => {
+      render(<TaskDetailPanel task={mockTask} />);
+    });
 
     // When: Clicking delete and confirming in dialog
     const deleteBtn = screen.getByRole("button", { name: /delete task/i });
-    fireEvent.click(deleteBtn);
+    await act(async () => {
+      fireEvent.click(deleteBtn);
+    });
 
     const confirmBtn = screen.getByText("Confirm Delete");
-    fireEvent.click(confirmBtn);
+    await act(async () => {
+      fireEvent.click(confirmBtn);
+    });
 
     // Then: delete mutation should be called
     expect(mockDeleteMutate).toHaveBeenCalledWith("task-1");
   });
 
-  it("TD-N-05: Calls onClose when close button clicked", () => {
+  it("TD-N-05: Calls onClose when close button clicked", async () => {
     // Given: A task and onClose callback are provided
     const onClose = vi.fn();
-    render(<TaskDetailPanel task={mockTask} onClose={onClose} />);
+    await act(async () => {
+      render(<TaskDetailPanel task={mockTask} onClose={onClose} />);
+    });
 
     // When: Clicking the close button
     const closeBtn = screen.getByLabelText(/close task details/i);
-    fireEvent.click(closeBtn);
+    await act(async () => {
+      fireEvent.click(closeBtn);
+    });
 
     // Then: onClose should be triggered
     expect(onClose).toHaveBeenCalled();
@@ -159,12 +185,18 @@ describe("TaskDetailPanel", () => {
 
   it("TD-N-06: Resets form when task changes", async () => {
     // Given: Initially rendering with one task
-    const { rerender } = render(<TaskDetailPanel task={mockTask} />);
+    let rerender: (ui: React.ReactElement) => void;
+    await act(async () => {
+      const result = render(<TaskDetailPanel task={mockTask} />);
+      rerender = result.rerender;
+    });
     expect(screen.getByDisplayValue("Test Task")).toBeInTheDocument();
 
     // When: Providing a different task
     const newTask = { ...mockTask, id: "task-2", content: "New Task" };
-    rerender(<TaskDetailPanel task={newTask} />);
+    await act(async () => {
+      rerender(<TaskDetailPanel task={newTask} />);
+    });
 
     // Then: Form should reflect the new task content
     await waitFor(() => {
@@ -174,11 +206,15 @@ describe("TaskDetailPanel", () => {
 
   it("TD-E-01: Shows validation error for empty content", async () => {
     // Given: Rendering task detail
-    render(<TaskDetailPanel task={mockTask} />);
+    await act(async () => {
+      render(<TaskDetailPanel task={mockTask} />);
+    });
     const input = screen.getByDisplayValue("Test Task");
 
     // When: Clearing content
-    fireEvent.change(input, { target: { value: "" } });
+    await act(async () => {
+      fireEvent.change(input, { target: { value: "" } });
+    });
 
     // Then: Error message should appear (validation is async)
     const error = await screen.findByText(/required/i);
@@ -190,11 +226,15 @@ describe("TaskDetailPanel", () => {
 
   it("TD-S-01: Handles Cmd+Enter to submit", async () => {
     // Given: Rendering task detail
-    render(<TaskDetailPanel task={mockTask} />);
+    await act(async () => {
+      render(<TaskDetailPanel task={mockTask} />);
+    });
     const input = screen.getByDisplayValue("Test Task");
 
     // When: Pressing Cmd+Enter on input
-    fireEvent.keyDown(input, { key: "Enter", metaKey: true });
+    await act(async () => {
+      fireEvent.keyDown(input, { key: "Enter", metaKey: true });
+    });
 
     // Then: update mutation should be called
     await waitFor(() => {
@@ -202,14 +242,18 @@ describe("TaskDetailPanel", () => {
     });
   });
 
-  it("TD-S-02: Handles Escape to close", () => {
+  it("TD-S-02: Handles Escape to close", async () => {
     // Given: onClose is provided
     const onClose = vi.fn();
-    render(<TaskDetailPanel task={mockTask} onClose={onClose} />);
+    await act(async () => {
+      render(<TaskDetailPanel task={mockTask} onClose={onClose} />);
+    });
     const panel = screen.getByDisplayValue("Test Task");
 
     // When: Pressing Escape
-    fireEvent.keyDown(panel, { key: "Escape" });
+    await act(async () => {
+      fireEvent.keyDown(panel, { key: "Escape" });
+    });
 
     // Then: onClose should be called
     expect(onClose).toHaveBeenCalled();

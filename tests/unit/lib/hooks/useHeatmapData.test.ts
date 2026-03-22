@@ -1,9 +1,11 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { useHeatmapData } from "@/lib/hooks/useHeatmapData";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 import { useAuth } from "@/components/AuthProvider";
 import { mockStore } from "@/lib/mock/mock-store";
+import type { FocusLog } from "@/lib/types/focus";
+import type { Task } from "@/lib/types/task";
 
 // Mock dependencies
 vi.mock("@tanstack/react-query", () => ({
@@ -59,18 +61,29 @@ describe("useHeatmapData", () => {
       { completed_at: new Date().toISOString(), is_completed: true },
     ];
 
-    vi.mocked(useQuery).mockImplementation(({ queryKey }: { queryKey: string[] }) => {
-      if (queryKey[0] === "heatmap-data") {
-        return {
-          data: {
+    vi.mocked(useQuery).mockImplementation(
+      ({ queryKey }: { queryKey: readonly unknown[] }) => {
+        const result = {
+          isLoading: false,
+          isError: false,
+          error: null,
+          isPending: false,
+          isFetching: false,
+          isSuccess: true,
+          status: "success",
+          data: null as unknown,
+          refetch: vi.fn(),
+        };
+
+        if (queryKey[0] === "heatmap-data") {
+          result.data = {
             focusLogs: mockFocusLogs,
             tasks: mockTasks,
-          },
-          isLoading: false,
-        };
-      }
-      return { data: null, isLoading: false };
-    });
+          };
+        }
+        return result as unknown as UseQueryResult<unknown, unknown>;
+      },
+    );
 
     const { result } = renderHook(() => useHeatmapData());
 
@@ -90,7 +103,9 @@ describe("useHeatmapData", () => {
   });
 
   it("should handle guest mode by calling mockStore", async () => {
-    vi.mocked(useAuth).mockReturnValue({ isGuestMode: true } as unknown as ReturnType<typeof useAuth>);
+    vi.mocked(useAuth).mockReturnValue({
+      isGuestMode: true,
+    } as unknown as ReturnType<typeof useAuth>);
 
     const mockFocusLogs = [
       { start_time: new Date().toISOString(), duration_seconds: 7200 },
@@ -108,13 +123,19 @@ describe("useHeatmapData", () => {
       },
     ];
 
-    vi.mocked(mockStore.getFocusLogs).mockReturnValue(mockFocusLogs as unknown as unknown[]);
-    vi.mocked(mockStore.getTasks).mockReturnValue(mockTasks as unknown as unknown[]);
+    vi.mocked(mockStore.getFocusLogs).mockReturnValue(
+      mockFocusLogs as unknown as FocusLog[],
+    );
+    vi.mocked(mockStore.getTasks).mockReturnValue(
+      mockTasks as unknown as Task[],
+    );
 
-    vi.mocked(useQuery).mockImplementation(() => ({
+    vi.mocked(useQuery).mockReturnValue({
       data: { focusLogs: mockFocusLogs, tasks: mockTasks },
       isLoading: false,
-    } as unknown as ReturnType<typeof useQuery>));
+      isSuccess: true,
+      status: "success",
+    } as unknown as UseQueryResult<unknown, unknown>);
 
     const { result } = renderHook(() => useHeatmapData());
 
@@ -128,7 +149,12 @@ describe("useHeatmapData", () => {
   });
 
   it("should return empty heatmap if data is unavailable", async () => {
-    vi.mocked(useQuery).mockReturnValue({ data: null, isLoading: false } as unknown as ReturnType<typeof useQuery>);
+    vi.mocked(useQuery).mockReturnValue({
+      data: null,
+      isLoading: false,
+      isSuccess: true,
+      status: "success",
+    } as unknown as UseQueryResult<unknown, unknown>);
 
     const { result } = renderHook(() => useHeatmapData());
 

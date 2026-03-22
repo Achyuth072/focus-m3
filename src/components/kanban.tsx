@@ -698,6 +698,9 @@ export function KanbanBoardColumnButton({
 Card
 */
 
+import { createRoot } from "react-dom/client";
+import { flushSync } from "react-dom";
+
 export type KanbanBoardCardProps<T extends { id: string } = { id: string }> =
   ComponentProps<"div"> & {
     /**
@@ -713,6 +716,10 @@ export type KanbanBoardCardProps<T extends { id: string } = { id: string }> =
      * Whether the component should render as its child.
      */
     asChild?: boolean;
+    /**
+     * An optional React element to use as the drag ghost image.
+     */
+    ghostElement?: React.ReactNode;
   };
 
 const kanbanBoardCardClassNames =
@@ -723,6 +730,7 @@ export function KanbanBoardCard({
   data,
   isActive = false,
   asChild = false,
+  ghostElement,
   ref,
   ...props
 }: KanbanBoardCardProps) {
@@ -747,6 +755,32 @@ export function KanbanBoardCard({
       draggable
       onDragStart={(event) => {
         setIsDragging(true);
+
+        if (ghostElement) {
+          // Create an off-screen container for the ghost snapshot
+          const ghostContainer = document.createElement("div");
+          ghostContainer.style.cssText =
+            "position: absolute; top: -9999px; left: -9999px; pointer-events: none;";
+          document.body.appendChild(ghostContainer);
+
+          const root = createRoot(ghostContainer);
+
+          // Use flushSync to guarantee the DOM is painted immediately
+          // before the browser takes the drag snapshot.
+          flushSync(() => {
+            root.render(ghostElement);
+          });
+
+          // Set the custom drag image (centered approx top)
+          event.dataTransfer.setDragImage(ghostContainer, 140, 30);
+
+          // Cleanup after the snapshot is taken (next tick is safe)
+          requestAnimationFrame(() => {
+            root.unmount();
+            ghostContainer.remove();
+          });
+        }
+
         event.dataTransfer.effectAllowed = "move";
         event.dataTransfer.setData(
           DATA_TRANSFER_TYPES.CARD,

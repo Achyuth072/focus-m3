@@ -28,7 +28,7 @@ const YearDayButton = ({
         "hover:bg-accent/40 hover:text-foreground text-muted-foreground/80",
         isToday &&
           "bg-brand text-white font-bold !opacity-100 shadow-sm scale-110 hover:!bg-brand/90 hover:!text-white",
-        className
+        className,
       )}
     >
       {day.date.getDate()}
@@ -73,7 +73,7 @@ const YearMonth = memo(
         />
       </div>
     );
-  }
+  },
 );
 
 YearMonth.displayName = "YearMonth";
@@ -82,7 +82,7 @@ const YearView = memo(
   ({ currentYear, onDateClick, className }: YearViewProps) => {
     const start = useMemo(
       () => startOfYear(new Date(currentYear, 0, 1)),
-      [currentYear]
+      [currentYear],
     );
 
     return (
@@ -98,7 +98,7 @@ const YearView = memo(
         </div>
       </div>
     );
-  }
+  },
 );
 
 YearView.displayName = "YearView";

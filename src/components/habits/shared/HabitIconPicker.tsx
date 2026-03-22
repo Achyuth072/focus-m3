@@ -38,7 +38,7 @@ import {
 } from "lucide-react";
 import { useHorizontalScroll } from "@/lib/hooks/useHorizontalScroll";
 
-export const HABIT_ICONS = [
+const HABIT_ICONS = [
   { name: "Flame", icon: Flame },
   { name: "Heart", icon: Heart },
   { name: "Dumbbell", icon: Dumbbell },

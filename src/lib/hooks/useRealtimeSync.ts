@@ -25,7 +25,7 @@ export function useRealtimeSync() {
         () => {
           // Invalidate tasks query to trigger refetch
           queryClient.invalidateQueries({ queryKey: ["tasks"] });
-        }
+        },
       )
       .subscribe();
 

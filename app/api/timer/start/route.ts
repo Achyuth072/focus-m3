@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     if (!duration || typeof duration !== "number" || duration <= 0) {
       return NextResponse.json(
         { error: "Valid positive duration is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -56,8 +56,8 @@ export async function POST(request: Request) {
     const body = taskContent
       ? `Finished your "${taskContent}" session. Great work!`
       : mode === "focus"
-      ? "Your focus session is complete. Take a break!"
-      : "Your break is over. Time to focus!";
+        ? "Your focus session is complete. Take a break!"
+        : "Your break is over. Time to focus!";
 
     // 3. Calculate scheduled time
     const scheduledAt = new Date(Date.now() + duration * 1000).toISOString();
@@ -83,7 +83,7 @@ export async function POST(request: Request) {
       console.error("Error scheduling notification:", error);
       return NextResponse.json(
         { error: "Failed to schedule notification" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -96,7 +96,7 @@ export async function POST(request: Request) {
     console.error("Internal Server Error:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -117,7 +117,7 @@ export async function DELETE(request: Request) {
     if (!notificationId) {
       return NextResponse.json(
         { error: "Notification ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -132,7 +132,7 @@ export async function DELETE(request: Request) {
       console.error("Error cancelling notification:", error);
       return NextResponse.json(
         { error: "Failed to cancel notification" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -141,7 +141,7 @@ export async function DELETE(request: Request) {
     console.error("Internal Server Error:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

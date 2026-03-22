@@ -10,7 +10,9 @@ vi.mock("framer-motion", () => ({
       return <div {...props}>{children}</div>;
     },
   },
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
 }));
 
 describe("OfflineIndicator", () => {

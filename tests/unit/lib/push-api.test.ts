@@ -21,7 +21,7 @@ describe("sendPushNotification", () => {
       sendPushNotification({
         title: "Test",
         body: "Body",
-      })
+      }),
     ).rejects.toThrow("User not subscribed or subscription not found");
   });
 

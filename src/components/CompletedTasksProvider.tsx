@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { CompletedTasksSheet } from '@/components/tasks/CompletedTasksSheet';
+import React, { createContext, useContext, useState, ReactNode } from "react";
+import { CompletedTasksSheet } from "@/components/tasks/CompletedTasksSheet";
 
 interface CompletedTasksContextValue {
   showCompleted: boolean;
@@ -11,7 +11,9 @@ interface CompletedTasksContextValue {
   closeSheet: () => void;
 }
 
-const CompletedTasksContext = createContext<CompletedTasksContextValue | null>(null);
+const CompletedTasksContext = createContext<CompletedTasksContextValue | null>(
+  null,
+);
 
 export function CompletedTasksProvider({ children }: { children: ReactNode }) {
   const [showCompleted, setShowCompleted] = useState(false);
@@ -25,13 +27,13 @@ export function CompletedTasksProvider({ children }: { children: ReactNode }) {
   const closeSheet = () => setIsSheetOpen(false);
 
   return (
-    <CompletedTasksContext.Provider 
-      value={{ 
-        showCompleted, 
-        toggleShowCompleted, 
-        isSheetOpen, 
-        openSheet, 
-        closeSheet 
+    <CompletedTasksContext.Provider
+      value={{
+        showCompleted,
+        toggleShowCompleted,
+        isSheetOpen,
+        openSheet,
+        closeSheet,
       }}
     >
       {children}
@@ -43,7 +45,9 @@ export function CompletedTasksProvider({ children }: { children: ReactNode }) {
 export function useCompletedTasks() {
   const context = useContext(CompletedTasksContext);
   if (!context) {
-    throw new Error('useCompletedTasks must be used within a CompletedTasksProvider');
+    throw new Error(
+      "useCompletedTasks must be used within a CompletedTasksProvider",
+    );
   }
   return context;
 }

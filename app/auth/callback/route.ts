@@ -10,7 +10,7 @@ export async function GET(request: Request) {
 
   if (errorDescription) {
     return NextResponse.redirect(
-      `${origin}/login?error=${encodeURIComponent(errorDescription)}`
+      `${origin}/login?error=${encodeURIComponent(errorDescription)}`,
     );
   }
 
@@ -39,26 +39,26 @@ export async function GET(request: Request) {
                 name: c.name,
                 value: c.value,
                 options: c.options as Record<string, unknown>,
-              }))
+              })),
             );
             // Also try to set on cookieStore (may silently fail)
             try {
               cookies.forEach(({ name, value, options }) =>
-                cookieStore.set(name, value, options)
+                cookieStore.set(name, value, options),
               );
             } catch {
               // Expected to fail in Route Handler context
             }
           },
         },
-      }
+      },
     );
 
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (error) {
       return NextResponse.redirect(
-        `${origin}/login?error=${encodeURIComponent(error.message)}`
+        `${origin}/login?error=${encodeURIComponent(error.message)}`,
       );
     }
 

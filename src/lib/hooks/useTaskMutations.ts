@@ -148,7 +148,29 @@ export function useUpdateTask() {
   return useMutation({
     mutationKey: ["updateTask"],
     mutationFn: taskMutations.update,
-    onError: (err) => {
+    onMutate: async (updates) => {
+      await queryClient.cancelQueries({ queryKey: ["tasks"] });
+
+      const allTaskQueries = queryClient.getQueriesData<Task[]>({
+        queryKey: ["tasks"],
+      });
+
+      for (const [queryKey] of allTaskQueries) {
+        queryClient.setQueryData<Task[]>(queryKey, (old) =>
+          old?.map((task) =>
+            task.id === updates.id ? { ...task, ...updates } : task,
+          ),
+        );
+      }
+
+      return { previousTaskQueries: allTaskQueries };
+    },
+    onError: (err, _vars, context) => {
+      if (context?.previousTaskQueries) {
+        context.previousTaskQueries.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
       handleMutationError(err);
     },
     onSettled: () => {
@@ -280,7 +302,6 @@ export function useDeleteTask() {
 
 export function useReorderTasks() {
   const queryClient = useQueryClient();
-  const { isGuestMode } = useAuth();
 
   return useMutation({
     mutationKey: ["reorderTasks"],
@@ -288,14 +309,12 @@ export function useReorderTasks() {
     onMutate: async (orderedIds) => {
       await queryClient.cancelQueries({ queryKey: ["tasks"] });
 
-      const previousTasks = queryClient.getQueryData<Task[]>([
-        "tasks",
-        { projectId: undefined, showCompleted: false, isGuestMode },
-      ]);
+      const allTaskQueries = queryClient.getQueriesData<Task[]>({
+        queryKey: ["tasks"],
+      });
 
-      queryClient.setQueryData<Task[]>(
-        ["tasks", { projectId: undefined, showCompleted: false, isGuestMode }],
-        (old) => {
+      for (const [queryKey] of allTaskQueries) {
+        queryClient.setQueryData<Task[]>(queryKey, (old) => {
           if (!old) return old;
           const taskMap = new Map(old.map((t) => [t.id, t]));
           return orderedIds
@@ -307,20 +326,16 @@ export function useReorderTasks() {
               return null;
             })
             .filter((t): t is Task => !!t);
-        },
-      );
+        });
+      }
 
-      return { previousTasks };
+      return { previousTaskQueries: allTaskQueries };
     },
     onError: (err, _vars, context) => {
-      if (context?.previousTasks) {
-        queryClient.setQueryData(
-          [
-            "tasks",
-            { projectId: undefined, showCompleted: false, isGuestMode },
-          ],
-          context.previousTasks,
-        );
+      if (context?.previousTaskQueries) {
+        context.previousTaskQueries.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
       }
       handleMutationError(err);
     },

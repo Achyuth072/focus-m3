@@ -26,7 +26,7 @@ describe("FocusSettingsSchema", () => {
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.flatten().fieldErrors.focusDuration).toContain(
-        "Focus duration must be at least 1 minute"
+        "Focus duration must be at least 1 minute",
       );
     }
   });

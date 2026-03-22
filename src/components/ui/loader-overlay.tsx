@@ -15,7 +15,7 @@ export function LoaderOverlay({
       className={cn(
         "fixed inset-0 bg-background/80 backdrop-blur-sm z-50",
         "flex flex-col items-center justify-center gap-4",
-        className
+        className,
       )}
     >
       <Loader2 className="h-8 w-8 animate-spin text-primary" />

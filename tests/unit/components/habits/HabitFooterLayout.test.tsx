@@ -14,15 +14,27 @@ vi.mock("@/lib/hooks/useHaptic", () => ({
 
 // Mock the components used in the views
 vi.mock("@/components/ui/responsive-dialog", () => ({
-  ResponsiveDialogHeader: ({ children, className }: { children: React.ReactNode; className?: string }) => (
-    <div className={className}>{children}</div>
-  ),
-  ResponsiveDialogTitle: ({ children, className }: { children: React.ReactNode; className?: string }) => (
-    <div className={className}>{children}</div>
-  ),
-  ResponsiveDialogDescription: ({ children, className }: { children: React.ReactNode; className?: string }) => (
-    <div className={className}>{children}</div>
-  ),
+  ResponsiveDialogHeader: ({
+    children,
+    className,
+  }: {
+    children: React.ReactNode;
+    className?: string;
+  }) => <div className={className}>{children}</div>,
+  ResponsiveDialogTitle: ({
+    children,
+    className,
+  }: {
+    children: React.ReactNode;
+    className?: string;
+  }) => <div className={className}>{children}</div>,
+  ResponsiveDialogDescription: ({
+    children,
+    className,
+  }: {
+    children: React.ReactNode;
+    className?: string;
+  }) => <div className={className}>{children}</div>,
 }));
 
 vi.mock("@/components/habits/shared/HabitColorPicker", () => ({
@@ -43,6 +55,10 @@ describe("Habit Views Footer Layout", () => {
     name: "Test Habit",
     color: "#ff0000",
     icon: "Flame",
+    user_id: "test-user-123",
+    description: "",
+    archived_at: null,
+    start_date: new Date().toISOString(),
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };

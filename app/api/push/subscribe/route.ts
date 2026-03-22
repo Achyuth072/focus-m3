@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     if (!subscription) {
       return NextResponse.json(
         { error: "Subscription is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -27,14 +27,14 @@ export async function POST(request: Request) {
         subscription,
         updated_at: new Date().toISOString(),
       },
-      { onConflict: "user_id" }
+      { onConflict: "user_id" },
     );
 
     if (error) {
       console.error("Error saving subscription:", error);
       return NextResponse.json(
         { error: "Failed to save subscription" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     console.error("Internal Server Error:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

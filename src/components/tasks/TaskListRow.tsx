@@ -1,14 +1,14 @@
 import React from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { 
-  ChevronRight, 
-  Calendar, 
-  CalendarClock, 
-  Moon, 
-  Flag, 
-  Play, 
-  Trash2 
+import {
+  ChevronRight,
+  Calendar,
+  CalendarClock,
+  Moon,
+  Flag,
+  Play,
+  Trash2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/lib/types/task";

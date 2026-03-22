@@ -52,7 +52,9 @@ describe("useMigrationStrategy", () => {
     };
 
     mockSupabase = createMockBuilder();
-    vi.mocked(createClient).mockReturnValue(mockSupabase as unknown as ReturnType<typeof createClient>);
+    vi.mocked(createClient).mockReturnValue(
+      mockSupabase as unknown as ReturnType<typeof createClient>,
+    );
   });
 
   const setupMockSequence = (results: { data: unknown; error?: unknown }[]) => {
@@ -217,5 +219,3 @@ describe("useMigrationStrategy", () => {
     );
   });
 });
-
-

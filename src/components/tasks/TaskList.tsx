@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 
 import {
   KeyboardSensor,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   DragEndEvent,
@@ -34,7 +35,7 @@ import { useTaskViewData } from "@/lib/hooks/useTaskViewData";
 import { TaskListView } from "./TaskListView";
 import { TaskMasonryGrid } from "./TaskMasonryGrid";
 import { IntegratedTaskKanbanBoard } from "./IntegratedTaskKanbanBoard";
-import TaskItem from "./TaskItem";
+import { TaskGhost } from "./TaskGhost";
 
 interface TaskListProps {
   sortBy?: SortOption;
@@ -54,8 +55,6 @@ export default function TaskList({
   const { data: tasks = [], isLoading } = useTasks({ projectId, filter });
   const { data: projectsData } = useProjects();
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [localTasks, setLocalTasks] = useState<Task[]>([]);
-  const [localEveningTasks, setLocalEveningTasks] = useState<Task[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [keyboardSelectedId, setKeyboardSelectedId] = useState<string | null>(
     null,
@@ -68,14 +67,18 @@ export default function TaskList({
   const { setSortBy, viewMode } = useUiStore();
   const { trigger } = useHaptic();
   const isDesktop = useMediaQuery("(min-width: 768px)");
-  // NOTE: uncertain intent — optimistic UI sync logic using ref to prevent sync loop after drag-and-drop.
-  const justDragged = useRef(false);
 
-  // Configure sensors - TouchSensor removed for instant activation on mobile (isolated to handle)
+  // Configure sensors - Split for desktop vs mobile feel
   const sensors = useSensors(
-    useSensor(PointerSensor, {
+    useSensor(MouseSensor, {
       activationConstraint: {
-        distance: 5, // 5px movement required - prevents accidental clicks but feels instant
+        distance: 5,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 150,
+        tolerance: 5,
       },
     }),
     useSensor(KeyboardSensor, {
@@ -90,17 +93,9 @@ export default function TaskList({
     projects: projectsData,
   });
 
-  // Sync local tasks with processed tasks (skip if just dragged for optimistic UI)
-  useEffect(() => {
-    if (justDragged.current) {
-      justDragged.current = false;
-      return; // Skip sync - keep optimistic order
-    }
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setLocalTasks(processedTasks?.active || []);
-
-    setLocalEveningTasks(processedTasks?.evening || []);
-  }, [processedTasks]);
+  // Single source of truth: TanStack Query cache (updated via onMutate)
+  const displayTasks = processedTasks.active;
+  const displayEveningTasks = processedTasks.evening;
 
   const handleTaskClick = useCallback(
     (task: Task) => {
@@ -126,8 +121,8 @@ export default function TaskList({
     if (active.id === over.id) return;
 
     const findTask = (id: string) =>
-      localTasks.find((t) => t.id === id) ||
-      localEveningTasks.find((t) => t.id === id);
+      processedTasks.active.find((t) => t.id === id) ||
+      processedTasks.evening.find((t) => t.id === id);
 
     const activeTask = findTask(active.id as string);
     const overTask = findTask(over.id as string);
@@ -144,47 +139,26 @@ export default function TaskList({
     // Handle cross-section movement
     if (activeTask.is_evening !== shouldBeInEvening) {
       trigger(50);
-      justDragged.current = true;
-
-      // Optimistic state update
-      if (shouldBeInEvening) {
-        // Move to evening
-        setLocalTasks((prev) => prev.filter((t) => t.id !== activeTask.id));
-        setLocalEveningTasks((prev) => [
-          ...prev,
-          { ...activeTask, is_evening: true },
-        ]);
-        updateMutation.mutate({ id: activeTask.id, is_evening: true });
-      } else {
-        // Move to active
-        setLocalEveningTasks((prev) =>
-          prev.filter((t) => t.id !== activeTask.id),
-        );
-        setLocalTasks((prev) => [
-          ...prev,
-          { ...activeTask, is_evening: false },
-        ]);
-        updateMutation.mutate({ id: activeTask.id, is_evening: false });
-      }
+      updateMutation.mutate({
+        id: activeTask.id,
+        is_evening: shouldBeInEvening,
+      });
       return;
     }
 
     // Same-section reordering
-    const currentList = activeTask.is_evening ? localEveningTasks : localTasks;
+    const currentList = activeTask.is_evening
+      ? processedTasks.evening
+      : processedTasks.active;
     const oldIndex = currentList.findIndex((task) => task.id === active.id);
     const newIndex = currentList.findIndex((task) => task.id === over.id);
 
     if (oldIndex !== -1 && newIndex !== -1) {
       trigger(50);
-      justDragged.current = true;
-
       const reordered = arrayMove(currentList, oldIndex, newIndex);
-      if (activeTask.is_evening) {
-        setLocalEveningTasks(reordered);
-      } else {
-        setLocalTasks(reordered);
-      }
 
+      // Mutation triggers onMutate which updates cache instantly
+      // No local state needed - TanStack Query handles optimistic update
       if (sortBy !== "custom") setSortBy("custom");
       reorderMutation.mutate(reordered.map((t) => t.id));
     }
@@ -197,14 +171,14 @@ export default function TaskList({
     if (processedTasks?.groups) {
       processedTasks.groups.forEach((g) => list.push(...g.tasks));
     } else {
-      list.push(...localTasks);
+      list.push(...(processedTasks?.active || []));
     }
     // Add evening
     list.push(...(processedTasks?.evening || []));
     // Add completed
     list.push(...(processedTasks?.completed || []));
     return list;
-  }, [processedTasks, localTasks]);
+  }, [processedTasks]);
 
   const handleNav = (direction: 1 | -1) => {
     if (navigableTasks.length === 0) return;
@@ -265,6 +239,41 @@ export default function TaskList({
     }
   });
 
+  // Must be declared before early returns to comply with Rules of Hooks.
+  const overlayContent = useMemo(() => {
+    if (!activeId) return null;
+
+    const currentActiveId = activeId as string;
+    const draggingTask =
+      processedTasks.active.find((t) => t.id === currentActiveId) ||
+      processedTasks.evening.find((t) => t.id === currentActiveId) ||
+      tasks.find((t) => t.id === currentActiveId);
+
+    if (!draggingTask) return null;
+
+    const project = projectsData?.find((p) => p.id === draggingTask.project_id);
+
+    return (
+      <div className="opacity-90 shadow-2xl scale-[1.02] origin-left transition-transform duration-200 pointer-events-none will-change-transform">
+        <TaskGhost
+          task={draggingTask}
+          isDesktop={isDesktop}
+          viewMode="list"
+          project={
+            project ? { color: project.color, name: project.name } : undefined
+          }
+        />
+      </div>
+    );
+  }, [
+    activeId,
+    processedTasks.active,
+    processedTasks.evening,
+    tasks,
+    projectsData,
+    isDesktop,
+  ]);
+
   if (isLoading) {
     return (
       <div className="px-4 md:px-6 py-4">
@@ -317,15 +326,15 @@ export default function TaskList({
             >
               <TaskListView
                 processedTasks={processedTasks}
-                localTasks={localTasks}
-                localEveningTasks={localEveningTasks}
+                activeTasks={displayTasks}
+                eveningTasks={displayEveningTasks}
                 handleTaskClick={handleTaskClick}
                 keyboardSelectedId={keyboardSelectedId}
               />
 
               <DragOverlay
                 dropAnimation={{
-                  duration: isDesktop ? 250 : 50, // Faster snap on mobile to reduce perceived delay
+                  duration: isDesktop ? 250 : 50,
                   sideEffects: defaultDropAnimationSideEffects({
                     styles: {
                       active: {
@@ -335,29 +344,7 @@ export default function TaskList({
                   }),
                 }}
               >
-                {activeId
-                  ? (() => {
-                      const currentActiveId = activeId as string;
-                      const draggingTask =
-                        localTasks.find((t) => t.id === currentActiveId) ||
-                        localEveningTasks.find(
-                          (t) => t.id === currentActiveId,
-                        ) ||
-                        tasks.find((t) => t.id === currentActiveId);
-
-                      if (!draggingTask) return null;
-
-                      return (
-                        <div className="opacity-90 shadow-2xl scale-[1.02] origin-left transition-transform duration-200">
-                          <TaskItem
-                            task={draggingTask}
-                            onSelect={() => {}}
-                            isDragging
-                          />
-                        </div>
-                      );
-                    })()
-                  : null}
+                {overlayContent}
               </DragOverlay>
             </DndContext>
           </div>

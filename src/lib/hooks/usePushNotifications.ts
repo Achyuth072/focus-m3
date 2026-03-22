@@ -21,7 +21,7 @@ export function usePushNotifications() {
     );
   });
   const [subscription, setSubscription] = useState<PushSubscription | null>(
-    null
+    null,
   );
   const [isSyncing, setIsSyncing] = useState(false);
 
@@ -31,8 +31,8 @@ export function usePushNotifications() {
     const timeoutPromise = new Promise<never>((_, reject) =>
       setTimeout(
         () => reject(new Error("Service worker registration timeout")),
-        5000
-      )
+        5000,
+      ),
     );
     return Promise.race([swPromise, timeoutPromise]);
   }, []);
@@ -45,12 +45,12 @@ export function usePushNotifications() {
         console.error("Error sending subscription to backend:", error);
       }
     },
-    []
+    [],
   );
 
   const subscribeToPush = useCallback(
     async (
-      permissionOverride?: NotificationPermission
+      permissionOverride?: NotificationPermission,
     ): Promise<PushSubscription | null> => {
       const effectivePermission = permissionOverride || permission;
       if (!isSupported || effectivePermission !== "granted") {
@@ -74,7 +74,7 @@ export function usePushNotifications() {
           sub = await registration.pushManager.subscribe({
             userVisibleOnly: true,
             applicationServerKey: urlBase64ToUint8Array(
-              vapidPublicKey
+              vapidPublicKey,
             ) as BufferSource,
           });
         }
@@ -99,7 +99,7 @@ export function usePushNotifications() {
       sendSubscriptionToBackend,
       getServiceWorkerRegistration,
       setNotificationsEnabled,
-    ]
+    ],
   );
 
   const requestPermission =
@@ -159,7 +159,7 @@ export function usePushNotifications() {
         console.error("Error showing notification:", error);
       }
     },
-    [isSupported, permission, getServiceWorkerRegistration]
+    [isSupported, permission, getServiceWorkerRegistration],
   );
 
   useEffect(() => {

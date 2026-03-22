@@ -61,7 +61,11 @@ export function ResponsiveDialog({
   if (isMobile) {
     return (
       <ResponsiveDialogContext.Provider value={{ isMobile }}>
-        <Drawer open={open} onOpenChange={onOpenChange} repositionInputs={false}>
+        <Drawer
+          open={open}
+          onOpenChange={onOpenChange}
+          repositionInputs={false}
+        >
           {children}
         </Drawer>
       </ResponsiveDialogContext.Provider>
@@ -138,7 +142,8 @@ export function ResponsiveDialogDescription({
   className,
   children,
   ...props
-}: ResponsiveDialogDescriptionProps & React.HTMLAttributes<HTMLParagraphElement>) {
+}: ResponsiveDialogDescriptionProps &
+  React.HTMLAttributes<HTMLParagraphElement>) {
   const { isMobile } = React.useContext(ResponsiveDialogContext);
 
   if (isMobile) {

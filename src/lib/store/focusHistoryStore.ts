@@ -34,6 +34,6 @@ export const useFocusHistoryStore = create<FocusHistoryState>()(
     }),
     {
       name: "kanso-focus-history",
-    }
-  )
+    },
+  ),
 );

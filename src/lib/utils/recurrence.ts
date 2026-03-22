@@ -16,7 +16,7 @@ export interface RecurrenceRule {
  */
 export function calculateNextDueDate(
   completedDate: Date,
-  rule: RecurrenceRule
+  rule: RecurrenceRule,
 ): Date {
   const { freq, interval } = rule;
 

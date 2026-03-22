@@ -14,7 +14,7 @@ vi.mock("@/lib/supabase/client", () => ({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
           single: vi.fn(() =>
-            Promise.resolve({ data: { id: "1", settings: {} } })
+            Promise.resolve({ data: { id: "1", settings: {} } }),
           ),
         })),
       })),
@@ -54,7 +54,7 @@ vi.mock("@/lib/hooks/usePushNotifications", () => ({
 
 vi.mock("@/lib/timer-api", () => ({
   scheduleTimerNotification: vi.fn(() =>
-    Promise.resolve({ success: true, notificationId: "test-id" })
+    Promise.resolve({ success: true, notificationId: "test-id" }),
   ),
   cancelTimerNotification: vi.fn(() => Promise.resolve({ success: true })),
 }));
@@ -130,7 +130,7 @@ describe("useFocusTimer - Reconciliation", () => {
     expect(toastMock).toHaveBeenCalledTimes(1);
     expect(toastMock).toHaveBeenCalledWith(
       expect.stringContaining("completed while away"),
-      expect.anything()
+      expect.anything(),
     );
 
     // Also verify state transitioned (mode should be shortBreak or focus-pause depending on autoStart)
@@ -190,7 +190,7 @@ describe("useFocusTimer - Reconciliation", () => {
     expect(toastMock).toHaveBeenCalled();
     expect(toastMock).toHaveBeenCalledWith(
       expect.stringContaining("completed while away"),
-      expect.anything()
+      expect.anything(),
     );
   });
 });

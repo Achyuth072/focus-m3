@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import type { Task } from "@/lib/types/task";
 import { priorityColors, formatDueDate } from "./task-utils";
 import { KanbanBoardCard, KanbanBoardCardButton } from "@/components/kanban";
+import { TaskGhost } from "./TaskGhost";
 
 interface IntegratedTaskCardProps {
   task: Task;
@@ -15,6 +16,7 @@ interface IntegratedTaskCardProps {
   isDesktop: boolean;
   handleComplete: (checked: boolean) => void;
   handlePlayFocus: (e: React.MouseEvent) => void;
+  onClick?: () => void;
 }
 
 export function IntegratedTaskCard({
@@ -24,12 +26,22 @@ export function IntegratedTaskCard({
   isDesktop,
   handleComplete,
   handlePlayFocus,
+  onClick,
 }: IntegratedTaskCardProps) {
   return (
     <KanbanBoardCard
       data={task}
       asChild
-      className="p-3 bg-background border border-border/80 hover:border-border transition-all"
+      ghostElement={
+        <TaskGhost
+          task={task}
+          project={project}
+          isDesktop={isDesktop}
+          viewMode="list"
+        />
+      }
+      className="p-3 bg-background border border-border/80 hover:border-border transition-all cursor-pointer group/card"
+      onClick={onClick}
     >
       <div className="flex flex-col gap-3 w-full text-left">
         {/* Header: Checkbox, Content, Play Button */}

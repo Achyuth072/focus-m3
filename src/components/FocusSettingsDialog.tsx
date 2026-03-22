@@ -68,7 +68,7 @@ function SettingsForm() {
               {...register("focusDuration", { valueAsNumber: true })}
               className={cn(
                 "w-16 h-8 text-sm bg-secondary/30 border-transparent hover:bg-secondary/50 text-center rounded-md",
-                errors.focusDuration && "border-destructive ring-destructive"
+                errors.focusDuration && "border-destructive ring-destructive",
               )}
               aria-invalid={!!errors.focusDuration}
               aria-describedby={
@@ -112,7 +112,7 @@ function SettingsForm() {
               className={cn(
                 "w-16 h-8 text-sm bg-secondary/30 border-transparent hover:bg-secondary/50 text-center rounded-md",
                 errors.shortBreakDuration &&
-                  "border-destructive ring-destructive"
+                  "border-destructive ring-destructive",
               )}
               aria-invalid={!!errors.shortBreakDuration}
               aria-describedby={
@@ -156,7 +156,7 @@ function SettingsForm() {
               className={cn(
                 "w-16 h-8 text-sm bg-secondary/30 border-transparent hover:bg-secondary/50 text-center rounded-md",
                 errors.longBreakDuration &&
-                  "border-destructive ring-destructive"
+                  "border-destructive ring-destructive",
               )}
               aria-invalid={!!errors.longBreakDuration}
               aria-describedby={
@@ -199,7 +199,7 @@ function SettingsForm() {
             className={cn(
               "w-16 h-8 text-sm bg-secondary/30 border-transparent hover:bg-secondary/50 text-center rounded-md",
               errors.sessionsBeforeLongBreak &&
-                "border-destructive ring-destructive"
+                "border-destructive ring-destructive",
             )}
             aria-invalid={!!errors.sessionsBeforeLongBreak}
             aria-describedby={
@@ -318,7 +318,7 @@ export function FocusSettingsDialog() {
     <motion.button
       className={cn(
         buttonVariants({ variant: "ghost" }),
-        "text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-all cursor-pointer"
+        "text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-all cursor-pointer",
       )}
       onTapStart={() => trigger(50)}
       whileTap={isPhone ? { scale: 0.95 } : {}}

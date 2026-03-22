@@ -24,7 +24,7 @@ export function useDocumentPiP() {
 
   // Lazy initialization to avoid setState in useEffect
   const [isPiPSupported] = useState(
-    () => typeof window !== "undefined" && "documentPictureInPicture" in window
+    () => typeof window !== "undefined" && "documentPictureInPicture" in window,
   );
   const [pipWindow, setPipWindow] = useState<Window | null>(null);
   const isPopupFallback = useRef(false);
@@ -102,7 +102,7 @@ export function useDocumentPiP() {
 
           // Set up basic HTML structure for popup
           pipWindow.document.write(
-            "<!DOCTYPE html><html><head><meta charset='utf-8'><title>Focus Timer</title></head><body></body></html>"
+            "<!DOCTYPE html><html><head><meta charset='utf-8'><title>Focus Timer</title></head><body></body></html>",
           );
           pipWindow.document.close();
         }
@@ -128,7 +128,7 @@ export function useDocumentPiP() {
         return null;
       }
     },
-    [isPiPSupported, copyStylesToWindow, setIsPipActive]
+    [isPiPSupported, copyStylesToWindow, setIsPipActive],
   );
 
   const closePiP = useCallback(() => {

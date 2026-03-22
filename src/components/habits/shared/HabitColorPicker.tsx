@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { useHorizontalScroll } from "@/lib/hooks/useHorizontalScroll";
 
-export const HABIT_COLORS = [
+const HABIT_COLORS = [
   { name: "Coral", value: "#FF6B6B" },
   { name: "Red", value: "#EF4444" },
   { name: "Orange", value: "#F59E0B" },

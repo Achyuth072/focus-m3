@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 
 const pageVariants = {
   initial: { opacity: 0, y: 8 },
@@ -9,8 +9,8 @@ const pageVariants = {
 };
 
 const pageTransition = {
-  type: 'tween' as const,
-  ease: 'easeOut' as const,
+  type: "tween" as const,
+  ease: "easeOut" as const,
   duration: 0.15,
 };
 

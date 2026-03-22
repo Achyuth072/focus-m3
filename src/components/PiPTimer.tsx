@@ -41,8 +41,8 @@ export function PiPTimer({ onClose }: PiPTimerProps) {
         {state.mode === "focus"
           ? "Focus"
           : state.mode === "shortBreak"
-          ? "Short Break"
-          : "Long Break"}
+            ? "Short Break"
+            : "Long Break"}
       </div>
 
       {/* Timer Display */}
@@ -80,8 +80,8 @@ export function PiPTimer({ onClose }: PiPTimerProps) {
         {state.mode === "focus"
           ? `Session ${state.completedSessions + 1}`
           : state.mode === "longBreak"
-          ? "Cycle Complete"
-          : `Break after Session ${state.completedSessions}`}
+            ? "Cycle Complete"
+            : `Break after Session ${state.completedSessions}`}
       </div>
     </div>
   );

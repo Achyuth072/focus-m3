@@ -1,6 +1,12 @@
 import type { NextConfig } from "next";
 import withSerwistInit from "@serwist/next";
 
+// @ts-ignore - factory exported via CommonJS require pattern
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
+  openAnalyzer: true,
+});
+
 const withSerwist = withSerwistInit({
   swSrc: "app/sw.ts",
   swDest: "public/sw.js",
@@ -26,4 +32,6 @@ const nextConfig: NextConfig = {
 };
 
 // Only wrap with Serwist when using Webpack (dev:pwa, build)
-export default isTurbopack ? nextConfig : withSerwist(nextConfig);
+export default withBundleAnalyzer(
+  isTurbopack ? nextConfig : withSerwist(nextConfig),
+);
