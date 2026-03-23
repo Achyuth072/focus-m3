@@ -76,26 +76,88 @@ export const projectMutations = {
     return data as Project;
   },
 
-  delete: async (id: string): Promise<void> => {
+  archive: async (id: string): Promise<Project> => {
     const isGuest =
       typeof window !== "undefined" &&
       localStorage.getItem("kanso_guest_mode") === "true";
 
     if (isGuest) {
-      mockStore.deleteProject(id);
+      const project = mockStore.updateProject(id, { is_archived: true });
+      if (!project) throw new Error("Project not found");
+      return project;
+    }
+
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("projects")
+      .update({ is_archived: true })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) throw new Error(error.message);
+    return data as Project;
+  },
+
+  moveTasksToInbox: async (projectId: string): Promise<void> => {
+    const isGuest =
+      typeof window !== "undefined" &&
+      localStorage.getItem("kanso_guest_mode") === "true";
+
+    if (isGuest) {
+      // fallback in case mockStore doesn't implement it yet
+      mockStore.moveTasksToInbox?.(projectId);
       return;
     }
 
     const supabase = createClient();
-    // Move all tasks to Inbox (project_id = null)
-    const { error: updateError } = await supabase
+    const { error } = await supabase
       .from("tasks")
       .update({ project_id: null })
-      .eq("project_id", id);
+      .eq("project_id", projectId);
 
-    if (updateError) throw new Error(updateError.message);
-
-    const { error } = await supabase.from("projects").delete().eq("id", id);
     if (error) throw new Error(error.message);
+  },
+
+  deleteProjectTasks: async (projectId: string): Promise<void> => {
+    const isGuest =
+      typeof window !== "undefined" &&
+      localStorage.getItem("kanso_guest_mode") === "true";
+
+    if (isGuest) {
+      mockStore.deleteTasksByProject?.(projectId);
+      return;
+    }
+
+    const supabase = createClient();
+    const { error } = await supabase
+      .from("tasks")
+      .delete()
+      .eq("project_id", projectId);
+
+    if (error) throw new Error(error.message);
+  },
+
+  unarchive: async (id: string): Promise<Project> => {
+    const isGuest =
+      typeof window !== "undefined" &&
+      localStorage.getItem("kanso_guest_mode") === "true";
+
+    if (isGuest) {
+      const project = mockStore.updateProject(id, { is_archived: false });
+      if (!project) throw new Error("Project not found");
+      return project;
+    }
+
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("projects")
+      .update({ is_archived: false })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) throw new Error(error.message);
+    return data as Project;
   },
 };

@@ -2,7 +2,8 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import type { Project } from "@/lib/types/task";
 import {
   Sidebar,
   SidebarContent,
@@ -11,6 +12,7 @@ import {
   SidebarGroupLabel,
   SidebarGroupAction,
   SidebarMenu,
+  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
@@ -30,12 +32,16 @@ import {
   Inbox,
   FolderKanban,
   ChevronDown,
+  Trash2,
+  ArchiveRestore,
 } from "lucide-react";
 import { useCompletedTasks } from "@/components/CompletedTasksProvider";
 import { useProjects } from "@/lib/hooks/useProjects";
 import { useProjectActions } from "@/components/ProjectActionsProvider";
 import { useUiStore } from "@/lib/store/uiStore";
 import { useHaptic } from "@/lib/hooks/useHaptic";
+import { DeleteProjectDialog } from "@/components/projects/DeleteProjectDialog";
+import { ArchivedProjectsDialog } from "@/components/projects/ArchivedProjectsDialog";
 
 const mainNavItems = [
   { label: "All Tasks", icon: CheckSquare, path: "/", isAction: false },
@@ -59,6 +65,9 @@ export function AppSidebar() {
   const { openCreateProject } = useProjectActions();
   const { isProjectsOpen, toggleProjectsOpen } = useUiStore();
   const { trigger } = useHaptic();
+
+  const [deleteProject, setDeleteProject] = useState<Project | null>(null);
+  const [isArchivedOpen, setIsArchivedOpen] = useState(false);
 
   const currentProjectId = searchParams.get("project");
 
@@ -247,8 +256,37 @@ export function AppSidebar() {
                             <span className="truncate">{project.name}</span>
                           </Link>
                         </SidebarMenuButton>
+                        <SidebarMenuAction
+                          showOnHover
+                          className="group-data-[collapsible=icon]:hidden"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            trigger(15);
+                            setDeleteProject(project);
+                          }}
+                          title="Delete Project"
+                        >
+                          <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive transition-colors" />
+                        </SidebarMenuAction>
                       </SidebarMenuItem>
                     ))}
+
+                  {/* Archived Projects */}
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      onClick={() => {
+                        trigger(15);
+                        setIsArchivedOpen(true);
+                      }}
+                      tooltip="Archived Projects"
+                    >
+                      <div className="flex items-center justify-center w-5 h-5 shrink-0">
+                        <ArchiveRestore className="h-4 w-4" />
+                      </div>
+                      <span className="truncate">Archived Projects</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
                 </SidebarMenu>
               </SidebarGroupContent>
             )}
@@ -323,6 +361,15 @@ export function AppSidebar() {
           </div>
         </SidebarFooter>
       </Sidebar>
+      <DeleteProjectDialog
+        project={deleteProject}
+        open={!!deleteProject}
+        onOpenChange={(open) => !open && setDeleteProject(null)}
+      />
+      <ArchivedProjectsDialog
+        open={isArchivedOpen}
+        onOpenChange={setIsArchivedOpen}
+      />
     </>
   );
 }

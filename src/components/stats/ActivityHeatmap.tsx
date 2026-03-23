@@ -1,149 +1,58 @@
 "use client";
 
-import React, { useEffect, useRef, useMemo } from "react";
-// @ts-expect-error - cal-heatmap may have type resolution issues in some environments
-import CalHeatmap from "cal-heatmap";
-// @ts-expect-error - cal-heatmap plugins may not have types
-import Tooltip from "cal-heatmap/plugins/Tooltip";
-// @ts-expect-error - cal-heatmap plugins may not have types
-import Legend from "cal-heatmap/plugins/Legend";
+import { useMemo } from "react";
+import { ActivityCalendar, type Activity } from "react-activity-calendar";
+import "react-activity-calendar/tooltips.css";
+import { useTheme } from "next-themes";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useHeatmapData } from "@/lib/hooks/useHeatmapData";
 import { cn } from "@/lib/utils";
-import { subDays } from "date-fns";
+import { Tooltip as ReactTooltip } from "react-tooltip";
 
 interface ActivityHeatmapProps {
   className?: string;
 }
 
 export function ActivityHeatmap({ className }: ActivityHeatmapProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
   const { data, isLoading, maxValue, activeDays } = useHeatmapData();
-  const selectedMetric = "combined";
+  const { resolvedTheme } = useTheme();
 
-  const colorScale = useMemo(
-    () => [
-      "hsl(var(--muted))",
-      "hsl(220, 44%, 80%)",
-      "hsl(220, 44%, 70%)",
-      "hsl(220, 44%, 60%)",
-      "hsl(var(--brand))",
+  // Transform data to react-activity-calendar format
+  const calendarData: Activity[] = useMemo(() => {
+    if (!data || data.length === 0) return [];
+    
+    return data.map((d) => ({
+      date: d.date,
+      count: d.combined,
+      level: d.combined === 0 ? 0 : Math.min(Math.ceil((d.combined / maxValue.combined) * 4), 4) as 0 | 1 | 2 | 3 | 4,
+    }));
+  }, [data, maxValue.combined]);
+
+  // Monochromatic Kanso theme (brand color scale)
+  const theme = useMemo(() => ({
+    dark: [
+      "#262626",                    // Level 0 - empty (muted)
+      "hsl(220, 44%, 80%)",        // Level 1
+      "hsl(220, 44%, 70%)",        // Level 2
+      "hsl(220, 44%, 60%)",        // Level 3
+      "hsl(var(--brand))",         // Level 4 - max (brand)
     ],
-    [],
-  );
+    light: [
+      "#ebebeb",                    // Level 0 - empty (muted)
+      "hsl(220, 44%, 80%)",        // Level 1
+      "hsl(220, 44%, 70%)",        // Level 2
+      "hsl(220, 44%, 60%)",        // Level 3
+      "hsl(var(--brand))",         // Level 4 - max (brand)
+    ],
+  }), []);
 
-  const thresholds = useMemo(() => {
-    const max = maxValue[selectedMetric];
-    if (max <= 1) return [0, 0.25, 0.5, 0.75];
-    return [
-      0,
-      Math.max(1, Math.floor(max * 0.25)),
-      Math.max(2, Math.floor(max * 0.5)),
-      Math.max(3, Math.floor(max * 0.75)),
-    ];
-  }, [maxValue, selectedMetric]);
-
-  const startDate = useMemo(() => subDays(new Date(), 364), []);
-  const legendId = React.useId().replace(/:/g, "");
-
-  useEffect(() => {
-    if (isLoading || !containerRef.current || !data) return;
-
-    // Create a disposable child container specifically for this instance
-    const mountPoint = document.createElement("div");
-    containerRef.current.appendChild(mountPoint);
-
-    const cal = new CalHeatmap();
-
-    cal.paint(
-      {
-        itemSelector: mountPoint,
-        data: {
-          source: data,
-          type: "json",
-          x: "date",
-          y: selectedMetric,
-          groupY: "max",
-        },
-        date: {
-          start: startDate,
-          timezone: "UTC",
-        },
-        range: 12,
-        scale: {
-          color: {
-            type: "threshold",
-            range: colorScale,
-            domain: thresholds,
-          },
-        },
-        domain: {
-          type: "month",
-          gutter: 8,
-          label: {
-            text: "MMM",
-            position: "bottom",
-            offset: { x: 0, y: 5 },
-          },
-        },
-        subDomain: {
-          type: "day",
-          radius: 2,
-          width: 12,
-          height: 12,
-          gutter: 4,
-        },
-        itemName: ["combined", "points"],
-      },
-      [
-        [
-          Tooltip,
-          {
-            enabled: true,
-            text: (
-              _date: Date | string | number,
-              _value: number | null,
-              dayjsDate: { format: (fmt: string) => string },
-            ) => {
-              const point = data.find(
-                (d) => d.date === dayjsDate.format("YYYY-MM-DD"),
-              );
-              if (!point) return dayjsDate.format("LL");
-              return `${dayjsDate.format("LL")}: ${point.focus}h focus • ${point.tasks} tasks`;
-            },
-          },
-        ],
-        [
-          Legend,
-          {
-            enabled: true,
-            itemSelector: `#${legendId}`,
-            label: "Activity Level",
-          },
-        ],
-      ],
-    );
-
-    return () => {
-      try {
-        cal.destroy();
-      } catch (e) {
-        console.warn("CalHeatmap destroy failed", e);
-      }
-      if (mountPoint.parentNode) {
-        mountPoint.parentNode.removeChild(mountPoint);
-      }
-    };
-  }, [
-    data,
-    isLoading,
-    selectedMetric,
-    colorScale,
-    thresholds,
-    legendId,
-    startDate,
-  ]);
+  // Custom tooltip render function
+  const renderTooltip = (activity: Activity) => {
+    const point = data.find((d) => d.date === activity.date);
+    if (!point) return activity.date;
+    return `${activity.date}: ${point.focus}h focus • ${point.tasks} tasks`;
+  };
 
   if (isLoading) {
     return (
@@ -173,18 +82,34 @@ export function ActivityHeatmap({ className }: ActivityHeatmapProps) {
         </div>
 
         <div className="relative flex flex-col items-center">
-          <div
-            ref={containerRef}
-            className="w-full overflow-x-auto pb-4 custom-scrollbar flex justify-start md:justify-center"
-          >
-            {/* CalHeatmap will render here */}
+          <div className="w-full overflow-x-auto pb-4 custom-scrollbar flex justify-start md:justify-center">
+            <ActivityCalendar
+              data={calendarData}
+              theme={theme}
+              colorScheme={(resolvedTheme as "light" | "dark") || "light"}
+              blockSize={15}
+              blockMargin={5}
+              blockRadius={2}
+              fontSize={13}
+              showColorLegend={true}
+              showMonthLabels={true}
+              showTotalCount={false}
+              labels={{
+                months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                weekdays: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+                legend: {
+                  less: "Less",
+                  more: "More",
+                },
+              }}
+              renderBlock={(block, activity) => (
+                <g data-tooltip-id="activity-tooltip" data-tooltip-content={renderTooltip(activity)}>
+                  {block}
+                </g>
+              )}
+            />
           </div>
-
-          <div className="flex justify-center items-center mt-2 text-[10px] text-muted-foreground w-full">
-            <span className="mr-2">Less</span>
-            <div id={legendId} className="flex gap-1" />
-            <span className="ml-2">More</span>
-          </div>
+          <ReactTooltip id="activity-tooltip" />
         </div>
       </div>
     </Card>

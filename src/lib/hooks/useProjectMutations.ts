@@ -70,13 +70,13 @@ export function useUpdateProject() {
   });
 }
 
-export function useDeleteProject() {
+export function useArchiveProject() {
   const queryClient = useQueryClient();
   const { isGuestMode } = useAuth();
 
   return useMutation({
-    mutationKey: ["deleteProject"],
-    mutationFn: projectMutations.delete,
+    mutationKey: ["archiveProject"],
+    mutationFn: projectMutations.archive,
     onMutate: async (id) => {
       await queryClient.cancelQueries({ queryKey: ["projects"] });
 
@@ -98,6 +98,52 @@ export function useDeleteProject() {
           context.previousProjects,
         );
       }
+      handleMutationError(err);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
+}
+
+export function useMoveTasksToInbox() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["moveTasksToInbox"],
+    mutationFn: projectMutations.moveTasksToInbox,
+    onError: (err) => {
+      handleMutationError(err);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
+}
+
+export function useDeleteProjectTasks() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["deleteProjectTasks"],
+    mutationFn: projectMutations.deleteProjectTasks,
+    onError: (err) => {
+      handleMutationError(err);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
+}
+
+export function useUnarchiveProject() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["unarchiveProject"],
+    mutationFn: projectMutations.unarchive,
+    onError: (err) => {
       handleMutationError(err);
     },
     onSettled: () => {

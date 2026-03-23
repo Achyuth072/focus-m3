@@ -40,7 +40,15 @@ export function useTasks(options: UseTasksOptions = {}) {
         if (projectId === "inbox") {
           tasks = tasks.filter((t) => !t.project_id);
         } else if (projectId === "all") {
-          // Show all
+          const archivedProjectIds = new Set(
+            mockStore
+              .getProjects()
+              .filter((p) => p.is_archived)
+              .map((p) => p.id),
+          );
+          tasks = tasks.filter(
+            (t) => !t.project_id || !archivedProjectIds.has(t.project_id),
+          );
         } else if (projectId) {
           tasks = tasks.filter((t) => t.project_id === projectId);
         }
@@ -61,7 +69,10 @@ export function useTasks(options: UseTasksOptions = {}) {
       // Normal Supabase flow
       let query = supabase
         .from("tasks")
-        .select("*")
+        .select(`
+          *,
+          projects!left(is_archived)
+        `)
         .is("parent_id", null) // Exclude subtasks from main list
         .order("day_order", { ascending: true })
         .order("created_at", { ascending: false });
@@ -74,19 +85,16 @@ export function useTasks(options: UseTasksOptions = {}) {
       } else if (filter === "p1") {
         query = query.eq("priority", 1);
       }
-
+      
       // Filter by project
       if (projectId === "inbox") {
         // Inbox: Only tasks without a project
         query = query.is("project_id", null);
-      } else if (projectId === "all") {
-        // All: Show everything (no filter)
-        // Don't add any project filter
-      } else if (projectId) {
+      } else if (projectId && projectId !== "all") {
         // Specific project: Only tasks in that project
         query = query.eq("project_id", projectId);
       }
-      // No projectId or 'all': Show all tasks (no filter)
+      // "all" doesn't filter at the database level so we can catch unassigned tasks too
 
       if (!showCompleted) {
         query = query.eq("is_completed", false);
@@ -98,7 +106,14 @@ export function useTasks(options: UseTasksOptions = {}) {
         throw new Error(error.message);
       }
 
-      return data as Task[];
+      let tasks = data as (Task & { projects: { is_archived: boolean } | null })[];
+      
+      // Filter out tasks from archived projects for "All Tasks" view
+      if (projectId === "all" || !projectId) {
+        tasks = tasks.filter((t) => !t.projects?.is_archived);
+      }
+
+      return tasks;
     },
     placeholderData: (previousData) => previousData,
   });

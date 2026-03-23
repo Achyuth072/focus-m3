@@ -86,8 +86,8 @@ export default function QueryProvider({
     client.setMutationDefaults(["updateProject"], {
       mutationFn: projectMutations.update,
     });
-    client.setMutationDefaults(["deleteProject"], {
-      mutationFn: projectMutations.delete,
+    client.setMutationDefaults(["archiveProject"], {
+      mutationFn: projectMutations.archive,
     });
 
     // Focus

@@ -67,3 +67,34 @@ export function useProject(projectId: string | null) {
     enabled: !!projectId,
   });
 }
+
+export function useArchivedProjects() {
+  const { isGuestMode } = useAuth();
+  const supabase = createClient();
+
+  return useQuery({
+    queryKey: ["projects", "archived", isGuestMode],
+    queryFn: async (): Promise<Project[]> => {
+      // Guest Mode: Use mock store
+      if (isGuestMode) {
+        return mockStore
+          .getProjects()
+          .filter((p) => p.is_archived)
+          .sort((a, b) => a.name.localeCompare(b.name));
+      }
+
+      // Normal Supabase flow
+      const { data, error } = await supabase
+        .from("projects")
+        .select("*")
+        .eq("is_archived", true)
+        .order("name", { ascending: true });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data as Project[];
+    },
+  });
+}

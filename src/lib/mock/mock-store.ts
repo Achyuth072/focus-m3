@@ -446,6 +446,26 @@ class MockStore {
     return true;
   }
 
+  moveTasksToInbox(projectId: string): void {
+    let changed = false;
+    this.data.tasks.forEach((t) => {
+      if (t.project_id === projectId) {
+        t.project_id = null;
+        t.updated_at = new Date().toISOString();
+        changed = true;
+      }
+    });
+    if (changed) this.saveToStorage();
+  }
+
+  deleteTasksByProject(projectId: string): void {
+    const initialLength = this.data.tasks.length;
+    this.data.tasks = this.data.tasks.filter((t) => t.project_id !== projectId);
+    if (this.data.tasks.length !== initialLength) {
+      this.saveToStorage();
+    }
+  }
+
   // Focus Logs
   getFocusLogs(): FocusLog[] {
     return [...(this.data.focus_logs || [])];
