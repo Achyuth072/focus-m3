@@ -15,7 +15,7 @@ export default function AddTaskFab({ onClick }: AddTaskFabProps) {
 
   return (
     <motion.button
-      onTapStart={() => trigger(50)}
+      onTapStart={() => trigger("HEAVY")}
       whileTap={isPhone ? { scale: 0.95 } : {}}
       onClick={onClick}
       className={cn(

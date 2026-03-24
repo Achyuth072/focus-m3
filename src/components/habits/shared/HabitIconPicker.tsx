@@ -116,7 +116,7 @@ export function HabitIconPicker({
               role="radio"
               aria-checked={isSelected}
               onClick={() => {
-                trigger(15);
+                trigger("MEDIUM");
                 onChange(item.name);
               }}
               className={cn(

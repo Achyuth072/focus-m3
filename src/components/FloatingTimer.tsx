@@ -31,7 +31,7 @@ export function FloatingTimer() {
     !isPipActive;
 
   const handlePlayPause = () => {
-    trigger(15);
+    trigger("MEDIUM");
     if (state.isRunning) {
       pause();
     } else {
@@ -40,12 +40,12 @@ export function FloatingTimer() {
   };
 
   const handleMaximize = () => {
-    trigger(10);
+    trigger("LIGHT");
     router.push("/focus");
   };
 
   const handleClose = () => {
-    trigger(50);
+    trigger("HEAVY");
     pause();
   };
 

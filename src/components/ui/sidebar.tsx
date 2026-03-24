@@ -301,7 +301,7 @@ const SidebarTrigger = React.forwardRef<
       size="icon"
       className={cn("h-7 w-7 transition-seijaku-fast", className)}
       onClick={(event) => {
-        trigger(20);
+        trigger("TAP");
         onClick?.(event);
         toggleSidebar();
       }}

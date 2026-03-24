@@ -11,7 +11,14 @@ import {
 import { isToday, isPast, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/lib/types/task";
-import SubtaskList from "./SubtaskList";
+import dynamic from "next/dynamic";
+
+// Lazy load SubtaskList to reduce initial render weight (PERF-02)
+const SubtaskList = dynamic(() => import("./SubtaskList"), {
+  loading: () => <div className="h-16 animate-pulse bg-muted/30 rounded-lg" />,
+  ssr: false,
+});
+
 import { useProject } from "@/lib/hooks/useProjects";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 
@@ -61,13 +68,13 @@ function TaskItem({
 
   const handlePlayFocus = (e: React.MouseEvent) => {
     e.stopPropagation();
-    trigger(50);
+    trigger("HEAVY");
     start(task.id);
     router.push("/focus");
   };
 
   const handleComplete = (checked: boolean) => {
-    trigger(checked ? [10, 50] : 15);
+    trigger(checked ? "SUCCESS" : "MEDIUM");
     setIsChecking(true);
     toggleMutation.mutate(
       { id: task.id, is_completed: checked },
@@ -91,7 +98,7 @@ function TaskItem({
 
   const toggleExpand = (e: React.MouseEvent) => {
     e.stopPropagation();
-    trigger(15);
+    trigger("MEDIUM");
     setIsExpanded(!isExpanded);
   };
 
@@ -143,12 +150,12 @@ function TaskItem({
           viewMode={viewMode}
           isHandleActive={isHandleActive}
           onSwipeLeft={() => {
-            trigger(50);
+            trigger("HEAVY");
             setPendingDelete(true);
             setShowDeleteDialog(true);
           }}
           onSwipeRight={() => {
-            trigger(50);
+            trigger("HEAVY");
             onSelect?.(task);
           }}
           onSwipeStart={() => setIsSwipeDragging(true)}

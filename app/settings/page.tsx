@@ -98,7 +98,7 @@ export default function SettingsPage() {
             <Button
               variant="ghost"
               size="icon"
-              onPointerDown={() => trigger(25)}
+              onPointerDown={() => trigger("MEDIUM")}
               onClick={() => router.back()}
               className="h-12 w-12"
             >
@@ -181,7 +181,7 @@ export default function SettingsPage() {
                         <button
                           key={option.value}
                           onClick={() => {
-                            trigger(25);
+                            trigger("MEDIUM");
                             setTheme(option.value);
                           }}
                           className={cn(
@@ -265,7 +265,7 @@ export default function SettingsPage() {
                       <Button
                         className="w-full bg-primary hover:opacity-90 transition-all font-semibold"
                         onClick={() => {
-                          trigger(25);
+                          trigger("MEDIUM");
                           router.push("/login");
                         }}
                       >
@@ -278,7 +278,7 @@ export default function SettingsPage() {
                           size="sm"
                           className="flex-1"
                           onClick={() => {
-                            trigger(50);
+                            trigger("HEAVY");
                             handleResetDemo();
                           }}
                         >
@@ -290,7 +290,7 @@ export default function SettingsPage() {
                           size="sm"
                           className="flex-1 text-destructive hover:text-destructive"
                           onClick={() => {
-                            trigger(50);
+                            trigger("HEAVY");
                             handleClearData();
                           }}
                         >
@@ -330,7 +330,7 @@ export default function SettingsPage() {
                     variant="outline"
                     className="w-full justify-start"
                     onClick={() => {
-                      trigger(50);
+                      trigger("HEAVY");
                       setShowSignOutConfirm(true);
                     }}
                     disabled={isSigningOut}

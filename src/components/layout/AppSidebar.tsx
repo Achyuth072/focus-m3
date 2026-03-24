@@ -134,7 +134,7 @@ export function AppSidebar() {
                                 : item.path
                             }
                             onClick={(e) => {
-                              trigger(15);
+                              trigger("MEDIUM");
                               if (item.isAction) {
                                 e.preventDefault();
                                 openSheet();
@@ -170,7 +170,7 @@ export function AppSidebar() {
             <SidebarGroupLabel
               className="cursor-pointer pr-10"
               onClick={() => {
-                trigger(15);
+                trigger("MEDIUM");
                 toggleProjectsOpen();
               }}
             >
@@ -185,7 +185,7 @@ export function AppSidebar() {
             <SidebarGroupAction
               title="Add Project"
               onClick={() => {
-                trigger(15);
+                trigger("MEDIUM");
                 openCreateProject();
               }}
             >
@@ -204,7 +204,7 @@ export function AppSidebar() {
                       <Link
                         href="/?project=inbox"
                         onClick={(e) => {
-                          trigger(15);
+                          trigger("MEDIUM");
                           if (isMobile) {
                             e.preventDefault();
                             setOpenMobile(false);
@@ -236,7 +236,7 @@ export function AppSidebar() {
                           <Link
                             href={`/?project=${project.id}`}
                             onClick={(e) => {
-                              trigger(15);
+                              trigger("MEDIUM");
                               if (isMobile) {
                                 e.preventDefault();
                                 setOpenMobile(false);
@@ -262,7 +262,7 @@ export function AppSidebar() {
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            trigger(15);
+                            trigger("MEDIUM");
                             setDeleteProject(project);
                           }}
                           title="Delete Project"
@@ -276,7 +276,7 @@ export function AppSidebar() {
                   <SidebarMenuItem>
                     <SidebarMenuButton
                       onClick={() => {
-                        trigger(15);
+                        trigger("MEDIUM");
                         setIsArchivedOpen(true);
                       }}
                       tooltip="Archived Projects"
@@ -309,7 +309,7 @@ export function AppSidebar() {
                           <Link
                             href={item.path}
                             onClick={() => {
-                              trigger(15);
+                              trigger("MEDIUM");
                             }}
                           >
                             <Icon className="h-5 w-5" />
@@ -337,7 +337,7 @@ export function AppSidebar() {
                   <Link
                     href="/settings"
                     onClick={(e) => {
-                      trigger(15);
+                      trigger("MEDIUM");
                       if (isMobile) {
                         e.preventDefault();
                         setOpenMobile(false);

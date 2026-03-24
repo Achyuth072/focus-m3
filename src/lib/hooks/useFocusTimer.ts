@@ -230,7 +230,7 @@ export function useFocusTimer() {
       } else {
         play("breakEnd");
       }
-      trigger(50);
+      trigger("HEAVY");
 
       // Show toast / notification
       const title =

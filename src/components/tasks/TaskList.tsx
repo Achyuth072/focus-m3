@@ -110,7 +110,7 @@ export default function TaskList({
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
-    trigger(15);
+    trigger("MEDIUM");
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -138,7 +138,7 @@ export default function TaskList({
 
     // Handle cross-section movement
     if (activeTask.is_evening !== shouldBeInEvening) {
-      trigger(50);
+      trigger("HEAVY");
       updateMutation.mutate({
         id: activeTask.id,
         is_evening: shouldBeInEvening,
@@ -154,7 +154,7 @@ export default function TaskList({
     const newIndex = currentList.findIndex((task) => task.id === over.id);
 
     if (oldIndex !== -1 && newIndex !== -1) {
-      trigger(50);
+      trigger("HEAVY");
       const reordered = arrayMove(currentList, oldIndex, newIndex);
 
       // Mutation triggers onMutate which updates cache instantly

@@ -105,7 +105,7 @@ export function TaskDetailPanel({ task, onClose }: TaskDetailPanelProps) {
     (data: CreateTaskInput) => {
       if (!task) return;
 
-      trigger([10, 50]); // Success signature haptic
+      trigger("SUCCESS"); // Success signature haptic
 
       updateMutation.mutate({
         ...data,
@@ -132,7 +132,7 @@ export function TaskDetailPanel({ task, onClose }: TaskDetailPanelProps) {
 
   const handleConfirmDelete = useCallback(() => {
     if (!task) return;
-    trigger(50); // Thud haptic for delete
+    trigger("HEAVY"); // Thud haptic for delete
     setShowDeleteDialog(false);
     onClose?.();
     deleteMutation.mutate(task.id);
@@ -168,7 +168,7 @@ export function TaskDetailPanel({ task, onClose }: TaskDetailPanelProps) {
         {onClose && (
           <button
             onClick={() => {
-              trigger(10);
+              trigger("LIGHT");
               onClose();
             }}
             className="absolute top-3 right-3 z-50 h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary/80 bg-background shadow-sm border border-border/80 transition-all duration-200"

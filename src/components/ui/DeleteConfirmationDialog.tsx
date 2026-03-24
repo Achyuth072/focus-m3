@@ -47,13 +47,13 @@ export function DeleteConfirmationDialog({
   useBackNavigation(isOpen && !isDesktop, onClose);
 
   const handleConfirm = () => {
-    trigger(50);
+    trigger("HEAVY");
     onConfirm();
     onClose();
   };
 
   const handleCancel = () => {
-    trigger(10);
+    trigger("LIGHT");
     onClose();
   };
 

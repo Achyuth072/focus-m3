@@ -37,9 +37,9 @@ describe("useHaptic", () => {
     const { result } = renderHook(() => useHaptic());
 
     // When: trigger is called with a pattern
-    result.current.trigger(15);
+    result.current.trigger("MEDIUM");
 
-    // Then: navigator.vibrate should be called with that pattern
+    // Then: navigator.vibrate should be called with that pattern's value
     expect(window.navigator.vibrate).toHaveBeenCalledWith(15);
   });
 
@@ -52,7 +52,7 @@ describe("useHaptic", () => {
     const { result } = renderHook(() => useHaptic());
 
     // When: trigger is called
-    result.current.trigger(50);
+    result.current.trigger("HEAVY");
 
     // Then: navigator.vibrate should NOT be called
     expect(window.navigator.vibrate).not.toHaveBeenCalled();
@@ -67,7 +67,7 @@ describe("useHaptic", () => {
     const { result } = renderHook(() => useHaptic());
 
     // When: trigger is called
-    result.current.trigger(10);
+    result.current.trigger("LIGHT");
 
     // Then: navigator.vibrate should NOT be called
     expect(window.navigator.vibrate).not.toHaveBeenCalled();

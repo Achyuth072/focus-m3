@@ -97,7 +97,7 @@ export function HabitSheet({ open, onClose, initialHabit }: HabitSheetProps) {
   }, [open, initialHabit, reset, triggerValidation]);
 
   const onFormSubmit = (data: CreateHabitInput) => {
-    trigger(50); // Haptic feedback on save
+    trigger("HEAVY"); // Haptic feedback on save
 
     // Convert Date to string if necessary
     const formattedData = {

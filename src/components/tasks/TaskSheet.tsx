@@ -164,7 +164,7 @@ export default function TaskSheet({
 
   // Handlers
   const onFormSubmit = (data: CreateTaskInput) => {
-    trigger(50); // Haptic feedback on save
+    trigger("HEAVY"); // Haptic feedback on save
 
     if (initialTask) {
       updateMutation.mutate({

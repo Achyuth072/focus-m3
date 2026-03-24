@@ -126,7 +126,7 @@ export default function SubtaskList({
                 checked={isCompleted}
                 onCheckedChange={(checked) => {
                   if (!isDraftMode && typeof item !== "string") {
-                    trigger(15);
+                    trigger("MEDIUM");
                     toggleMutation.mutate({
                       id: item.id,
                       is_completed: checked as boolean,
@@ -162,7 +162,7 @@ export default function SubtaskList({
                 size="icon"
                 className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground/40 hover:text-destructive hover:bg-destructive/10 rounded-lg"
                 onClick={() => {
-                  trigger(10);
+                  trigger("LIGHT");
                   handleDeleteSubtask(
                     isDraftMode ? index : (item as { id: string }).id,
                   );

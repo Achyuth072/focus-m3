@@ -41,7 +41,7 @@ function CompletedTaskItem({ task }: { task: Task }) {
   const { trigger } = useHaptic();
 
   const handleUncomplete = () => {
-    trigger(20);
+    trigger("TAP");
     updateMutation.mutate({ id: task.id, is_completed: false });
   };
 
@@ -207,7 +207,7 @@ export function CompletedTasksSheet({
                   variant="ghost"
                   size="sm"
                   onClick={() => {
-                    trigger(50);
+                    trigger("HEAVY");
                     setShowClearDialog(true);
                   }}
                   className="h-8 gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-seijaku-fast rounded-sm"
@@ -262,7 +262,7 @@ export function CompletedTasksSheet({
                   size="icon"
                   className="h-10 w-10 text-muted-foreground active:bg-destructive/10 active:text-destructive active:scale-95 transition-seijaku-fast rounded-md"
                   onClick={() => {
-                    trigger(50);
+                    trigger("HEAVY");
                     setShowClearDialog(true);
                   }}
                 >

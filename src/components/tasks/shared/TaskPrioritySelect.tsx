@@ -49,15 +49,15 @@ export function TaskPrioritySelect({
     <Select
       value={priority.toString()}
       onValueChange={(v) => {
-        trigger(10);
+        trigger("LIGHT");
         setPriority(parseInt(v) as 1 | 2 | 3 | 4);
       }}
       onOpenChange={(open) => {
-        if (!open) trigger(10);
+        if (!open) trigger("LIGHT");
       }}
     >
       <SelectTrigger
-        onPointerDown={() => trigger(15)}
+        onPointerDown={() => trigger("MEDIUM")}
         className={cn(
           "h-10 border transition-all shrink-0 focus:ring-0 [&>svg]:hidden group shadow-none",
           "border-input bg-background hover:bg-accent hover:text-accent-foreground",

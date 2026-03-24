@@ -30,14 +30,14 @@ export function SplitViewLayout({
 
   const handleTaskSelect = useCallback(
     (task: Task) => {
-      trigger(15); // Toggle haptic for selection
+      trigger("MEDIUM"); // Toggle haptic for selection
       setSelectedTask(task);
     },
     [trigger],
   );
 
   const handleCloseDetail = useCallback(() => {
-    trigger(10); // Tick haptic for close
+    trigger("LIGHT"); // Tick haptic for close
     setSelectedTask(null);
   }, [trigger]);
 

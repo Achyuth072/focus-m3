@@ -33,7 +33,7 @@ export function MobileNav() {
           return (
             <motion.button
               key={item.path}
-              onTapStart={() => trigger(15)} // Subtle vibration for nav
+              onTapStart={() => trigger("MEDIUM")} // Subtle vibration for nav
               whileTap={isPhone ? { scale: 0.95 } : {}}
               onClick={() => router.push(item.path)}
               className={cn(

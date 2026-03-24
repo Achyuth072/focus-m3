@@ -85,7 +85,7 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
           variant="outline"
           size={isMobile ? "icon" : "default"}
           onClick={() => {
-            trigger(10);
+            trigger("LIGHT");
             goToToday();
           }}
           className={cn(isMobile && "h-8 w-8")}
@@ -99,7 +99,7 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
             variant="ghost"
             size="icon"
             onClick={() => {
-              trigger(10);
+              trigger("LIGHT");
               prev();
             }}
           >
@@ -109,7 +109,7 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
             variant="ghost"
             size="icon"
             onClick={() => {
-              trigger(10);
+              trigger("LIGHT");
               next();
             }}
           >
@@ -126,7 +126,7 @@ export function CalendarToolbar({ isMobile, className }: CalendarToolbarProps) {
       <Select
         value={view}
         onValueChange={(v) => {
-          trigger(15);
+          trigger("MEDIUM");
           setView(v as CalendarView);
         }}
       >

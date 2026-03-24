@@ -29,6 +29,12 @@ interface UiState {
   // PIP State (for cross-hook communication)
   isPipActive: boolean;
   setIsPipActive: (active: boolean) => void;
+
+  // Task Selection State (for component decoupling per PERF-02)
+  selectedTaskId: string | null;
+  setSelectedTaskId: (id: string | null) => void;
+  editingTaskId: string | null;
+  setEditingTaskId: (id: string | null) => void;
 }
 
 export const useUiStore = create<UiState>()(
@@ -67,6 +73,12 @@ export const useUiStore = create<UiState>()(
       // PIP State defaults
       isPipActive: false,
       setIsPipActive: (active) => set({ isPipActive: active }),
+
+      // Task Selection State defaults
+      selectedTaskId: null,
+      setSelectedTaskId: (id) => set({ selectedTaskId: id }),
+      editingTaskId: null,
+      setEditingTaskId: (id) => set({ editingTaskId: id }),
     }),
     {
       name: "kanso-ui-state",

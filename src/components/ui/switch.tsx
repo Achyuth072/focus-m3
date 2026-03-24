@@ -12,7 +12,7 @@ const Switch = React.forwardRef<
   const { trigger } = useHaptic();
 
   const handleCheckedChange = (checked: boolean) => {
-    trigger(15);
+    trigger("MEDIUM");
     onCheckedChange?.(checked);
   };
 

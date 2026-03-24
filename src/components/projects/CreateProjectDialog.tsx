@@ -79,7 +79,7 @@ export function CreateProjectDialog({
   const scrollRef = useHorizontalScroll();
 
   const onFormSubmit = (data: CreateProjectInput) => {
-    trigger(50);
+    trigger("HEAVY");
     createProject.mutate(data);
     reset();
     onOpenChange(false);
@@ -156,7 +156,7 @@ export function CreateProjectDialog({
                     role="radio"
                     aria-checked={color === c.value}
                     onClick={() => {
-                      trigger(15);
+                      trigger("MEDIUM");
                       setValue("color", c.value, { shouldValidate: true });
                     }}
                     className={cn(
@@ -180,7 +180,7 @@ export function CreateProjectDialog({
               type="button"
               variant="ghost"
               onClick={() => {
-                trigger(10);
+                trigger("LIGHT");
                 onOpenChange(false);
               }}
             >

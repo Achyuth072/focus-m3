@@ -188,8 +188,8 @@ export function TaskEditView({
               size="sm"
               className="h-7 px-3 text-[10px] uppercase tracking-wider font-bold text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors rounded-lg border-border/40"
               onClick={() => {
-                trigger(15);
-                setIsPreviewMode(!isPreviewMode);
+              trigger("MEDIUM");
+              setIsPreviewMode(!isPreviewMode);
               }}
               disabled={!description.trim() && !isPreviewMode}
             >
@@ -221,7 +221,7 @@ export function TaskEditView({
               variant="outline"
               size="sm"
               onClick={() => {
-                trigger(15);
+                trigger("MEDIUM");
                 setShowSubtasks(!showSubtasks);
               }}
               className={cn(
@@ -292,7 +292,7 @@ export function TaskEditView({
             )}
             onClick={() => {
               const nextValue = !isEvening;
-              trigger(15);
+              trigger("MEDIUM");
               setIsEvening(nextValue);
               if (nextValue && !doDate) {
                 setDoDate(new Date());
@@ -326,12 +326,12 @@ export function TaskEditView({
           <Select
             value={selectedProjectId || "inbox"}
             onValueChange={(v) => {
-              trigger(15);
+              trigger("MEDIUM");
               setSelectedProjectId(v === "inbox" ? null : v);
             }}
           >
             <SelectTrigger
-              onPointerDown={() => trigger(15)}
+            onPointerDown={() => trigger("MEDIUM")}
               className={cn(
                 "h-10 w-[120px] md:w-[140px] type-ui border-border/50 bg-background hover:bg-accent hover:text-accent-foreground shrink-0 focus:ring-0 rounded-lg",
                 selectedProjectId ? "min-w-20" : "min-w-12",
@@ -372,7 +372,7 @@ export function TaskEditView({
             size="sm"
             className="h-10 w-10 p-0 text-muted-foreground/60 hover:text-red-500 hover:bg-red-500/10 transition-seijaku-fast [&_svg]:!size-5 rounded-lg"
             onClick={() => {
-              trigger(50);
+              trigger("HEAVY");
               onDelete();
             }}
             title="Delete task"
@@ -390,7 +390,7 @@ export function TaskEditView({
                 "bg-brand hover:bg-brand/90 text-brand-foreground shadow-lg shadow-brand/10",
             )}
             onClick={() => {
-              trigger([10, 50]);
+              trigger("SUCCESS");
               onSubmit();
             }}
             disabled={!hasContent || isPending}

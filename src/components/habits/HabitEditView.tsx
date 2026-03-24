@@ -140,7 +140,7 @@ export function HabitEditView({
             size="sm"
             className="h-10 w-10 p-0 text-muted-foreground/60 hover:text-red-500 hover:bg-red-500/10 transition-seijaku-fast [&_svg]:!size-5 rounded-lg"
             onClick={() => {
-              trigger(50);
+              trigger("HEAVY");
               onDelete();
             }}
             title="Delete habit"
@@ -170,7 +170,7 @@ export function HabitEditView({
           size="sm"
           className="h-10 w-10 p-0 rounded-lg bg-brand hover:bg-brand/90 text-brand-foreground shadow-lg shadow-brand/10 transition-seijaku flex items-center justify-center"
           onClick={() => {
-            trigger([10, 50]);
+            trigger("SUCCESS");
             onSubmit();
           }}
           disabled={!hasContent || isPending}

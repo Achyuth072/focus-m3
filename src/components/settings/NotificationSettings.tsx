@@ -112,7 +112,7 @@ export function NotificationSettings() {
 
   const handleTogglePush = async (checked: boolean) => {
     if (isSyncing) return;
-    trigger(15);
+    trigger("MEDIUM");
 
     if (!isSupported) {
       toast.error("Push notifications are not supported in this browser");
@@ -133,7 +133,7 @@ export function NotificationSettings() {
   };
 
   const updateNotifySetting = async (key: string, checked: boolean) => {
-    trigger(10);
+    trigger("LIGHT");
     try {
       await updateSettings.mutateAsync({
         notifications: {
@@ -147,7 +147,7 @@ export function NotificationSettings() {
   };
 
   const handleTestNotification = async () => {
-    trigger(15);
+    trigger("MEDIUM");
     if (permission !== "granted") {
       toast.error("Please enable notifications first");
       return;
@@ -238,7 +238,7 @@ export function NotificationSettings() {
             <Select
               value={profile?.timezone || "UTC"}
               onValueChange={(val) => {
-                trigger(15);
+                trigger("MEDIUM");
                 updateProfile.mutate({ timezone: val });
                 setTimezoneSearch(""); // Clear search on selection
               }}

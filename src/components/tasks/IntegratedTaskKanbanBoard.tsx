@@ -108,7 +108,7 @@ export function IntegratedTaskKanbanBoard({
 
       if (Object.keys(updates).length > 0) {
         updateTaskMutation.mutate({ id: task.id, ...updates });
-        trigger(50); // Thud haptic for drop commitment
+        trigger("HEAVY"); // Thud haptic for drop commitment
       }
     },
     [updateTaskMutation, trigger, getTaskUpdatesForColumn],
@@ -150,7 +150,7 @@ export function IntegratedTaskKanbanBoard({
       tasks.splice(finalIndex, 0, { ...draggedTask, ...updates });
 
       reorderMutation.mutate(tasks.map((t) => t.id));
-      trigger(50);
+      trigger("HEAVY");
     },
     [
       boardColumns,
@@ -243,7 +243,7 @@ const TaskCardWrapper = React.memo(function TaskCardWrapper({
 
   const handleComplete = useCallback(
     (checked: boolean) => {
-      trigger(checked ? [10, 50] : 15);
+      trigger(checked ? "SUCCESS" : "MEDIUM");
       toggleMutation.mutate({ id: task.id, is_completed: checked });
     },
     [task.id, toggleMutation, trigger],
@@ -252,7 +252,7 @@ const TaskCardWrapper = React.memo(function TaskCardWrapper({
   const handlePlayFocus = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
-      trigger(50);
+      trigger("HEAVY");
       startTimer(task.id);
       router.push("/focus");
     },

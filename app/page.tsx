@@ -61,7 +61,7 @@ function HomeContent() {
                 </span>
                 <button
                   onClick={() => {
-                    trigger(15);
+                    trigger("MEDIUM");
                     router.push("/");
                   }}
                   className="hover:bg-accent/60 p-0.5 rounded-full transition-colors"

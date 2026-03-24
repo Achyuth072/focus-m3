@@ -225,8 +225,7 @@ export function useDeleteTask() {
         const taskToRestore = { ...deletedTask };
 
         // Success Haptic (Double Tick)
-        trigger(20);
-        setTimeout(() => trigger(20), 150);
+        trigger("SUCCESS");
 
         toast("Task deleted", {
           description: deletedTask.content,
@@ -238,8 +237,7 @@ export function useDeleteTask() {
                 // Restore to mock store
                 mockStore.addTask(taskToRestore);
                 queryClient.invalidateQueries({ queryKey: ["tasks"] });
-                trigger(20);
-                setTimeout(() => trigger(20), 150);
+                trigger("SUCCESS");
                 toast("Task restored");
                 return;
               }
@@ -268,13 +266,12 @@ export function useDeleteTask() {
                 console.error("Failed to restore task:", error);
 
                 // Error Haptic (Strong Pulse)
-                trigger(50);
+                trigger("HEAVY");
 
                 toast.error("Failed to restore task");
               } else {
                 // Success Haptic (Double Tick)
-                trigger(20);
-                setTimeout(() => trigger(20), 150);
+                trigger("SUCCESS");
 
                 toast("Task restored");
               }

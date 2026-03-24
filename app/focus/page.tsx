@@ -80,7 +80,7 @@ export default function FocusPage() {
   };
 
   const handlePiP = async () => {
-    trigger(15);
+    trigger("MEDIUM");
     if (isPiPActive) {
       closePiP();
     } else {
@@ -97,7 +97,7 @@ export default function FocusPage() {
       {/* Close Button */}
       <motion.button
         onClick={() => router.back()}
-        onTapStart={() => trigger(50)}
+        onTapStart={() => trigger("HEAVY")}
         whileTap={isPhone ? { scale: 0.95 } : {}}
         className={cn(
           buttonVariants({ variant: "ghost", size: "icon" }),
@@ -111,7 +111,7 @@ export default function FocusPage() {
       {isPiPSupported && !isPhone && (
         <motion.button
           onClick={handlePiP}
-          onTapStart={() => trigger(50)}
+          onTapStart={() => trigger("HEAVY")}
           whileTap={isPhone ? { scale: 0.95 } : {}}
           className={cn(
             buttonVariants({ variant: "ghost", size: "icon" }),
@@ -185,7 +185,7 @@ export default function FocusPage() {
                   buttonVariants({ variant: "ghost", size: "icon" }),
                   "h-14 w-14 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-seijaku cursor-pointer",
                 )}
-                onTapStart={() => trigger(50)}
+                onTapStart={() => trigger("HEAVY")}
                 whileTap={isPhone ? { scale: 0.95 } : {}}
                 onClick={() => {
                   stop();
@@ -201,7 +201,7 @@ export default function FocusPage() {
                   buttonVariants({ variant: "default", size: "icon" }),
                   "h-20 w-20 rounded-full transition-seijaku hover:scale-105 active:scale-95 active:opacity-90 cursor-pointer",
                 )}
-                onTapStart={() => trigger(50)}
+                onTapStart={() => trigger("HEAVY")}
                 whileTap={isPhone ? { scale: 0.95 } : {}}
                 onClick={handlePlayPause}
               >
@@ -218,7 +218,7 @@ export default function FocusPage() {
                   buttonVariants({ variant: "ghost", size: "icon" }),
                   "h-14 w-14 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-seijaku cursor-pointer",
                 )}
-                onTapStart={() => trigger(50)}
+                onTapStart={() => trigger("HEAVY")}
                 whileTap={isPhone ? { scale: 0.95 } : {}}
                 onClick={skip}
               >

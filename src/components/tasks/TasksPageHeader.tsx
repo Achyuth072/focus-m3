@@ -29,6 +29,7 @@ import { useHaptic } from "@/lib/hooks/useHaptic";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 import { useHotkeys } from "react-hotkeys-hook";
+import { SyncIndicator } from "@/components/ui/SyncIndicator";
 
 interface TasksPageHeaderProps {
   currentSort: SortOption;
@@ -65,6 +66,7 @@ export function TasksPageHeader({
 
   return (
     <div className="flex items-center gap-2">
+      <SyncIndicator />
       <div className="flex items-center rounded-md border border-input h-8 overflow-hidden bg-muted/20">
         <Button
           variant="ghost"
@@ -76,7 +78,7 @@ export function TasksPageHeader({
               : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
           )}
           onClick={() => {
-            trigger(15);
+            trigger("MEDIUM");
             onViewModeChange("grid");
           }}
           title="Grid View (Shift+1)"
@@ -94,7 +96,7 @@ export function TasksPageHeader({
                 : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
             )}
             onClick={() => {
-              trigger(15);
+              trigger("MEDIUM");
               onViewModeChange("board");
             }}
             title="Board View (Shift+2)"
@@ -112,7 +114,7 @@ export function TasksPageHeader({
               : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
           )}
           onClick={() => {
-            trigger(15);
+            trigger("MEDIUM");
             onViewModeChange("list");
           }}
           title="List View (Shift+3)"
@@ -127,7 +129,7 @@ export function TasksPageHeader({
             variant="outline"
             size="sm"
             className="h-8 w-8 p-0"
-            onPointerDown={() => trigger(25)}
+            onPointerDown={() => trigger("TAP")}
           >
             <ListFilter className="h-4 w-4" />
           </Button>
@@ -142,7 +144,7 @@ export function TasksPageHeader({
               <DropdownMenuRadioItem
                 key={value}
                 value={value}
-                onClick={() => trigger(15)}
+                onClick={() => trigger("MEDIUM")}
               >
                 {label}
               </DropdownMenuRadioItem>
@@ -158,7 +160,7 @@ export function TasksPageHeader({
               <DropdownMenuRadioItem
                 key={value}
                 value={value}
-                onClick={() => trigger(15)}
+                onClick={() => trigger("MEDIUM")}
               >
                 {label}
               </DropdownMenuRadioItem>

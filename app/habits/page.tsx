@@ -17,12 +17,12 @@ export default function HabitsPage() {
   const { trigger } = useHaptic();
 
   const handleOpenCreate = () => {
-    trigger(15);
+    trigger("MEDIUM");
     openAddHabit();
   };
 
   const handleEditHabit = (habit: HabitWithEntries) => {
-    trigger(15);
+    trigger("MEDIUM");
     openEditHabit(habit);
   };
 
