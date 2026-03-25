@@ -64,6 +64,14 @@ const FloatingTimer = dynamic(
   { ssr: false },
 );
 
+const ProjectDialogs = dynamic(
+  () =>
+    import("@/components/projects/ProjectDialogs").then(
+      (mod) => mod.ProjectDialogs,
+    ),
+  { ssr: false },
+);
+
 interface AppShellProps {
   children: React.ReactNode;
 }
@@ -231,6 +239,7 @@ function AppShellContent({ children }: AppShellProps) {
           open={isCreateProjectOpen}
           onOpenChange={closeCreateProject}
         />
+        <ProjectDialogs />
 
         {/* Global Command Menu */}
         <CommandMenu open={commandOpen} onOpenChange={setCommandOpen} />

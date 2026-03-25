@@ -1,20 +1,33 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogFooter,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogCancel,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import { useArchiveProject, useMoveTasksToInbox, useDeleteProjectTasks } from "@/lib/hooks/useProjectMutations";
 import type { Project } from "@/lib/types/task";
-import { cn } from "@/lib/utils";
-import { Inbox, ArchiveRestore, Trash2, Loader2 } from "lucide-react";
+import { useHaptic } from "@/lib/hooks/useHaptic";
+import { useEffect } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
+import { useBackNavigation } from "@/lib/hooks/useBackNavigation";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 interface DeleteProjectDialogProps {
   project: Project | null;
@@ -22,137 +35,145 @@ interface DeleteProjectDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-type ActionType = "inbox" | "delete" | "keep" | null;
+type ActiveAction = "keep" | "inbox" | "delete" | null;
 
 export function DeleteProjectDialog({ project, open, onOpenChange }: DeleteProjectDialogProps) {
+  const isDesktop = useMediaQuery("(min-width: 768px)");
   const archiveProject = useArchiveProject();
   const moveTasksToInbox = useMoveTasksToInbox();
   const deleteProjectTasks = useDeleteProjectTasks();
-  
-  const [selectedOption, setSelectedOption] = useState<ActionType>("inbox");
+  const { trigger } = useHaptic();
+
+  const [activeAction, setActiveAction] = useState<ActiveAction>(null);
   const isPending = archiveProject.isPending || moveTasksToInbox.isPending || deleteProjectTasks.isPending;
-  
+
+  // Handle back navigation on mobile to close drawer instead of navigating away
+  useBackNavigation(open && !isDesktop, () => onOpenChange(false));
+
+  // Haptic on open
+  useEffect(() => {
+    if (open) trigger("WARNING");
+  }, [open, trigger]);
+
   // Close on success
   useEffect(() => {
-    if (archiveProject.isSuccess && selectedOption) {
+    if (archiveProject.isSuccess && activeAction) {
       onOpenChange(false);
-      setSelectedOption("inbox");
+      setActiveAction(null);
     }
-  }, [archiveProject.isSuccess, selectedOption, onOpenChange]);
-  
-  // Reset on error
-  useEffect(() => {
-    if (archiveProject.isError) {
-      // Keep selected option but allow retry
-    }
-  }, [archiveProject.isError]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [archiveProject.isSuccess]);
 
-  const handleConfirm = async () => {
-    if (!project) return;
-    
-    if (selectedOption === "inbox") {
-      await moveTasksToInbox.mutateAsync(project.id);
-    } else if (selectedOption === "delete") {
-      await deleteProjectTasks.mutateAsync(project.id);
-    }
-    
-    archiveProject.mutate(project.id);
-  };
-  
   if (!project) return null;
 
-  const options = [
-    {
-      id: "inbox",
-      title: "Move to Inbox",
-      description: "Keep your tasks and move them to the Inbox for later.",
-      icon: Inbox,
-      destructive: false,
-    },
-    {
-      id: "keep",
-      title: "Keep Archived",
-      description: "Archive the project and tasks. They won't be visible in active lists.",
-      icon: ArchiveRestore,
-      destructive: false,
-    },
-    {
-      id: "delete",
-      title: "Delete All Tasks",
-      description: "Permanently delete the project and all of its tasks.",
-      icon: Trash2,
-      destructive: true,
-    },
-  ] as const;
-  
+  const handleKeepArchived = async () => {
+    setActiveAction("keep");
+    await archiveProject.mutateAsync(project.id);
+    trigger("SUCCESS");
+  };
+
+  const handleInbox = async () => {
+    setActiveAction("inbox");
+    await moveTasksToInbox.mutateAsync(project.id);
+    await archiveProject.mutateAsync(project.id);
+    trigger("SUCCESS");
+  };
+
+  const handleDeleteAll = async () => {
+    setActiveAction("delete");
+    await deleteProjectTasks.mutateAsync(project.id);
+    await archiveProject.mutateAsync(project.id);
+    trigger("SUCCESS");
+  };
+
+  const description = `Are you sure you want to delete "${project.name}"? Choose what happens to its tasks.`;
+
+  if (isDesktop) {
+    return (
+      <AlertDialog open={open} onOpenChange={onOpenChange}>
+        <AlertDialogContent aria-describedby="delete-project-description">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Project</AlertDialogTitle>
+            <AlertDialogDescription id="delete-project-description">
+              {description}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => { trigger("LIGHT"); onOpenChange(false); }}>
+              Cancel
+            </AlertDialogCancel>
+            <Button
+              variant="outline"
+              disabled={isPending}
+              onClick={handleKeepArchived}
+            >
+              {activeAction === "keep" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Keep Archived
+            </Button>
+            <Button
+              variant="outline"
+              disabled={isPending}
+              onClick={handleInbox}
+            >
+              {activeAction === "inbox" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Move to Inbox
+            </Button>
+            <AlertDialogAction
+              onClick={handleDeleteAll}
+              disabled={isPending}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {activeAction === "delete" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    );
+  }
+
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="max-w-md">
-        <AlertDialogHeader>
-          <AlertDialogTitle>Delete Project</AlertDialogTitle>
-          <AlertDialogDescription>
-            Choose what happens to the tasks in "{project.name}".
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-
-        <div className="space-y-2 py-4">
-          {options.map((option) => {
-            const Icon = option.icon;
-            const isSelected = selectedOption === option.id;
-            return (
-              <button
-                key={option.id}
-                onClick={() => setSelectedOption(option.id)}
-                className={cn(
-                  "w-full text-left p-4 rounded-xl border transition-all duration-200",
-                  "flex items-start gap-4",
-                  isSelected 
-                    ? option.destructive 
-                      ? "bg-destructive/10 border-destructive ring-1 ring-destructive"
-                      : "bg-primary/5 border-primary ring-1 ring-primary"
-                    : "bg-card hover:bg-muted border-border"
-                )}
-              >
-                <div className={cn(
-                  "mt-1 p-2 rounded-lg shrink-0",
-                  isSelected
-                    ? option.destructive ? "bg-destructive text-destructive-foreground" : "bg-primary text-primary-foreground"
-                    : "bg-secondary text-muted-foreground"
-                )}>
-                  <Icon className="h-4 w-4" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="font-semibold">{option.title}</div>
-                  <div className="text-sm text-muted-foreground leading-relaxed">
-                    {option.description}
-                  </div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        <AlertDialogFooter className="flex-col gap-2 sm:flex-row sm:justify-end">
-          <AlertDialogCancel disabled={isPending} className="sm:flex-1">
-            Cancel
-          </AlertDialogCancel>
+    <Drawer open={open} onOpenChange={onOpenChange} repositionInputs={false}>
+      <DrawerContent>
+        <DrawerHeader className="text-left">
+          <DrawerTitle>Delete Project</DrawerTitle>
+          <DrawerDescription>{description}</DrawerDescription>
+        </DrawerHeader>
+        <DrawerFooter className="pt-2">
           <Button
-            onClick={handleConfirm}
+            onClick={handleDeleteAll}
+            variant="destructive"
+            className="w-full bg-destructive text-destructive-foreground hover:bg-destructive/90"
             disabled={isPending}
-            className={cn(
-              "sm:flex-1",
-              selectedOption === "delete" && "bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            )}
           >
-            {isPending ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Working...
-              </>
-            ) : "Confirm"}
+            {activeAction === "delete" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Delete All Tasks
           </Button>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+          <Button
+            variant="outline"
+            className="w-full"
+            disabled={isPending}
+            onClick={handleInbox}
+          >
+            {activeAction === "inbox" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Move to Inbox
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full"
+            disabled={isPending}
+            onClick={handleKeepArchived}
+          >
+            {activeAction === "keep" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Keep Archived
+          </Button>
+          <DrawerClose asChild>
+            <Button variant="outline" className="w-full" onClick={() => trigger("LIGHT")}>
+              Cancel
+            </Button>
+          </DrawerClose>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useIsFetching, useIsMutating } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
+import { useAuth } from "@/components/AuthProvider";
 
 const LINGER_MS = 150;
 
@@ -10,10 +11,12 @@ const LINGER_MS = 150;
  *
  * Shows immediately when any TanStack Query operation starts.
  * Lingers for LINGER_MS after the last operation ends so users can perceive it.
+ * Hidden during auth loading phase and in guest mode.
  */
 export function SyncIndicator() {
   const isFetching = useIsFetching();
   const isMutating = useIsMutating();
+  const { isGuestMode, loading } = useAuth();
   const isSyncing = isFetching > 0 || isMutating > 0;
 
   const [visible, setVisible] = useState(false);
@@ -21,8 +24,13 @@ export function SyncIndicator() {
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
+    // Do not update spinner state while auth is loading or in guest mode
+    if (loading || isGuestMode) {
+      setVisible(false);
+      return;
+    }
+
     if (isSyncing) {
-      // Syncing started — show immediately, cancel any pending hide
       wasSyncingRef.current = true;
       setVisible(true);
       if (timerRef.current) {
@@ -30,14 +38,16 @@ export function SyncIndicator() {
         timerRef.current = undefined;
       }
     } else if (wasSyncingRef.current) {
-      // Syncing just ended — linger for LINGER_MS then hide
       wasSyncingRef.current = false;
       timerRef.current = setTimeout(() => setVisible(false), LINGER_MS);
     }
-  }, [isSyncing]);
+  }, [isSyncing, loading, isGuestMode]);
 
   // Cleanup on unmount only
   useEffect(() => () => clearTimeout(timerRef.current), []);
+
+  // Don't render while auth is still loading or guest
+  if (loading || isGuestMode) return null;
 
   return (
     <div

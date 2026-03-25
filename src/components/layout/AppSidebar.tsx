@@ -34,14 +34,25 @@ import {
   ChevronDown,
   Trash2,
   ArchiveRestore,
+  MoreHorizontal,
+  Pencil,
 } from "lucide-react";
 import { useCompletedTasks } from "@/components/CompletedTasksProvider";
 import { useProjects } from "@/lib/hooks/useProjects";
 import { useProjectActions } from "@/components/ProjectActionsProvider";
 import { useUiStore } from "@/lib/store/uiStore";
 import { useHaptic } from "@/lib/hooks/useHaptic";
-import { DeleteProjectDialog } from "@/components/projects/DeleteProjectDialog";
 import { ArchivedProjectsDialog } from "@/components/projects/ArchivedProjectsDialog";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerClose,
+} from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
 
 const mainNavItems = [
   { label: "All Tasks", icon: CheckSquare, path: "/", isAction: false },
@@ -62,11 +73,17 @@ export function AppSidebar() {
   const { isMobile, setOpenMobile } = useSidebar();
   const { openSheet } = useCompletedTasks();
   const { data: projects } = useProjects();
-  const { openCreateProject } = useProjectActions();
+   const {
+    openCreateProject,
+    openEditProject,
+    openDeleteProject,
+  } = useProjectActions();
   const { isProjectsOpen, toggleProjectsOpen } = useUiStore();
   const { trigger } = useHaptic();
 
-  const [deleteProject, setDeleteProject] = useState<Project | null>(null);
+  const [mobileActionProject, setMobileActionProject] = useState<Project | null>(
+    null,
+  );
   const [isArchivedOpen, setIsArchivedOpen] = useState(false);
 
   const currentProjectId = searchParams.get("project");
@@ -227,11 +244,12 @@ export function AppSidebar() {
                   {projects
                     ?.filter((p) => !p.is_inbox)
                     .map((project) => (
-                      <SidebarMenuItem key={project.id}>
+                       <SidebarMenuItem key={project.id} className="relative">
                         <SidebarMenuButton
                           asChild
                           isActive={currentProjectId === project.id}
                           tooltip={project.name}
+                          className="peer"
                         >
                           <Link
                             href={`/?project=${project.id}`}
@@ -256,19 +274,49 @@ export function AppSidebar() {
                             <span className="truncate">{project.name}</span>
                           </Link>
                         </SidebarMenuButton>
-                        <SidebarMenuAction
-                          showOnHover
-                          className="group-data-[collapsible=icon]:hidden"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            trigger("MEDIUM");
-                            setDeleteProject(project);
-                          }}
-                          title="Delete Project"
-                        >
-                          <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive transition-colors" />
-                        </SidebarMenuAction>
+
+                        {/* Project Actions */}
+                        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-end">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              trigger("MEDIUM");
+                              setMobileActionProject(project);
+                            }}
+                            className="md:hidden p-1.5 rounded-md hover:bg-accent transition-colors active:scale-95"
+                            aria-label="Project options"
+                          >
+                            <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                          </button>
+
+                          <div className="hidden md:flex items-center opacity-0 peer-hover:opacity-100 peer-focus-within:opacity-100 hover:opacity-100 focus-within:opacity-100 transition-opacity group-data-[collapsible=icon]:hidden gap-0.5">
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                trigger("MEDIUM");
+                                openEditProject(project);
+                              }}
+                              className="p-1.5 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
+                              title="Edit Project"
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                trigger("WARNING");
+                                openDeleteProject(project);
+                              }}
+                              className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                              title="Delete Project"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        </div>
                       </SidebarMenuItem>
                     ))}
 
@@ -361,15 +409,54 @@ export function AppSidebar() {
           </div>
         </SidebarFooter>
       </Sidebar>
-      <DeleteProjectDialog
-        project={deleteProject}
-        open={!!deleteProject}
-        onOpenChange={(open) => !open && setDeleteProject(null)}
-      />
-      <ArchivedProjectsDialog
+       <ArchivedProjectsDialog
         open={isArchivedOpen}
         onOpenChange={setIsArchivedOpen}
       />
+
+      {/* Mobile Project Action Drawer */}
+      <Drawer
+        open={!!mobileActionProject}
+        onOpenChange={(open) => !open && setMobileActionProject(null)}
+      >
+        <DrawerContent>
+          <DrawerHeader className="text-left">
+            <DrawerTitle>{mobileActionProject?.name}</DrawerTitle>
+            <DrawerDescription>What would you like to do?</DrawerDescription>
+          </DrawerHeader>
+          <DrawerFooter className="pt-2">
+            <DrawerClose asChild>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => {
+                  trigger("MEDIUM");
+                  if (mobileActionProject) openEditProject(mobileActionProject);
+                }}
+              >
+                Edit Project
+              </Button>
+            </DrawerClose>
+            <DrawerClose asChild>
+              <Button
+                variant="destructive"
+                className="w-full bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={() => {
+                  trigger("WARNING");
+                  if (mobileActionProject) openDeleteProject(mobileActionProject);
+                }}
+              >
+                Delete Project
+              </Button>
+            </DrawerClose>
+            <DrawerClose asChild>
+              <Button variant="outline" className="w-full" onClick={() => trigger("LIGHT")}>
+                Cancel
+              </Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 }

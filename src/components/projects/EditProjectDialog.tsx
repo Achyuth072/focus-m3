@@ -2,10 +2,8 @@
 
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  CreateProjectSchema,
-  type CreateProjectInput,
-} from "@/lib/schemas/project";
+import { z } from "zod";
+import { useEffect } from "react";
 import {
   ResponsiveDialog,
   ResponsiveDialogContent,
@@ -16,53 +14,79 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { useCreateProject } from "@/lib/hooks/useProjectMutations";
+import { useUpdateProject } from "@/lib/hooks/useProjectMutations";
 import { useHaptic } from "@/lib/hooks/useHaptic";
 import { useHorizontalScroll } from "@/lib/hooks/useHorizontalScroll";
 import { cn } from "@/lib/utils";
-import { PROJECT_COLORS, DEFAULT_PROJECT_COLOR } from "@/lib/constants/colors";
+import { PROJECT_COLORS } from "@/lib/constants/colors";
+import type { Project } from "@/lib/types/task";
 
-interface CreateProjectDialogProps {
+const EditProjectSchema = z.object({
+  name: z.string().min(1, "Name is required").max(50, "Name is too long"),
+  color: z.string(),
+});
+
+type EditProjectInput = z.infer<typeof EditProjectSchema>;
+
+interface EditProjectDialogProps {
+  project: Project | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function CreateProjectDialog({
+export function EditProjectDialog({
+  project,
   open,
   onOpenChange,
-}: CreateProjectDialogProps) {
+}: EditProjectDialogProps) {
   const {
     register,
     handleSubmit,
     setValue,
     control,
     reset,
-    formState: { errors, isValid },
-  } = useForm<CreateProjectInput>({
-    resolver: zodResolver(CreateProjectSchema),
+    formState: { errors, isValid, isDirty },
+  } = useForm<EditProjectInput>({
+    resolver: zodResolver(EditProjectSchema),
     mode: "onChange",
     defaultValues: {
       name: "",
-      color: DEFAULT_PROJECT_COLOR,
-      view_style: "list",
+      color: PROJECT_COLORS[0].hex,
     },
   });
 
   const color = useWatch({
     control,
     name: "color",
-    defaultValue: DEFAULT_PROJECT_COLOR,
+    defaultValue: PROJECT_COLORS[0].hex,
   });
-  const createProject = useCreateProject();
+
+  const updateProject = useUpdateProject();
   const { trigger } = useHaptic();
   const scrollRef = useHorizontalScroll();
 
-  const onFormSubmit = (data: CreateProjectInput) => {
-    trigger("HEAVY");
-    createProject.mutate(data);
-    reset();
+  // Sync form with project when opened
+  useEffect(() => {
+    if (project && open) {
+      reset({
+        name: project.name,
+        color: project.color,
+      });
+    }
+  }, [project, open, reset]);
+
+  const onFormSubmit = (data: EditProjectInput) => {
+    if (!project) return;
+    trigger("SUCCESS");
+    updateProject.mutate({
+      id: project.id,
+      name: data.name,
+      color: data.color,
+    });
     onOpenChange(false);
   };
+
+  if (!project) return null;
 
   return (
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
@@ -73,22 +97,22 @@ export function CreateProjectDialog({
         >
           <ResponsiveDialogHeader className="px-4 pt-6 shrink-0">
             <ResponsiveDialogTitle className="type-h2">
-              Create Project
+              Edit Project
             </ResponsiveDialogTitle>
             <ResponsiveDialogDescription className="sr-only">
-              Organize your tasks into a new project.
+              Update project name and color.
             </ResponsiveDialogDescription>
           </ResponsiveDialogHeader>
 
           <div className="flex-1 overflow-y-auto min-h-0 px-4 py-4 space-y-4">
             <div className="grid gap-2">
-              <Label htmlFor="project-name" className="sr-only">
+              <Label htmlFor="edit-project-name" className="sr-only">
                 Project Name
               </Label>
               <Textarea
                 {...register("name")}
-                id="project-name"
-                placeholder="Work, Personal, School..."
+                id="edit-project-name"
+                placeholder="Project name..."
                 autoFocus
                 className={cn(
                   "text-xl sm:text-2xl font-semibold px-3 py-2 h-10 min-h-[40px] bg-transparent border-border focus-visible:ring-1 focus-visible:ring-ring shadow-sm resize-none placeholder:text-muted-foreground/30 tracking-tight leading-tight rounded-md transition-all",
@@ -98,19 +122,17 @@ export function CreateProjectDialog({
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
-                    if (isValid) {
+                    if (isValid && isDirty) {
                       handleSubmit(onFormSubmit)();
                     }
                   }
                 }}
                 aria-invalid={!!errors.name}
-                aria-describedby={
-                  errors.name ? "project-name-error" : undefined
-                }
+                aria-describedby={errors.name ? "edit-project-name-error" : undefined}
               />
               {errors.name && (
                 <p
-                  id="project-name-error"
+                  id="edit-project-name-error"
                   className="text-xs font-medium text-destructive mt-1"
                 >
                   {errors.name.message}
@@ -136,7 +158,7 @@ export function CreateProjectDialog({
                     aria-checked={color === c.hex}
                     onClick={() => {
                       trigger("MEDIUM");
-                      setValue("color", c.hex, { shouldValidate: true });
+                      setValue("color", c.hex, { shouldValidate: true, shouldDirty: true });
                     }}
                     className={cn(
                       "h-9 w-9 rounded-xl transition-all border-2 shrink-0 snap-start",
@@ -167,10 +189,10 @@ export function CreateProjectDialog({
             </Button>
             <Button
               type="submit"
-              disabled={!isValid || createProject.isPending}
+              disabled={!isValid || !isDirty || updateProject.isPending}
               className="bg-brand hover:bg-brand/90 text-brand-foreground shadow-lg shadow-brand/10 transition-seijaku h-10 px-6"
             >
-              {createProject.isPending ? "Creating..." : "Create"}
+              {updateProject.isPending ? "Saving..." : "Save Project"}
             </Button>
           </div>
         </form>

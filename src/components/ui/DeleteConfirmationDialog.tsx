@@ -92,7 +92,7 @@ export function DeleteConfirmationDialog({
           <Button
             onClick={handleConfirm}
             variant="destructive"
-            className="w-full"
+            className="w-full bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
             Delete
           </Button>
