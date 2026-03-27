@@ -19,6 +19,8 @@ interface MonthViewProps {
   currentDate: Date;
   events: CalendarEvent[];
   onDateClick?: (date: Date) => void;
+  onDateNumberClick?: (date: Date) => void;
+  onEventClick?: (event: CalendarEvent) => void;
   className?: string;
   "data-testid"?: string;
 }
@@ -29,6 +31,8 @@ interface MonthDayCellProps {
   isCurrentMonth: boolean;
   isCurrentDay: boolean;
   onDateClick?: (date: Date) => void;
+  onDateNumberClick?: (date: Date) => void;
+  onEventClick?: (event: CalendarEvent) => void;
 }
 
 const MonthDayCell = memo(
@@ -38,6 +42,8 @@ const MonthDayCell = memo(
     isCurrentMonth,
     isCurrentDay,
     onDateClick,
+    onDateNumberClick,
+    onEventClick,
   }: MonthDayCellProps) => {
     const maxVisible = 3;
     const visibleEvents = dayEvents.slice(0, maxVisible);
@@ -55,16 +61,20 @@ const MonthDayCell = memo(
       >
         {/* Date number */}
         <div className="flex items-center justify-between mb-0.5 md:mb-0.5 shrink-0">
-          <span
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDateNumberClick?.(day);
+            }}
             className={cn(
-              "text-xs md:text-sm font-medium transition-all",
-              isCurrentDay &&
-                "flex items-center justify-center w-5 h-5 md:w-6 md:h-6 rounded-lg bg-brand text-white shadow-sm",
+              "text-xs md:text-sm font-medium transition-all hover:opacity-70",
+              "min-w-6 min-h-6 flex items-center justify-center rounded-lg",
+              isCurrentDay && "bg-brand text-white shadow-sm hover:opacity-100",
               !isCurrentMonth && "text-muted-foreground/50",
             )}
           >
             {format(day, "d")}
-          </span>
+          </button>
         </div>
 
         {/* Events */}
@@ -72,7 +82,11 @@ const MonthDayCell = memo(
           {visibleEvents.map((event) => (
             <div
               key={event.id}
-              className="text-[10px] md:text-[11px] px-1.5 md:px-2 py-0.5 rounded-sm truncate bg-(--event-color)/20 text-foreground font-semibold leading-tight"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEventClick?.(event);
+              }}
+              className="text-[10px] md:text-[11px] px-1.5 md:px-2 py-0.5 rounded-sm truncate bg-(--event-color)/20 text-foreground font-semibold leading-tight hover:brightness-95 transition-all"
               style={
                 {
                   "--event-color": event.color || "hsl(var(--primary))",
@@ -105,6 +119,8 @@ const MonthView = memo(
     currentDate,
     events,
     onDateClick,
+    onDateNumberClick,
+    onEventClick,
     className,
     "data-testid": testId,
   }: MonthViewProps) => {
@@ -170,6 +186,8 @@ const MonthView = memo(
               isCurrentMonth={isSameMonth(day, currentDate)}
               isCurrentDay={isToday(day)}
               onDateClick={onDateClick}
+              onDateNumberClick={onDateNumberClick}
+              onEventClick={onEventClick}
             />
           ))}
         </div>

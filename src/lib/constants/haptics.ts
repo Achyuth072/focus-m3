@@ -1,9 +1,9 @@
 /**
  * Semantic Haptic Pattern Registry
- * 
+ *
  * All vibration patterns are centralized here. Components should import
  * and use these semantic names instead of raw millisecond values.
- * 
+ *
  * Per CONTEXT.md: Haptics are mobile-only, no desktop fallback.
  */
 export const HAPTIC_PATTERNS = {

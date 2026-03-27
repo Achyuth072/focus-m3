@@ -69,10 +69,12 @@ export function useTasks(options: UseTasksOptions = {}) {
       // Normal Supabase flow
       let query = supabase
         .from("tasks")
-        .select(`
+        .select(
+          `
           *,
           projects!left(is_archived)
-        `)
+        `,
+        )
         .is("parent_id", null) // Exclude subtasks from main list
         .order("day_order", { ascending: true })
         .order("created_at", { ascending: false });
@@ -85,7 +87,7 @@ export function useTasks(options: UseTasksOptions = {}) {
       } else if (filter === "p1") {
         query = query.eq("priority", 1);
       }
-      
+
       // Filter by project
       if (projectId === "inbox") {
         // Inbox: Only tasks without a project
@@ -106,8 +108,10 @@ export function useTasks(options: UseTasksOptions = {}) {
         throw new Error(error.message);
       }
 
-      let tasks = data as (Task & { projects: { is_archived: boolean } | null })[];
-      
+      let tasks = data as (Task & {
+        projects: { is_archived: boolean } | null;
+      })[];
+
       // Filter out tasks from archived projects for "All Tasks" view
       if (projectId === "all" || !projectId) {
         tasks = tasks.filter((t) => !t.projects?.is_archived);

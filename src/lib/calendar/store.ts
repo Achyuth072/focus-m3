@@ -9,13 +9,13 @@ import {
   subMonths,
   subYears,
 } from "date-fns";
-import type { CalendarEvent, CalendarView } from "./types";
+import type { CalendarView, CalendarEventUI } from "./types";
 
 interface CalendarStore {
   // State
   currentDate: Date;
   view: CalendarView;
-  events: CalendarEvent[];
+  events: CalendarEventUI[];
 
   // Actions
   setView: (view: CalendarView) => void;
@@ -23,10 +23,10 @@ interface CalendarStore {
   goToToday: () => void;
   next: () => void;
   prev: () => void;
-  addEvent: (event: CalendarEvent) => void;
-  updateEvent: (id: string, updates: Partial<CalendarEvent>) => void;
+  addEvent: (event: CalendarEventUI) => void;
+  updateEvent: (id: string, updates: Partial<CalendarEventUI>) => void;
   deleteEvent: (id: string) => void;
-  setEvents: (events: CalendarEvent[]) => void;
+  setEvents: (events: CalendarEventUI[]) => void;
 }
 
 export const useCalendarStore = create<CalendarStore>((set, get) => ({

@@ -18,6 +18,7 @@ describe("EventOverflowPopover", () => {
       start: new Date("2024-01-01T14:00:00"),
       end: new Date("2024-01-01T15:00:00"),
       color: "#00ff00",
+      allDay: false,
     },
     {
       id: "5",
@@ -25,6 +26,7 @@ describe("EventOverflowPopover", () => {
       start: new Date("2024-01-01T16:00:00"),
       end: new Date("2024-01-01T17:00:00"),
       color: "#0000ff",
+      allDay: false,
     },
   ];
 

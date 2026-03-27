@@ -169,7 +169,7 @@ describe("TaskSheet", () => {
         }),
       );
       // Verify signature haptic for task update
-      expect(mockHapticTrigger).toHaveBeenCalledWith([10, 50]);
+      expect(mockHapticTrigger).toHaveBeenCalledWith("HEAVY");
     });
   });
 });

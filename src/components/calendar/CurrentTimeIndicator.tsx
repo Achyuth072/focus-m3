@@ -29,21 +29,21 @@ export function CurrentTimeIndicator({ className }: CurrentTimeIndicatorProps) {
     <div
       data-testid="current-time-indicator"
       className={cn(
-        "absolute left-0 right-0 z-30 flex items-center pointer-events-none transition-all duration-500 ease-in-out",
+        "absolute left-0 right-0 z-30 h-0 overflow-visible pointer-events-none transition-all duration-500 ease-in-out",
         className,
       )}
       style={{ top: `${topPx}px` }}
     >
-      {/* The Dot/Label on the left */}
-      <div className="absolute left-0 flex items-center">
-        <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-brand shadow-[0_0_0_2px_rgba(255,255,255,1)] dark:shadow-[0_0_0_2px_rgba(26,26,26,1)]" />
-        <span className="ml-2 px-1.5 py-0.5 rounded bg-brand text-white text-[9px] md:text-[10px] font-bold leading-none uppercase tracking-wider">
+      {/* 1. The Horizontal Line, rendered first to be on BOTTOM */}
+      <div className="absolute left-0 right-0 h-[2px] bg-brand/60 -translate-y-1/2" />
+
+      {/* 2. The Dot/Label on the left, rendered second to be on TOP */}
+      <div className="absolute left-0 flex items-center h-0 overflow-visible -translate-y-1/2">
+        <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-brand shadow-[0_0_0_2px_rgba(255,255,255,1)] dark:shadow-[0_0_0_2px_rgba(10,10,10,1)]" />
+        <span className="ml-2 px-1.5 py-0.5 rounded bg-brand text-white text-[9px] md:text-[10px] font-bold leading-none uppercase tracking-wider whitespace-nowrap shadow-sm">
           {format(now, "h:mm a")}
         </span>
       </div>
-
-      {/* The Horizontal Line */}
-      <div className="w-full h-[2px] bg-brand/60" />
     </div>
   );
 }

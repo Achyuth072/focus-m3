@@ -105,6 +105,7 @@ describe("Regression Fixes", () => {
       start: today,
       end: new Date(today.getTime() + 3600000),
       color: "#ff0000",
+      allDay: false,
     };
 
     render(<MonthView currentDate={today} events={[event]} />);

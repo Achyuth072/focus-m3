@@ -180,7 +180,7 @@ describe("TaskDetailPanel", () => {
 
     // Then: onClose should be triggered
     expect(onClose).toHaveBeenCalled();
-    expect(mockHapticTrigger).toHaveBeenCalledWith(10);
+    expect(mockHapticTrigger).toHaveBeenCalledWith("LIGHT");
   });
 
   it("TD-N-06: Resets form when task changes", async () => {

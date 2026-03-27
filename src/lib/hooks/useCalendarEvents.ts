@@ -2,7 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { useCalendarStore } from "@/lib/calendar/store";
 import { useEffect, useMemo } from "react";
-import type { CalendarEvent } from "@/lib/calendar/types";
+import type { CalendarEventUI } from "@/lib/calendar/types";
+import { toCalendarEventUI } from "@/lib/types/calendar-event";
 import { useAuth } from "@/components/AuthProvider";
 import { mockStore } from "@/lib/mock/mock-store";
 
@@ -11,7 +12,24 @@ export function useCalendarEvents() {
   const setEvents = useCalendarStore((state) => state.setEvents);
   const { isGuestMode } = useAuth();
 
-  const { data: tasks, isLoading } = useQuery({
+  // 1. Fetch Dedicated Calendar Events
+  const { data: dedicatedEvents, isLoading: eventsLoading } = useQuery({
+    queryKey: ["calendar-events", isGuestMode],
+    queryFn: async () => {
+      if (isGuestMode) return [];
+
+      const { data, error } = await supabase
+        .from("calendar_events")
+        .select("*")
+        .eq("is_archived", false);
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // 2. Fetch Tasks as Events
+  const { data: tasks, isLoading: tasksLoading } = useQuery({
     queryKey: ["calendar-tasks", isGuestMode],
     queryFn: async () => {
       // Guest Mode
@@ -57,39 +75,51 @@ export function useCalendarEvents() {
     },
   });
 
-  // Define the shape of the data returned by Supabase
+  // Define the shape of the data returned by Supabase tasks select
   type CalendarTaskData = {
     id: string;
     content: string;
-    due_date: string; // Supabase returns dates as strings
+    due_date: string;
     project_id: string | null;
     projects: { color: string } | { color: string }[] | null;
   };
 
-  // Memoize the transformation to prevent recalculating on every render
+  // Memoize the transformation and merging
   const calendarEvents = useMemo(() => {
-    if (!tasks) return [];
+    const results: CalendarEventUI[] = [];
 
-    return (tasks as unknown as CalendarTaskData[]).map((task) => {
-      const startDate = new Date(task.due_date);
-      const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
+    // Map dedicated events
+    if (dedicatedEvents) {
+      dedicatedEvents.forEach((e) => results.push(toCalendarEventUI(e)));
+    }
 
-      return {
-        id: task.id,
-        title: task.content,
-        start: startDate,
-        end: endDate,
-        color:
-          (Array.isArray(task.projects)
-            ? task.projects[0]?.color
-            : task.projects?.color) || "hsl(var(--primary))",
-      } as CalendarEvent;
-    });
-  }, [tasks]);
+    // Map tasks
+    if (tasks) {
+      (tasks as unknown as CalendarTaskData[]).forEach((task) => {
+        const startDate = new Date(task.due_date);
+        const endDate = new Date(startDate.getTime() + 60 * 60 * 1000);
+
+        results.push({
+          id: task.id,
+          title: task.content,
+          start: startDate,
+          end: endDate,
+          allDay: false, // Tasks are always timed by default
+          color:
+            (Array.isArray(task.projects)
+              ? task.projects[0]?.color
+              : task.projects?.color) || "hsl(var(--primary))",
+          category: "task",
+        });
+      });
+    }
+
+    return results;
+  }, [dedicatedEvents, tasks]);
 
   useEffect(() => {
     setEvents(calendarEvents);
   }, [calendarEvents, setEvents]);
 
-  return { isLoading };
+  return { isLoading: eventsLoading || tasksLoading };
 }

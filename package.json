@@ -1,6 +1,6 @@
 {
   "name": "kanso",
-  "version": "1.11.0",
+  "version": "1.12.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbo",
@@ -51,6 +51,8 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.23.26",
+    "ical-generator": "^10.1.0",
+    "ical.js": "^2.2.1",
     "idb-keyval": "^6.2.2",
     "lucide-react": "^0.562.0",
     "next": "16.1.0",
@@ -69,6 +71,7 @@
     "serwist": "^9.4.2",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
+    "tsdav": "^2.1.8",
     "vaul": "^1.1.2",
     "web-push": "^3.6.7",
     "zod": "^4.2.1",

@@ -13,7 +13,7 @@ export function ProjectDialogs() {
 
   // Ensure we have a project to edit/delete before rendering
   if (!activeProject && actionType !== null) {
-     return null;
+    return null;
   }
 
   return (

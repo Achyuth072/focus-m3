@@ -21,31 +21,42 @@ export function ActivityHeatmap({ className }: ActivityHeatmapProps) {
   // Transform data to react-activity-calendar format
   const calendarData: Activity[] = useMemo(() => {
     if (!data || data.length === 0) return [];
-    
+
     return data.map((d) => ({
       date: d.date,
       count: d.combined,
-      level: d.combined === 0 ? 0 : Math.min(Math.ceil((d.combined / maxValue.combined) * 4), 4) as 0 | 1 | 2 | 3 | 4,
+      level:
+        d.combined === 0
+          ? 0
+          : (Math.min(Math.ceil((d.combined / maxValue.combined) * 4), 4) as
+              | 0
+              | 1
+              | 2
+              | 3
+              | 4),
     }));
   }, [data, maxValue.combined]);
 
   // Monochromatic Kanso theme (brand color scale)
-  const theme = useMemo(() => ({
-    dark: [
-      "#262626",                    // Level 0 - empty (muted)
-      "hsl(220, 44%, 80%)",        // Level 1
-      "hsl(220, 44%, 70%)",        // Level 2
-      "hsl(220, 44%, 60%)",        // Level 3
-      "hsl(var(--brand))",         // Level 4 - max (brand)
-    ],
-    light: [
-      "#ebebeb",                    // Level 0 - empty (muted)
-      "hsl(220, 44%, 80%)",        // Level 1
-      "hsl(220, 44%, 70%)",        // Level 2
-      "hsl(220, 44%, 60%)",        // Level 3
-      "hsl(var(--brand))",         // Level 4 - max (brand)
-    ],
-  }), []);
+  const theme = useMemo(
+    () => ({
+      dark: [
+        "#262626", // Level 0 - empty (muted)
+        "hsl(220, 44%, 80%)", // Level 1
+        "hsl(220, 44%, 70%)", // Level 2
+        "hsl(220, 44%, 60%)", // Level 3
+        "hsl(var(--brand))", // Level 4 - max (brand)
+      ],
+      light: [
+        "#ebebeb", // Level 0 - empty (muted)
+        "hsl(220, 44%, 80%)", // Level 1
+        "hsl(220, 44%, 70%)", // Level 2
+        "hsl(220, 44%, 60%)", // Level 3
+        "hsl(var(--brand))", // Level 4 - max (brand)
+      ],
+    }),
+    [],
+  );
 
   // Custom tooltip render function
   const renderTooltip = (activity: Activity) => {
@@ -95,7 +106,20 @@ export function ActivityHeatmap({ className }: ActivityHeatmapProps) {
               showMonthLabels={true}
               showTotalCount={false}
               labels={{
-                months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                months: [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ],
                 weekdays: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
                 legend: {
                   less: "Less",
@@ -103,7 +127,10 @@ export function ActivityHeatmap({ className }: ActivityHeatmapProps) {
                 },
               }}
               renderBlock={(block, activity) => (
-                <g data-tooltip-id="activity-tooltip" data-tooltip-content={renderTooltip(activity)}>
+                <g
+                  data-tooltip-id="activity-tooltip"
+                  data-tooltip-content={renderTooltip(activity)}
+                >
                   {block}
                 </g>
               )}

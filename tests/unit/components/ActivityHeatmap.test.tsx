@@ -6,7 +6,11 @@ import { useHeatmapData } from "@/lib/hooks/useHeatmapData";
 // Mock react-activity-calendar
 vi.mock("react-activity-calendar", () => ({
   ActivityCalendar: ({ data, theme }: { data: unknown[]; theme: object }) => (
-    <div data-testid="activity-calendar" data-count={data.length} data-has-theme={!!theme}>
+    <div
+      data-testid="activity-calendar"
+      data-count={data.length}
+      data-has-theme={!!theme}
+    >
       ActivityCalendar Mock
     </div>
   ),

@@ -188,8 +188,8 @@ export function TaskEditView({
               size="sm"
               className="h-7 px-3 text-[10px] uppercase tracking-wider font-bold text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors rounded-lg border-border/40"
               onClick={() => {
-              trigger("MEDIUM");
-              setIsPreviewMode(!isPreviewMode);
+                trigger("MEDIUM");
+                setIsPreviewMode(!isPreviewMode);
               }}
               disabled={!description.trim() && !isPreviewMode}
             >
@@ -331,7 +331,7 @@ export function TaskEditView({
             }}
           >
             <SelectTrigger
-            onPointerDown={() => trigger("MEDIUM")}
+              onPointerDown={() => trigger("MEDIUM")}
               className={cn(
                 "h-10 w-[120px] md:w-[140px] type-ui border-border/50 bg-background hover:bg-accent hover:text-accent-foreground shrink-0 focus:ring-0 rounded-lg",
                 selectedProjectId ? "min-w-20" : "min-w-12",

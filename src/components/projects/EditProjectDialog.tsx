@@ -128,7 +128,9 @@ export function EditProjectDialog({
                   }
                 }}
                 aria-invalid={!!errors.name}
-                aria-describedby={errors.name ? "edit-project-name-error" : undefined}
+                aria-describedby={
+                  errors.name ? "edit-project-name-error" : undefined
+                }
               />
               {errors.name && (
                 <p
@@ -158,7 +160,10 @@ export function EditProjectDialog({
                     aria-checked={color === c.hex}
                     onClick={() => {
                       trigger("MEDIUM");
-                      setValue("color", c.hex, { shouldValidate: true, shouldDirty: true });
+                      setValue("color", c.hex, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      });
                     }}
                     className={cn(
                       "h-9 w-9 rounded-xl transition-all border-2 shrink-0 snap-start",

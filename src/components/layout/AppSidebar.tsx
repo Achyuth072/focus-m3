@@ -12,7 +12,6 @@ import {
   SidebarGroupLabel,
   SidebarGroupAction,
   SidebarMenu,
-  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
@@ -73,17 +72,13 @@ export function AppSidebar() {
   const { isMobile, setOpenMobile } = useSidebar();
   const { openSheet } = useCompletedTasks();
   const { data: projects } = useProjects();
-   const {
-    openCreateProject,
-    openEditProject,
-    openDeleteProject,
-  } = useProjectActions();
+  const { openCreateProject, openEditProject, openDeleteProject } =
+    useProjectActions();
   const { isProjectsOpen, toggleProjectsOpen } = useUiStore();
   const { trigger } = useHaptic();
 
-  const [mobileActionProject, setMobileActionProject] = useState<Project | null>(
-    null,
-  );
+  const [mobileActionProject, setMobileActionProject] =
+    useState<Project | null>(null);
   const [isArchivedOpen, setIsArchivedOpen] = useState(false);
 
   const currentProjectId = searchParams.get("project");
@@ -244,7 +239,7 @@ export function AppSidebar() {
                   {projects
                     ?.filter((p) => !p.is_inbox)
                     .map((project) => (
-                       <SidebarMenuItem key={project.id} className="relative">
+                      <SidebarMenuItem key={project.id} className="relative">
                         <SidebarMenuButton
                           asChild
                           isActive={currentProjectId === project.id}
@@ -405,11 +400,11 @@ export function AppSidebar() {
             <SidebarTrigger className="h-8 w-8" />
           </div>
           <div className="px-2 py-2 text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">
-            v1.11.0
+            v1.12.0
           </div>
         </SidebarFooter>
       </Sidebar>
-       <ArchivedProjectsDialog
+      <ArchivedProjectsDialog
         open={isArchivedOpen}
         onOpenChange={setIsArchivedOpen}
       />
@@ -443,14 +438,19 @@ export function AppSidebar() {
                 className="w-full bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 onClick={() => {
                   trigger("WARNING");
-                  if (mobileActionProject) openDeleteProject(mobileActionProject);
+                  if (mobileActionProject)
+                    openDeleteProject(mobileActionProject);
                 }}
               >
                 Delete Project
               </Button>
             </DrawerClose>
             <DrawerClose asChild>
-              <Button variant="outline" className="w-full" onClick={() => trigger("LIGHT")}>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => trigger("LIGHT")}
+              >
                 Cancel
               </Button>
             </DrawerClose>

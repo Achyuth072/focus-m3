@@ -1,7 +1,11 @@
 "use client";
 
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
-import { useArchiveProject, useMoveTasksToInbox, useDeleteProjectTasks } from "@/lib/hooks/useProjectMutations";
+import {
+  useArchiveProject,
+  useMoveTasksToInbox,
+  useDeleteProjectTasks,
+} from "@/lib/hooks/useProjectMutations";
 import type { Project } from "@/lib/types/task";
 import { useHaptic } from "@/lib/hooks/useHaptic";
 import { useEffect } from "react";
@@ -37,7 +41,11 @@ interface DeleteProjectDialogProps {
 
 type ActiveAction = "keep" | "inbox" | "delete" | null;
 
-export function DeleteProjectDialog({ project, open, onOpenChange }: DeleteProjectDialogProps) {
+export function DeleteProjectDialog({
+  project,
+  open,
+  onOpenChange,
+}: DeleteProjectDialogProps) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const archiveProject = useArchiveProject();
   const moveTasksToInbox = useMoveTasksToInbox();
@@ -45,7 +53,10 @@ export function DeleteProjectDialog({ project, open, onOpenChange }: DeleteProje
   const { trigger } = useHaptic();
 
   const [activeAction, setActiveAction] = useState<ActiveAction>(null);
-  const isPending = archiveProject.isPending || moveTasksToInbox.isPending || deleteProjectTasks.isPending;
+  const isPending =
+    archiveProject.isPending ||
+    moveTasksToInbox.isPending ||
+    deleteProjectTasks.isPending;
 
   // Handle back navigation on mobile to close drawer instead of navigating away
   useBackNavigation(open && !isDesktop, () => onOpenChange(false));
@@ -99,7 +110,12 @@ export function DeleteProjectDialog({ project, open, onOpenChange }: DeleteProje
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => { trigger("LIGHT"); onOpenChange(false); }}>
+            <AlertDialogCancel
+              onClick={() => {
+                trigger("LIGHT");
+                onOpenChange(false);
+              }}
+            >
               Cancel
             </AlertDialogCancel>
             <Button
@@ -107,7 +123,9 @@ export function DeleteProjectDialog({ project, open, onOpenChange }: DeleteProje
               disabled={isPending}
               onClick={handleKeepArchived}
             >
-              {activeAction === "keep" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {activeAction === "keep" && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Keep Archived
             </Button>
             <Button
@@ -115,7 +133,9 @@ export function DeleteProjectDialog({ project, open, onOpenChange }: DeleteProje
               disabled={isPending}
               onClick={handleInbox}
             >
-              {activeAction === "inbox" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {activeAction === "inbox" && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Move to Inbox
             </Button>
             <AlertDialogAction
@@ -123,7 +143,9 @@ export function DeleteProjectDialog({ project, open, onOpenChange }: DeleteProje
               disabled={isPending}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {activeAction === "delete" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {activeAction === "delete" && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -146,7 +168,9 @@ export function DeleteProjectDialog({ project, open, onOpenChange }: DeleteProje
             className="w-full bg-destructive text-destructive-foreground hover:bg-destructive/90"
             disabled={isPending}
           >
-            {activeAction === "delete" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {activeAction === "delete" && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
             Delete All Tasks
           </Button>
           <Button
@@ -155,7 +179,9 @@ export function DeleteProjectDialog({ project, open, onOpenChange }: DeleteProje
             disabled={isPending}
             onClick={handleInbox}
           >
-            {activeAction === "inbox" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {activeAction === "inbox" && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
             Move to Inbox
           </Button>
           <Button
@@ -164,11 +190,17 @@ export function DeleteProjectDialog({ project, open, onOpenChange }: DeleteProje
             disabled={isPending}
             onClick={handleKeepArchived}
           >
-            {activeAction === "keep" && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {activeAction === "keep" && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
             Keep Archived
           </Button>
           <DrawerClose asChild>
-            <Button variant="outline" className="w-full" onClick={() => trigger("LIGHT")}>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => trigger("LIGHT")}
+            >
               Cancel
             </Button>
           </DrawerClose>

@@ -81,7 +81,7 @@ describe("useArchiveProject", () => {
   it("rolls back cache on error", async () => {
     const { projectMutations } = await import("@/lib/mutations/project");
     vi.mocked(projectMutations.archive).mockRejectedValueOnce(
-      new Error("Network error")
+      new Error("Network error"),
     );
 
     const initialProjects: Partial<Project>[] = [

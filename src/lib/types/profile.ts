@@ -3,6 +3,7 @@ export interface Profile {
   display_name: string | null;
   settings: UserSettings;
   timezone: string;
+  is_premium: boolean;
   created_at: string;
   updated_at: string;
 }

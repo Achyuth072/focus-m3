@@ -11,6 +11,8 @@ describe("MonthView Mobile Layout Resolution", () => {
       title: "Event 1",
       start: new Date("2025-03-01T10:00:00"),
       end: new Date("2025-03-01T11:00:00"),
+      allDay: false,
+      color: "hsl(var(--primary))",
     },
   ];
 

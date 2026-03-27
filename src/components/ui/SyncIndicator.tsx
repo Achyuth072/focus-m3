@@ -14,9 +14,17 @@ const LINGER_MS = 150;
  * Hidden during auth loading phase and in guest mode.
  */
 export function SyncIndicator() {
+  const { isGuestMode, loading } = useAuth();
+
+  // Don't render while auth is still loading or guest
+  if (loading || isGuestMode) return null;
+
+  return <SyncIndicatorContent />;
+}
+
+function SyncIndicatorContent() {
   const isFetching = useIsFetching();
   const isMutating = useIsMutating();
-  const { isGuestMode, loading } = useAuth();
   const isSyncing = isFetching > 0 || isMutating > 0;
 
   const [visible, setVisible] = useState(false);
@@ -24,30 +32,23 @@ export function SyncIndicator() {
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
-    // Do not update spinner state while auth is loading or in guest mode
-    if (loading || isGuestMode) {
-      setVisible(false);
-      return;
-    }
-
     if (isSyncing) {
       wasSyncingRef.current = true;
-      setVisible(true);
+      // Defer state update to satisfy linter and avoid cascading renders
+      const timer = setTimeout(() => setVisible(true), 0);
       if (timerRef.current) {
         clearTimeout(timerRef.current);
         timerRef.current = undefined;
       }
+      return () => clearTimeout(timer);
     } else if (wasSyncingRef.current) {
       wasSyncingRef.current = false;
       timerRef.current = setTimeout(() => setVisible(false), LINGER_MS);
     }
-  }, [isSyncing, loading, isGuestMode]);
+  }, [isSyncing]);
 
   // Cleanup on unmount only
   useEffect(() => () => clearTimeout(timerRef.current), []);
-
-  // Don't render while auth is still loading or guest
-  if (loading || isGuestMode) return null;
 
   return (
     <div

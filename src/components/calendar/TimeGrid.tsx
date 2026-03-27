@@ -14,6 +14,8 @@ interface TimeGridProps {
   startDate: Date;
   daysToShow: number; // 1 for Day, 3 for Mobile, 4 for Desktop, 7 for Week
   events: CalendarEvent[];
+  onDateNumberClick?: (date: Date) => void;
+  onEventClick?: (event: CalendarEvent) => void;
   className?: string;
   "data-testid"?: string;
 }
@@ -23,6 +25,8 @@ export function TimeGrid({
   startDate,
   daysToShow,
   events,
+  onDateNumberClick,
+  onEventClick,
   className,
   "data-testid": testId,
 }: TimeGridProps) {
@@ -124,15 +128,20 @@ export function TimeGrid({
                 >
                   {format(column.date, "EEE")}
                 </div>
-                <div
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDateNumberClick?.(column.date);
+                  }}
                   className={cn(
                     "text-lg md:text-xl font-bold inline-flex items-center justify-center transition-all",
+                    "hover:bg-brand/10 rounded-lg p-1 -m-1",
                     isToday &&
-                      "w-7 h-7 md:w-8 md:h-8 rounded-lg bg-brand text-white shadow-sm",
+                      "w-7 h-7 md:w-8 md:h-8 bg-brand text-white shadow-sm hover:bg-brand/90",
                   )}
                 >
                   {format(column.date, "d")}
-                </div>
+                </button>
               </div>
 
               {/* The Grid Lines */}
@@ -160,6 +169,10 @@ export function TimeGrid({
                       "z-10 hover:z-20 hover:brightness-95 active:scale-[0.98] transition-all",
                       "bg-(--event-color)/25 text-foreground border-l-2 border-(--event-color)",
                     )}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEventClick?.(event);
+                    }}
                     style={
                       {
                         "--event-color": event.color || "hsl(var(--primary))",

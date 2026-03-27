@@ -7,6 +7,7 @@ import {
 } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { CreateProjectDialog } from "@/components/projects/CreateProjectDialog";
+import { DEFAULT_PROJECT_COLOR } from "@/lib/constants/colors";
 
 // Mock hooks
 const mockMutate = vi.fn();
@@ -17,9 +18,10 @@ vi.mock("@/lib/hooks/useProjectMutations", () => ({
   }),
 }));
 
+const mockTrigger = vi.fn();
 vi.mock("@/lib/hooks/useHaptic", () => ({
   useHaptic: () => ({
-    trigger: vi.fn(),
+    trigger: mockTrigger,
   }),
 }));
 
@@ -77,9 +79,10 @@ describe("CreateProjectDialog", () => {
       () => {
         expect(mockMutate).toHaveBeenCalledWith({
           name: "New Project",
-          color: "#2196F3",
+          color: DEFAULT_PROJECT_COLOR,
           view_style: "list",
         });
+        expect(mockTrigger).toHaveBeenCalledWith("HEAVY");
         expect(onOpenChange).toHaveBeenCalledWith(false);
       },
       { timeout: 3000 },
@@ -89,11 +92,13 @@ describe("CreateProjectDialog", () => {
   it("changes color when a color button is clicked", async () => {
     render(<CreateProjectDialog open={true} onOpenChange={vi.fn()} />);
 
-    const berryColor = screen.getByLabelText("Berry");
+    // PROJECT_COLORS[0] is "Coral" (#FF6B6B)
+    const coralColor = screen.getByLabelText("Coral");
     await act(async () => {
-      fireEvent.click(berryColor);
+      fireEvent.click(coralColor);
     });
 
-    expect(berryColor).toHaveAttribute("aria-checked", "true");
+    expect(coralColor).toHaveAttribute("aria-checked", "true");
+    expect(mockTrigger).toHaveBeenCalledWith("MEDIUM");
   });
 });

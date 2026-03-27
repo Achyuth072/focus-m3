@@ -8,12 +8,19 @@ import { TimeGrid } from "@/components/calendar/TimeGrid";
 import { YearView } from "@/components/calendar/YearView";
 import { MonthView } from "@/components/calendar/MonthView";
 import { ScheduleView } from "@/components/calendar/ScheduleView";
-
+import { CreateEventDialog } from "@/components/calendar/CreateEventDialog";
+import AddEventFab from "@/components/calendar/AddEventFab";
 import { useCalendarEvents } from "@/lib/hooks/useCalendarEvents";
+import type { CalendarEvent } from "@/lib/calendar/types";
 
 export default function CalendarPage() {
   const { currentDate, view, events, setView, setDate } = useCalendarStore();
   const [isMobile, setIsMobile] = useState(false);
+  const [createEventOpen, setCreateEventOpen] = useState(false);
+  const [createEventDate, setCreateEventDate] = useState<Date | undefined>();
+  const [selectedEvent, setSelectedEvent] = useState<
+    CalendarEvent | undefined
+  >();
 
   // Fetch real events from Supabase
   useCalendarEvents();
@@ -35,13 +42,24 @@ export default function CalendarPage() {
     }
   }, [isMobile, view, setView]);
 
-  const handleDateClick = useCallback(
+  const handleDateClick = useCallback((date: Date) => {
+    setSelectedEvent(undefined);
+    setCreateEventDate(date);
+    setCreateEventOpen(true);
+  }, []);
+
+  const handleDateNumberClick = useCallback(
     (date: Date) => {
       setDate(date);
       setView("day");
     },
     [setDate, setView],
   );
+
+  const handleEventClick = useCallback((event: CalendarEvent) => {
+    setSelectedEvent(event);
+    setCreateEventOpen(true);
+  }, []);
 
   const renderView = () => {
     switch (view) {
@@ -60,6 +78,8 @@ export default function CalendarPage() {
             startDate={currentDate}
             daysToShow={1}
             events={events}
+            onDateNumberClick={handleDateNumberClick}
+            onEventClick={handleEventClick}
           />
         );
 
@@ -70,6 +90,8 @@ export default function CalendarPage() {
             startDate={currentDate}
             daysToShow={3}
             events={events}
+            onDateNumberClick={handleDateNumberClick}
+            onEventClick={handleEventClick}
           />
         );
 
@@ -80,6 +102,8 @@ export default function CalendarPage() {
             startDate={currentDate}
             daysToShow={4}
             events={events}
+            onDateNumberClick={handleDateNumberClick}
+            onEventClick={handleEventClick}
           />
         );
 
@@ -90,6 +114,8 @@ export default function CalendarPage() {
             startDate={startOfWeek(currentDate)}
             daysToShow={7}
             events={events}
+            onDateNumberClick={handleDateNumberClick}
+            onEventClick={handleEventClick}
           />
         );
 
@@ -109,6 +135,8 @@ export default function CalendarPage() {
             currentDate={currentDate}
             events={events}
             onDateClick={handleDateClick}
+            onDateNumberClick={handleDateNumberClick}
+            onEventClick={handleEventClick}
           />
         );
     }
@@ -116,8 +144,27 @@ export default function CalendarPage() {
 
   return (
     <div className="flex flex-col h-[calc(100dvh-124px)] md:h-dvh">
-      <CalendarToolbar isMobile={isMobile} />
+      <CalendarToolbar
+        isMobile={isMobile}
+        events={events}
+        onCreateEvent={() => {
+          setSelectedEvent(undefined);
+          setCreateEventOpen(true);
+        }}
+      />
       <div className="flex-1 min-h-0">{renderView()}</div>
+
+      <AddEventFab onClick={() => setCreateEventOpen(true)} />
+
+      <CreateEventDialog
+        open={createEventOpen}
+        onOpenChange={(open) => {
+          setCreateEventOpen(open);
+          if (!open) setSelectedEvent(undefined);
+        }}
+        defaultDate={createEventDate}
+        event={selectedEvent}
+      />
     </div>
   );
 }

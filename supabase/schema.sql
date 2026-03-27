@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS profiles (
   display_name TEXT,
   settings JSONB DEFAULT '{}',
   timezone TEXT DEFAULT 'UTC',
+  is_premium BOOLEAN DEFAULT false NOT NULL,
   created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -515,3 +516,145 @@ CREATE POLICY "Users can delete own habit_entries" ON public.habit_entries
   FOR DELETE USING (
     EXISTS (SELECT 1 FROM public.habits WHERE public.habits.id = habit_entries.habit_id AND public.habits.user_id = auth.uid())
   );
+
+
+-- =============================================================================
+-- 13. CALENDAR_EVENTS TABLE (Native & Synced Events)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS public.calendar_events (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  
+  -- Core Event Fields (RFC 5545 compliant)
+  title TEXT NOT NULL,
+  description TEXT,
+  location TEXT,
+  start_time TIMESTAMPTZ NOT NULL,
+  end_time TIMESTAMPTZ NOT NULL,
+  all_day BOOLEAN DEFAULT false,
+  
+  -- Categorization
+  color TEXT DEFAULT '#4B6CB7',
+  category TEXT,
+  
+  -- Recurrence (RRULE storage)
+  recurrence_rule TEXT,
+  
+  -- Sync Metadata (for CalDAV/ICS sync)
+  remote_id TEXT,
+  remote_calendar_id UUID,
+  etag TEXT,
+  ics_uid TEXT,
+  
+  -- Soft Deletion (per D-48-06)
+  is_archived BOOLEAN DEFAULT false,
+  
+  -- Flexible Metadata (per D-48-07 Hybrid Mapping)
+  metadata JSONB DEFAULT '{}',
+  
+  -- Timestamps
+  created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+  
+  CONSTRAINT calendar_events_title_length_check CHECK (char_length(title) <= 200),
+  CONSTRAINT calendar_events_description_length_check CHECK (char_length(description) <= 2000),
+  CONSTRAINT calendar_events_end_after_start CHECK (end_time >= start_time)
+);
+
+-- Indexes for performance
+CREATE INDEX IF NOT EXISTS calendar_events_user_id_idx ON public.calendar_events (user_id);
+CREATE INDEX IF NOT EXISTS calendar_events_start_time_idx ON public.calendar_events (start_time);
+CREATE INDEX IF NOT EXISTS calendar_events_remote_id_idx ON public.calendar_events (remote_id) WHERE remote_id IS NOT NULL;
+
+-- Updated At Trigger
+CREATE TRIGGER calendar_events_updated_at
+  BEFORE UPDATE ON public.calendar_events
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+-- ROW LEVEL SECURITY
+ALTER TABLE public.calendar_events ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own calendar_events" ON public.calendar_events
+  FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own calendar_events" ON public.calendar_events
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own calendar_events" ON public.calendar_events
+  FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own calendar_events" ON public.calendar_events
+  FOR DELETE USING (auth.uid() = user_id);
+
+-- =============================================================================
+-- 14. EXTERNAL_CALENDARS TABLE (Multi-Provider Sync Metadata)
+-- =============================================================================
+-- Supports: CalDAV (iCloud, Fastmail, Nextcloud), Google Calendar, Microsoft Outlook
+-- Per D-48-08: All providers built, but Google/Outlook feature-flagged as Premium
+
+CREATE TABLE IF NOT EXISTS public.external_calendars (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  
+  -- Provider Info (supports all adapter strategies from RESEARCH.md 3.2)
+  provider TEXT NOT NULL CHECK (provider IN ('caldav', 'google', 'outlook', 'icloud', 'fastmail', 'nextcloud')),
+  name TEXT NOT NULL,
+  color TEXT DEFAULT '#4B6CB7',
+  
+  -- Connection Details (varies by provider)
+  server_url TEXT, -- CalDAV server URL (null for Google/Outlook)
+  calendar_url TEXT, -- Discovered calendar collection URL
+  principal_url TEXT, -- CalDAV principal (null for Google/Outlook)
+  
+  -- Auth (encrypted at rest by Supabase)
+  username TEXT, -- CalDAV username (null for Google/Outlook which use OAuth)
+  -- Note: For CalDAV, passwords stored in Supabase Vault or user-provided on each sync
+  -- For Google/Outlook: OAuth tokens managed by Supabase Auth provider tokens
+  
+  -- OAuth Provider Specifics (for Google/Outlook)
+  oauth_provider_token_id TEXT, -- Reference to supabase auth.identities for OAuth refresh
+  remote_calendar_id TEXT, -- Google Calendar ID or Outlook folder ID
+  
+  -- Sync State
+  sync_token TEXT, -- CTag for CalDAV, nextSyncToken for Google, deltaLink for MS Graph
+  last_sync_at TIMESTAMPTZ,
+  sync_status TEXT DEFAULT 'pending' CHECK (sync_status IN ('pending', 'syncing', 'success', 'error')),
+  sync_error TEXT,
+  
+  -- Settings
+  sync_enabled BOOLEAN DEFAULT true,
+  sync_direction TEXT DEFAULT 'bidirectional' CHECK (sync_direction IN ('bidirectional', 'pull', 'push')),
+  
+  -- Feature Gating (per D-48-08)
+  is_premium_provider BOOLEAN DEFAULT false, -- true for google/outlook
+  
+  -- Timestamps
+  created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+  
+  CONSTRAINT external_calendars_name_length CHECK (char_length(name) <= 100)
+);
+
+-- Indexes
+CREATE INDEX IF NOT EXISTS external_calendars_user_id_idx ON public.external_calendars (user_id);
+CREATE INDEX IF NOT EXISTS external_calendars_provider_idx ON public.external_calendars (provider);
+
+-- Updated At Trigger
+CREATE TRIGGER external_calendars_updated_at
+  BEFORE UPDATE ON public.external_calendars
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+-- RLS
+ALTER TABLE public.external_calendars ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own external_calendars" ON public.external_calendars
+  FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own external_calendars" ON public.external_calendars
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own external_calendars" ON public.external_calendars
+  FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own external_calendars" ON public.external_calendars
+  FOR DELETE USING (auth.uid() = user_id);
+
+-- Add foreign key to calendar_events for remote_calendar_id
+ALTER TABLE public.calendar_events
+  ADD CONSTRAINT calendar_events_remote_calendar_fk
+  FOREIGN KEY (remote_calendar_id) REFERENCES public.external_calendars(id) ON DELETE SET NULL;
+

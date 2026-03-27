@@ -95,7 +95,7 @@ describe("SplitViewLayout", () => {
 
     // Then: Detail panel should show the selected task
     expect(screen.getByText("Selected Task")).toBeInTheDocument();
-    expect(mockHapticTrigger).toHaveBeenCalledWith(15);
+    expect(mockHapticTrigger).toHaveBeenCalledWith("MEDIUM");
   });
 
   it("SV-N-03: Returns to empty state when detail panel is closed", () => {
@@ -110,7 +110,7 @@ describe("SplitViewLayout", () => {
 
     // Then: Detail panel should show empty state again
     expect(screen.getByText("Empty State")).toBeInTheDocument();
-    expect(mockHapticTrigger).toHaveBeenCalledWith(10);
+    expect(mockHapticTrigger).toHaveBeenCalledWith("LIGHT");
   });
 
   it("SV-03: Detail panel is collapsible", () => {

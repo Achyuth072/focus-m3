@@ -1,16 +1,9 @@
-/**
- * Calendar Engine Types
- * Pure domain types for calendar events and layout
- */
+import type { CalendarEventUI } from "@/lib/types/calendar-event";
+export type { CalendarEventUI } from "@/lib/types/calendar-event";
+export { toCalendarEventUI } from "@/lib/types/calendar-event";
 
-export type CalendarEvent = {
-  id: string;
-  title: string;
-  start: Date;
-  end: Date;
-  allDay?: boolean;
-  color?: string;
-};
+// Alias for backward compatibility with existing views
+export type CalendarEvent = CalendarEventUI;
 
 export type PositionedEvent = CalendarEvent & {
   top: number; // % from top (0-100)
