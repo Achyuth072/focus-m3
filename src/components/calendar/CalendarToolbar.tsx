@@ -72,9 +72,9 @@ export function CalendarToolbar({
       case "4day":
         return format(currentDate, "MMM yyyy");
       case "day":
-        // Shorter format on mobile to prevent overflow
+        // Extra short format on mobile to prevent overflow on small screens
         return isMobile
-          ? format(currentDate, "EEE, MMM d")
+          ? format(currentDate, "MMM d")
           : format(currentDate, "EEEE, MMMM d, yyyy");
       case "schedule":
         return "Schedule";
@@ -132,8 +132,8 @@ export function CalendarToolbar({
       </div>
 
       {/* Center: Flexible Date Label */}
-      <div className="flex-1 flex justify-center min-w-0 px-2 overflow-hidden">
-        <div className="text-[18px] sm:text-xl md:text-2xl font-bold tracking-tight truncate">
+      <div className="flex-1 flex justify-center min-w-0 px-1 sm:px-2 overflow-hidden">
+        <div className="text-base sm:text-xl md:text-2xl font-bold tracking-tight truncate max-w-full">
           {getDateLabel()}
         </div>
       </div>

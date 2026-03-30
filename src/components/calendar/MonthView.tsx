@@ -45,7 +45,8 @@ const MonthDayCell = memo(
     onDateNumberClick,
     onEventClick,
   }: MonthDayCellProps) => {
-    const maxVisible = 3;
+    // Show only 2 events if there are more than 3, to prevent partial visibility of 3rd event
+    const maxVisible = dayEvents.length > 3 ? 2 : 3;
     const visibleEvents = dayEvents.slice(0, maxVisible);
     const remainingCount = dayEvents.length - maxVisible;
 
@@ -78,31 +79,33 @@ const MonthDayCell = memo(
         </div>
 
         {/* Events */}
-        <div className="flex-1 min-h-0 space-y-0.5 md:space-y-1 overflow-hidden relative z-10">
-          {visibleEvents.map((event) => {
-            const isTask = event.category === "task";
-            return (
-              <div
-                key={event.id}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEventClick?.(event);
-                }}
-                className={cn(
-                  "text-[10px] md:text-[11px] px-1.5 md:px-2 py-0.5 rounded-sm truncate font-semibold leading-tight hover:brightness-95 transition-all cursor-pointer",
-                  isTask
-                    ? "bg-transparent border-[1.5px] border-brand text-foreground"
-                    : "bg-brand text-white",
-                )}
-                title={event.title}
-              >
-                <span className="hidden md:inline">
-                  {format(event.start, "h:mm a")}{" "}
-                </span>
-                {event.title}
-              </div>
-            );
-          })}
+        <div className="flex-1 min-h-0 relative z-10 flex flex-col">
+          <div className="space-y-0.5 md:space-y-1 overflow-hidden flex-1">
+            {visibleEvents.map((event) => {
+              const isTask = event.category === "task";
+              return (
+                <div
+                  key={event.id}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEventClick?.(event);
+                  }}
+                  className={cn(
+                    "text-[10px] md:text-[11px] px-1.5 md:px-2 py-0.5 rounded-sm truncate font-semibold leading-tight hover:brightness-95 transition-all cursor-pointer",
+                    isTask
+                      ? "bg-transparent border-[1.5px] border-brand text-foreground"
+                      : "bg-brand text-white",
+                  )}
+                  title={event.title}
+                >
+                  <span className="hidden md:inline">
+                    {format(event.start, "h:mm a")}{" "}
+                  </span>
+                  {event.title}
+                </div>
+              );
+            })}
+          </div>
           {remainingCount > 0 && (
             <EventOverflowPopover
               remainingEvents={dayEvents.slice(maxVisible)}

@@ -39,6 +39,7 @@ export const EventOverflowPopover = memo(
         <PopoverContent
           className="w-64 p-3 bg-popover/95 backdrop-blur-md border-border/40 shadow-xl"
           align="start"
+          collisionPadding={16}
           onEscapeKeyDown={(e) => e.stopPropagation()}
           onPointerDownOutside={(e) => e.stopPropagation()}
           onClick={(e) => e.stopPropagation()}

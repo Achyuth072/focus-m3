@@ -354,7 +354,7 @@ export default function SettingsPage() {
             {/* App Info */}
             <div className="pt-8 border-t border-border/50">
               <p className="text-xs text-muted-foreground text-center">
-                Kanso • Version 1.13.0
+                Kanso • Version 1.13.1
               </p>
             </div>
           </main>
