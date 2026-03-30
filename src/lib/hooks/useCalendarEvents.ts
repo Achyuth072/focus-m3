@@ -16,7 +16,7 @@ export function useCalendarEvents() {
   const { data: dedicatedEvents, isLoading: eventsLoading } = useQuery({
     queryKey: ["calendar-events", isGuestMode],
     queryFn: async () => {
-      if (isGuestMode) return [];
+      if (isGuestMode) return mockStore.getEvents();
 
       const { data, error } = await supabase
         .from("calendar_events")

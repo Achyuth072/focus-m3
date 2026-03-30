@@ -9,18 +9,20 @@ import { YearView } from "@/components/calendar/YearView";
 import { MonthView } from "@/components/calendar/MonthView";
 import { ScheduleView } from "@/components/calendar/ScheduleView";
 import { CreateEventDialog } from "@/components/calendar/CreateEventDialog";
-import AddEventFab from "@/components/calendar/AddEventFab";
 import { useCalendarEvents } from "@/lib/hooks/useCalendarEvents";
-import type { CalendarEvent } from "@/lib/calendar/types";
+import type { CalendarEventUI } from "@/lib/types/calendar-event";
+import { useTask } from "@/lib/hooks/useTasks";
+import TaskSheet from "@/components/tasks/TaskSheet";
 
 export default function CalendarPage() {
-  const { currentDate, view, events, setView, setDate } = useCalendarStore();
+  const { currentDate, view, events, setView, setDate, isCreateEventOpen, openCreateEvent, closeCreateEvent } = useCalendarStore();
   const [isMobile, setIsMobile] = useState(false);
-  const [createEventOpen, setCreateEventOpen] = useState(false);
   const [createEventDate, setCreateEventDate] = useState<Date | undefined>();
   const [selectedEvent, setSelectedEvent] = useState<
-    CalendarEvent | undefined
+    CalendarEventUI | undefined
   >();
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const { data: fullTask } = useTask(selectedTaskId);
 
   // Fetch real events from Supabase
   useCalendarEvents();
@@ -45,8 +47,8 @@ export default function CalendarPage() {
   const handleDateClick = useCallback((date: Date) => {
     setSelectedEvent(undefined);
     setCreateEventDate(date);
-    setCreateEventOpen(true);
-  }, []);
+    openCreateEvent();
+  }, [openCreateEvent]);
 
   const handleDateNumberClick = useCallback(
     (date: Date) => {
@@ -56,10 +58,14 @@ export default function CalendarPage() {
     [setDate, setView],
   );
 
-  const handleEventClick = useCallback((event: CalendarEvent) => {
-    setSelectedEvent(event);
-    setCreateEventOpen(true);
-  }, []);
+  const handleEventClick = useCallback((event: CalendarEventUI) => {
+    if (event.category === "task") {
+      setSelectedTaskId(event.id);
+    } else {
+      setSelectedEvent(event);
+      openCreateEvent();
+    }
+  }, [openCreateEvent]);
 
   const renderView = () => {
     switch (view) {
@@ -149,21 +155,27 @@ export default function CalendarPage() {
         events={events}
         onCreateEvent={() => {
           setSelectedEvent(undefined);
-          setCreateEventOpen(true);
+          openCreateEvent();
         }}
       />
       <div className="flex-1 min-h-0">{renderView()}</div>
 
-      <AddEventFab onClick={() => setCreateEventOpen(true)} />
-
       <CreateEventDialog
-        open={createEventOpen}
+        open={isCreateEventOpen}
         onOpenChange={(open) => {
-          setCreateEventOpen(open);
-          if (!open) setSelectedEvent(undefined);
+          if (!open) {
+            closeCreateEvent();
+            setSelectedEvent(undefined);
+          }
         }}
         defaultDate={createEventDate}
         event={selectedEvent}
+      />
+
+      <TaskSheet
+        open={!!selectedTaskId && !!fullTask}
+        onClose={() => setSelectedTaskId(null)}
+        initialTask={fullTask || null}
       />
     </div>
   );

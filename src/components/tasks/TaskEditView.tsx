@@ -218,16 +218,16 @@ export function TaskEditView({
           <div className="flex items-center justify-between">
             <Label>Subtasks</Label>
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => {
                 trigger("MEDIUM");
                 setShowSubtasks(!showSubtasks);
               }}
               className={cn(
-                "h-8 w-8 p-0 text-muted-foreground hover:text-foreground transition-all [&_svg]:!size-4 rounded-lg border-border/40",
+                "h-8 w-8 p-0 text-muted-foreground hover:text-foreground transition-all [&_svg]:!size-4 rounded-lg border border-input",
                 showSubtasks &&
-                  "text-brand bg-brand/10 border-brand/20 hover:bg-brand/20 hover:text-brand",
+                  "text-brand bg-brand/10 border-transparent hover:bg-brand/20 hover:text-brand",
               )}
               title="Toggle subtasks"
             >
@@ -283,12 +283,12 @@ export function TaskEditView({
 
           {/* This Evening Toggle */}
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             className={cn(
-              "h-10 px-4 text-xs border border-border/50 bg-background hover:bg-accent hover:text-accent-foreground shrink-0 gap-2 rounded-lg transition-seijaku-fast",
+              "h-10 px-4 text-xs border border-input bg-background hover:bg-accent hover:text-accent-foreground shrink-0 gap-2 rounded-lg transition-seijaku-fast",
               isEvening &&
-                "text-brand bg-brand/10 border-brand/20 hover:bg-brand/20",
+                "text-brand bg-brand/10 border-transparent hover:bg-brand/20 hover:text-brand",
             )}
             onClick={() => {
               const nextValue = !isEvening;
@@ -333,7 +333,7 @@ export function TaskEditView({
             <SelectTrigger
               onPointerDown={() => trigger("MEDIUM")}
               className={cn(
-                "h-10 w-[120px] md:w-[140px] type-ui border-border/50 bg-background hover:bg-accent hover:text-accent-foreground shrink-0 focus:ring-0 rounded-lg",
+                "h-10 w-[120px] md:w-[140px] type-ui border-border/50 bg-background hover:bg-accent hover:text-accent-foreground shrink-0 focus:ring-0 rounded-lg text-foreground [&_svg]:opacity-100 [&_svg]:text-foreground",
                 selectedProjectId ? "min-w-20" : "min-w-12",
               )}
             >

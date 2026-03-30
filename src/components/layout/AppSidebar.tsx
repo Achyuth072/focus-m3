@@ -12,6 +12,7 @@ import {
   SidebarGroupLabel,
   SidebarGroupAction,
   SidebarMenu,
+  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
@@ -33,7 +34,7 @@ import {
   ChevronDown,
   Trash2,
   ArchiveRestore,
-  MoreHorizontal,
+  EllipsisVertical,
   Pencil,
 } from "lucide-react";
 import { useCompletedTasks } from "@/components/CompletedTasksProvider";
@@ -51,6 +52,12 @@ import {
   DrawerFooter,
   DrawerClose,
 } from "@/components/ui/drawer";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
 const mainNavItems = [
@@ -180,13 +187,13 @@ export function AppSidebar() {
           {/* Projects Section */}
           <SidebarGroup>
             <SidebarGroupLabel
-              className="cursor-pointer pr-10"
+              className="cursor-pointer pr-10 text-sidebar-foreground [&_svg]:opacity-100"
               onClick={() => {
                 trigger("MEDIUM");
                 toggleProjectsOpen();
               }}
             >
-              <FolderKanban />
+              <FolderKanban strokeWidth={2.25} />
               <span className="flex-1">Projects</span>
               <ChevronDown
                 className={`h-4 w-4 shrink-0 translate-y-px transition-transform ${
@@ -271,47 +278,58 @@ export function AppSidebar() {
                         </SidebarMenuButton>
 
                         {/* Project Actions */}
-                        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-end">
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              trigger("MEDIUM");
-                              setMobileActionProject(project);
-                            }}
-                            className="md:hidden p-1.5 rounded-md hover:bg-accent transition-colors active:scale-95"
-                            aria-label="Project options"
-                          >
-                            <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
-                          </button>
-
-                          <div className="hidden md:flex items-center opacity-0 peer-hover:opacity-100 peer-focus-within:opacity-100 hover:opacity-100 focus-within:opacity-100 transition-opacity group-data-[collapsible=icon]:hidden gap-0.5">
-                            <button
+                        {/* Project Actions */}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <SidebarMenuAction
+                              showOnHover={!isMobile}
+                              className="peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-data-[collapsible=icon]:hidden"
                               onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                trigger("MEDIUM");
-                                openEditProject(project);
+                                if (isMobile) {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  trigger("MEDIUM");
+                                  setMobileActionProject(project);
+                                }
                               }}
-                              className="p-1.5 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
-                              title="Edit Project"
                             >
-                              <Pencil className="h-3.5 w-3.5" />
-                            </button>
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                trigger("WARNING");
-                                openDeleteProject(project);
-                              }}
-                              className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
-                              title="Delete Project"
+                              <EllipsisVertical className="h-4 w-4" />
+                              <span className="sr-only">More</span>
+                            </SidebarMenuAction>
+                          </DropdownMenuTrigger>
+                          {!isMobile && (
+                            <DropdownMenuContent
+                              side="right"
+                              align="start"
+                              className="w-48"
                             >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </button>
-                          </div>
-                        </div>
+                              <DropdownMenuItem
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  trigger("MEDIUM");
+                                  openEditProject(project);
+                                }}
+                                className="flex items-center gap-2"
+                              >
+                                <Pencil className="h-4 w-4" />
+                                <span>Edit Project</span>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  trigger("WARNING");
+                                  openDeleteProject(project);
+                                }}
+                                className="flex items-center gap-2 text-destructive focus:text-destructive focus:bg-destructive/10"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                                <span>Delete Project</span>
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          )}
+                        </DropdownMenu>
                       </SidebarMenuItem>
                     ))}
 
@@ -400,7 +418,7 @@ export function AppSidebar() {
             <SidebarTrigger className="h-8 w-8" />
           </div>
           <div className="px-2 py-2 text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">
-            v1.12.0
+            v1.13.0
           </div>
         </SidebarFooter>
       </Sidebar>

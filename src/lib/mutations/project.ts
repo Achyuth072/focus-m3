@@ -160,4 +160,23 @@ export const projectMutations = {
     if (error) throw new Error(error.message);
     return data as Project;
   },
+
+  delete: async (id: string): Promise<void> => {
+    const isGuest =
+      typeof window !== "undefined" &&
+      localStorage.getItem("kanso_guest_mode") === "true";
+
+    if (isGuest) {
+      mockStore.deleteProject(id);
+      return;
+    }
+
+    const supabase = createClient();
+    const { error } = await supabase
+      .from("projects")
+      .delete()
+      .eq("id", id);
+
+    if (error) throw new Error(error.message);
+  },
 };

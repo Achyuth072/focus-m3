@@ -29,6 +29,13 @@ export const priorities: {
   },
 ];
 
+// Priority-specific icon colors for the trigger button
+const priorityIconColor: Record<number, string> = {
+  1: "text-red-500 fill-red-500",
+  2: "text-orange-500 fill-orange-500",
+  3: "text-blue-500 fill-blue-500",
+};
+
 interface TaskPrioritySelectProps {
   priority: 1 | 2 | 3 | 4;
   setPriority: (value: 1 | 2 | 3 | 4) => void;
@@ -39,11 +46,10 @@ interface TaskPrioritySelectProps {
 export function TaskPrioritySelect({
   priority,
   setPriority,
-  variant = "icon",
   isMobile = false,
 }: TaskPrioritySelectProps) {
-  const isCompact = variant === "compact";
   const { trigger } = useHaptic();
+  const isSelected = priority !== 4;
 
   return (
     <Select
@@ -59,51 +65,28 @@ export function TaskPrioritySelect({
       <SelectTrigger
         onPointerDown={() => trigger("MEDIUM")}
         className={cn(
-          "h-10 border transition-all shrink-0 focus:ring-0 [&>svg]:hidden group shadow-none",
-          "border-input bg-background hover:bg-accent hover:text-accent-foreground",
-          isCompact
-            ? cn(
-                "px-0",
-                priority !== 4
-                  ? "w-auto px-2.5 min-w-16"
-                  : "w-10 justify-center",
-                priority === 4 &&
-                  "text-muted-foreground hover:text-foreground hover:bg-secondary/50",
-                priorities.find((p) => p.value === priority)?.color,
-                // For colored priorities (P1-P3), remove border to avoid clash with solid background
-                priority !== 4 && "border-transparent",
-              )
-            : cn(
-                "min-w-10 items-center justify-center",
-                priority !== 4
-                  ? "text-primary bg-primary/10 px-3 w-auto border-transparent hover:bg-primary/20 hover:text-primary"
-                  : "px-0 w-10 text-muted-foreground hover:text-foreground hover:bg-accent",
-              ),
+          // Base — exactly matches the Evening / Subtasks / DatePicker tags
+          "h-10 transition-all shrink-0 [&>svg]:hidden shadow-none border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-lg outline-none focus:ring-0 focus:outline-none",
+          // Unselected (P4 / Low): icon-only pill
+          !isSelected && "w-10 px-0 text-muted-foreground hover:text-foreground",
+          // Selected (P1-P3): labelled pill with brand outline active state
+          isSelected &&
+            "w-auto px-2.5 min-w-[68px] text-brand bg-brand/10 border-transparent hover:bg-brand/20 hover:text-brand",
         )}
         title={!isMobile ? "Set priority" : undefined}
       >
-        <div className="flex items-center gap-1.5 justify-center">
+        <div className="flex items-center gap-1.5 justify-center w-full">
           <Flag
-            strokeWidth={1.5}
+            strokeWidth={2.25}
             className={cn(
-              isCompact ? "h-5 w-5" : "h-5 w-5 transition-all",
-              priority === 1
-                ? isCompact
-                  ? "text-white h-3.5 w-3.5"
-                  : "text-red-500 fill-red-500"
-                : priority === 2
-                  ? isCompact
-                    ? "text-white h-3.5 w-3.5"
-                    : "text-orange-500 fill-orange-500"
-                  : priority === 3
-                    ? isCompact
-                      ? "text-white h-3.5 w-3.5"
-                      : "text-blue-500 fill-blue-500"
-                    : "", // Removed text-muted-foreground to match other icons
+              "h-5 w-5 transition-all shrink-0",
+              isSelected
+                ? priorityIconColor[priority]
+                : "text-muted-foreground",
             )}
           />
-          {isCompact && priority !== 4 && (
-            <span className="text-xs font-semibold">
+          {isSelected && (
+            <span className="text-sm font-medium">
               {priorities.find((p) => p.value === priority)?.label}
             </span>
           )}
@@ -122,7 +105,7 @@ export function TaskPrioritySelect({
                 )}
               />
               <span className="font-medium">
-                {p.label} -{" "}
+                {p.label} —{" "}
                 {p.value === 1
                   ? "Urgent"
                   : p.value === 2

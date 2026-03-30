@@ -79,31 +79,35 @@ const MonthDayCell = memo(
 
         {/* Events */}
         <div className="flex-1 min-h-0 space-y-0.5 md:space-y-1 overflow-hidden relative z-10">
-          {visibleEvents.map((event) => (
-            <div
-              key={event.id}
-              onClick={(e) => {
-                e.stopPropagation();
-                onEventClick?.(event);
-              }}
-              className="text-[10px] md:text-[11px] px-1.5 md:px-2 py-0.5 rounded-sm truncate bg-(--event-color)/20 text-foreground font-semibold leading-tight hover:brightness-95 transition-all"
-              style={
-                {
-                  "--event-color": event.color || "hsl(var(--primary))",
-                } as React.CSSProperties
-              }
-              title={event.title}
-            >
-              <span className="hidden md:inline">
-                {format(event.start, "h:mm a")}{" "}
-              </span>
-              {event.title}
-            </div>
-          ))}
+          {visibleEvents.map((event) => {
+            const isTask = event.category === "task";
+            return (
+              <div
+                key={event.id}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEventClick?.(event);
+                }}
+                className={cn(
+                  "text-[10px] md:text-[11px] px-1.5 md:px-2 py-0.5 rounded-sm truncate font-semibold leading-tight hover:brightness-95 transition-all cursor-pointer",
+                  isTask
+                    ? "bg-transparent border-[1.5px] border-brand text-foreground"
+                    : "bg-brand text-white",
+                )}
+                title={event.title}
+              >
+                <span className="hidden md:inline">
+                  {format(event.start, "h:mm a")}{" "}
+                </span>
+                {event.title}
+              </div>
+            );
+          })}
           {remainingCount > 0 && (
             <EventOverflowPopover
               remainingEvents={dayEvents.slice(maxVisible)}
               day={day}
+              onEventClick={onEventClick}
             />
           )}
         </div>
@@ -157,7 +161,7 @@ const MonthView = memo(
         )}
       >
         {/* Week day headers */}
-        <div className="grid grid-cols-7 border-b border-border/[0.08]">
+        <div className="grid grid-cols-7 border-b border-border/40">
           {weekDays.map((day) => (
             <div
               key={day}
@@ -171,7 +175,7 @@ const MonthView = memo(
         {/* Calendar grid */}
         <div
           className={cn(
-            "flex-1 min-h-0 grid grid-cols-7 overflow-y-auto md:overflow-hidden divide-x divide-border/[0.08] divide-y divide-border/[0.08] border-b border-r border-border/[0.08]",
+            "flex-1 min-h-0 grid grid-cols-7 overflow-y-auto md:overflow-hidden divide-x divide-border/40 divide-y divide-border/40 border-b border-r border-border/40",
             numWeeks === 4 && "grid-rows-4",
             numWeeks === 5 && "grid-rows-5",
             numWeeks === 6 && "grid-rows-6",

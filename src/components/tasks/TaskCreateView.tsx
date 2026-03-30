@@ -169,12 +169,12 @@ export function TaskCreateView({
           />
 
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             className={cn(
-              "h-10 px-4 transition-all text-muted-foreground hover:text-foreground hover:bg-accent gap-2 shrink-0 rounded-lg border-border/50",
+              "h-10 px-4 transition-all text-muted-foreground hover:text-foreground hover:bg-accent gap-2 shrink-0 rounded-lg border border-input",
               isEvening &&
-                "text-brand bg-brand/10 border-brand/20 hover:bg-brand/20",
+                "text-brand bg-brand/10 border-transparent hover:bg-brand/20 hover:text-brand",
             )}
             onClick={() => {
               const nextValue = !isEvening;
@@ -192,16 +192,16 @@ export function TaskCreateView({
           </Button>
 
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={() => {
               trigger("MEDIUM");
               setShowSubtasks(!showSubtasks);
             }}
             className={cn(
-              "h-10 w-10 p-0 transition-all text-muted-foreground hover:text-foreground hover:bg-accent group [&_svg]:!size-5 shrink-0 rounded-lg border-border/50",
+              "h-10 w-10 p-0 transition-all text-muted-foreground hover:text-foreground hover:bg-accent group [&_svg]:!size-5 shrink-0 rounded-lg border border-input",
               showSubtasks &&
-                "text-brand bg-brand/10 border-brand/20 hover:bg-brand/20 hover:text-brand",
+                "text-brand bg-brand/10 border-transparent hover:bg-brand/20 hover:text-brand",
             )}
             title={!isMobile ? "Toggle subtasks" : undefined}
             aria-label="Toggle subtasks"
@@ -257,7 +257,7 @@ export function TaskCreateView({
         >
           <SelectTrigger
             onPointerDown={() => trigger("MEDIUM")}
-            className="h-10 w-[140px] type-ui border-border/50 bg-secondary/10 hover:bg-secondary/20 focus:ring-0 transition-colors rounded-lg"
+            className="h-10 w-[140px] type-ui border-border/50 bg-secondary/10 hover:bg-secondary/20 focus:ring-0 transition-colors rounded-lg text-foreground [&_svg]:opacity-100 [&_svg]:text-foreground"
           >
             <SelectValue placeholder="Inbox" />
           </SelectTrigger>

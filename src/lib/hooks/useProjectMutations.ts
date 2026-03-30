@@ -152,3 +152,19 @@ export function useUnarchiveProject() {
     },
   });
 }
+
+export function useHardDeleteProject() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: ["deleteProject"],
+    mutationFn: projectMutations.delete,
+    onError: (err) => {
+      handleMutationError(err);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
+}

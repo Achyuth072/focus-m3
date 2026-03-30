@@ -255,7 +255,7 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="space-y-3">
-                  <div className="p-4 rounded-lg border border-blue-500/20 bg-blue-500/5">
+                  <div className="p-4 rounded-lg border border-brand/20 bg-brand/5">
                     <p className="text-xs text-muted-foreground mb-4">
                       Your data is stored locally in your browser. Sign in to
                       sync your data across devices and ensure it&apos;s never
@@ -263,7 +263,7 @@ export default function SettingsPage() {
                     </p>
                     <div className="flex flex-col gap-2">
                       <Button
-                        className="w-full bg-primary hover:opacity-90 transition-all font-semibold"
+                        className="w-full bg-brand hover:bg-brand/90 text-brand-foreground transition-all font-semibold"
                         onClick={() => {
                           trigger("MEDIUM");
                           router.push("/login");
@@ -354,7 +354,7 @@ export default function SettingsPage() {
             {/* App Info */}
             <div className="pt-8 border-t border-border/50">
               <p className="text-xs text-muted-foreground text-center">
-                Kanso • Version 1.12.0
+                Kanso • Version 1.13.0
               </p>
             </div>
           </main>

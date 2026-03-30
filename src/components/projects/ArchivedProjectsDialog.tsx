@@ -1,11 +1,12 @@
 "use client";
 
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+  ResponsiveDialogDescription,
+} from "@/components/ui/responsive-dialog";
 import { useArchivedProjects } from "@/lib/hooks/useProjects";
 import { useUnarchiveProject } from "@/lib/hooks/useProjectMutations";
 import { Button } from "@/components/ui/button";
@@ -24,13 +25,16 @@ export function ArchivedProjectsDialog({
   const unarchiveProject = useUnarchiveProject();
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Archived Projects</DialogTitle>
-        </DialogHeader>
+    <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
+      <ResponsiveDialogContent className="sm:max-w-md p-0 overflow-hidden">
+        <ResponsiveDialogHeader className="px-4 pt-6 shrink-0">
+          <ResponsiveDialogTitle className="type-h2">Archived Projects</ResponsiveDialogTitle>
+          <ResponsiveDialogDescription className="sr-only">
+            View and restore archived projects
+          </ResponsiveDialogDescription>
+        </ResponsiveDialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="flex-1 overflow-y-auto min-h-0 px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
           {isLoading ? (
             <div className="flex justify-center p-8">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -68,7 +72,8 @@ export function ArchivedProjectsDialog({
             </div>
           )}
         </div>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   );
 }
+

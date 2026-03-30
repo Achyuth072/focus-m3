@@ -27,6 +27,11 @@ interface CalendarStore {
   updateEvent: (id: string, updates: Partial<CalendarEventUI>) => void;
   deleteEvent: (id: string) => void;
   setEvents: (events: CalendarEventUI[]) => void;
+
+  // Create Event Dialog
+  isCreateEventOpen: boolean;
+  openCreateEvent: () => void;
+  closeCreateEvent: () => void;
 }
 
 export const useCalendarStore = create<CalendarStore>((set, get) => ({
@@ -34,6 +39,7 @@ export const useCalendarStore = create<CalendarStore>((set, get) => ({
   currentDate: new Date(),
   view: "month",
   events: [],
+  isCreateEventOpen: false,
 
   // Actions
   setView: (view) => set({ view }),
@@ -117,4 +123,7 @@ export const useCalendarStore = create<CalendarStore>((set, get) => ({
     })),
 
   setEvents: (events) => set({ events }),
+
+  openCreateEvent: () => set({ isCreateEventOpen: true }),
+  closeCreateEvent: () => set({ isCreateEventOpen: false }),
 }));

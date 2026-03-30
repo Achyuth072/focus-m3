@@ -21,6 +21,7 @@ import { MobileNav } from "@/components/layout/MobileNav";
 import { MobileHeader } from "@/components/layout/MobileHeader";
 import AddTaskFab from "@/components/tasks/AddTaskFab";
 import AddHabitFab from "@/components/habits/AddHabitFab";
+import AddEventFab from "@/components/calendar/AddEventFab";
 import { HabitSheet } from "@/components/habits/HabitSheet";
 import {
   HabitActionsProvider,
@@ -33,6 +34,7 @@ import { LoaderOverlay } from "@/components/ui/loader-overlay";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { useUiStore } from "@/lib/store/uiStore";
+import { useCalendarStore } from "@/lib/calendar/store";
 
 // Global Overlays (Lazy Loaded)
 const TaskSheet = dynamic(() => import("@/components/tasks/TaskSheet"), {
@@ -83,9 +85,11 @@ function AppShellContent({ children }: AppShellProps) {
   const hideMobileNav = pathname === "/focus" || pathname === "/settings";
   const isTasksPage = pathname === "/";
   const isHabitsPage = pathname === "/habits";
+  const isCalendarPage = pathname === "/calendar";
   const { isAddTaskOpen, openAddTask, closeAddTask } = useTaskActions();
   const { isHabitSheetOpen, editingHabit, openAddHabit, closeHabitSheet } =
     useHabitActions();
+  const { openCreateEvent } = useCalendarStore();
 
   const { isCreateProjectOpen, closeCreateProject } = useProjectActions();
   const { isShortcutsHelpOpen, setShortcutsHelpOpen } = useUiStore();
@@ -224,6 +228,7 @@ function AppShellContent({ children }: AppShellProps) {
         {/* FABs - Rendered outside template animation to prevent shifts */}
         {isTasksPage && <AddTaskFab onClick={openAddTask} />}
         {isHabitsPage && <AddHabitFab onClick={openAddHabit} />}
+        {isCalendarPage && <AddEventFab onClick={openCreateEvent} />}
 
         {/* Global Task Sheet */}
         <TaskSheet open={isAddTaskOpen} onClose={closeAddTask} />

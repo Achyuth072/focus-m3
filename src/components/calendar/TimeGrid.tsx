@@ -160,6 +160,7 @@ export function TimeGrid({
               {column.events.map((event) => {
                 const topPx = (event.top / 100) * (24 * HOUR_HEIGHT);
                 const heightPx = (event.height / 100) * (24 * HOUR_HEIGHT);
+                const isTask = event.category === "task";
 
                 return (
                   <div
@@ -167,32 +168,49 @@ export function TimeGrid({
                     className={cn(
                       "absolute rounded-sm px-1 md:px-2 py-1 text-[10px] md:text-xs cursor-pointer overflow-hidden flex flex-col gap-0.5",
                       "z-10 hover:z-20 hover:brightness-95 active:scale-[0.98] transition-all",
-                      "bg-(--event-color)/25 text-foreground border-l-2 border-(--event-color)",
+                      isTask
+                        ? "bg-transparent border-[1.5px] border-brand text-foreground"
+                        : "bg-brand/90 text-white border-l-2 border-brand",
                     )}
                     onClick={(e) => {
                       e.stopPropagation();
                       onEventClick?.(event);
                     }}
-                    style={
-                      {
-                        "--event-color": event.color || "hsl(var(--primary))",
-                        top: `${topPx + 64}px`, // +64px for h-16 header height
-                        height: `${Math.max(heightPx, 24)}px`, // Minimum 24px height
-                        left: "1px",
-                        right: "1px",
-                        width: "calc(100% - 2px)",
-                      } as React.CSSProperties
-                    }
+                    style={{
+                      top: `${topPx + 64}px`, // +64px for h-16 header height
+                      height: `${Math.max(heightPx, 24)}px`, // Minimum 24px height
+                      left: "1px",
+                      right: "1px",
+                      width: "calc(100% - 2px)",
+                    }}
                   >
                     {/* Title */}
                     <div className="font-bold truncate text-[10px] md:text-[11px] leading-tight">
                       {event.title}
                     </div>
 
-                    {/* Time - Only show if enough height */}
+                    {/* Time & Location - Only show if enough height */}
                     {heightPx > 40 && (
-                      <div className="text-muted-foreground/70 text-[9px] md:text-[10px] leading-tight font-medium">
-                        {format(event.start, "h:mm a")}
+                      <div className="flex flex-col gap-0.5">
+                        <div
+                          className={cn(
+                            "text-[9px] md:text-[10px] leading-tight font-medium",
+                            isTask ? "text-muted-foreground/70" : "text-white/80",
+                          )}
+                        >
+                          {format(event.start, "h:mm a")}
+                        </div>
+                        {heightPx > 60 && event.location && (
+                          <div
+                            className={cn(
+                              "text-[8px] md:text-[9px] leading-tight flex items-center gap-0.5 mt-0.5",
+                              isTask ? "text-muted-foreground/60" : "text-white/70",
+                            )}
+                          >
+                            <span className="shrink-0 opacity-80">📍</span>
+                            <span className="truncate">{event.location}</span>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

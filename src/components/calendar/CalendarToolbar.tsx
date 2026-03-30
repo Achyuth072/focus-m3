@@ -86,12 +86,12 @@ export function CalendarToolbar({
   return (
     <div
       className={cn(
-        "flex items-center justify-between gap-4 p-4 md:p-6 border-b bg-background/50 backdrop-blur-md sticky top-0 z-20",
+        "flex flex-row items-center justify-between gap-1 px-2 py-2 sm:p-4 md:p-6 border-b bg-background/60 backdrop-blur-xl sticky top-0 z-20 shadow-sm overflow-hidden",
         className,
       )}
     >
-      {/* Left: Date Navigation */}
-      <div className="flex items-center gap-1 md:gap-2">
+      {/* Left: Date Navigation Cluster */}
+      <div className="flex items-center gap-0.5 shrink-0">
         <Button
           variant="outline"
           size={isMobile ? "icon" : "default"}
@@ -99,19 +99,17 @@ export function CalendarToolbar({
             trigger("LIGHT");
             goToToday();
           }}
-          className={cn(
-            "shadow-none border-border/80 hover:bg-accent/50",
-            isMobile && "h-8 w-8",
-          )}
+          className="shadow-none border-border/60 hover:bg-black/5 dark:hover:bg-white/5 transition-seijaku-fast h-9"
         >
           <CalendarIcon className="h-4 w-4 md:mr-2" />
           <span className="hidden md:inline">Today</span>
         </Button>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5">
           <Button
             variant="ghost"
             size="icon"
+            className="h-9 w-9 rounded-full transition-seijaku-fast hover:bg-black/5 dark:hover:bg-white/5"
             onClick={() => {
               trigger("LIGHT");
               prev();
@@ -122,6 +120,7 @@ export function CalendarToolbar({
           <Button
             variant="ghost"
             size="icon"
+            className="h-9 w-9 rounded-full transition-seijaku-fast hover:bg-black/5 dark:hover:bg-white/5"
             onClick={() => {
               trigger("LIGHT");
               next();
@@ -130,14 +129,17 @@ export function CalendarToolbar({
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
+      </div>
 
-        <div className="text-lg md:text-2xl font-semibold min-w-0 md:min-w-50 truncate">
+      {/* Center: Flexible Date Label */}
+      <div className="flex-1 flex justify-center min-w-0 px-2 overflow-hidden">
+        <div className="text-[18px] sm:text-xl md:text-2xl font-bold tracking-tight truncate">
           {getDateLabel()}
         </div>
       </div>
 
-      {/* Right: View Selector & Creation */}
-      <div className="flex items-center gap-2 flex-1 justify-end">
+      {/* Right: View Selector & Actions Unified */}
+      <div className="flex items-center gap-0.5 sm:gap-2 shrink-0 justify-end">
         <Select
           value={view}
           onValueChange={(v) => {
@@ -145,7 +147,7 @@ export function CalendarToolbar({
             setView(v as CalendarView);
           }}
         >
-          <SelectTrigger className="w-28 md:w-35 h-9 text-xs md:text-sm px-3 font-medium bg-background shadow-none border-border/80 hover:bg-accent/50 hover:text-accent-foreground transition-colors">
+          <SelectTrigger className="w-22 sm:w-28 md:w-35 h-9 text-[14px] md:text-sm px-2 sm:px-3 font-semibold bg-background/50 border-border/60 shadow-none hover:bg-black/5 dark:hover:bg-white/5 transition-seijaku-fast shrink-0 rounded-lg">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="shadow-none border-border/80">
@@ -157,9 +159,9 @@ export function CalendarToolbar({
           </SelectContent>
         </Select>
 
-        {/* Actions Group */}
-        <div className="flex items-center gap-2">
-          {/* Desktop-only New Event Button */}
+        {/* Action Buttons */}
+        <div className="flex items-center gap-0.5 sm:gap-2">
+          {/* Desktop-only Actions */}
           <Button
             variant="outline"
             size="sm"
@@ -173,7 +175,6 @@ export function CalendarToolbar({
             <span>New Event</span>
           </Button>
 
-          {/* Sync (Refresh) Button */}
           <Button
             variant="outline"
             size="sm"
@@ -186,7 +187,7 @@ export function CalendarToolbar({
             <RefreshCw className="h-4 w-4" />
           </Button>
 
-          {/* Import/Export Options */}
+          {/* Import/Export Menu (The triple dot ⋮ on mobile) */}
           <ImportExportMenu events={events} />
         </div>
       </div>

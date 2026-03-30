@@ -5,6 +5,7 @@ import {
   useArchiveProject,
   useMoveTasksToInbox,
   useDeleteProjectTasks,
+  useHardDeleteProject,
 } from "@/lib/hooks/useProjectMutations";
 import type { Project } from "@/lib/types/task";
 import { useHaptic } from "@/lib/hooks/useHaptic";
@@ -31,7 +32,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { useBackNavigation } from "@/lib/hooks/useBackNavigation";
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import {
+  Loader2,
+  Archive,
+  Inbox,
+  Trash2,
+} from "lucide-react";
 
 interface DeleteProjectDialogProps {
   project: Project | null;
@@ -50,13 +56,15 @@ export function DeleteProjectDialog({
   const archiveProject = useArchiveProject();
   const moveTasksToInbox = useMoveTasksToInbox();
   const deleteProjectTasks = useDeleteProjectTasks();
+  const hardDeleteProject = useHardDeleteProject();
   const { trigger } = useHaptic();
 
   const [activeAction, setActiveAction] = useState<ActiveAction>(null);
   const isPending =
     archiveProject.isPending ||
     moveTasksToInbox.isPending ||
-    deleteProjectTasks.isPending;
+    deleteProjectTasks.isPending ||
+    hardDeleteProject.isPending;
 
   // Handle back navigation on mobile to close drawer instead of navigating away
   useBackNavigation(open && !isDesktop, () => onOpenChange(false));
@@ -68,12 +76,11 @@ export function DeleteProjectDialog({
 
   // Close on success
   useEffect(() => {
-    if (archiveProject.isSuccess && activeAction) {
+    if ((archiveProject.isSuccess || hardDeleteProject.isSuccess) && activeAction) {
       onOpenChange(false);
       setActiveAction(null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [archiveProject.isSuccess]);
+  }, [archiveProject.isSuccess, hardDeleteProject.isSuccess, activeAction, onOpenChange]);
 
   if (!project) return null;
 
@@ -93,7 +100,7 @@ export function DeleteProjectDialog({
   const handleDeleteAll = async () => {
     setActiveAction("delete");
     await deleteProjectTasks.mutateAsync(project.id);
-    await archiveProject.mutateAsync(project.id);
+    await hardDeleteProject.mutateAsync(project.id);
     trigger("SUCCESS");
   };
 
@@ -122,9 +129,12 @@ export function DeleteProjectDialog({
               variant="outline"
               disabled={isPending}
               onClick={handleKeepArchived}
+              className="gap-2"
             >
-              {activeAction === "keep" && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              {activeAction === "keep" ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Archive className="h-4 w-4 text-[#757575]" strokeWidth={2.25} />
               )}
               Keep Archived
             </Button>
@@ -132,22 +142,28 @@ export function DeleteProjectDialog({
               variant="outline"
               disabled={isPending}
               onClick={handleInbox}
+              className="gap-2"
             >
-              {activeAction === "inbox" && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              {activeAction === "inbox" ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Inbox className="h-4 w-4 text-[#757575]" strokeWidth={2.25} />
               )}
               Move to Inbox
             </Button>
-            <AlertDialogAction
+            <Button
+              variant="destructive"
               onClick={handleDeleteAll}
               disabled={isPending}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="gap-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-all active:scale-95"
             >
-              {activeAction === "delete" && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              {activeAction === "delete" ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="h-4 w-4" strokeWidth={2.25} />
               )}
               Delete
-            </AlertDialogAction>
+            </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -165,35 +181,41 @@ export function DeleteProjectDialog({
           <Button
             onClick={handleDeleteAll}
             variant="destructive"
-            className="w-full bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className="w-full gap-3 bg-destructive text-destructive-foreground hover:bg-destructive/90"
             disabled={isPending}
           >
-            {activeAction === "delete" && (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            {activeAction === "delete" ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Trash2 className="h-4 w-4" strokeWidth={2.25} />
             )}
-            Delete All Tasks
+            <span>Delete All Tasks</span>
           </Button>
           <Button
             variant="outline"
-            className="w-full"
+            className="w-full gap-3"
             disabled={isPending}
             onClick={handleInbox}
           >
-            {activeAction === "inbox" && (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            {activeAction === "inbox" ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Inbox className="h-4 w-4 text-[#757575]" strokeWidth={2.25} />
             )}
-            Move to Inbox
+            <span>Move to Inbox</span>
           </Button>
           <Button
             variant="outline"
-            className="w-full"
+            className="w-full gap-3"
             disabled={isPending}
             onClick={handleKeepArchived}
           >
-            {activeAction === "keep" && (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            {activeAction === "keep" ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Archive className="h-4 w-4 text-[#757575]" strokeWidth={2.25} />
             )}
-            Keep Archived
+            <span>Keep Archived</span>
           </Button>
           <DrawerClose asChild>
             <Button
@@ -209,3 +231,4 @@ export function DeleteProjectDialog({
     </Drawer>
   );
 }
+

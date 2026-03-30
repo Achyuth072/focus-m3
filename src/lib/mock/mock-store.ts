@@ -6,8 +6,9 @@
 import type { Task, Project } from "@/lib/types/task";
 import type { Habit, HabitEntry } from "@/lib/types/habit";
 import type { FocusLog } from "@/lib/types/focus";
+import type { CalendarEvent } from "@/lib/types/calendar-event";
 
-const STORAGE_KEY = "kanso_guest_data_v7";
+const STORAGE_KEY = "kanso_guest_data_v8";
 
 interface GuestData {
   tasks: Task[];
@@ -15,6 +16,7 @@ interface GuestData {
   habits: Habit[];
   habit_entries: HabitEntry[];
   focus_logs: FocusLog[];
+  events: CalendarEvent[];
   lastUpdated: string;
 }
 
@@ -84,6 +86,7 @@ class MockStore {
     const logs: FocusLog[] = [];
     const habits: Habit[] = [];
     const entries: HabitEntry[] = [];
+    const events: CalendarEvent[] = [];
 
     // Generators
     const generateId = () => Math.random().toString(36).substr(2, 9);
@@ -314,12 +317,49 @@ class MockStore {
       }
     }
 
+    // Generate Mock Events (Past and Future)
+    const mockLocations = ["Coffee Shop", "Office", "Zoom", "Gym", "Home"];
+    for (let i = -7; i <= 14; i++) {
+        const date = new Date(now.getTime() + i * oneDay);
+        // Add random event
+        if (Math.random() > 0.4) {
+             const randomHour = 9 + Math.floor(Math.random() * 8); // 9am to 4pm
+             const startTime = new Date(date);
+             startTime.setHours(randomHour, 0, 0, 0);
+             const endTime = new Date(startTime.getTime() + 3600000); // 1 hour
+
+             const id = `event-${generateId()}`;
+             events.push({
+                 id,
+                 user_id: "guest",
+                 title: i === 0 ? "Team Catch Up" : `Meeting ${id}`,
+                 description: "Mock event generated for guest mode",
+                 location: Math.random() > 0.5 ? mockLocations[Math.floor(Math.random() * mockLocations.length)] : null,
+                 start_time: startTime.toISOString(),
+                 end_time: endTime.toISOString(),
+                 all_day: false,
+                 color: "#4B6CB7", // Kanso brand
+                 category: "event",
+                 recurrence_rule: null,
+                 remote_id: null,
+                 remote_calendar_id: null,
+                 etag: null,
+                 ics_uid: null,
+                 is_archived: false,
+                 metadata: {},
+                 created_at: nowIso,
+                 updated_at: nowIso,
+             });
+        }
+    }
+
     return {
       tasks,
       projects,
       habits,
       habit_entries: entries,
       focus_logs: logs,
+      events,
       lastUpdated: nowIso,
     };
   }
@@ -572,6 +612,52 @@ class MockStore {
     }
   }
 
+  // Event Operations
+  getEvents(): CalendarEvent[] {
+    return [...(this.data.events || [])];
+  }
+
+  addEvent(
+    event: Omit<CalendarEvent, "id" | "user_id" | "created_at" | "updated_at">,
+  ): CalendarEvent {
+    const now = new Date().toISOString();
+    const newEvent: CalendarEvent = {
+      ...event,
+      id: `guest-event-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      user_id: "guest",
+      created_at: now,
+      updated_at: now,
+    };
+
+    if (!this.data.events) this.data.events = [];
+    this.data.events.push(newEvent);
+    this.saveToStorage();
+    return newEvent;
+  }
+
+  updateEvent(id: string, updates: Partial<CalendarEvent>): CalendarEvent | null {
+    const index = this.data.events?.findIndex((e) => e.id === id) ?? -1;
+    if (index === -1) return null;
+
+    this.data.events[index] = {
+      ...this.data.events[index],
+      ...updates,
+      updated_at: new Date().toISOString(),
+    };
+
+    this.saveToStorage();
+    return this.data.events[index];
+  }
+
+  deleteEvent(id: string): boolean {
+    const index = this.data.events?.findIndex((e) => e.id === id) ?? -1;
+    if (index === -1) return false;
+
+    this.data.events.splice(index, 1);
+    this.saveToStorage();
+    return true;
+  }
+
   // Utility
   reset(): void {
     this.data = this.getInitialData();
@@ -585,6 +671,7 @@ class MockStore {
       habits: [],
       habit_entries: [],
       focus_logs: [],
+      events: [],
       lastUpdated: new Date().toISOString(),
     };
     this.saveToStorage();

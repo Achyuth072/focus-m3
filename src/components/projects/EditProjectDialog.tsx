@@ -19,6 +19,7 @@ import { useHaptic } from "@/lib/hooks/useHaptic";
 import { useHorizontalScroll } from "@/lib/hooks/useHorizontalScroll";
 import { cn } from "@/lib/utils";
 import { PROJECT_COLORS } from "@/lib/constants/colors";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import type { Project } from "@/lib/types/task";
 
 const EditProjectSchema = z.object({
@@ -64,6 +65,7 @@ export function EditProjectDialog({
   const updateProject = useUpdateProject();
   const { trigger } = useHaptic();
   const scrollRef = useHorizontalScroll();
+  const isFinePointer = useMediaQuery("(pointer: fine)");
 
   // Sync form with project when opened
   useEffect(() => {
@@ -113,7 +115,7 @@ export function EditProjectDialog({
                 {...register("name")}
                 id="edit-project-name"
                 placeholder="Project name..."
-                autoFocus
+                autoFocus={isFinePointer}
                 className={cn(
                   "text-xl sm:text-2xl font-semibold px-3 py-2 h-10 min-h-[40px] bg-transparent border-border focus-visible:ring-1 focus-visible:ring-ring shadow-sm resize-none placeholder:text-muted-foreground/30 tracking-tight leading-tight rounded-md transition-all",
                   errors.name &&
@@ -146,7 +148,7 @@ export function EditProjectDialog({
               <Label>Color</Label>
               <div
                 ref={scrollRef}
-                className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide py-1 px-1 snap-x snap-mandatory"
+                className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide py-3 px-1 snap-x snap-mandatory"
                 role="radiogroup"
                 aria-label="Project color"
               >
@@ -166,15 +168,12 @@ export function EditProjectDialog({
                       });
                     }}
                     className={cn(
-                      "h-9 w-9 rounded-xl transition-all border-2 shrink-0 snap-start",
+                      "h-9 w-9 rounded-xl transition-all shrink-0 snap-start",
                       color === c.hex
-                        ? "border-current opacity-100 scale-110 shadow-sm"
-                        : "border-transparent opacity-70 hover:opacity-90 hover:scale-105",
+                        ? "ring-2 ring-brand ring-offset-2 ring-offset-background scale-110 opacity-100"
+                        : "opacity-70 hover:opacity-90 hover:scale-105",
                     )}
-                    style={{
-                      backgroundColor: c.hex,
-                      borderColor: color === c.hex ? c.hex : "transparent",
-                    }}
+                    style={{ backgroundColor: c.hex }}
                   />
                 ))}
               </div>
