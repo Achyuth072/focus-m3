@@ -14,17 +14,20 @@ Kanso is a **Zen-Modernist** task management and focus tool. It fuses the Japane
 
 ## Features
 
-- **Macro & Micro Views**: Switch between Masonry Grid, Kanban Board (Desktop), and List views instantly with `Shift+1/2/3`.
-- **Visual Activity Heatmap**: GitHub-style consistency chart tracking both focus minutes and habit repetitions.
-- **Habit Mastery**: Dedicated habit tracking system with CRUD management and longevity insights.
-- **Calendar Precision**: Vertical schedule with real-time indicators and programmatic auto-scroll to "Now."
+- **Macro & Micro Views**: Switch between Masonry Grid, Kanban Board (Desktop), and List views instantly with `Shift+1/2/3`. Low-latency DnD ensures fluid transitions.
+- **Visual Activity Heatmap**: High-fidelity consistency chart tracking both focus minutes and habit repetitions via `react-activity-calendar`.
+- **Habit Mastery**: Dedicated habit tracking system with CRUD management, longevity insights, and standardized haptic signatures.
+- **Calendar & Event Engine**: 
+  - **Native Event Creation**: FAB (mobile) and inline grid placeholders (desktop) for creating events directly in-app.
+  - **Sync Engine**: Bi-directional CalDAV synchronization (Experimental) for iCloud/Nextcloud compatibility. Scaffolded support for Google and Outlook providers.
+  - **Portability**: Support for universal `.ics` (RFC 5545) import/export.
 - **Guest Mode**: A 100% private, zero-footprint demo experience anchored in `localStorage`.
 - **Absolute Resilience**: Offline-first via a **Tri-Layer Defense** (Service Worker timeouts, network-resilient middleware, and IndexedDB persistence).
+- **Project Hardening**: Multi-project support with deep organizational layers, selective archiving vs. deletion, and native-style Drawers for mobile project management.
 - **Migration Engine**: Idempotent and resilient data transition from Guest Mode to cloud accounts.
-- **PWA Excellence**: Native-grade mobile experience with swipe-to-edit/delete gestures and "Seijaku" haptics.
+- **PWA Excellence**: Native-grade mobile experience with swipe gestures, offline-first reliability, and "Seijaku" haptics.
 - **Command Menu**: Global `Ctrl+K` palette for instant navigation and action execution.
 - **Focus Timer**: PiP-enabled Pomodoro engine with real-time stats synchronization.
-- **Project Organization**: Multi-project support with collapsible, tactile organizational layers.
 
 ## Shortcuts
 
@@ -32,13 +35,14 @@ Press **Shift + H** to see the full list of keyboard shortcuts.
 
 ## Built with
 
-- **Next.js 16.1.0 (App Router)** and **Supabase (PostgreSQL/Realtime/SSR)**
+- **Next.js 16.1.0 (App Router)** and **Supabase (Postgres/Realtime/SSR)**
 - **TanStack Query v5.90+** (Persistence via IndexedDB) and **Zustand**
 - **React 19.2.3** (Pre-optimized for Concurrent Mode)
 - **Tailwind CSS v4** and **Shadcn UI** (Radical Minimalism)
-- **Framer Motion** and **dnd-kit** for physical interactions
+- **Framer Motion** and **@dnd-kit** (Optimized Flat-DOM implementation)
 - **Serwist** for Typed Service Worker & PWA support
-- **Recharts** and **Cal-Heatmap** for data visualization
+- **react-activity-calendar** and **Recharts** for data visualization
+- **tsdav** and **ical.js** for calendar synchronization and portability
 
 ## Setup
 
