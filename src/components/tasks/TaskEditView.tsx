@@ -33,6 +33,7 @@ import SubtaskList from "./SubtaskList";
 import { TaskDatePicker } from "./shared/TaskDatePicker";
 import { TaskPrioritySelect } from "./shared/TaskPrioritySelect";
 import RecurrencePicker from "./TaskSheet/RecurrencePicker";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import type { Task, Project } from "@/lib/types/task";
 import type { RecurrenceRule } from "@/lib/utils/recurrence";
 
@@ -122,6 +123,7 @@ export function TaskEditView({
 }: TaskEditViewProps) {
   const scrollRef = useHorizontalScroll();
   const { trigger } = useHaptic();
+  const isFinePointer = useMediaQuery("(pointer: fine)");
 
   return (
     <div
@@ -159,6 +161,7 @@ export function TaskEditView({
             value={content}
             onChange={(e) => setContent(e.target.value)}
             onKeyDown={onKeyDown}
+            autoFocus={isFinePointer}
             className={cn(
               "text-xl sm:text-2xl font-semibold px-3 py-2 h-10 min-h-[40px] bg-transparent border-border focus-visible:ring-1 focus-visible:ring-ring shadow-sm resize-none placeholder:text-muted-foreground/30 tracking-tight leading-tight rounded-md transition-all",
               errors?.content &&
@@ -186,7 +189,7 @@ export function TaskEditView({
             <Button
               variant="outline"
               size="sm"
-              className="h-7 px-3 text-[10px] uppercase tracking-wider font-bold text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors rounded-lg border-border/40"
+              className="h-7 px-3 text-[10px] uppercase tracking-wider font-bold text-muted-foreground hover:text-foreground bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none transition-seijaku-fast rounded-lg"
               onClick={() => {
                 trigger("MEDIUM");
                 setIsPreviewMode(!isPreviewMode);
@@ -208,6 +211,7 @@ export function TaskEditView({
               placeholder="Add details... (Markdown supported)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              onKeyDown={onKeyDown}
               className="min-h-[200px] text-[15px] leading-relaxed px-3 py-2 bg-transparent border-border focus-visible:ring-1 focus-visible:ring-ring shadow-sm resize-none placeholder:text-muted-foreground/40 rounded-md transition-all overflow-y-auto scrollbar-hide"
             />
           )}
@@ -225,7 +229,7 @@ export function TaskEditView({
                 setShowSubtasks(!showSubtasks);
               }}
               className={cn(
-                "h-8 w-8 p-0 text-muted-foreground hover:text-foreground transition-all [&_svg]:!size-4 rounded-lg border border-input",
+                "h-8 w-8 p-0 text-muted-foreground hover:text-foreground bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none transition-seijaku-fast [&_svg]:!size-4 rounded-lg",
                 showSubtasks &&
                   "text-brand bg-brand/10 border-transparent hover:bg-brand/20 hover:text-brand",
               )}
@@ -286,7 +290,7 @@ export function TaskEditView({
             variant="ghost"
             size="sm"
             className={cn(
-              "h-10 px-4 text-xs border border-input bg-background hover:bg-accent hover:text-accent-foreground shrink-0 gap-2 rounded-lg transition-seijaku-fast",
+              "h-10 px-4 text-xs bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none hover:text-foreground shrink-0 gap-2 rounded-lg transition-seijaku-fast",
               isEvening &&
                 "text-brand bg-brand/10 border-transparent hover:bg-brand/20 hover:text-brand",
             )}
@@ -333,7 +337,7 @@ export function TaskEditView({
             <SelectTrigger
               onPointerDown={() => trigger("MEDIUM")}
               className={cn(
-                "h-10 w-[120px] md:w-[140px] type-ui border-border/50 bg-background hover:bg-accent hover:text-accent-foreground shrink-0 focus:ring-0 rounded-lg text-foreground [&_svg]:opacity-100 [&_svg]:text-foreground",
+                "h-10 w-[120px] md:w-[140px] type-ui border-border/50 bg-secondary/40 hover:bg-secondary/60 shadow-none focus:ring-0 transition-seijaku-fast rounded-lg text-foreground [&_svg]:opacity-100 [&_svg]:text-foreground",
                 selectedProjectId ? "min-w-20" : "min-w-12",
               )}
             >

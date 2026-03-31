@@ -54,28 +54,20 @@ export function TasksPageHeader({
   const { trigger } = useHaptic();
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
-  useHotkeys("shift+1", () => onViewModeChange("grid"), {
-    preventDefault: true,
-  });
-  useHotkeys("shift+2", () => isDesktop && onViewModeChange("board"), {
-    preventDefault: true,
-  });
-  useHotkeys("shift+3", () => onViewModeChange("list"), {
-    preventDefault: true,
-  });
+  const isFilterActive = currentSort !== "date" || currentGroup !== "none";
 
   return (
     <div className="flex items-center gap-2">
       <SyncIndicator />
-      <div className="flex items-center rounded-md border border-input h-8 overflow-hidden bg-muted/20">
+      <div className="flex h-10 items-stretch overflow-hidden rounded-lg border border-border/50 bg-background/50 backdrop-blur-sm shadow-none md:h-9">
         <Button
           variant="ghost"
           size="sm"
           className={cn(
             "h-full w-8 p-0 rounded-none transition-all duration-200 border-r border-input/50 last:border-r-0",
             viewMode === "grid"
-              ? "bg-brand text-white"
-              : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
+              ? "bg-brand text-white shadow-none"
+              : "bg-secondary/40 text-muted-foreground hover:text-foreground hover:bg-secondary/60",
           )}
           onClick={() => {
             trigger("MEDIUM");
@@ -92,8 +84,8 @@ export function TasksPageHeader({
             className={cn(
               "h-full w-8 p-0 rounded-none transition-all duration-200 border-r border-input/50 last:border-r-0",
               viewMode === "board"
-                ? "bg-brand text-white"
-                : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
+                ? "bg-brand text-white shadow-none"
+                : "bg-secondary/40 text-muted-foreground hover:text-foreground hover:bg-secondary/60",
             )}
             onClick={() => {
               trigger("MEDIUM");
@@ -110,8 +102,8 @@ export function TasksPageHeader({
           className={cn(
             "h-full w-8 p-0 rounded-none transition-all duration-200 border-r border-input/50 last:border-r-0",
             viewMode === "list"
-              ? "bg-brand text-white"
-              : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
+              ? "bg-brand text-white shadow-none"
+              : "bg-secondary/40 text-muted-foreground hover:text-foreground hover:bg-secondary/60",
           )}
           onClick={() => {
             trigger("MEDIUM");
@@ -126,12 +118,20 @@ export function TasksPageHeader({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0"
+            className={cn(
+              "h-8 w-8 p-0 relative bg-secondary/40 hover:bg-secondary/60 border border-border/50",
+              isFilterActive && "border-brand/50",
+            )}
             onPointerDown={() => trigger("TAP")}
           >
-            <ListFilter className="h-4 w-4" />
+            <ListFilter
+              className={cn("h-4 w-4", isFilterActive && "text-brand")}
+            />
+            {isFilterActive && (
+              <div className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-brand" />
+            )}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
@@ -170,20 +170,20 @@ export function TasksPageHeader({
       </DropdownMenu>
 
       <Button
-        variant="outline"
+        variant="ghost"
         size="sm"
         onClick={openSheet}
-        className="hidden md:flex items-center gap-2"
+        className="hidden md:flex items-center gap-2 bg-secondary/40 hover:bg-secondary/60 border border-border/50"
       >
         <CheckCircle2 className="h-4 w-4" />
         Completed
       </Button>
 
       <Button
-        variant="outline"
+        variant="ghost"
         size="sm"
         onClick={onNewTask}
-        className="hidden md:flex items-center gap-2"
+        className="hidden md:flex items-center gap-2 bg-secondary/40 hover:bg-secondary/60 border border-border/50"
       >
         <Plus className="h-4 w-4" />
         New Task

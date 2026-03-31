@@ -171,7 +171,7 @@ export function TaskDetailPanel({ task, onClose }: TaskDetailPanelProps) {
               trigger("LIGHT");
               onClose();
             }}
-            className="absolute top-3 right-3 z-50 h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary/80 bg-background shadow-sm border border-border/80 transition-all duration-200"
+            className="absolute top-3 right-3 z-50 h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground bg-secondary/40 hover:bg-secondary/60 border border-border/50 transition-all duration-200"
             aria-label="Close task details"
           >
             <svg

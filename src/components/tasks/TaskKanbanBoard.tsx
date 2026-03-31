@@ -101,7 +101,7 @@ export function TaskKanbanBoard({
         }}
       >
         {activeTask ? (
-          <div className="w-[90vw] md:w-[320px] rotate-2 scale-105 shadow-xl pointer-events-none">
+          <div className="w-[90vw] md:w-[320px] rotate-2 scale-105 pointer-events-none border border-border">
             <TaskItem task={activeTask} viewMode="board" />
           </div>
         ) : null}
@@ -126,7 +126,8 @@ const KanbanColumn = memo(function KanbanColumn({
       ref={setNodeRef}
       className="flex-shrink-0 w-[90vw] md:w-[320px] snap-center h-full flex flex-col"
     >
-      <div className="flex flex-col max-h-full bg-secondary/10 rounded-2xl border border-border/60 overflow-hidden shadow-sm shadow-black/[0.02]">
+      <div className="flex flex-col max-h-full bg-secondary/10 rounded-2xl border border-border/60 overflow-hidden">
+
         <header className="flex items-center justify-between px-4 py-3.5 flex-shrink-0">
           <h3 className="type-h3 lowercase tracking-tight text-foreground/70">
             {group.title}

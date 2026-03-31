@@ -32,7 +32,6 @@ import { useMigrationStrategy } from "@/lib/hooks/useMigrationStrategy";
 import { LoaderOverlay } from "@/components/ui/loader-overlay";
 
 import { cn } from "@/lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
 import { useUiStore } from "@/lib/store/uiStore";
 import { useCalendarStore } from "@/lib/calendar/store";
 
@@ -65,11 +64,25 @@ const FloatingTimer = dynamic(
   () => import("@/components/FloatingTimer").then((mod) => mod.FloatingTimer),
   { ssr: false },
 );
+const CreateEventDialog = dynamic(
+  () =>
+    import("@/components/calendar/CreateEventDialog").then(
+      (mod) => mod.CreateEventDialog,
+    ),
+  { ssr: false },
+);
 
 const ProjectDialogs = dynamic(
   () =>
     import("@/components/projects/ProjectDialogs").then(
       (mod) => mod.ProjectDialogs,
+    ),
+  { ssr: false },
+);
+const ArchivedProjectsDialog = dynamic(
+  () =>
+    import("@/components/projects/ArchivedProjectsDialog").then(
+      (mod) => mod.ArchivedProjectsDialog,
     ),
   { ssr: false },
 );
@@ -89,29 +102,22 @@ function AppShellContent({ children }: AppShellProps) {
   const { isAddTaskOpen, openAddTask, closeAddTask } = useTaskActions();
   const { isHabitSheetOpen, editingHabit, openAddHabit, closeHabitSheet } =
     useHabitActions();
-  const { openCreateEvent } = useCalendarStore();
+  const {
+    isCreateEventOpen,
+    openCreateEvent,
+    closeCreateEvent,
+    defaultDate,
+    selectedEvent,
+  } = useCalendarStore();
 
   const { isCreateProjectOpen, closeCreateProject } = useProjectActions();
-  const { isShortcutsHelpOpen, setShortcutsHelpOpen } = useUiStore();
+  const { isShortcutsHelpOpen, setShortcutsHelpOpen, isArchivedProjectsOpen, setArchivedProjectsOpen } = useUiStore();
 
   const [commandOpen, setCommandOpen] = useState(false);
 
   // Global realtime sync - stays alive during navigation
   useRealtimeSync();
-  const { isGuestMode } = useAuth();
 
-  // Banner dismiss state (session-based)
-  const [showBanner, setShowBanner] = useState(() => {
-    if (typeof window === "undefined") return true;
-    return sessionStorage.getItem("guest_banner_dismissed") !== "true";
-  });
-
-  const dismissBanner = () => {
-    setShowBanner(false);
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("guest_banner_dismissed", "true");
-    }
-  };
 
   // Reset scroll position on navigation to prevent layout shifts
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -136,68 +142,6 @@ function AppShellContent({ children }: AppShellProps) {
 
         {/* Main Content with proper inset */}
         <SidebarInset className="relative">
-          <AnimatePresence>
-            {isGuestMode && showBanner && (
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{
-                  type: "spring",
-                  mass: 1,
-                  stiffness: 280,
-                  damping: 60,
-                }}
-                className={cn(
-                  "fixed z-30 pointer-events-none flex justify-center",
-                  "left-0 right-0 px-4 top-18", // Mobile: Floating comfortably below header
-                  "md:left-[var(--sidebar-width)] md:px-0 md:top-4 md:right-6 md:justify-end", // Desktop: Floating top-right banner
-                )}
-              >
-                <div className="pointer-events-auto flex items-center justify-between w-full max-w-[500px] md:w-[350px] bg-card border border-border/80 text-foreground text-[13px] font-medium py-2.5 px-4 rounded-lg shadow-none">
-                  <div className="flex items-center gap-3">
-                    <div className="flex-shrink-0 w-2 h-2 rounded-full bg-brand shadow-[0_0_8px_hsl(var(--brand)/0.3)]" />
-                    <div className="flex flex-col leading-tight">
-                      <span className="font-semibold tracking-tight">
-                        Guest Mode
-                      </span>
-                      <span className="text-[11px] text-muted-foreground font-normal">
-                        Data stored locally.{" "}
-                        <button
-                          onClick={() => {
-                            dismissBanner();
-                            router.push("/login");
-                          }}
-                          className="text-brand font-semibold hover:underline cursor-pointer inline"
-                        >
-                          Sync now
-                        </button>
-                      </span>
-                    </div>
-                  </div>
-                  <button
-                    onClick={dismissBanner}
-                    className="p-1.5 hover:bg-accent rounded-lg transition-seijaku-fast flex-shrink-0 cursor-pointer text-muted-foreground hover:text-foreground"
-                    aria-label="Dismiss banner"
-                  >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2.5}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
 
           <div
             ref={scrollContainerRef}
@@ -251,6 +195,20 @@ function AppShellContent({ children }: AppShellProps) {
         <ShortcutsHelp
           open={isShortcutsHelpOpen}
           onOpenChange={setShortcutsHelpOpen}
+        />
+
+        <CreateEventDialog
+          open={isCreateEventOpen}
+          onOpenChange={(open) => {
+            if (!open) closeCreateEvent();
+          }}
+          defaultDate={defaultDate}
+          event={selectedEvent}
+        />
+
+        <ArchivedProjectsDialog
+          open={isArchivedProjectsOpen}
+          onOpenChange={setArchivedProjectsOpen}
         />
 
         {/* Floating Timer - shows when timer is active and not on focus page */}

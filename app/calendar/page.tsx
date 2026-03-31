@@ -15,12 +15,19 @@ import { useTask } from "@/lib/hooks/useTasks";
 import TaskSheet from "@/components/tasks/TaskSheet";
 
 export default function CalendarPage() {
-  const { currentDate, view, events, setView, setDate, isCreateEventOpen, openCreateEvent, closeCreateEvent } = useCalendarStore();
+  const {
+    currentDate,
+    view,
+    events,
+    setView,
+    setDate,
+    isCreateEventOpen,
+    openCreateEvent,
+    closeCreateEvent,
+    selectedEvent: globalSelectedEvent,
+    defaultDate: globalDefaultDate,
+  } = useCalendarStore();
   const [isMobile, setIsMobile] = useState(false);
-  const [createEventDate, setCreateEventDate] = useState<Date | undefined>();
-  const [selectedEvent, setSelectedEvent] = useState<
-    CalendarEventUI | undefined
-  >();
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const { data: fullTask } = useTask(selectedTaskId);
 
@@ -44,11 +51,12 @@ export default function CalendarPage() {
     }
   }, [isMobile, view, setView]);
 
-  const handleDateClick = useCallback((date: Date) => {
-    setSelectedEvent(undefined);
-    setCreateEventDate(date);
-    openCreateEvent();
-  }, [openCreateEvent]);
+  const handleDateClick = useCallback(
+    (date: Date) => {
+      openCreateEvent(date);
+    },
+    [openCreateEvent],
+  );
 
   const handleDateNumberClick = useCallback(
     (date: Date) => {
@@ -58,14 +66,16 @@ export default function CalendarPage() {
     [setDate, setView],
   );
 
-  const handleEventClick = useCallback((event: CalendarEventUI) => {
-    if (event.category === "task") {
-      setSelectedTaskId(event.id);
-    } else {
-      setSelectedEvent(event);
-      openCreateEvent();
-    }
-  }, [openCreateEvent]);
+  const handleEventClick = useCallback(
+    (event: CalendarEventUI) => {
+      if (event.category === "task") {
+        setSelectedTaskId(event.id);
+      } else {
+        openCreateEvent(undefined, event);
+      }
+    },
+    [openCreateEvent],
+  );
 
   const renderView = () => {
     switch (view) {
@@ -154,23 +164,10 @@ export default function CalendarPage() {
         isMobile={isMobile}
         events={events}
         onCreateEvent={() => {
-          setSelectedEvent(undefined);
           openCreateEvent();
         }}
       />
       <div className="flex-1 min-h-0">{renderView()}</div>
-
-      <CreateEventDialog
-        open={isCreateEventOpen}
-        onOpenChange={(open) => {
-          if (!open) {
-            closeCreateEvent();
-            setSelectedEvent(undefined);
-          }
-        }}
-        defaultDate={createEventDate}
-        event={selectedEvent}
-      />
 
       <TaskSheet
         open={!!selectedTaskId && !!fullTask}

@@ -93,13 +93,13 @@ export function CalendarToolbar({
       {/* Left: Date Navigation Cluster */}
       <div className="flex items-center gap-0.5 shrink-0">
         <Button
-          variant="outline"
+          variant="ghost"
           size={isMobile ? "icon" : "default"}
           onClick={() => {
             trigger("LIGHT");
             goToToday();
           }}
-          className="shadow-none border-border/60 hover:bg-black/5 dark:hover:bg-white/5 transition-seijaku-fast h-9"
+          className="h-9 bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none transition-seijaku-fast"
         >
           <CalendarIcon className="h-4 w-4 md:mr-2" />
           <span className="hidden md:inline">Today</span>
@@ -109,7 +109,7 @@ export function CalendarToolbar({
           <Button
             variant="ghost"
             size="icon"
-            className="h-9 w-9 rounded-full transition-seijaku-fast hover:bg-black/5 dark:hover:bg-white/5"
+            className="h-9 w-9 shadow-none transition-seijaku-fast rounded-full"
             onClick={() => {
               trigger("LIGHT");
               prev();
@@ -120,7 +120,7 @@ export function CalendarToolbar({
           <Button
             variant="ghost"
             size="icon"
-            className="h-9 w-9 rounded-full transition-seijaku-fast hover:bg-black/5 dark:hover:bg-white/5"
+            className="h-9 w-9 shadow-none transition-seijaku-fast rounded-full"
             onClick={() => {
               trigger("LIGHT");
               next();
@@ -147,7 +147,7 @@ export function CalendarToolbar({
             setView(v as CalendarView);
           }}
         >
-          <SelectTrigger className="w-22 sm:w-28 md:w-35 h-9 text-[14px] md:text-sm px-2 sm:px-3 font-semibold bg-background/50 border-border/60 shadow-none hover:bg-black/5 dark:hover:bg-white/5 transition-seijaku-fast shrink-0 rounded-lg">
+          <SelectTrigger className="w-22 sm:w-28 md:w-35 h-9 text-xs md:text-sm px-2 sm:px-3 font-semibold bg-secondary/40 border-border/50 shadow-none hover:bg-secondary/60 transition-seijaku-fast shrink-0 rounded-lg">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="shadow-none border-border/80">
@@ -162,28 +162,28 @@ export function CalendarToolbar({
         {/* Action Buttons */}
         <div className="flex items-center gap-0.5 sm:gap-2">
           {/* Desktop-only Actions */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              trigger("LIGHT");
-              onCreateEvent();
-            }}
-            className="hidden md:flex h-9 items-center gap-2 border-border/80 shadow-none hover:bg-accent/50"
-          >
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                trigger("LIGHT");
+                onCreateEvent();
+              }}
+              className="hidden md:flex h-9 items-center gap-2 bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none"
+            >
             <Plus className="h-4 w-4" />
             <span>New Event</span>
           </Button>
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              trigger("MEDIUM");
-              // TODO: Trigger manual event refresh
-            }}
-            className="hidden md:flex h-9 w-9 p-0 items-center justify-center border-border/80 shadow-none hover:bg-accent/50"
-          >
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                trigger("MEDIUM");
+                // TODO: Trigger manual event refresh
+              }}
+              className="hidden md:flex h-9 w-9 p-0 items-center justify-center bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none"
+            >
             <RefreshCw className="h-4 w-4" />
           </Button>
 

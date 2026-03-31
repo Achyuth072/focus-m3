@@ -53,8 +53,8 @@ export default function StatsPage() {
   const focusTrendData = stats?.dailyTrend || [];
 
   return (
-    <div className="px-4 md:px-6 py-6 pb-12 md:pb-6">
-      <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
+    <div className="px-4 md:px-6 py-6 pb-12 md:pb-6 scrollbar-hide">
+      <div className="space-y-6 md:space-y-8">
         {/* Header */}
         <div>
           <h1 className="type-h1 text-2xl md:text-3xl">Statistics</h1>
@@ -102,14 +102,14 @@ export default function StatsPage() {
           />
         </div>
 
-        {/* Heatmap */}
-        <div>
-          <ActivityHeatmap />
-        </div>
-
-        {/* Chart */}
+        {/* Trend Chart - shows progression over time */}
         <div>
           <FocusTrendChart data={focusTrendData} />
+        </div>
+
+        {/* Heatmap - shows density patterns */}
+        <div>
+          <ActivityHeatmap />
         </div>
       </div>
     </div>

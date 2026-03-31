@@ -8,13 +8,14 @@ import {
   ResponsiveDialogDescription,
 } from "@/components/ui/responsive-dialog";
 import { Keyboard } from "lucide-react";
+import { getPlatformKey } from "@/lib/utils/platform";
 
 interface ShortcutGroup {
   title: string;
   shortcuts: { keys: string[]; description: string }[];
 }
 
-const SHORTCUTS: ShortcutGroup[] = [
+const getShortcuts = (platformKey: string): ShortcutGroup[] => [
   {
     title: "Navigation",
     shortcuts: [
@@ -24,7 +25,7 @@ const SHORTCUTS: ShortcutGroup[] = [
       { keys: ["4"], description: "Go to Stats" },
       { keys: ["5"], description: "Go to Focus" },
       { keys: ["6"], description: "Go to Settings" },
-      { keys: ["b"], description: "Toggle Sidebar" },
+      { keys: [platformKey, "b"], description: "Toggle Sidebar" },
       { keys: ["Esc"], description: "Close Focus/Dialogs" },
     ],
   },
@@ -33,11 +34,13 @@ const SHORTCUTS: ShortcutGroup[] = [
     shortcuts: [
       { keys: ["n"], description: "New Task" },
       { keys: ["h"], description: "Create Habit" },
+      { keys: ["e"], description: "New Event" },
+      { keys: ["p"], description: "New Project" },
+      { keys: ["a"], description: "Archived Projects" },
       { keys: ["c"], description: "Toggle Completed Tasks" },
-      { keys: ["Cmd", "Enter"], description: "Save Task" },
-      { keys: ["s"], description: "Search / Command Menu" },
-      { keys: ["Ctrl", "k"], description: "Search / Command Menu" },
-      { keys: ["t"], description: "Switch Theme" },
+      { keys: [platformKey, "Enter"], description: "Save Task" },
+      { keys: [platformKey, "K"], description: "Search / Command Menu" },
+      { keys: ["T"], description: "Switch Theme" },
       { keys: ["f"], description: "Focus Mode" },
       { keys: ["Shift", "h"], description: "Show Shortcuts" },
     ],
@@ -68,6 +71,9 @@ interface ShortcutsHelpProps {
 }
 
 export function ShortcutsHelp({ open, onOpenChange }: ShortcutsHelpProps) {
+  const platformKey = getPlatformKey();
+  const shortcuts = getShortcuts(platformKey);
+
   return (
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
       <ResponsiveDialogContent className="sm:max-w-[550px] border-border/80 shadow-2xl p-0">
@@ -83,7 +89,7 @@ export function ShortcutsHelp({ open, onOpenChange }: ShortcutsHelpProps) {
 
         <div className="max-h-[60vh] overflow-y-auto scrollbar-hide p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
-            {SHORTCUTS.map((group) => (
+            {shortcuts.map((group) => (
               <div key={group.title} className="space-y-4">
                 <h3 className="text-[18px] font-medium tracking-[-0.01em] text-foreground pb-2 border-b border-border/80">
                   {group.title}
@@ -92,16 +98,16 @@ export function ShortcutsHelp({ open, onOpenChange }: ShortcutsHelpProps) {
                   {group.shortcuts.map((shortcut, i) => (
                     <div
                       key={i}
-                      className="flex items-center justify-between text-[13px] font-medium tracking-[0.01em]"
+                      className="flex items-center justify-between text-[15px] font-medium tracking-[0.01em]"
                     >
                       <span className="text-foreground/90 font-medium">
                         {shortcut.description}
                       </span>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2.5">
                         {shortcut.keys.map((key) => (
                           <kbd
                             key={key}
-                            className="pointer-events-none h-5.5 min-w-[24px] select-none items-center justify-center rounded border border-border bg-sidebar px-1.5 font-mono text-[11px] font-medium text-foreground shadow-none flex"
+                            className="pointer-events-none h-6.5 min-w-[28px] select-none items-center justify-center rounded border border-border bg-sidebar px-2 font-mono text-[12px] font-medium text-foreground shadow-none flex"
                           >
                             {key}
                           </kbd>

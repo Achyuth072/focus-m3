@@ -30,6 +30,10 @@ interface UiState {
   isPipActive: boolean;
   setIsPipActive: (active: boolean) => void;
 
+  // Archived Projects Dialog
+  isArchivedProjectsOpen: boolean;
+  setArchivedProjectsOpen: (open: boolean) => void;
+
   // Task Selection State (for component decoupling per PERF-02)
   selectedTaskId: string | null;
   setSelectedTaskId: (id: string | null) => void;
@@ -73,6 +77,10 @@ export const useUiStore = create<UiState>()(
       // PIP State defaults
       isPipActive: false,
       setIsPipActive: (active) => set({ isPipActive: active }),
+
+      // Archived Projects defaults
+      isArchivedProjectsOpen: false,
+      setArchivedProjectsOpen: (open) => set({ isArchivedProjectsOpen: open }),
 
       // Task Selection State defaults
       selectedTaskId: null,

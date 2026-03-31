@@ -40,6 +40,7 @@ type SidebarContextProps = {
   openMobile: boolean;
   setOpenMobile: (open: boolean) => void;
   isMobile: boolean;
+  windowWidth: number;
   toggleSidebar: () => void;
 };
 
@@ -78,6 +79,15 @@ const SidebarProvider = React.forwardRef<
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const [openMobile, setOpenMobile] = React.useState(false);
+    const [windowWidth, setWindowWidth] = React.useState(
+      typeof window !== "undefined" ? window.innerWidth : 768,
+    );
+
+    React.useEffect(() => {
+      const handleResize = () => setWindowWidth(window.innerWidth);
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     React.useEffect(() => {
       if (isMobile) {
@@ -115,6 +125,7 @@ const SidebarProvider = React.forwardRef<
           event.key === SIDEBAR_KEYBOARD_SHORTCUT &&
           (event.metaKey || event.ctrlKey)
         ) {
+          if (event.repeat) return;
           event.preventDefault();
           toggleSidebar();
         }
@@ -134,6 +145,7 @@ const SidebarProvider = React.forwardRef<
         isMobile,
         openMobile,
         setOpenMobile,
+        windowWidth,
         toggleSidebar,
       }),
       [
@@ -143,6 +155,7 @@ const SidebarProvider = React.forwardRef<
         isMobile,
         openMobile,
         setOpenMobile,
+        windowWidth,
         toggleSidebar,
       ],
     );
@@ -155,6 +168,7 @@ const SidebarProvider = React.forwardRef<
               {
                 "--sidebar-width": SIDEBAR_WIDTH,
                 "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
+                "--sidebar-width-mobile": SIDEBAR_WIDTH_MOBILE,
                 ...style,
               } as React.CSSProperties
             }
@@ -204,12 +218,7 @@ const Sidebar = React.forwardRef<
           <SheetContent
             data-sidebar="sidebar"
             data-mobile="true"
-            className="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
-            style={
-              {
-                "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
-              } as React.CSSProperties
-            }
+            className="w-[var(--sidebar-width-mobile)] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
             side={side}
           >
             <SheetHeader className="sr-only">
@@ -462,7 +471,9 @@ const SidebarGroupLabel = React.forwardRef<
   React.ComponentProps<"div"> & { asChild?: boolean }
 >(({ className, asChild = false, ...props }, ref) => {
   const Comp = asChild ? Slot : "div";
-  const { isMobile } = useSidebar();
+  const { isMobile, windowWidth } = useSidebar();
+
+  const isLargeMobile = isMobile && windowWidth > 360;
 
   return (
     <Comp
@@ -470,7 +481,7 @@ const SidebarGroupLabel = React.forwardRef<
       data-sidebar="group-label"
       className={cn(
         "flex w-full shrink-0 items-center gap-2 rounded-md px-2 font-medium text-sidebar-foreground/70 outline-none ring-sidebar-ring transition-[margin,opacity] duration-200 ease-linear focus-visible:ring-2 [&>svg]:shrink-0",
-        isMobile
+        isLargeMobile
           ? "h-12 text-base [&>svg]:size-6"
           : "h-8 text-sm [&>svg]:size-4",
         "group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0",
@@ -487,7 +498,9 @@ const SidebarGroupAction = React.forwardRef<
   React.ComponentProps<"button"> & { asChild?: boolean }
 >(({ className, asChild = false, ...props }, ref) => {
   const Comp = asChild ? Slot : "button";
-  const { isMobile } = useSidebar();
+  const { isMobile, windowWidth } = useSidebar();
+
+  const isLargeMobile = isMobile && windowWidth > 360;
 
   return (
     <Comp
@@ -495,7 +508,7 @@ const SidebarGroupAction = React.forwardRef<
       data-sidebar="group-action"
       className={cn(
         "absolute right-3 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground outline-none ring-sidebar-ring transition-transform hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
-        isMobile ? "top-5.5" : "top-3.5",
+        isLargeMobile ? "top-5.5" : "top-3.5",
         // Increases the hit area of the button on mobile.
         "after:absolute after:-inset-2 after:md:hidden",
         "group-data-[collapsible=icon]:hidden",
@@ -589,10 +602,11 @@ const SidebarMenuButton = React.forwardRef<
     ref,
   ) => {
     const Comp = asChild ? Slot : "button";
-    const { isMobile, state } = useSidebar();
+    const { isMobile, state, windowWidth } = useSidebar();
 
-    // Use larger size on mobile for better touch targets
-    const effectiveSize = isMobile && size === "default" ? "lg" : size;
+    // Use larger size on mobile for better touch targets, except on tiny screens
+    const effectiveSize =
+      isMobile && size === "default" && windowWidth > 360 ? "lg" : size;
 
     const button = (
       <Comp
@@ -758,7 +772,7 @@ const SidebarMenuSubButton = React.forwardRef<
   }
 >(({ asChild = false, size = "md", isActive, className, ...props }, ref) => {
   const Comp = asChild ? Slot : "a";
-  const { isMobile } = useSidebar();
+  const { isMobile, windowWidth } = useSidebar();
 
   return (
     <Comp
@@ -769,7 +783,7 @@ const SidebarMenuSubButton = React.forwardRef<
       className={cn(
         "flex min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-sidebar-foreground outline-none ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-sidebar-accent-foreground",
         "data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground",
-        isMobile ? "h-10 text-base" : "h-7",
+        isMobile && windowWidth > 360 ? "h-10 text-base" : "h-7",
         size === "sm" && "text-xs",
         size === "md" && !isMobile && "text-sm",
         "group-data-[collapsible=icon]:hidden",

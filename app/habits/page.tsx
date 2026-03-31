@@ -76,9 +76,9 @@ export default function HabitsPage() {
           </p>
         </div>
         <Button
-          variant="outline"
+          variant="ghost"
           onClick={handleOpenCreate}
-          className="h-10 px-6 rounded-lg border-border/60 hover:bg-accent hover:text-accent-foreground transition-seijaku gap-2"
+          className="h-10 px-6 rounded-lg bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none transition-seijaku gap-2"
         >
           <Plus className="h-4 w-4" />
           Create Habit
@@ -100,9 +100,9 @@ export default function HabitsPage() {
         </div>
 
         <Button
-          variant="outline"
+          variant="ghost"
           onClick={handleOpenCreate}
-          className="hidden md:flex h-9 items-center gap-2 rounded-lg border-border/60 hover:bg-accent hover:text-accent-foreground transition-seijaku"
+          className="hidden md:flex h-9 items-center gap-2 rounded-lg bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none transition-seijaku"
         >
           <Plus className="h-4 w-4" />
           New Habit
@@ -110,7 +110,7 @@ export default function HabitsPage() {
       </div>
 
       <div className="flex-1 min-h-0 overflow-y-auto px-4 md:px-6 py-4 scrollbar-hide">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-12 max-w-7xl">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-12">
           {habits.map((habit) => (
             <HabitCard
               key={habit.id}

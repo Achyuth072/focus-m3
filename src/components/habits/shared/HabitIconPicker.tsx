@@ -100,7 +100,7 @@ export function HabitIconPicker({
       )}
       <div
         ref={scrollRef}
-        className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide py-1 px-1 snap-x snap-mandatory"
+        className="flex flex-nowrap gap-2.5 overflow-x-auto scrollbar-hide py-1 px-4"
         role="radiogroup"
         aria-label="Habit icon"
       >
@@ -120,16 +120,16 @@ export function HabitIconPicker({
                 onChange(item.name);
               }}
               className={cn(
-                "h-9 w-9 rounded-lg transition-all border flex items-center justify-center shrink-0 snap-start",
+                "h-10 transition-all shrink-0 border rounded-lg shadow-none flex items-center justify-center",
                 isSelected
-                  ? "border-border/80 bg-secondary/50 scale-105 shadow-sm"
-                  : "border-border/50 bg-transparent text-muted-foreground hover:text-foreground hover:bg-accent",
+                  ? "text-brand bg-brand/10 border-transparent hover:bg-brand/20 hover:text-brand"
+                  : "border-input bg-background hover:bg-accent text-muted-foreground hover:text-foreground",
+                variant === "compact" ? "w-10 px-0" : "px-3 min-w-[40px]",
               )}
             >
               <Icon
-                strokeWidth={2.25}
-                className="h-5 w-5"
-                style={{ color: isSelected ? color : "currentColor" }}
+                strokeWidth={isSelected ? 2.5 : 2}
+                className={cn("h-5 w-5", isSelected ? "scale-110" : "")}
               />
             </button>
           );

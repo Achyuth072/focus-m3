@@ -16,6 +16,7 @@ import { useHaptic } from "@/lib/hooks/useHaptic";
 import { HabitColorPicker } from "./shared/HabitColorPicker";
 import { HabitIconPicker } from "./shared/HabitIconPicker";
 import { TaskDatePicker } from "../tasks/shared/TaskDatePicker";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 
 interface HabitCreateViewProps {
   name: string;
@@ -60,6 +61,7 @@ export function HabitCreateView({
   errors,
 }: HabitCreateViewProps) {
   const { trigger } = useHaptic();
+  const isFinePointer = useMediaQuery("(pointer: fine)");
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden w-full max-w-full">
@@ -88,6 +90,7 @@ export function HabitCreateView({
               value={name}
               onChange={(e) => setName(e.target.value)}
               onKeyDown={onKeyDown}
+              autoFocus={isFinePointer}
               className={cn(
                 "text-xl sm:text-2xl font-semibold px-3 py-2 h-10 min-h-[40px] bg-transparent border-border focus-visible:ring-1 focus-visible:ring-ring shadow-sm resize-none placeholder:text-muted-foreground/30 tracking-tight leading-tight rounded-md transition-all",
                 errors?.name &&

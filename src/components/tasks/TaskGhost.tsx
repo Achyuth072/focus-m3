@@ -28,8 +28,8 @@ export const TaskGhost = React.memo(
         className={cn(
           "flex items-center w-full gap-2 md:gap-3 touch-none opacity-90",
           viewMode === "list"
-            ? "px-4 py-3.5 bg-background/95 rounded-md shadow-elevation-medium border-b border-border/40"
-            : "p-3 bg-card backdrop-blur-sm border border-border/80 rounded-xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1),0_0_20px_rgba(0,0,0,0.05)] ring-2 ring-brand/20 cursor-grabbing",
+            ? "px-4 py-3.5 bg-background/95 rounded-md border-b border-border/40"
+            : "p-3 bg-card backdrop-blur-sm border border-border/80 rounded-xl cursor-grabbing",
         )}
       >
         <DragHandle

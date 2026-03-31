@@ -46,7 +46,7 @@ export function HabitColorPicker({
     return (
       <div
         ref={scrollRef}
-        className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-1 px-1 flex-nowrap snap-x snap-mandatory"
+        className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-1 px-4 flex-nowrap"
         role="radiogroup"
         aria-label="Habit color"
       >
@@ -63,10 +63,10 @@ export function HabitColorPicker({
               onChange(c.value);
             }}
             className={cn(
-              "h-7 w-7 rounded-xl transition-all border shrink-0 snap-start",
+              "h-7 w-7 rounded-xl transition-all shrink-0",
               value === c.value
-                ? "border-border/80 scale-110 shadow-sm"
-                : "border-transparent opacity-60 hover:opacity-100 hover:scale-105",
+                ? "ring-2 ring-brand ring-offset-2 ring-offset-background scale-110 opacity-100"
+                : "opacity-60 hover:opacity-100 hover:scale-105",
             )}
             style={{
               backgroundColor: c.value,
@@ -82,7 +82,7 @@ export function HabitColorPicker({
       <Label className="px-1 text-xs text-muted-foreground/60">Color</Label>
       <div
         ref={scrollRef}
-        className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide py-1 px-1 snap-x snap-mandatory"
+        className="flex flex-nowrap gap-2.5 overflow-x-auto scrollbar-hide py-3 px-4"
         role="radiogroup"
         aria-label="Habit color"
       >
@@ -99,14 +99,13 @@ export function HabitColorPicker({
               onChange(c.value);
             }}
             className={cn(
-              "h-9 w-9 rounded-xl transition-all border-2 shrink-0 snap-start",
+              "h-9 w-9 rounded-xl transition-all shrink-0",
               value === c.value
-                ? "border-current opacity-100 scale-110 shadow-sm"
-                : "border-transparent opacity-70 hover:opacity-90 hover:scale-105",
+                ? "ring-2 ring-brand ring-offset-2 ring-offset-background scale-110 opacity-100"
+                : "opacity-70 hover:opacity-90 hover:scale-105",
             )}
             style={{
               backgroundColor: c.value,
-              borderColor: value === c.value ? c.value : "transparent",
             }}
           />
         ))}

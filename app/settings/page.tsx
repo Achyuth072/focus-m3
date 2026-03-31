@@ -91,7 +91,7 @@ export default function SettingsPage() {
 
   return (
     <div className="h-full overflow-auto">
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="p-4 md:p-6 space-y-8">
         {/* Mobile Header */}
         <div className="md:hidden mb-6">
           <div className="flex items-center gap-3 mb-2">
@@ -100,7 +100,7 @@ export default function SettingsPage() {
               size="icon"
               onPointerDown={() => trigger("MEDIUM")}
               onClick={() => router.back()}
-              className="h-12 w-12"
+              className="h-12 w-12 bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none"
             >
               <ArrowLeft className="h-5 w-5" />
               <span className="sr-only">Back</span>
@@ -354,7 +354,7 @@ export default function SettingsPage() {
             {/* App Info */}
             <div className="pt-8 border-t border-border/50">
               <p className="text-xs text-muted-foreground text-center">
-                Kanso • Version 1.13.1
+                Kanso • Version 1.14.0
               </p>
             </div>
           </main>

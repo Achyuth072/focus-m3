@@ -30,7 +30,9 @@ interface CalendarStore {
 
   // Create Event Dialog
   isCreateEventOpen: boolean;
-  openCreateEvent: () => void;
+  selectedEvent?: CalendarEventUI;
+  defaultDate?: Date;
+  openCreateEvent: (date?: Date, event?: CalendarEventUI) => void;
   closeCreateEvent: () => void;
 }
 
@@ -124,6 +126,16 @@ export const useCalendarStore = create<CalendarStore>((set, get) => ({
 
   setEvents: (events) => set({ events }),
 
-  openCreateEvent: () => set({ isCreateEventOpen: true }),
-  closeCreateEvent: () => set({ isCreateEventOpen: false }),
+  openCreateEvent: (date, event) =>
+    set({
+      isCreateEventOpen: true,
+      defaultDate: date,
+      selectedEvent: event,
+    }),
+  closeCreateEvent: () =>
+    set({
+      isCreateEventOpen: false,
+      defaultDate: undefined,
+      selectedEvent: undefined,
+    }),
 }));

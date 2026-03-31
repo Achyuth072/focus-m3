@@ -10,6 +10,7 @@ import {
   ResponsiveDialogTitle,
   ResponsiveDialogDescription,
 } from "@/components/ui/responsive-dialog";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import {
   Select,
   SelectContent,
@@ -95,6 +96,7 @@ export function TaskCreateView({
   errors,
 }: TaskCreateViewProps) {
   const { trigger } = useHaptic();
+  const isFinePointer = useMediaQuery("(pointer: fine)");
 
   return (
     <div className="flex flex-col h-auto max-h-[90dvh] w-full max-w-full overflow-hidden">
@@ -119,7 +121,7 @@ export function TaskCreateView({
             value={content}
             onChange={(e) => setContent(e.target.value)}
             onKeyDown={onKeyDown}
-            autoFocus
+            autoFocus={isFinePointer}
             className={cn(
               "text-xl sm:text-2xl font-semibold px-3 py-2 h-10 min-h-[40px] bg-transparent border-border focus-visible:ring-1 focus-visible:ring-ring shadow-sm resize-none placeholder:text-muted-foreground/30 tracking-tight leading-tight rounded-md transition-all",
               errors?.content &&
@@ -172,7 +174,7 @@ export function TaskCreateView({
             variant="ghost"
             size="sm"
             className={cn(
-              "h-10 px-4 transition-all text-muted-foreground hover:text-foreground hover:bg-accent gap-2 shrink-0 rounded-lg border border-input",
+              "h-10 px-4 transition-seijaku-fast text-muted-foreground hover:text-foreground bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none gap-2 shrink-0 rounded-lg",
               isEvening &&
                 "text-brand bg-brand/10 border-transparent hover:bg-brand/20 hover:text-brand",
             )}
@@ -199,7 +201,7 @@ export function TaskCreateView({
               setShowSubtasks(!showSubtasks);
             }}
             className={cn(
-              "h-10 w-10 p-0 transition-all text-muted-foreground hover:text-foreground hover:bg-accent group [&_svg]:!size-5 shrink-0 rounded-lg border border-input",
+              "h-10 w-10 p-0 transition-seijaku-fast text-muted-foreground hover:text-foreground bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none group [&_svg]:!size-5 shrink-0 rounded-lg",
               showSubtasks &&
                 "text-brand bg-brand/10 border-transparent hover:bg-brand/20 hover:text-brand",
             )}
@@ -257,7 +259,7 @@ export function TaskCreateView({
         >
           <SelectTrigger
             onPointerDown={() => trigger("MEDIUM")}
-            className="h-10 w-[140px] type-ui border-border/50 bg-secondary/10 hover:bg-secondary/20 focus:ring-0 transition-colors rounded-lg text-foreground [&_svg]:opacity-100 [&_svg]:text-foreground"
+            className="h-10 w-[140px] type-ui border-border/50 bg-secondary/40 hover:bg-secondary/60 shadow-none focus:ring-0 transition-seijaku-fast rounded-lg text-foreground [&_svg]:opacity-100 [&_svg]:text-foreground"
           >
             <SelectValue placeholder="Inbox" />
           </SelectTrigger>

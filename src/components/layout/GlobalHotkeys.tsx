@@ -1,12 +1,16 @@
 "use client";
 
 import { useHotkeys } from "react-hotkeys-hook";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useTaskActions } from "@/components/TaskActionsProvider";
 import { useCompletedTasks } from "@/components/CompletedTasksProvider";
 import { useHabitActions } from "@/components/habits/HabitActionsProvider";
+import { useProjectActions } from "@/components/ProjectActionsProvider";
+import { useUiStore } from "@/lib/store/uiStore";
+import { useCalendarStore } from "@/lib/calendar/store";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 
 interface GlobalHotkeysProps {
   setCommandOpen: (open: boolean | ((prev: boolean) => boolean)) => void;
@@ -18,11 +22,16 @@ export function GlobalHotkeys({
   setHelpOpen,
 }: GlobalHotkeysProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const { setTheme, resolvedTheme } = useTheme();
   const { toggleSidebar } = useSidebar();
   const { openAddTask } = useTaskActions();
   const { openSheet: openCompletedSheet } = useCompletedTasks();
   const { openAddHabit } = useHabitActions();
+  const { openCreateProject } = useProjectActions();
+  const { openCreateEvent } = useCalendarStore();
+  const { setViewMode, setArchivedProjectsOpen } = useUiStore();
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   // Memoize options to prevent listener thrashing
   const options = {
@@ -43,23 +52,32 @@ export function GlobalHotkeys({
   // New Habit (h)
   useHotkeys("h", () => openAddHabit(), options);
 
+  // New Event (e)
+  useHotkeys("e", () => openCreateEvent(), options);
+
+  // New Project (p)
+  useHotkeys("p", () => openCreateProject(), options);
+
+  // Archived Projects (a)
+  useHotkeys("a", () => setArchivedProjectsOpen(true), options);
+
   // Toggle Logbook (c)
   useHotkeys("c", () => openCompletedSheet(), options);
 
-  // Command Menu (s, Ctrl+K/Cmd+K)
   useHotkeys(
-    ["s", "meta+k", "ctrl+k"],
-    () => setCommandOpen((prev) => !prev),
+    ["mod+k"],
+    (event) => {
+      if (event.repeat) return;
+      setCommandOpen((prev) => !prev);
+    },
     options,
   );
-
-  // Sidebar Toggle (b)
-  useHotkeys("b", () => toggleSidebar(), options);
 
   // Theme Cycle (t)
   useHotkeys(
     "t",
-    () => {
+    (event) => {
+      if (event.repeat) return;
       const nextTheme = resolvedTheme === "dark" ? "light" : "dark";
       setTheme(nextTheme);
     },
@@ -69,12 +87,45 @@ export function GlobalHotkeys({
   // Shortcuts Help (Shift+H)
   useHotkeys(
     ["shift+h", "shift+/", "?"],
-    () => setHelpOpen((prev) => !prev),
+    (event) => {
+      if (event.repeat) return;
+      setHelpOpen((prev) => !prev);
+    },
     options,
   );
 
   // Focus Mode (f)
   useHotkeys("f", () => router.push("/focus"), options);
+
+  // View Switching Shortcuts (Shift + 1/2/3)
+  useHotkeys(
+    "shift+1",
+    () => {
+      setViewMode("grid");
+      if (pathname !== "/") router.push("/");
+    },
+    options,
+  );
+
+  useHotkeys(
+    "shift+2",
+    () => {
+      if (isDesktop) {
+        setViewMode("board");
+        if (pathname !== "/") router.push("/");
+      }
+    },
+    options,
+  );
+
+  useHotkeys(
+    "shift+3",
+    () => {
+      setViewMode("list");
+      if (pathname !== "/") router.push("/");
+    },
+    options,
+  );
 
   // Escape to close Focus Mode (if on focus page) and other sheets
   useHotkeys(

@@ -129,7 +129,7 @@ export function ImportExportMenu({ events }: ImportExportMenuProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 hover:bg-accent/50 transition-colors"
+            className="h-8 w-8 bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none transition-seijaku-fast"
             disabled={isImporting}
           >
             {isImporting ? (

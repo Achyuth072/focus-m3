@@ -3,6 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import type { Project } from "@/lib/types/task";
 import {
   Sidebar,
@@ -76,7 +77,7 @@ export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { isMobile, setOpenMobile } = useSidebar();
+  const { isMobile, setOpenMobile, state } = useSidebar();
   const { openSheet } = useCompletedTasks();
   const { data: projects } = useProjects();
   const { openCreateProject, openEditProject, openDeleteProject } =
@@ -106,16 +107,28 @@ export function AppSidebar() {
         className="h-screen border-r"
       >
         <SidebarHeader className="border-b border-border">
-          <div className="flex items-center justify-between px-2 py-4">
-            <div className="flex items-center gap-2 group-data-[collapsible=icon]:w-full group-data-[collapsible=icon]:justify-center">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-semibold shrink-0">
-                K
-              </div>
-              <span className="type-h2 group-data-[collapsible=icon]:hidden">
-                Kanso
-              </span>
+          <div className="flex items-center py-2 h-[60px]">
+            {/* K logo — always in-flow, centers naturally in 48px icon-width sidebar when collapsed */}
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-semibold shrink-0">
+              K
             </div>
-            <SidebarTrigger className="h-8 w-8 group-data-[collapsible=icon]:hidden" />
+            {/* Label + trigger animate in/out with same Seijaku spring as the project list */}
+            <AnimatePresence initial={false}>
+              {state === "expanded" && (
+                <motion.div
+                  key="header-expanded"
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: "auto" }}
+                  exit={{ opacity: 0, width: 0 }}
+                  transition={{ type: "spring", mass: 1, stiffness: 280, damping: 60 }}
+                  className="flex items-center justify-between overflow-hidden ml-2 flex-1"
+                  style={{ minWidth: 0 }}
+                >
+                  <span className="type-h2 whitespace-nowrap">Kanso</span>
+                  <SidebarTrigger className="h-8 w-8 shrink-0 bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none active:scale-95 transition-all" />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </SidebarHeader>
 
@@ -159,15 +172,7 @@ export function AppSidebar() {
                                 openSheet();
                                 if (isMobile) setOpenMobile(false);
                               } else if (isMobile) {
-                                e.preventDefault();
-                                setOpenMobile(false);
-                                setTimeout(() => {
-                                  router.push(
-                                    item.label === "All Tasks"
-                                      ? "/?project=all"
-                                      : item.path,
-                                  );
-                                }, 50);
+                                setTimeout(() => setOpenMobile(false), 150);
                               }
                             }}
                           >
@@ -210,147 +215,147 @@ export function AppSidebar() {
             >
               <Plus className="h-4 w-4" />
             </SidebarGroupAction>
-            {isProjectsOpen && (
-              <SidebarGroupContent>
-                <SidebarMenu className="pl-2 group-data-[collapsible=icon]:pl-0">
-                  {/* Inbox */}
-                  <SidebarMenuItem>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={currentProjectId === "inbox"}
-                      tooltip="Inbox"
-                    >
-                      <Link
-                        href="/?project=inbox"
-                        onClick={(e) => {
-                          trigger("MEDIUM");
-                          if (isMobile) {
-                            e.preventDefault();
-                            setOpenMobile(false);
-                            setTimeout(
-                              () => router.push("/?project=inbox"),
-                              50,
-                            );
-                          }
-                        }}
-                      >
-                        <div className="flex items-center justify-center w-5 h-5 shrink-0">
-                          <Inbox className="h-4 w-4" />
-                        </div>
-                        <span>Inbox</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-
-                  {/* User Projects */}
-                  {projects
-                    ?.filter((p) => !p.is_inbox)
-                    .map((project) => (
-                      <SidebarMenuItem key={project.id} className="relative">
+            <AnimatePresence initial={false}>
+              {isProjectsOpen && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ type: "spring", mass: 1, stiffness: 280, damping: 60 }}
+                  className="overflow-hidden"
+                >
+                  <SidebarGroupContent>
+                    <SidebarMenu className="pl-2 group-data-[collapsible=icon]:pl-0">
+                      {/* Inbox */}
+                      <SidebarMenuItem>
                         <SidebarMenuButton
                           asChild
-                          isActive={currentProjectId === project.id}
-                          tooltip={project.name}
-                          className="peer"
+                          isActive={currentProjectId === "inbox"}
+                          tooltip="Inbox"
                         >
                           <Link
-                            href={`/?project=${project.id}`}
-                            onClick={(e) => {
+                            href="/?project=inbox"
+                            onClick={() => {
                               trigger("MEDIUM");
                               if (isMobile) {
-                                e.preventDefault();
-                                setOpenMobile(false);
-                                setTimeout(
-                                  () => router.push(`/?project=${project.id}`),
-                                  50,
-                                );
+                                setTimeout(() => setOpenMobile(false), 150);
                               }
                             }}
                           >
                             <div className="flex items-center justify-center w-5 h-5 shrink-0">
-                              <div
-                                className="h-3 w-3 rounded-full"
-                                style={{ backgroundColor: project.color }}
-                              />
+                              <Inbox className="h-4 w-4" />
                             </div>
-                            <span className="truncate">{project.name}</span>
+                            <span>Inbox</span>
                           </Link>
                         </SidebarMenuButton>
-
-                        {/* Project Actions */}
-                        {/* Project Actions */}
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <SidebarMenuAction
-                              showOnHover={!isMobile}
-                              className="peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-data-[collapsible=icon]:hidden"
-                              onClick={(e) => {
-                                if (isMobile) {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  trigger("MEDIUM");
-                                  setMobileActionProject(project);
-                                }
-                              }}
-                            >
-                              <EllipsisVertical className="h-4 w-4" />
-                              <span className="sr-only">More</span>
-                            </SidebarMenuAction>
-                          </DropdownMenuTrigger>
-                          {!isMobile && (
-                            <DropdownMenuContent
-                              side="right"
-                              align="start"
-                              className="w-48"
-                            >
-                              <DropdownMenuItem
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  trigger("MEDIUM");
-                                  openEditProject(project);
-                                }}
-                                className="flex items-center gap-2"
-                              >
-                                <Pencil className="h-4 w-4" />
-                                <span>Edit Project</span>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  trigger("WARNING");
-                                  openDeleteProject(project);
-                                }}
-                                className="flex items-center gap-2 text-destructive focus:text-destructive focus:bg-destructive/10"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                                <span>Delete Project</span>
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          )}
-                        </DropdownMenu>
                       </SidebarMenuItem>
-                    ))}
 
-                  {/* Archived Projects */}
-                  <SidebarMenuItem>
-                    <SidebarMenuButton
-                      onClick={() => {
-                        trigger("MEDIUM");
-                        setIsArchivedOpen(true);
-                      }}
-                      tooltip="Archived Projects"
-                    >
-                      <div className="flex items-center justify-center w-5 h-5 shrink-0">
-                        <ArchiveRestore className="h-4 w-4" />
-                      </div>
-                      <span className="truncate">Archived Projects</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </SidebarMenu>
-              </SidebarGroupContent>
-            )}
+                      {/* User Projects */}
+                      {projects
+                        ?.filter((p) => !p.is_inbox)
+                        .map((project) => (
+                          <SidebarMenuItem key={project.id} className="relative">
+                            <SidebarMenuButton
+                              asChild
+                              isActive={currentProjectId === project.id}
+                              tooltip={project.name}
+                              className="peer"
+                            >
+                              <Link
+                                href={`/?project=${project.id}`}
+                                onClick={() => {
+                                  trigger("MEDIUM");
+                                  if (isMobile) {
+                                    setTimeout(() => setOpenMobile(false), 150);
+                                  }
+                                }}
+                              >
+                                <div className="flex items-center justify-center w-5 h-5 shrink-0">
+                                  <div
+                                    className="h-3 w-3 rounded-full"
+                                    style={{ backgroundColor: project.color }}
+                                  />
+                                </div>
+                                <span className="truncate">{project.name}</span>
+                              </Link>
+                            </SidebarMenuButton>
+
+                            {/* Project Actions */}
+                            {/* Project Actions */}
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <SidebarMenuAction
+                                  showOnHover={!isMobile}
+                                  className="peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-data-[collapsible=icon]:hidden"
+                                  onClick={(e) => {
+                                    if (isMobile) {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      trigger("MEDIUM");
+                                      setMobileActionProject(project);
+                                    }
+                                  }}
+                                >
+                                  <EllipsisVertical className="h-4 w-4" />
+                                  <span className="sr-only">More</span>
+                                </SidebarMenuAction>
+                              </DropdownMenuTrigger>
+                              {!isMobile && (
+                                <DropdownMenuContent
+                                  side="right"
+                                  align="start"
+                                  className="w-48"
+                                >
+                                  <DropdownMenuItem
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      trigger("MEDIUM");
+                                      openEditProject(project);
+                                    }}
+                                    className="flex items-center gap-2"
+                                  >
+                                    <Pencil className="h-4 w-4" />
+                                    <span>Edit Project</span>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      trigger("WARNING");
+                                      openDeleteProject(project);
+                                    }}
+                                    className="flex items-center gap-2 text-destructive focus:text-destructive focus:bg-destructive/10"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                    <span>Delete Project</span>
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              )}
+                            </DropdownMenu>
+                          </SidebarMenuItem>
+                        ))}
+
+                      {/* Archived Projects */}
+                      <SidebarMenuItem>
+                        <SidebarMenuButton
+                          onClick={() => {
+                            trigger("MEDIUM");
+                            setIsArchivedOpen(true);
+                          }}
+                          tooltip="Archived Projects"
+                        >
+                          <div className="flex items-center justify-center w-5 h-5 shrink-0">
+                            <ArchiveRestore className="h-4 w-4" />
+                          </div>
+                          <span className="truncate">Archived Projects</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </SidebarGroup>
 
           {!isMobile && (
@@ -386,7 +391,7 @@ export function AppSidebar() {
           )}
         </SidebarContent>
 
-        <SidebarFooter className="border-t border-border">
+        <SidebarFooter className="border-t border-border overflow-hidden">
           {isMobile && (
             <SidebarMenu>
               <SidebarMenuItem>
@@ -397,12 +402,10 @@ export function AppSidebar() {
                 >
                   <Link
                     href="/settings"
-                    onClick={(e) => {
+                    onClick={() => {
                       trigger("MEDIUM");
                       if (isMobile) {
-                        e.preventDefault();
-                        setOpenMobile(false);
-                        setTimeout(() => router.push("/settings"), 50);
+                        setTimeout(() => setOpenMobile(false), 150);
                       }
                     }}
                   >
@@ -413,12 +416,33 @@ export function AppSidebar() {
               </SidebarMenuItem>
             </SidebarMenu>
           )}
-          {/* Expand trigger - visible only when collapsed */}
-          <div className="hidden group-data-[collapsible=icon]:flex justify-center py-2">
-            <SidebarTrigger className="h-8 w-8" />
-          </div>
-          <div className="px-2 py-2 text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">
-            v1.13.1
+          
+          <div className="h-[48px] relative flex flex-col justify-center">
+            <AnimatePresence mode="popLayout" initial={false}>
+              {state === "collapsed" && !isMobile ? (
+                <motion.div
+                  key="footer-collapsed"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0, transition: { duration: 0.05 } }}
+                  transition={{ duration: 0.15 }}
+                  className="flex justify-center w-full"
+                >
+                  <SidebarTrigger className="h-8 w-8 bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none active:scale-95 transition-all" />
+                </motion.div>
+              ) : state === "expanded" && !isMobile ? (
+                <motion.div
+                  key="footer-expanded"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0, transition: { duration: 0.05 } }}
+                  transition={{ duration: 0.15 }}
+                  className="px-4 py-3 text-xs text-muted-foreground font-medium tracking-tight w-full"
+                >
+                  v1.14.0
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
           </div>
         </SidebarFooter>
       </Sidebar>

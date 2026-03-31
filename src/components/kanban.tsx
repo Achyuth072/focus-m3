@@ -723,7 +723,7 @@ export type KanbanBoardCardProps<T extends { id: string } = { id: string }> =
   };
 
 const kanbanBoardCardClassNames =
-  "rounded-lg border border-border bg-background p-3 text-start text-foreground shadow-sm";
+  "rounded-lg border border-border bg-background p-3 text-start text-foreground shadow-none";
 
 export function KanbanBoardCard({
   className,

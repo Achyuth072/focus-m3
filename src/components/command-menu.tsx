@@ -7,12 +7,12 @@ import {
   CalendarIcon,
   HomeIcon,
   LaptopIcon,
-  LayoutGridIcon,
-  MoonIcon,
-  PlusIcon,
-  SettingsIcon,
-  SunIcon,
-  HashIcon,
+  LayoutGrid,
+  Moon,
+  Plus,
+  Settings,
+  Sun,
+  Hash,
   CheckCircle2,
   Columns,
   LogOut,
@@ -27,6 +27,24 @@ import {
   Clock,
   Filter,
   Command as CommandIcon,
+  ArchiveRestore,
+  RefreshCw,
+  FileDown,
+  FileUp,
+  CalendarPlus,
+  LayoutGridIcon,
+  MoonIcon,
+  PlusIcon,
+  SettingsIcon,
+  SunIcon,
+  HashIcon,
+  Kanban,
+  List as ListIcon,
+  Repeat,
+  BarChart3,
+  Layout as LayoutIcon,
+  PlayCircle,
+  CalendarDays,
 } from "lucide-react";
 
 import {
@@ -37,6 +55,7 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
+  CommandShortcut,
 } from "@/components/ui/command";
 import { useProjects } from "@/lib/hooks/useProjects";
 import { useTaskActions } from "@/components/TaskActionsProvider";
@@ -49,6 +68,11 @@ import { SignOutConfirmation } from "@/components/auth/SignOutConfirmation";
 import { useDocumentPiP } from "@/lib/hooks/useDocumentPiP";
 import { useUiStore } from "@/lib/store/uiStore";
 import { useBackNavigation } from "@/lib/hooks/useBackNavigation";
+import { useCalendarStore } from "@/lib/calendar/store";
+import { ArchivedProjectsDialog } from "@/components/projects/ArchivedProjectsDialog";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { getPlatformKey } from "@/lib/utils/platform";
 
 interface CommandMenuProps {
   open: boolean;
@@ -57,25 +81,29 @@ interface CommandMenuProps {
 
 export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
   const router = useRouter();
-  // const [open, setOpen] = React.useState(false) // Controlled by parent
+  const queryClient = useQueryClient();
   const [showSignOutConfirm, setShowSignOutConfirm] = React.useState(false);
-  const { setTheme } = useTheme();
+  const [showArchivedProjects, setShowArchivedProjects] = React.useState(false);
+  const { setTheme, resolvedTheme } = useTheme();
   const { data: projects } = useProjects();
   const { openAddTask } = useTaskActions();
   const { openCreateProject } = useProjectActions();
   const { openAddHabit } = useHabitActions();
+  const { openCreateEvent } = useCalendarStore();
   const { openSheet: openCompletedSheet } = useCompletedTasks();
-  const { user, signOut } = useAuth();
+  const { user, signOut, isGuestMode } = useAuth();
   const { toggleSidebar } = useSidebar();
   const { openPiP, closePiP, isPiPActive } = useDocumentPiP();
-  const { setShortcutsHelpOpen, setSortBy, setGroupBy } = useUiStore();
+  const {
+    setShortcutsHelpOpen,
+    setSortBy,
+    setGroupBy,
+    setArchivedProjectsOpen,
+  } = useUiStore();
   const [copied, setCopied] = React.useState(false);
 
   // Handle back navigation to close command menu instead of navigating away
-  // Handle back navigation to close command menu instead of navigating away
   useBackNavigation(open, () => onOpenChange(false));
-
-  // Internal shortcut listener removed in favor of GlobalHotkeys
 
   const runCommand = React.useCallback(
     (command: () => void) => {
@@ -105,23 +133,52 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
 
           <CommandGroup heading="Actions">
             <CommandItem onSelect={() => runCommand(() => openAddTask())}>
-              <PlusIcon className="mr-2 h-4 w-4" />
+              <PlusIcon className="mr-2 h-5 w-5" />
               <span>New Task</span>
+              <CommandShortcut>N</CommandShortcut>
             </CommandItem>
             <CommandItem onSelect={() => runCommand(() => openAddHabit())}>
-              <PlusIcon className="mr-2 h-4 w-4" />
+              <PlusIcon className="mr-2 h-5 w-5" />
               <span>New Habit</span>
+              <CommandShortcut>H</CommandShortcut>
+            </CommandItem>
+            <CommandItem onSelect={() => runCommand(() => openCreateEvent())}>
+              <CalendarPlus className="mr-2 h-5 w-5" />
+              <span>New Event</span>
+              <CommandShortcut>E</CommandShortcut>
             </CommandItem>
             <CommandItem onSelect={() => runCommand(() => openCreateProject())}>
-              <FolderPlus className="mr-2 h-4 w-4" />
+              <FolderPlus className="mr-2 h-5 w-5" />
               <span>New Project</span>
+              <CommandShortcut>P</CommandShortcut>
+            </CommandItem>
+            <CommandItem
+              onSelect={() => runCommand(() => setArchivedProjectsOpen(true))}
+            >
+              <ArchiveRestore className="mr-2 h-5 w-5" />
+              <span>Archived Projects</span>
+              <CommandShortcut>A</CommandShortcut>
             </CommandItem>
             <CommandItem
               onSelect={() => runCommand(() => openCompletedSheet())}
             >
-              <CheckCircle2 className="mr-2 h-4 w-4" />
+              <CheckCircle2 className="mr-2 h-5 w-5" />
               <span>Show Completed Tasks</span>
+              <CommandShortcut>C</CommandShortcut>
             </CommandItem>
+            {user && !isGuestMode && (
+              <CommandItem
+                onSelect={() =>
+                  runCommand(() => {
+                    queryClient.invalidateQueries();
+                    toast.success("Syncing...");
+                  })
+                }
+              >
+                <RefreshCw className="mr-2 h-5 w-5" />
+                <span>Sync Now</span>
+              </CommandItem>
+            )}
             <CommandItem
               onSelect={() =>
                 runCommand(() => {
@@ -130,14 +187,15 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
                 })
               }
             >
-              <Monitor className="mr-2 h-4 w-4" />
+              <Monitor className="mr-2 h-5 w-5" />
               <span>
                 {isPiPActive ? "Close PiP Window" : "Open PiP Window"}
               </span>
             </CommandItem>
             <CommandItem onSelect={() => runCommand(() => toggleSidebar())}>
-              <Columns className="mr-2 h-4 w-4" />
+              <Columns className="mr-2 h-5 w-5" />
               <span>Toggle Sidebar</span>
+              <CommandShortcut>{getPlatformKey()}+B</CommandShortcut>
             </CommandItem>
           </CommandGroup>
 
@@ -149,16 +207,24 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
                 runCommand(() => router.push("/focus?duration=25"))
               }
             >
-              <Clock className="mr-2 h-4 w-4" />
+              <Clock className="mr-2 h-5 w-5" />
               <span>Pomodoro (25m)</span>
+              <CommandShortcut>F</CommandShortcut>
             </CommandItem>
             <CommandItem
               onSelect={() =>
                 runCommand(() => router.push("/focus?duration=50"))
               }
             >
-              <Clock className="mr-2 h-4 w-4" />
+              <Clock className="mr-2 h-5 w-5" />
               <span>Deep Work (50m)</span>
+            </CommandItem>
+            <CommandItem
+              onSelect={() => runCommand(() => router.push("/focus"))}
+            >
+              <Clock className="mr-2 h-5 w-5" />
+              <span>Focus Session</span>
+              <CommandShortcut>5</CommandShortcut>
             </CommandItem>
           </CommandGroup>
 
@@ -173,7 +239,7 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
                 })
               }
             >
-              <ListFilter className="mr-2 h-4 w-4" />
+              <ListFilter className="mr-2 h-5 w-5" />
               <span>Sort by Date</span>
             </CommandItem>
             <CommandItem
@@ -184,7 +250,7 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
                 })
               }
             >
-              <ListFilter className="mr-2 h-4 w-4" />
+              <ListFilter className="mr-2 h-5 w-5" />
               <span>Sort by Priority</span>
             </CommandItem>
             <CommandItem
@@ -195,7 +261,7 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
                 })
               }
             >
-              <Layers className="mr-2 h-4 w-4" />
+              <Layers className="mr-2 h-5 w-5" />
               <span>Group by Project</span>
             </CommandItem>
             <CommandItem
@@ -206,8 +272,23 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
                 })
               }
             >
-              <Layers className="mr-2 h-4 w-4" />
+              <Layers className="mr-2 h-5 w-5" />
               <span>Ungroup Tasks</span>
+            </CommandItem>
+            <CommandItem
+              onSelect={() =>
+                runCommand(() =>
+                  setTheme(resolvedTheme === "light" ? "dark" : "light"),
+                )
+              }
+            >
+              {resolvedTheme === "light" ? (
+                <MoonIcon className="mr-2 h-5 w-5" />
+              ) : (
+                <SunIcon className="mr-2 h-5 w-5" />
+              )}
+              <span>Toggle Dark Mode</span>
+              <CommandShortcut>T</CommandShortcut>
             </CommandItem>
           </CommandGroup>
 
@@ -215,90 +296,31 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
 
           <CommandGroup heading="Navigation">
             <CommandItem onSelect={() => runCommand(() => router.push("/"))}>
-              <HomeIcon className="mr-2 h-4 w-4" />
+              <HomeIcon className="mr-2 h-5 w-5" />
               <span>Home</span>
+              <CommandShortcut>1</CommandShortcut>
             </CommandItem>
             <CommandItem
               onSelect={() => runCommand(() => router.push("/habits"))}
             >
-              <Layers className="mr-2 h-4 w-4" />
+              <Layers className="mr-2 h-5 w-5" />
               <span>Habits</span>
+              <CommandShortcut>2</CommandShortcut>
             </CommandItem>
-            {/* Inbox moved to projects */}
             <CommandItem
               onSelect={() => runCommand(() => router.push("/calendar"))}
             >
-              <CalendarIcon className="mr-2 h-4 w-4" />
+              <CalendarIcon className="mr-2 h-5 w-5" />
               <span>Calendar</span>
+              <CommandShortcut>3</CommandShortcut>
             </CommandItem>
             <CommandItem
               onSelect={() => runCommand(() => router.push("/stats"))}
             >
-              <LayoutGridIcon className="mr-2 h-4 w-4" />
+              <LayoutGridIcon className="mr-2 h-5 w-5" />
               <span>Statistics</span>
+              <CommandShortcut>4</CommandShortcut>
             </CommandItem>
-          </CommandGroup>
-
-          <CommandSeparator />
-
-          <CommandGroup heading="Quick Filters">
-            <CommandItem
-              onSelect={() => runCommand(() => router.push("/?filter=today"))}
-            >
-              <Filter className="mr-2 h-4 w-4" />
-              <span>Due Today</span>
-            </CommandItem>
-            <CommandItem
-              onSelect={() => runCommand(() => router.push("/?filter=p1"))}
-            >
-              <Filter className="mr-2 h-4 w-4" />
-              <span>High Priority</span>
-            </CommandItem>
-            <CommandItem onSelect={() => runCommand(() => router.push("/"))}>
-              <PlusIcon className="mr-2 h-4 w-4 rotate-45" />
-              <span>Clear all filters</span>
-            </CommandItem>
-          </CommandGroup>
-
-          <CommandSeparator />
-
-          <CommandGroup heading="Theme">
-            <CommandItem onSelect={() => runCommand(() => setTheme("light"))}>
-              <SunIcon className="mr-2 h-4 w-4" />
-              <span>Light</span>
-            </CommandItem>
-            <CommandItem onSelect={() => runCommand(() => setTheme("dark"))}>
-              <MoonIcon className="mr-2 h-4 w-4" />
-              <span>Dark</span>
-            </CommandItem>
-            <CommandItem onSelect={() => runCommand(() => setTheme("system"))}>
-              <LaptopIcon className="mr-2 h-4 w-4" />
-              <span>System</span>
-            </CommandItem>
-          </CommandGroup>
-
-          <CommandSeparator />
-
-          <CommandGroup heading="Projects">
-            <CommandItem
-              onSelect={() => runCommand(() => router.push("/?project=inbox"))}
-            >
-              <Inbox className="mr-2 h-4 w-4" />
-              <span>Inbox</span>
-            </CommandItem>
-            {projects
-              ?.filter((p) => !p.is_inbox)
-              .map((project) => (
-                <CommandItem
-                  key={project.id}
-                  onSelect={() => {
-                    runCommand(() => router.push(`/?project=${project.id}`));
-                  }}
-                >
-                  <HashIcon className="mr-2 h-4 w-4" />
-                  <span>{project.name}</span>
-                </CommandItem>
-              ))}
           </CommandGroup>
 
           <CommandSeparator />
@@ -307,14 +329,16 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
             <CommandItem
               onSelect={() => runCommand(() => router.push("/settings"))}
             >
-              <SettingsIcon className="mr-2 h-4 w-4" />
+              <SettingsIcon className="mr-2 h-5 w-5" />
               <span>Settings</span>
+              <CommandShortcut>6</CommandShortcut>
             </CommandItem>
             <CommandItem
               onSelect={() => runCommand(() => setShortcutsHelpOpen(true))}
             >
-              <Keyboard className="mr-2 h-4 w-4" />
+              <Keyboard className="mr-2 h-5 w-5" />
               <span>Keyboard Shortcuts</span>
+              <CommandShortcut>Shift+H</CommandShortcut>
             </CommandItem>
             {user && (
               <CommandItem
@@ -329,7 +353,7 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
                 {copied ? (
                   <Check className="mr-2 h-4 w-4 text-green-500" />
                 ) : (
-                  <Copy className="mr-2 h-4 w-4" />
+                  <Copy className="mr-2 h-5 w-5" />
                 )}
                 <span>Copy My User ID</span>
               </CommandItem>
@@ -337,7 +361,7 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
             <CommandItem
               onSelect={() => runCommand(() => setShowSignOutConfirm(true))}
             >
-              <LogOut className="mr-2 h-4 w-4" />
+              <LogOut className="mr-2 h-5 w-5" />
               <span>Sign Out</span>
             </CommandItem>
           </CommandGroup>

@@ -1,12 +1,14 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useRef, useLayoutEffect, useCallback } from "react";
 import { ActivityCalendar, type Activity } from "react-activity-calendar";
 import "react-activity-calendar/tooltips.css";
 import { useTheme } from "next-themes";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useHeatmapData } from "@/lib/hooks/useHeatmapData";
+import { useIsMobile } from "@/lib/hooks/useIsMobile";
+import { useHorizontalScroll } from "@/lib/hooks/useHorizontalScroll";
 import { cn } from "@/lib/utils";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 
@@ -17,25 +19,75 @@ interface ActivityHeatmapProps {
 export function ActivityHeatmap({ className }: ActivityHeatmapProps) {
   const { data, isLoading, maxValue, activeDays } = useHeatmapData();
   const { resolvedTheme } = useTheme();
+  
+  const isMobile = useIsMobile();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const horizontalScrollRef = useHorizontalScroll();
+
+  // Combine refs: useHorizontalScroll for desktop wheel, manual ref for mobile auto-scroll
+  const setRefs = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (!isMobile) {
+        horizontalScrollRef(node);
+      } else {
+        horizontalScrollRef(null);
+      }
+      (
+        scrollContainerRef as React.MutableRefObject<HTMLDivElement | null>
+      ).current = node;
+    },
+    [horizontalScrollRef, isMobile],
+  );
 
   // Transform data to react-activity-calendar format
   const calendarData: Activity[] = useMemo(() => {
-    if (!data || data.length === 0) return [];
+    // Ensure at least today is represented to prevent "Activity data must not be empty" crash
+    const today = new Date().toISOString().split("T")[0];
+    const rawData = data || [];
+    
+    // Map existing data points
+    const heatmapMap = new Map<string, number>(
+      rawData.map((d) => [d.date, d.combined])
+    );
+    
+    // Always anchor with today to ensure the chart has a latest date
+    if (!heatmapMap.has(today)) {
+      heatmapMap.set(today, 0);
+    }
 
-    return data.map((d) => ({
-      date: d.date,
-      count: d.combined,
-      level:
-        d.combined === 0
-          ? 0
-          : (Math.min(Math.ceil((d.combined / maxValue.combined) * 4), 4) as
-              | 0
-              | 1
-              | 2
-              | 3
-              | 4),
-    }));
-  }, [data, maxValue.combined]);
+    const maxVal = maxValue?.combined || 1; // Prevent division by zero
+
+    return Array.from(heatmapMap.entries())
+      .map(([date, combined]) => ({
+        date,
+        count: combined,
+        level:
+          combined === 0
+            ? 0
+            : (Math.min(Math.ceil((combined / maxVal) * 4), 4) as
+                | 0
+                | 1
+                | 2
+                | 3
+                | 4),
+      }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+  }, [data, maxValue?.combined]);
+
+  // Auto-scroll to current date (right end) on mobile only
+  // Using calendarData.length as dependency to avoid "changed size" errors 
+  // with certain dev-tooling/HMR scenarios, and to ensure it scrolls when data arrives.
+  useLayoutEffect(() => {
+    if (!isMobile) return;
+    
+    const frame = requestAnimationFrame(() => {
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollLeft =
+          scrollContainerRef.current.scrollWidth;
+      }
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [calendarData.length, isMobile, isLoading]);
 
   // Monochromatic Kanso theme (brand color scale)
   const theme = useMemo(
@@ -92,49 +144,54 @@ export function ActivityHeatmap({ className }: ActivityHeatmapProps) {
           </div>
         </div>
 
-        <div className="relative flex flex-col items-center">
-          <div className="w-full overflow-x-auto pb-4 custom-scrollbar flex justify-start md:justify-center">
-            <ActivityCalendar
-              data={calendarData}
-              theme={theme}
-              colorScheme={(resolvedTheme as "light" | "dark") || "light"}
-              blockSize={15}
-              blockMargin={5}
-              blockRadius={2}
-              fontSize={13}
-              showColorLegend={true}
-              showMonthLabels={true}
-              showTotalCount={false}
-              labels={{
-                months: [
-                  "Jan",
-                  "Feb",
-                  "Mar",
-                  "Apr",
-                  "May",
-                  "Jun",
-                  "Jul",
-                  "Aug",
-                  "Sep",
-                  "Oct",
-                  "Nov",
-                  "Dec",
-                ],
-                weekdays: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-                legend: {
-                  less: "Less",
-                  more: "More",
-                },
-              }}
-              renderBlock={(block, activity) => (
-                <g
-                  data-tooltip-id="activity-tooltip"
-                  data-tooltip-content={renderTooltip(activity)}
-                >
-                  {block}
-                </g>
-              )}
-            />
+        <div className="relative">
+          <div 
+            ref={setRefs}
+            className="w-full overflow-x-auto pb-4 custom-scrollbar"
+          >
+            <div className="mx-auto" style={{ width: "fit-content" }}>
+              <ActivityCalendar
+                data={calendarData}
+                theme={theme}
+                colorScheme={(resolvedTheme as "light" | "dark") || "light"}
+                blockSize={15}
+                blockMargin={5}
+                blockRadius={2}
+                fontSize={13}
+                showColorLegend={true}
+                showMonthLabels={true}
+                showTotalCount={false}
+                labels={{
+                  months: [
+                    "Jan",
+                    "Feb",
+                    "Mar",
+                    "Apr",
+                    "May",
+                    "Jun",
+                    "Jul",
+                    "Aug",
+                    "Sep",
+                    "Oct",
+                    "Nov",
+                    "Dec",
+                  ],
+                  weekdays: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+                  legend: {
+                    less: "Less",
+                    more: "More",
+                  },
+                }}
+                renderBlock={(block, activity) => (
+                  <g
+                    data-tooltip-id="activity-tooltip"
+                    data-tooltip-content={renderTooltip(activity)}
+                  >
+                    {block}
+                  </g>
+                )}
+              />
+            </div>
           </div>
           <ReactTooltip id="activity-tooltip" />
         </div>

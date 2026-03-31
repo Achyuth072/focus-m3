@@ -148,7 +148,7 @@ export function EditProjectDialog({
               <Label>Color</Label>
               <div
                 ref={scrollRef}
-                className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide py-3 px-1 snap-x snap-mandatory"
+                className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide py-3 px-4"
                 role="radiogroup"
                 aria-label="Project color"
               >
@@ -168,7 +168,7 @@ export function EditProjectDialog({
                       });
                     }}
                     className={cn(
-                      "h-9 w-9 rounded-xl transition-all shrink-0 snap-start",
+                      "h-9 w-9 rounded-xl transition-all shrink-0",
                       color === c.hex
                         ? "ring-2 ring-brand ring-offset-2 ring-offset-background scale-110 opacity-100"
                         : "opacity-70 hover:opacity-90 hover:scale-105",

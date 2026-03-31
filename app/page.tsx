@@ -64,7 +64,7 @@ function HomeContent() {
                     trigger("MEDIUM");
                     router.push("/");
                   }}
-                  className="hover:bg-accent/60 p-0.5 rounded-full transition-colors"
+                  className="bg-secondary/40 hover:bg-secondary/60 border border-border/50 p-0.5 rounded-full transition-colors"
                   title="Clear filter"
                 >
                   <PlusIcon className="h-3.5 w-3.5 rotate-45" />

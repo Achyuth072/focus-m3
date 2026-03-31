@@ -210,7 +210,7 @@ export function CompletedTasksSheet({
                     trigger("HEAVY");
                     setShowClearDialog(true);
                   }}
-                  className="h-8 gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-seijaku-fast rounded-sm"
+                  className="h-8 gap-2 bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none text-muted-foreground hover:text-destructive transition-seijaku-fast rounded-sm"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                   <span className="text-xs">Clear History</span>
@@ -260,7 +260,7 @@ export function CompletedTasksSheet({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-10 w-10 text-muted-foreground active:bg-destructive/10 active:text-destructive active:scale-95 transition-seijaku-fast rounded-md"
+                  className="h-10 w-10 bg-secondary/40 active:bg-secondary/60 border border-border/50 shadow-none text-muted-foreground active:text-destructive active:scale-95 transition-seijaku-fast rounded-md"
                   onClick={() => {
                     trigger("HEAVY");
                     setShowClearDialog(true);

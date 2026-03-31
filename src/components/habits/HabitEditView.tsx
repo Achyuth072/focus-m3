@@ -17,6 +17,7 @@ import { HabitColorPicker } from "./shared/HabitColorPicker";
 import { HabitIconPicker } from "./shared/HabitIconPicker";
 import type { Habit } from "@/lib/types/habit";
 import { TaskDatePicker } from "../tasks/shared/TaskDatePicker";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 
 interface HabitEditViewProps {
   initialHabit: Habit;
@@ -65,6 +66,7 @@ export function HabitEditView({
   errors,
 }: HabitEditViewProps) {
   const { trigger } = useHaptic();
+  const isFinePointer = useMediaQuery("(pointer: fine)");
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden w-full max-w-full">
@@ -93,6 +95,7 @@ export function HabitEditView({
               value={name}
               onChange={(e) => setName(e.target.value)}
               onKeyDown={onKeyDown}
+              autoFocus={isFinePointer}
               className={cn(
                 "text-xl sm:text-2xl font-semibold px-3 py-2 h-10 min-h-[40px] bg-transparent border-border focus-visible:ring-1 focus-visible:ring-ring shadow-sm resize-none placeholder:text-muted-foreground/30 tracking-tight leading-tight rounded-md transition-all",
                 errors?.name &&

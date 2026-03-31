@@ -9,7 +9,8 @@ export function useHorizontalScroll() {
       cleanupRef.current = null;
     }
 
-    if (!el) return;
+      if (!el) return;
+      el.style.overflowAnchor = "none";
 
     let targetScrollLeft = el.scrollLeft;
     let animationId: number | null = null;
@@ -44,10 +45,11 @@ export function useHorizontalScroll() {
       if (isMoving) {
         // Smoothly interpolate to target (used for Wheel)
         const diff = targetScrollLeft - el.scrollLeft;
-        if (Math.abs(diff) < 0.5) {
+        if (Math.abs(diff) < 0.2) { // Tighter threshold
           el.scrollLeft = targetScrollLeft;
           animationId = null;
           enableScrollSnap();
+          velocity = 0;
           return;
         }
         el.scrollLeft += diff * lerpFactor;
