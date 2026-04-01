@@ -406,7 +406,7 @@ export function AppSidebar() {
 
         <SidebarFooter className="border-t border-border overflow-hidden md:p-2 p-0">
           {isMobile && (
-            <SidebarMenu className="p-2 pb-0">
+            <SidebarMenu className="p-2 pb-2">
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
@@ -452,7 +452,7 @@ export function AppSidebar() {
                   transition={{ duration: 0.15 }}
                   className="px-4 py-3 text-xs text-muted-foreground font-medium tracking-tight w-full"
                 >
-                  v1.14.1
+                  v1.14.2
                 </motion.div>
               ) : null}
             </AnimatePresence>
