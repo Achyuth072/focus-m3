@@ -1,11 +1,11 @@
 "use client";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { format } from "date-fns";
+import { format, isValid } from "date-fns";
 import { Calendar, Clock, MapPin, Trash2, Check } from "lucide-react";
 import {
   Command,
@@ -43,7 +43,6 @@ import { parseEventInput } from "@/lib/utils/nlp-event";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import { useCalendarStore } from "@/lib/calendar/store";
-import { useMemo } from "react";
 import type { CalendarEventUI } from "@/lib/types/calendar-event";
 
 const CreateEventSchema = z.object({
@@ -72,6 +71,23 @@ interface CreateEventDialogProps {
   event?: CalendarEventUI;
 }
 
+function coerceValidDate(value: unknown): Date | undefined {
+  if (value instanceof Date) {
+    return isValid(value) ? value : undefined;
+  }
+
+  if (typeof value === "string" || typeof value === "number") {
+    const parsed = new Date(value);
+    return isValid(parsed) ? parsed : undefined;
+  }
+
+  return undefined;
+}
+
+function getDefaultEndDate(start: Date) {
+  return new Date(start.getTime() + 3600000);
+}
+
 export function CreateEventDialog({
   open,
   onOpenChange,
@@ -83,20 +99,28 @@ export function CreateEventDialog({
   const updateEvent = useUpdateCalendarEvent();
   const deleteEvent = useDeleteCalendarEvent();
   const isFinePointer = useMediaQuery("(pointer: fine)");
+  const normalizedDefaultDate = coerceValidDate(defaultDate);
+  const normalizedEventStart = coerceValidDate(event?.start);
+  const normalizedEventEnd = coerceValidDate(event?.end);
+  const initialStartDate = useMemo(
+    () => normalizedEventStart ?? normalizedDefaultDate ?? new Date(),
+    [normalizedDefaultDate, normalizedEventStart],
+  );
+  const initialEndDate = useMemo(
+    () => normalizedEventEnd ?? getDefaultEndDate(initialStartDate),
+    [initialStartDate, normalizedEventEnd],
+  );
 
   const [startDate, setStartDate] = useState<Date | undefined>(
-    event?.start || defaultDate || new Date(),
+    initialStartDate,
   );
-  const [endDate, setEndDate] = useState<Date | undefined>(() => {
-    if (event?.end) return event.end;
-    const d = defaultDate || new Date();
-    // Default to 1 hour after start
-    return new Date(d.getTime() + 3600000);
-  });
+  const [endDate, setEndDate] = useState<Date | undefined>(initialEndDate);
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
   const [locationOpen, setLocationOpen] = useState(false);
   const events = useCalendarStore((state) => state.events);
+  const safeStartDate = coerceValidDate(startDate);
+  const safeEndDate = coerceValidDate(endDate);
 
   const uniqueLocations = useMemo(() => {
     const history = events
@@ -105,14 +129,13 @@ export function CreateEventDialog({
     return Array.from(new Set([...PREDEFINED_LOCATIONS, ...history]));
   }, [events]);
 
-
   const {
     register,
     handleSubmit,
     control,
     setValue,
     reset,
-    formState: { errors, isValid },
+    formState: { errors, isValid: isFormValid },
   } = useForm<CreateEventFormData>({
     resolver: zodResolver(CreateEventSchema) as any,
     mode: "onChange",
@@ -142,7 +165,7 @@ export function CreateEventDialog({
       const timer = setTimeout(() => {
         setStartDate(start);
         // Update end date to 1 hour after or use parsed end
-        setEndDate(end || new Date(start.getTime() + 3600000));
+        setEndDate(coerceValidDate(end) ?? getDefaultEndDate(start));
         if (isAllDay) {
           setValue("all_day", true);
         }
@@ -156,8 +179,11 @@ export function CreateEventDialog({
     if (open) {
       const timer = setTimeout(() => {
         if (event) {
-          setStartDate(event.start);
-          setEndDate(event.end);
+          setStartDate(normalizedEventStart ?? initialStartDate);
+          setEndDate(
+            normalizedEventEnd ??
+              getDefaultEndDate(normalizedEventStart ?? initialStartDate),
+          );
           reset({
             title: event.title,
             description: event.description || "",
@@ -165,9 +191,9 @@ export function CreateEventDialog({
             all_day: event.allDay || false,
           });
         } else {
-          const now = defaultDate || new Date();
+          const now = normalizedDefaultDate ?? new Date();
           setStartDate(now);
-          setEndDate(new Date(now.getTime() + 3600000));
+          setEndDate(getDefaultEndDate(now));
           reset({
             title: "",
             description: "",
@@ -178,10 +204,18 @@ export function CreateEventDialog({
       }, 0);
       return () => clearTimeout(timer);
     }
-  }, [open, defaultDate, event, reset]);
+  }, [
+    event,
+    initialStartDate,
+    normalizedDefaultDate,
+    normalizedEventEnd,
+    normalizedEventStart,
+    open,
+    reset,
+  ]);
 
   const onFormSubmit = (data: CreateEventFormData) => {
-    if (!startDate || !endDate) return;
+    if (!safeStartDate || !safeEndDate) return;
 
     trigger("HEAVY"); // THUD haptic for save commitment
 
@@ -191,8 +225,8 @@ export function CreateEventDialog({
         title: data.title,
         description: data.description || undefined,
         location: data.location || undefined,
-        start_time: startDate.toISOString(),
-        end_time: endDate.toISOString(),
+        start_time: safeStartDate.toISOString(),
+        end_time: safeEndDate.toISOString(),
         all_day: data.all_day,
       });
     } else {
@@ -200,8 +234,8 @@ export function CreateEventDialog({
         title: data.title,
         description: data.description || undefined,
         location: data.location || undefined,
-        start_time: startDate.toISOString(),
-        end_time: endDate.toISOString(),
+        start_time: safeStartDate.toISOString(),
+        end_time: safeEndDate.toISOString(),
         all_day: data.all_day,
       });
     }
@@ -283,16 +317,16 @@ export function CreateEventDialog({
                     type="button"
                   >
                     <Calendar className="mr-2 h-4 w-4" />
-                    {startDate
+                    {safeStartDate
                       ? allDay
-                        ? format(startDate, "PPP")
-                        : format(startDate, "PPP p")
+                        ? format(safeStartDate, "PPP")
+                        : format(safeStartDate, "PPP p")
                       : "Pick a date"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <DateTimeWizard
-                    date={startDate}
+                    date={safeStartDate}
                     setDate={setStartDate}
                     onClose={() => setShowStartPicker(false)}
                     showTime={!allDay}
@@ -313,16 +347,16 @@ export function CreateEventDialog({
                     type="button"
                   >
                     <Clock className="mr-2 h-4 w-4" />
-                    {endDate
+                    {safeEndDate
                       ? allDay
-                        ? format(endDate, "PPP")
-                        : format(endDate, "PPP p")
+                        ? format(safeEndDate, "PPP")
+                        : format(safeEndDate, "PPP p")
                       : "Pick an end time"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <DateTimeWizard
-                    date={endDate}
+                    date={safeEndDate}
                     setDate={setEndDate}
                     onClose={() => setShowEndPicker(false)}
                     showTime={!allDay}
@@ -336,7 +370,11 @@ export function CreateEventDialog({
               <Label htmlFor="event-location" className="text-sm font-medium">
                 Location
               </Label>
-              <Popover open={locationOpen} onOpenChange={setLocationOpen} modal={false}>
+              <Popover
+                open={locationOpen}
+                onOpenChange={setLocationOpen}
+                modal={false}
+              >
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -345,11 +383,15 @@ export function CreateEventDialog({
                     className="w-full justify-start text-left font-normal shadow-none border-border/80"
                   >
                     <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
-                    {locationValue || <span className="text-muted-foreground">Search location...</span>}
+                    {locationValue || (
+                      <span className="text-muted-foreground">
+                        Search location...
+                      </span>
+                    )}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent 
-                  className="p-0 w-[var(--radix-popover-trigger-width)] z-[60] data-[state=closed]:animate-none data-[state=closed]:duration-0 data-[state=closed]:fade-out-0" 
+                <PopoverContent
+                  className="p-0 w-[var(--radix-popover-trigger-width)] z-[60] data-[state=closed]:animate-none data-[state=closed]:duration-0 data-[state=closed]:fade-out-0"
                   align="start"
                   onMouseDown={(e) => e.preventDefault()}
                   onInteractOutside={(e) => e.preventDefault()}
@@ -363,7 +405,9 @@ export function CreateEventDialog({
                       }}
                     />
                     <CommandList>
-                      <CommandEmpty>Press enter or click outside to use custom location</CommandEmpty>
+                      <CommandEmpty>
+                        Press enter or click outside to use custom location
+                      </CommandEmpty>
                       <CommandGroup heading="Suggestions">
                         {uniqueLocations.map((loc) => (
                           <CommandItem
@@ -371,7 +415,9 @@ export function CreateEventDialog({
                             value={loc}
                             className="text-foreground data-[selected=true]:bg-brand data-[selected=true]:text-brand-foreground"
                             onSelect={() => {
-                              setValue("location", loc, { shouldValidate: true });
+                              setValue("location", loc, {
+                                shouldValidate: true,
+                              });
                               setLocationOpen(false);
                             }}
                           >
@@ -380,7 +426,9 @@ export function CreateEventDialog({
                             <Check
                               className={cn(
                                 "ml-auto h-4 w-4",
-                                locationValue === loc ? "opacity-100" : "opacity-0"
+                                locationValue === loc
+                                  ? "opacity-100"
+                                  : "opacity-0",
                               )}
                             />
                           </CommandItem>
@@ -436,9 +484,9 @@ export function CreateEventDialog({
             <Button
               type="submit"
               disabled={
-                !isValid ||
-                !startDate ||
-                !endDate ||
+                !isFormValid ||
+                !safeStartDate ||
+                !safeEndDate ||
                 createEvent.isPending ||
                 updateEvent.isPending
               }

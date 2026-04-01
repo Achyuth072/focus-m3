@@ -120,12 +120,17 @@ export function AppSidebar() {
                   initial={{ opacity: 0, width: 0 }}
                   animate={{ opacity: 1, width: "auto" }}
                   exit={{ opacity: 0, width: 0 }}
-                  transition={{ type: "spring", mass: 1, stiffness: 280, damping: 60 }}
+                  transition={{
+                    type: "spring",
+                    mass: 1,
+                    stiffness: 280,
+                    damping: 60,
+                  }}
                   className="flex items-center justify-between overflow-hidden ml-2 flex-1"
                   style={{ minWidth: 0 }}
                 >
                   <span className="type-h2 whitespace-nowrap">Kanso</span>
-                  <SidebarTrigger className="h-8 w-8 shrink-0 bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none active:scale-95 transition-all" />
+                  <SidebarTrigger className="h-8 w-8 shrink-0 active:scale-95 transition-all" />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -221,7 +226,12 @@ export function AppSidebar() {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ type: "spring", mass: 1, stiffness: 280, damping: 60 }}
+                  transition={{
+                    type: "spring",
+                    mass: 1,
+                    stiffness: 280,
+                    damping: 60,
+                  }}
                   className="overflow-hidden"
                 >
                   <SidebarGroupContent>
@@ -254,7 +264,10 @@ export function AppSidebar() {
                       {projects
                         ?.filter((p) => !p.is_inbox)
                         .map((project) => (
-                          <SidebarMenuItem key={project.id} className="relative">
+                          <SidebarMenuItem
+                            key={project.id}
+                            className="relative"
+                          >
                             <SidebarMenuButton
                               asChild
                               isActive={currentProjectId === project.id}
@@ -391,9 +404,9 @@ export function AppSidebar() {
           )}
         </SidebarContent>
 
-        <SidebarFooter className="border-t border-border overflow-hidden">
+        <SidebarFooter className="border-t border-border overflow-hidden md:p-2 p-0">
           {isMobile && (
-            <SidebarMenu>
+            <SidebarMenu className="p-2 pb-0">
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
@@ -416,8 +429,8 @@ export function AppSidebar() {
               </SidebarMenuItem>
             </SidebarMenu>
           )}
-          
-          <div className="h-[48px] relative flex flex-col justify-center">
+
+          <div className="h-[48px] relative flex-col justify-center hidden md:flex">
             <AnimatePresence mode="popLayout" initial={false}>
               {state === "collapsed" && !isMobile ? (
                 <motion.div
@@ -428,7 +441,7 @@ export function AppSidebar() {
                   transition={{ duration: 0.15 }}
                   className="flex justify-center w-full"
                 >
-                  <SidebarTrigger className="h-8 w-8 bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none active:scale-95 transition-all" />
+                  <SidebarTrigger className="h-8 w-8 active:scale-95 transition-all" />
                 </motion.div>
               ) : state === "expanded" && !isMobile ? (
                 <motion.div
@@ -439,7 +452,7 @@ export function AppSidebar() {
                   transition={{ duration: 0.15 }}
                   className="px-4 py-3 text-xs text-muted-foreground font-medium tracking-tight w-full"
                 >
-                  v1.14.0
+                  v1.14.1
                 </motion.div>
               ) : null}
             </AnimatePresence>

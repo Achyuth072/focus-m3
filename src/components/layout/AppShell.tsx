@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useLayoutEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useAuth } from "@/components/AuthProvider";
 import { CompletedTasksProvider } from "@/components/CompletedTasksProvider";
@@ -93,7 +93,6 @@ interface AppShellProps {
 
 function AppShellContent({ children }: AppShellProps) {
   const pathname = usePathname();
-  const router = useRouter();
   const isFocus = pathname === "/focus";
   const hideMobileNav = pathname === "/focus" || pathname === "/settings";
   const isTasksPage = pathname === "/";
@@ -111,13 +110,17 @@ function AppShellContent({ children }: AppShellProps) {
   } = useCalendarStore();
 
   const { isCreateProjectOpen, closeCreateProject } = useProjectActions();
-  const { isShortcutsHelpOpen, setShortcutsHelpOpen, isArchivedProjectsOpen, setArchivedProjectsOpen } = useUiStore();
+  const {
+    isShortcutsHelpOpen,
+    setShortcutsHelpOpen,
+    isArchivedProjectsOpen,
+    setArchivedProjectsOpen,
+  } = useUiStore();
 
   const [commandOpen, setCommandOpen] = useState(false);
 
   // Global realtime sync - stays alive during navigation
   useRealtimeSync();
-
 
   // Reset scroll position on navigation to prevent layout shifts
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -142,7 +145,6 @@ function AppShellContent({ children }: AppShellProps) {
 
         {/* Main Content with proper inset */}
         <SidebarInset className="relative">
-
           <div
             ref={scrollContainerRef}
             className={cn(
@@ -172,7 +174,7 @@ function AppShellContent({ children }: AppShellProps) {
         {/* FABs - Rendered outside template animation to prevent shifts */}
         {isTasksPage && <AddTaskFab onClick={openAddTask} />}
         {isHabitsPage && <AddHabitFab onClick={openAddHabit} />}
-        {isCalendarPage && <AddEventFab onClick={openCreateEvent} />}
+        {isCalendarPage && <AddEventFab onClick={() => openCreateEvent()} />}
 
         {/* Global Task Sheet */}
         <TaskSheet open={isAddTaskOpen} onClose={closeAddTask} />

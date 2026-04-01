@@ -59,7 +59,7 @@ export function TasksPageHeader({
   return (
     <div className="flex items-center gap-2">
       <SyncIndicator />
-      <div className="flex h-10 items-stretch overflow-hidden rounded-lg border border-border/50 bg-background/50 backdrop-blur-sm shadow-none md:h-9">
+      <div className="flex h-8 items-stretch overflow-hidden rounded-lg border border-border/50 bg-background/50 backdrop-blur-sm shadow-none">
         <Button
           variant="ghost"
           size="sm"

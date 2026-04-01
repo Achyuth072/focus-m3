@@ -101,7 +101,7 @@ export default function FocusPage() {
         whileTap={isPhone ? { scale: 0.95 } : {}}
         className={cn(
           buttonVariants({ variant: "ghost", size: "icon" }),
-          "absolute top-4 left-4 h-14 w-14 rounded-full bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none active:scale-95 transition-seijaku cursor-pointer"
+          "absolute top-4 left-4 h-14 w-14 rounded-full active:scale-95 transition-seijaku cursor-pointer"
         )}
       >
         <X className="h-6 w-6" />
@@ -115,7 +115,7 @@ export default function FocusPage() {
           whileTap={isPhone ? { scale: 0.95 } : {}}
           className={cn(
             buttonVariants({ variant: "ghost", size: "icon" }),
-            "absolute top-4 right-4 h-14 w-14 rounded-full bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none active:scale-95 transition-seijaku cursor-pointer"
+            "absolute top-4 right-4 h-14 w-14 rounded-full active:scale-95 transition-seijaku cursor-pointer"
           )}
           title={
             isPiPActive ? "Close Picture-in-Picture" : "Open Picture-in-Picture"

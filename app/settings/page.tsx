@@ -100,7 +100,7 @@ export default function SettingsPage() {
               size="icon"
               onPointerDown={() => trigger("MEDIUM")}
               onClick={() => router.back()}
-              className="h-12 w-12 bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none"
+              className="h-12 w-12"
             >
               <ArrowLeft className="h-5 w-5" />
               <span className="sr-only">Back</span>
@@ -354,7 +354,7 @@ export default function SettingsPage() {
             {/* App Info */}
             <div className="pt-8 border-t border-border/50">
               <p className="text-xs text-muted-foreground text-center">
-                Kanso • Version 1.14.0
+                Kanso • Version 1.14.1
               </p>
             </div>
           </main>
