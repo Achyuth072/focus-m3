@@ -40,7 +40,6 @@ type SidebarContextProps = {
   openMobile: boolean;
   setOpenMobile: (open: boolean) => void;
   isMobile: boolean;
-  windowWidth: number;
   toggleSidebar: () => void;
 };
 
@@ -79,15 +78,6 @@ const SidebarProvider = React.forwardRef<
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const [openMobile, setOpenMobile] = React.useState(false);
-    const [windowWidth, setWindowWidth] = React.useState(
-      typeof window !== "undefined" ? window.innerWidth : 768,
-    );
-
-    React.useEffect(() => {
-      const handleResize = () => setWindowWidth(window.innerWidth);
-      window.addEventListener("resize", handleResize);
-      return () => window.removeEventListener("resize", handleResize);
-    }, []);
 
     React.useEffect(() => {
       if (isMobile) {
@@ -145,19 +135,9 @@ const SidebarProvider = React.forwardRef<
         isMobile,
         openMobile,
         setOpenMobile,
-        windowWidth,
         toggleSidebar,
       }),
-      [
-        state,
-        open,
-        setOpen,
-        isMobile,
-        openMobile,
-        setOpenMobile,
-        windowWidth,
-        toggleSidebar,
-      ],
+      [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar],
     );
 
     return (
@@ -599,7 +579,7 @@ const SidebarMenuButton = React.forwardRef<
     ref,
   ) => {
     const Comp = asChild ? Slot : "button";
-    const { isMobile, state, windowWidth } = useSidebar();
+    const { isMobile, state } = useSidebar();
 
     // Use larger size on mobile for better touch targets
     const effectiveSize = isMobile && size === "default" ? "md" : size;

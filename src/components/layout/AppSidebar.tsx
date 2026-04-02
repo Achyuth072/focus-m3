@@ -11,7 +11,6 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
-  SidebarGroupAction,
   SidebarMenu,
   SidebarMenuAction,
   SidebarMenuButton,
@@ -99,6 +98,12 @@ export function AppSidebar() {
     allRoutes.forEach((path) => router.prefetch(path));
   }, [router]);
 
+  const handleMobileRouteIntent = () => {
+    trigger("MEDIUM");
+    // Let the route change close the mobile sidebar via SidebarProvider.
+    // Closing it on a timer can race the sheet's history cleanup and cancel navigation.
+  };
+
   return (
     <>
       <Sidebar
@@ -171,13 +176,13 @@ export function AppSidebar() {
                                 : item.path
                             }
                             onClick={(e) => {
-                              trigger("MEDIUM");
                               if (item.isAction) {
+                                trigger("MEDIUM");
                                 e.preventDefault();
                                 openSheet();
                                 if (isMobile) setOpenMobile(false);
-                              } else if (isMobile) {
-                                setTimeout(() => setOpenMobile(false), 150);
+                              } else {
+                                handleMobileRouteIntent();
                               }
                             }}
                           >
@@ -197,7 +202,7 @@ export function AppSidebar() {
           {/* Projects Section */}
           <SidebarGroup>
             <SidebarGroupLabel
-              className="cursor-pointer pr-10 text-sidebar-foreground [&_svg]:opacity-100"
+              className="cursor-pointer text-sidebar-foreground [&_svg]:opacity-100"
               onClick={() => {
                 trigger("MEDIUM");
                 toggleProjectsOpen();
@@ -206,20 +211,23 @@ export function AppSidebar() {
               <FolderKanban strokeWidth={2.25} />
               <span className="flex-1">Projects</span>
               <ChevronDown
-                className={`h-4 w-4 shrink-0 translate-y-px transition-transform ${
+                className={`h-4 w-4 shrink-0 transition-transform ${
                   isProjectsOpen ? "" : "-rotate-90"
                 }`}
               />
+              <button
+                type="button"
+                title="Add Project"
+                className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-sidebar-foreground outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  trigger("MEDIUM");
+                  openCreateProject();
+                }}
+              >
+                <Plus className="h-5 w-5 md:h-4 md:w-4" />
+              </button>
             </SidebarGroupLabel>
-            <SidebarGroupAction
-              title="Add Project"
-              onClick={() => {
-                trigger("MEDIUM");
-                openCreateProject();
-              }}
-            >
-              <Plus className="h-4 w-4" />
-            </SidebarGroupAction>
             <AnimatePresence initial={false}>
               {isProjectsOpen && (
                 <motion.div
@@ -246,10 +254,7 @@ export function AppSidebar() {
                           <Link
                             href="/?project=inbox"
                             onClick={() => {
-                              trigger("MEDIUM");
-                              if (isMobile) {
-                                setTimeout(() => setOpenMobile(false), 150);
-                              }
+                              handleMobileRouteIntent();
                             }}
                           >
                             <div className="flex items-center justify-center w-5 h-5 shrink-0">
@@ -277,10 +282,7 @@ export function AppSidebar() {
                               <Link
                                 href={`/?project=${project.id}`}
                                 onClick={() => {
-                                  trigger("MEDIUM");
-                                  if (isMobile) {
-                                    setTimeout(() => setOpenMobile(false), 150);
-                                  }
+                                  handleMobileRouteIntent();
                                 }}
                               >
                                 <div className="flex items-center justify-center w-5 h-5 shrink-0">
@@ -416,10 +418,7 @@ export function AppSidebar() {
                   <Link
                     href="/settings"
                     onClick={() => {
-                      trigger("MEDIUM");
-                      if (isMobile) {
-                        setTimeout(() => setOpenMobile(false), 150);
-                      }
+                      handleMobileRouteIntent();
                     }}
                   >
                     <Settings className="h-5 w-5" />
@@ -452,7 +451,7 @@ export function AppSidebar() {
                   transition={{ duration: 0.15 }}
                   className="px-4 py-3 text-xs text-muted-foreground font-medium tracking-tight w-full"
                 >
-                  v1.14.2
+                  v1.14.3
                 </motion.div>
               ) : null}
             </AnimatePresence>

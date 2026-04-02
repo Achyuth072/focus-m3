@@ -29,6 +29,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { mockStore } from "@/lib/mock/mock-store";
 import { toast } from "sonner";
 import { NotificationSettings } from "@/components/settings/NotificationSettings";
+import { DeleteUserDataDialog } from "@/components/settings/DeleteUserDataDialog";
 
 const SignOutConfirmation = dynamic(
   () =>
@@ -47,6 +48,7 @@ export default function SettingsPage() {
 
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<
     "appearance" | "preferences" | "account"
   >("appearance");
@@ -67,19 +69,23 @@ export default function SettingsPage() {
 
   const handleResetDemo = () => {
     mockStore.reset();
-    queryClient.invalidateQueries({ queryKey: ["tasks"] });
-    queryClient.invalidateQueries({ queryKey: ["projects"] });
-    queryClient.invalidateQueries({ queryKey: ["habits"] });
-    queryClient.invalidateQueries({ queryKey: ["stats-dashboard"] });
+    queryClient.removeQueries({ queryKey: ["tasks"] });
+    queryClient.removeQueries({ queryKey: ["projects"] });
+    queryClient.removeQueries({ queryKey: ["habits"] });
+    queryClient.removeQueries({ queryKey: ["stats-dashboard"] });
+    queryClient.removeQueries({ queryKey: ["calendar-events"] });
+    queryClient.removeQueries({ queryKey: ["calendar-tasks"] });
     toast.success("Demo data reset successfully");
   };
 
   const handleClearData = () => {
     mockStore.clearData();
-    queryClient.invalidateQueries({ queryKey: ["tasks"] });
-    queryClient.invalidateQueries({ queryKey: ["projects"] });
-    queryClient.invalidateQueries({ queryKey: ["habits"] });
-    queryClient.invalidateQueries({ queryKey: ["stats-dashboard"] });
+    queryClient.removeQueries({ queryKey: ["tasks"] });
+    queryClient.removeQueries({ queryKey: ["projects"] });
+    queryClient.removeQueries({ queryKey: ["habits"] });
+    queryClient.removeQueries({ queryKey: ["stats-dashboard"] });
+    queryClient.removeQueries({ queryKey: ["calendar-events"] });
+    queryClient.removeQueries({ queryKey: ["calendar-tasks"] });
     toast.success("All data cleared");
   };
 
@@ -286,15 +292,15 @@ export default function SettingsPage() {
                           Reset Demo
                         </Button>
                         <Button
-                          variant="outline"
+                          variant="destructive"
                           size="sm"
-                          className="flex-1 text-destructive hover:text-destructive"
+                          className="flex-1 gap-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-all active:scale-95 shadow-lg shadow-destructive/10 font-semibold"
                           onClick={() => {
                             trigger("HEAVY");
-                            handleClearData();
+                            setIsDeleteDialogOpen(true);
                           }}
                         >
-                          <Trash2 className="h-4 w-4 mr-2" />
+                          <Trash2 className="h-4 w-4" strokeWidth={2.25} />
                           Clear Data
                         </Button>
                       </div>
@@ -354,7 +360,7 @@ export default function SettingsPage() {
             {/* App Info */}
             <div className="pt-8 border-t border-border/50">
               <p className="text-xs text-muted-foreground text-center">
-                Kanso • Version 1.14.2
+                Kanso • Version 1.14.3
               </p>
             </div>
           </main>
@@ -365,6 +371,12 @@ export default function SettingsPage() {
         isOpen={showSignOutConfirm}
         onClose={() => setShowSignOutConfirm(false)}
         onConfirm={handleSignOut}
+      />
+
+      <DeleteUserDataDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={handleClearData}
       />
 
       {/* Loading Overlay */}
