@@ -42,22 +42,15 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 export async function OPTIONS(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   return proxyWebDAV(request, await params, "OPTIONS");
 }
-// WebDAV-specific methods — Next.js doesn't have named exports for these,
-// so we use the generic handler.
-export async function PROPFIND(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
-  return proxyWebDAV(request, await params, "PROPFIND");
-}
-export async function PROPPATCH(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
-  return proxyWebDAV(request, await params, "PROPPATCH");
-}
-export async function MKCOL(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
-  return proxyWebDAV(request, await params, "MKCOL");
-}
-export async function COPY(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
-  return proxyWebDAV(request, await params, "COPY");
-}
-export async function MOVE(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
-  return proxyWebDAV(request, await params, "MOVE");
+
+/**
+ * Handle WebDAV-specific methods (PROPFIND, MKCOL, etc.)
+ * Next.js only allows standard HTTP methods as named exports. For everything else,
+ * we catch them in the POST handler and check the actual method from the request.
+ */
+export async function POST(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+  const method = request.method;
+  return proxyWebDAV(request, await params, method);
 }
 
 async function proxyWebDAV(
