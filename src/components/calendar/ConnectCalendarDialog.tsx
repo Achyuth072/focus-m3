@@ -27,6 +27,10 @@ import {
   isPremiumProvider,
 } from "@/lib/types/external-calendar";
 import { cn } from "@/lib/utils";
+import { discoverCalendars } from "@/lib/caldav/client";
+import { Trash2 } from "lucide-react";
+
+const CALDAV_STORAGE_KEY = "kanso_caldav_credentials";
 
 interface ConnectCalendarDialogProps {
   onSuccess?: () => void;
@@ -56,11 +60,47 @@ export function ConnectCalendarDialog({
 
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [discoveredCount, setDiscoveredCount] = useState<number | null>(null);
+
+  // Load stored credentials when the dialog opens
+  React.useEffect(() => {
+    if (open && typeof window !== "undefined") {
+      const stored = localStorage.getItem(CALDAV_STORAGE_KEY);
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          setCaldavForm((f) => ({
+            ...f,
+            server_url: parsed.server_url || "",
+            username: parsed.username || "",
+            password: parsed.password || "",
+          }));
+        } catch (e) {
+          console.error("Failed to parse stored CalDAV credentials");
+        }
+      }
+    }
+  }, [open]);
+
+  const clearStoredCredentials = () => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(CALDAV_STORAGE_KEY);
+      setCaldavForm({
+        server_url: "",
+        username: "",
+        password: "",
+        name: "My Calendar",
+      });
+      setError(null);
+      setDiscoveredCount(null);
+    }
+  };
 
   const resetDialog = () => {
     setStep("select");
     setSelectedProvider(null);
     setError(null);
+    setDiscoveredCount(null);
     setCaldavForm({
       server_url: "",
       username: "",
@@ -103,22 +143,33 @@ export function ConnectCalendarDialog({
     e.preventDefault();
     setIsConnecting(true);
     setError(null);
+    setDiscoveredCount(null);
 
     try {
-      // This will eventually call the caldav-sync Edge Function
-      console.log("Connecting to CalDAV server...", caldavForm);
-      // Simulation
+      const calendars = await discoverCalendars({
+        serverUrl: caldavForm.server_url,
+        username: caldavForm.username,
+        password: caldavForm.password,
+      });
+
+      // Save credentials locally upon successful connection
+      if (typeof window !== "undefined") {
+        localStorage.setItem(CALDAV_STORAGE_KEY, JSON.stringify(caldavForm));
+      }
+
+      setDiscoveredCount(calendars.length);
+      // Give the user 1.5s to read the success state then close
       setTimeout(() => {
-        setIsConnecting(false);
         setOpen(false);
         onSuccess?.();
-      }, 2000);
+      }, 1500);
     } catch (err: unknown) {
       setError(
         err instanceof Error
           ? err.message
           : "Failed to connect to CalDAV server",
       );
+    } finally {
       setIsConnecting(false);
     }
   };
@@ -283,22 +334,43 @@ export function ConnectCalendarDialog({
             </div>
 
             {error && <p className="text-sm text-destructive">{error}</p>}
+            {discoveredCount !== null && (
+              <p className="text-sm text-green-600 dark:text-green-400">
+                ✓ Connected — {discoveredCount === 0
+                  ? "no calendars found yet (server is reachable)"
+                  : `${discoveredCount} calendar${discoveredCount === 1 ? "" : "s"} discovered`}
+              </p>
+            )}
 
             <div className="flex justify-between items-center pt-4">
-              <Button
-                type="button"
-                variant="ghost"
-                className="hover:bg-accent/50"
-                onClick={() => setStep("select")}
-              >
-                Back
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="hover:bg-accent/50"
+                  onClick={() => setStep("select")}
+                >
+                  Back
+                </Button>
+                {(caldavForm.server_url || caldavForm.username) && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="h-9 w-9 bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-all active:scale-95 shadow-lg shadow-destructive/10"
+                    onClick={clearStoredCredentials}
+                    title="Forget stored credentials"
+                  >
+                    <Trash2 className="h-4 w-4" strokeWidth={2.25} />
+                  </Button>
+                )}
+              </div>
               <Button
                 type="submit"
-                disabled={isConnecting}
+                disabled={isConnecting || discoveredCount !== null}
                 className="bg-brand text-white shadow-brand/10 hover:bg-brand/90"
               >
-                {isConnecting ? "Connecting..." : "Connect Calendar"}
+                {isConnecting ? "Connecting..." : discoveredCount !== null ? "Connected ✓" : "Connect Calendar"}
               </Button>
             </div>
           </form>

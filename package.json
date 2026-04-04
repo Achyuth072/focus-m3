@@ -1,6 +1,6 @@
 {
   "name": "kanso",
-  "version": "1.14.3",
+  "version": "1.15.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbo",
@@ -50,6 +50,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
+    "fflate": "^0.8.2",
     "framer-motion": "^12.23.26",
     "ical-generator": "^10.1.0",
     "ical.js": "^2.2.1",

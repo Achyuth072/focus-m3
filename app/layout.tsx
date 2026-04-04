@@ -64,23 +64,30 @@ export default function RootLayout({
               </TimerProvider>
             </AuthProvider>
           </QueryProvider>
-          <Toaster
-            position="bottom-center"
-            toastOptions={{
-              unstyled: true,
-              classNames: {
-                toast:
-                  "bg-card border border-border text-foreground rounded-lg p-4 shadow-none flex items-center justify-between gap-3 w-[90vw] sm:w-[420px] mb-[calc(76px+env(safe-area-inset-bottom))] md:mb-0",
-                title: "font-medium text-sm",
-                description: "text-sm text-muted-foreground",
-                actionButton:
-                  "bg-primary text-primary-foreground px-3 py-1.5 rounded-md text-sm font-medium hover:opacity-90 shrink-0",
-                cancelButton:
-                  "bg-transparent border border-border text-muted-foreground px-3 py-1.5 rounded-md text-sm hover:bg-accent shrink-0",
-              },
-            }}
-          />
         </ThemeProvider>
+        <Toaster
+          position="bottom-center"
+          expand={true}
+          duration={4000}
+          swipeDirections={["bottom"]}
+          toastOptions={{
+            unstyled: true,
+            classNames: {
+              toast:
+                "bg-card border border-border text-foreground rounded-lg p-4 shadow-none flex items-center justify-start gap-4 w-[90vw] sm:w-fit sm:max-w-[420px] mb-[calc(76px+env(safe-area-inset-bottom))] md:mb-0 text-left",
+              success: "",
+              content:
+                "flex min-w-0 flex-col items-start gap-0.5 text-left order-1",
+              icon: "shrink-0 order-2",
+              title: "font-medium text-sm leading-tight text-left",
+              description: "text-sm text-muted-foreground text-left",
+              actionButton:
+                "bg-primary text-primary-foreground px-3 py-1.5 rounded-md text-sm font-medium hover:opacity-90 shrink-0",
+              cancelButton:
+                "bg-transparent border border-border text-muted-foreground px-3 py-1.5 rounded-md text-sm hover:bg-accent shrink-0",
+            },
+          }}
+        />
       </body>
     </html>
   );

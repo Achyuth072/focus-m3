@@ -30,6 +30,8 @@ import { mockStore } from "@/lib/mock/mock-store";
 import { toast } from "sonner";
 import { NotificationSettings } from "@/components/settings/NotificationSettings";
 import { DeleteUserDataDialog } from "@/components/settings/DeleteUserDataDialog";
+import { BackupSyncSettings } from "@/components/settings/BackupSyncSettings";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const SignOutConfirmation = dynamic(
   () =>
@@ -95,11 +97,17 @@ export default function SettingsPage() {
     { value: "system", label: "System", icon: Monitor },
   ];
 
+  const sectionTabs = [
+    { value: "appearance", label: "Appearance" },
+    { value: "preferences", label: "Preferences" },
+    { value: "account", label: "Account" },
+  ] as const;
+
   return (
-    <div className="h-full overflow-auto">
-      <div className="p-4 md:p-6 space-y-8">
+    <>
+      <div className="flex flex-col min-h-[calc(100svh-4rem)] md:min-h-full p-4 md:p-6 gap-6 md:gap-8 relative">
         {/* Mobile Header */}
-        <div className="md:hidden mb-6">
+        <div className="md:hidden">
           <div className="flex items-center gap-3 mb-2">
             <Button
               variant="ghost"
@@ -118,8 +126,34 @@ export default function SettingsPage() {
           </p>
         </div>
 
+        {/* Mobile Section Switcher */}
+        <div className="md:hidden sticky top-0 z-20 -mx-4 border-b border-border/50 bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+          <Tabs
+            value={activeTab}
+            onValueChange={(v) => {
+              trigger("MEDIUM");
+              setActiveTab(v as any);
+            }}
+            className="w-full"
+          >
+            <TabsList className="grid grid-cols-3 bg-secondary/10 p-1 rounded-lg h-11 border border-border/40 shadow-none">
+              {sectionTabs.map((tab) => (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className={cn(
+                    "rounded-md gap-2 text-[13px] font-medium tracking-tight data-[state=active]:bg-brand data-[state=active]:text-brand-foreground data-[state=active]:shadow-none transition-seijaku-fast h-9 border border-transparent data-[state=active]:border-brand/20 text-muted-foreground hover:text-foreground hover:bg-secondary/40",
+                  )}
+                >
+                  {tab.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+        </div>
+
         {/* Desktop Grid Layout */}
-        <div className="grid md:grid-cols-[240px_1fr] gap-12">
+        <div className="grid md:grid-cols-[240px_1fr] gap-12 flex-1">
           {/* Sidebar Navigation (Desktop Only) */}
           <aside className="hidden md:block">
             <div className="sticky top-6 space-y-1">
@@ -128,47 +162,28 @@ export default function SettingsPage() {
                 Manage your account and preferences
               </p>
               <nav className="space-y-1">
-                <button
-                  onClick={() => setActiveTab("appearance")}
-                  className={cn(
-                    "block w-full text-left px-3 py-2 text-sm rounded-md transition-seijaku-fast",
-                    activeTab === "appearance"
-                      ? "bg-secondary text-foreground font-medium"
-                      : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground",
-                  )}
-                >
-                  Appearance
-                </button>
-                <button
-                  onClick={() => setActiveTab("preferences")}
-                  className={cn(
-                    "block w-full text-left px-3 py-2 text-sm rounded-md transition-seijaku-fast",
-                    activeTab === "preferences"
-                      ? "bg-secondary text-foreground font-medium"
-                      : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground",
-                  )}
-                >
-                  Preferences
-                </button>
-                <button
-                  onClick={() => setActiveTab("account")}
-                  className={cn(
-                    "block w-full text-left px-3 py-2 text-sm rounded-md transition-seijaku-fast",
-                    activeTab === "account"
-                      ? "bg-secondary text-foreground font-medium"
-                      : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground",
-                  )}
-                >
-                  Account
-                </button>
+                {sectionTabs.map((tab) => (
+                  <button
+                    key={tab.value}
+                    onClick={() => setActiveTab(tab.value)}
+                    className={cn(
+                      "block w-full rounded-md px-3 py-2 text-left text-sm transition-seijaku-fast",
+                      activeTab === tab.value
+                        ? "bg-secondary font-medium text-foreground"
+                        : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground",
+                    )}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
               </nav>
             </div>
           </aside>
 
           {/* Main Content */}
-          <main className="md:pt-22 space-y-12">
+          <main className="space-y-8 md:space-y-12 flex flex-col">
             {/* Appearance Section */}
-            {(!isDesktop || activeTab === "appearance") && (
+            {activeTab === "appearance" && (
               <section className="space-y-4">
                 <div>
                   <h2 className="type-micro font-medium uppercase">
@@ -217,7 +232,7 @@ export default function SettingsPage() {
             )}
 
             {/* Preference Section (Mobile & Desktop) */}
-            {(!isDesktop || activeTab === "preferences") && (
+            {activeTab === "preferences" && (
               <section className="space-y-4">
                 <div>
                   <h2 className="type-micro font-medium uppercase">
@@ -252,7 +267,7 @@ export default function SettingsPage() {
             )}
 
             {/* Guest Mode Section */}
-            {isGuestMode && (!isDesktop || activeTab === "account") && (
+            {isGuestMode && activeTab === "account" && (
               <section className="space-y-4">
                 <div>
                   <h2 className="type-micro font-medium uppercase">
@@ -294,7 +309,7 @@ export default function SettingsPage() {
                         <Button
                           variant="destructive"
                           size="sm"
-                          className="flex-1 gap-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-all active:scale-95 shadow-lg shadow-destructive/10 font-semibold"
+                          className="flex-1 gap-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-all active:scale-95 font-semibold"
                           onClick={() => {
                             trigger("HEAVY");
                             setIsDeleteDialogOpen(true);
@@ -306,12 +321,14 @@ export default function SettingsPage() {
                       </div>
                     </div>
                   </div>
+
+                  <BackupSyncSettings />
                 </div>
               </section>
             )}
 
             {/* Account Section */}
-            {(!isDesktop || activeTab === "account") && (
+            {activeTab === "account" && (
               <section className="space-y-4">
                 <div>
                   <h2 className="type-micro font-medium uppercase">Account</h2>
@@ -357,13 +374,14 @@ export default function SettingsPage() {
               </section>
             )}
 
-            {/* App Info */}
-            <div className="pt-8 border-t border-border/50">
-              <p className="text-xs text-muted-foreground text-center">
-                Kanso • Version 1.14.3
-              </p>
-            </div>
           </main>
+        </div>
+
+        {/* App Info Footer - Docked to bottom via mt-auto in flex context */}
+        <div className="mt-auto pt-8 border-t border-border/50">
+          <p className="text-xs text-muted-foreground text-center">
+            Kanso • Version 1.15.0
+          </p>
         </div>
       </div>
 
@@ -381,6 +399,6 @@ export default function SettingsPage() {
 
       {/* Loading Overlay */}
       {isSigningOut && <LoaderOverlay message="Signing out..." />}
-    </div>
+    </>
   );
 }

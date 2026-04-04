@@ -7,6 +7,7 @@ import type { Task, Project } from "@/lib/types/task";
 import type { Habit, HabitEntry } from "@/lib/types/habit";
 import type { FocusLog } from "@/lib/types/focus";
 import type { CalendarEvent } from "@/lib/types/calendar-event";
+import type { BackupData } from "@/lib/backup/types";
 
 const STORAGE_KEY = "kanso_guest_data_v8";
 
@@ -19,6 +20,8 @@ interface GuestData {
   events: CalendarEvent[];
   lastUpdated: string;
 }
+
+type BackupPayload = Omit<BackupData, "metadata">;
 
 class MockStore {
   private data: GuestData;
@@ -320,37 +323,40 @@ class MockStore {
     // Generate Mock Events (Past and Future)
     const mockLocations = ["Coffee Shop", "Office", "Zoom", "Gym", "Home"];
     for (let i = -7; i <= 14; i++) {
-        const date = new Date(now.getTime() + i * oneDay);
-        // Add random event
-        if (Math.random() > 0.4) {
-             const randomHour = 9 + Math.floor(Math.random() * 8); // 9am to 4pm
-             const startTime = new Date(date);
-             startTime.setHours(randomHour, 0, 0, 0);
-             const endTime = new Date(startTime.getTime() + 3600000); // 1 hour
+      const date = new Date(now.getTime() + i * oneDay);
+      // Add random event
+      if (Math.random() > 0.4) {
+        const randomHour = 9 + Math.floor(Math.random() * 8); // 9am to 4pm
+        const startTime = new Date(date);
+        startTime.setHours(randomHour, 0, 0, 0);
+        const endTime = new Date(startTime.getTime() + 3600000); // 1 hour
 
-             const id = `event-${generateId()}`;
-             events.push({
-                 id,
-                 user_id: "guest",
-                 title: i === 0 ? "Team Catch Up" : `Meeting ${id}`,
-                 description: "Mock event generated for guest mode",
-                 location: Math.random() > 0.5 ? mockLocations[Math.floor(Math.random() * mockLocations.length)] : null,
-                 start_time: startTime.toISOString(),
-                 end_time: endTime.toISOString(),
-                 all_day: false,
-                 color: "#4B6CB7", // Kanso brand
-                 category: "event",
-                 recurrence_rule: null,
-                 remote_id: null,
-                 remote_calendar_id: null,
-                 etag: null,
-                 ics_uid: null,
-                 is_archived: false,
-                 metadata: {},
-                 created_at: nowIso,
-                 updated_at: nowIso,
-             });
-        }
+        const id = `event-${generateId()}`;
+        events.push({
+          id,
+          user_id: "guest",
+          title: i === 0 ? "Team Catch Up" : `Meeting ${id}`,
+          description: "Mock event generated for guest mode",
+          location:
+            Math.random() > 0.5
+              ? mockLocations[Math.floor(Math.random() * mockLocations.length)]
+              : null,
+          start_time: startTime.toISOString(),
+          end_time: endTime.toISOString(),
+          all_day: false,
+          color: "#4B6CB7", // Kanso brand
+          category: "event",
+          recurrence_rule: null,
+          remote_id: null,
+          remote_calendar_id: null,
+          etag: null,
+          ics_uid: null,
+          is_archived: false,
+          metadata: {},
+          created_at: nowIso,
+          updated_at: nowIso,
+        });
+      }
     }
 
     return {
@@ -635,7 +641,10 @@ class MockStore {
     return newEvent;
   }
 
-  updateEvent(id: string, updates: Partial<CalendarEvent>): CalendarEvent | null {
+  updateEvent(
+    id: string,
+    updates: Partial<CalendarEvent>,
+  ): CalendarEvent | null {
     const index = this.data.events?.findIndex((e) => e.id === id) ?? -1;
     if (index === -1) return null;
 
@@ -656,6 +665,55 @@ class MockStore {
     this.data.events.splice(index, 1);
     this.saveToStorage();
     return true;
+  }
+
+  // Backup Restore Operations (preserve IDs and timestamps)
+  restoreProject(project: Project): void {
+    this.data.projects.push(project);
+    this.saveToStorage();
+  }
+
+  restoreTask(task: Task): void {
+    this.data.tasks.push(task);
+    this.saveToStorage();
+  }
+
+  restoreHabit(habit: Habit): void {
+    if (!this.data.habits) this.data.habits = [];
+    this.data.habits.push(habit);
+    this.saveToStorage();
+  }
+
+  restoreEvent(event: CalendarEvent): void {
+    if (!this.data.events) this.data.events = [];
+    this.data.events.push(event);
+    this.saveToStorage();
+  }
+
+  restoreFocusLog(log: FocusLog): void {
+    if (!this.data.focus_logs) this.data.focus_logs = [];
+    this.data.focus_logs.push(log);
+    this.saveToStorage();
+  }
+
+  restoreBackup(data: BackupPayload): void {
+    this.data = {
+      tasks: [...(data.tasks || [])],
+      projects: [...(data.projects || [])],
+      habits: [...(data.habits || [])],
+      habit_entries: [...(data.habit_entries || [])],
+      focus_logs: [...(data.focus_logs || [])],
+      events: [...(data.events || [])],
+      lastUpdated: new Date().toISOString(),
+    };
+
+    this.saveToStorage();
+  }
+
+  addHabitEntry(entry: HabitEntry): void {
+    if (!this.data.habit_entries) this.data.habit_entries = [];
+    this.data.habit_entries.push(entry);
+    this.saveToStorage();
   }
 
   // Utility

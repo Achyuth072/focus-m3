@@ -34,6 +34,7 @@ import { LoaderOverlay } from "@/components/ui/loader-overlay";
 import { cn } from "@/lib/utils";
 import { useUiStore } from "@/lib/store/uiStore";
 import { useCalendarStore } from "@/lib/calendar/store";
+import { useWeeklyBackup } from "@/lib/hooks/useWeeklyBackup";
 
 // Global Overlays (Lazy Loaded)
 const TaskSheet = dynamic(() => import("@/components/tasks/TaskSheet"), {
@@ -121,6 +122,9 @@ function AppShellContent({ children }: AppShellProps) {
 
   // Global realtime sync - stays alive during navigation
   useRealtimeSync();
+
+  // Global backup reminder for guest mode
+  useWeeklyBackup();
 
   // Reset scroll position on navigation to prevent layout shifts
   const scrollContainerRef = useRef<HTMLDivElement>(null);

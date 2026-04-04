@@ -65,3 +65,6 @@ node_modules/
 # Test logs
 tests/unit/*.txt
 
+# Docker data
+/docker_data/
+
