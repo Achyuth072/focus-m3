@@ -380,7 +380,7 @@ export default function SettingsPage() {
         {/* App Info Footer - Docked to bottom via mt-auto in flex context */}
         <div className="mt-auto pt-8 border-t border-border/50">
           <p className="text-xs text-muted-foreground text-center">
-            Kanso • Version 1.15.1
+            Kanso • Version 1.15.2
           </p>
         </div>
       </div>

@@ -12,26 +12,41 @@ Kanso is a **Zen-Modernist** task management and focus tool. It fuses the Japane
 
 [Live Demo](https://focus-m3.vercel.app/)
 
-## Features
+## Key Workflows
 
-- **Macro & Micro Views**: Switch between Masonry Grid, Kanban Board (Desktop), and List views instantly with `Shift+1/2/3`. Low-latency DnD ensures fluid transitions.
-- **Visual Activity Heatmap**: High-fidelity consistency chart tracking both focus minutes and habit repetitions via `react-activity-calendar`.
-- **Habit Mastery**: Dedicated habit tracking system with CRUD management, longevity insights, and standardized haptic signatures.
-- **Calendar & Event Engine**: 
-  - **Native Event Creation**: FAB (mobile) and inline grid placeholders (desktop) for creating events directly in-app.
-  - **Sync Engine**: Bi-directional CalDAV synchronization (Experimental) for iCloud/Nextcloud compatibility. Scaffolded support for Google and Outlook providers.
-  - **Portability**: Support for universal `.ics` (RFC 5545) import/export.
-- **Guest Mode**: A 100% private, zero-footprint demo experience anchored in `localStorage`.
-- **Absolute Resilience**: Offline-first via a **Tri-Layer Defense** (Service Worker timeouts, network-resilient middleware, and IndexedDB persistence).
-- **Project Hardening**: Multi-project support with deep organizational layers, selective archiving vs. deletion, and native-style Drawers for mobile project management.
-- **Migration Engine**: Idempotent and resilient data transition from Guest Mode to cloud accounts.
-- **PWA Excellence**: Native-grade mobile experience with swipe gestures, offline-first reliability, and "Seijaku" haptics.
-- **Command Menu**: Global `Ctrl+K` palette for instant navigation and action execution.
-- **Focus Timer**: PiP-enabled Pomodoro engine with real-time stats synchronization.
+### 1. Capture & Organize
 
-## Shortcuts
+- **Global Command Menu**: `Ctrl/Cmd + K` for instant search, navigation, and actions.
+- **Micro & Macro Views**: Shift between **Masonry Grid**, **Board**, and **List** views instantly with `1/2/3`.
+- **Project Structure**: Multi-layered project management with archiving and mobile-native drawers.
 
-Press **Shift + H** to see the full list of keyboard shortcuts.
+### 2. High-Fidelity Tracking
+
+- **Habit Mastery**: Standardized habit tracking with haptic feedback and longevity insights.
+- **Activity Heatmap**: Track focus minutes and habit completions via a visual consistency chart.
+- **Focus Timer**: PiP-enabled Pomodoro engine with real-time stats.
+
+### 3. Data Ownership & Sync
+
+- **Private Mode**: A zero-footprint experience running entirely in `localStorage`.
+- **WebDAV & CalDAV**: Sync with personal servers (Nextcloud, Synology, iCloud) without an account.
+- **Export/Import**: Universal `.zip` backups and `.ics` (RFC 5545) portability.
+
+## Essential Shortcuts
+
+| Shortcut            | Action                                                            |
+| ------------------- | ----------------------------------------------------------------- |
+| `1 - 6`             | Quick Navigation (Home, Habits, Calendar, Stats, Focus, Settings) |
+| `Shift + 1 / 2 / 3` | Switch View (Grid / Board / List)                                 |
+| `Ctrl/Cmd + K`      | Open Command Palette                                              |
+| `Ctrl/Cmd + B`      | Toggle Sidebar                                                    |
+| `N / H / E / P`     | Create New (Task, Habit, Event, Project)                          |
+| `Shift + H`         | View all Shortcuts                                                |
+
+## Get Started
+
+1. **Web App**: [focus-m3.vercel.app](https://focus-m3.vercel.app/)
+2. **Guest Mode**: Try the full experience instantly, no account required.
 
 ## Built with
 

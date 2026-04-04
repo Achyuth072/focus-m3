@@ -30,16 +30,16 @@ const ALLOWED_METHODS = [
   "HEAD",
 ];
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ path?: string[] }> }) {
   return proxyWebDAV(request, await params, "GET");
 }
-export async function PUT(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ path?: string[] }> }) {
   return proxyWebDAV(request, await params, "PUT");
 }
-export async function DELETE(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ path?: string[] }> }) {
   return proxyWebDAV(request, await params, "DELETE");
 }
-export async function OPTIONS(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function OPTIONS(request: NextRequest, { params }: { params: Promise<{ path?: string[] }> }) {
   return proxyWebDAV(request, await params, "OPTIONS");
 }
 
@@ -48,14 +48,14 @@ export async function OPTIONS(request: NextRequest, { params }: { params: Promis
  * Next.js only allows standard HTTP methods as named exports. For everything else,
  * we catch them in the POST handler and check the actual method from the request.
  */
-export async function POST(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ path?: string[] }> }) {
   const method = request.method;
   return proxyWebDAV(request, await params, method);
 }
 
 async function proxyWebDAV(
   request: NextRequest,
-  params: { path: string[] },
+  params: { path?: string[] },
   method: string
 ): Promise<NextResponse> {
   // Guard: only allow known WebDAV-safe methods
