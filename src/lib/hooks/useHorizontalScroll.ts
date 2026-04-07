@@ -265,7 +265,7 @@ export function useHorizontalScroll() {
         );
         el.scrollLeft = newScrollLeft;
         targetScrollLeft = newScrollLeft;
-// distance from right handled below
+        // distance from right handled below
         distanceFromRightBeforeTransition = null;
       }
     };

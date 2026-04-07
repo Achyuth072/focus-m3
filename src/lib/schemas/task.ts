@@ -37,8 +37,14 @@ export const CreateTaskSchema = z.object({
   content: z.string().min(1, "Task content is required").max(500),
   description: z.string().max(5000).optional(),
   priority: PrioritySchema.optional(),
-  due_date: z.union([z.date(), z.string().datetime()]).nullable().optional(),
-  do_date: z.union([z.date(), z.string().datetime()]).nullable().optional(),
+  due_date: z
+    .union([z.date(), z.string().datetime({ offset: true })])
+    .nullable()
+    .optional(),
+  do_date: z
+    .union([z.date(), z.string().datetime({ offset: true })])
+    .nullable()
+    .optional(),
   is_evening: z.boolean().default(false).optional(),
   project_id: z.string().nullable().optional(),
   parent_id: z.string().optional(),
@@ -54,10 +60,13 @@ export const CreateTaskSchema = z.object({
 
 export const UpdateTaskSchema = z.object({
   id: z.string(),
-  content: z.string().min(1).max(500).optional(),
+  content: z.string().min(1, "Task content is required").max(500).optional(),
   description: z.string().max(5000).optional(),
   priority: PrioritySchema.optional(),
-  due_date: z.string().datetime().nullable().optional(),
+  due_date: z
+    .union([z.date(), z.string().datetime({ offset: true })])
+    .nullable()
+    .optional(),
   is_completed: z.boolean().optional(),
   day_order: z.number().int().optional(),
   project_id: z.string().nullable().optional(),

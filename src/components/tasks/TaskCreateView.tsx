@@ -154,6 +154,7 @@ export function TaskCreateView({
             side="right"
             align="center"
             sideOffset={15}
+            error={!!errors?.due_date}
           />
 
           <TaskDatePicker
@@ -168,6 +169,7 @@ export function TaskCreateView({
             side="right"
             align="center"
             sideOffset={15}
+            error={!!errors?.do_date}
           />
 
           <Button
@@ -285,6 +287,12 @@ export function TaskCreateView({
               ))}
           </SelectContent>
         </Select>
+
+        {(errors?.due_date || errors?.do_date) && (
+          <div className="absolute top-[calc(100%+4px)] left-0 right-0 bg-destructive/10 text-destructive text-[10px] font-bold px-3 py-1 rounded-md animate-in slide-in-from-top-1 fade-in duration-200 pointer-events-none text-center">
+            {errors?.due_date?.message || errors?.do_date?.message}
+          </div>
+        )}
 
         <Button
           size="sm"

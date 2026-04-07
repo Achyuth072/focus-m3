@@ -34,6 +34,7 @@ interface TaskDatePickerProps {
   align?: "start" | "center" | "end";
   showTime?: boolean;
   allowPastDates?: boolean;
+  error?: boolean;
 }
 
 export function TaskDatePicker({
@@ -52,6 +53,7 @@ export function TaskDatePicker({
 
   showTime = true,
   allowPastDates = false,
+  error = false,
 }: TaskDatePickerProps) {
   const isCompact = variant === "compact";
   const { trigger } = useHaptic();
@@ -61,13 +63,22 @@ export function TaskDatePicker({
       <Icon
         strokeWidth={1.5}
         className={cn(
-          isCompact ? "h-5 w-5" : "h-5 w-5 transition-all",
+          isCompact
+            ? "h-5 w-5"
+            : "h-5 w-5 transition-all text-muted-foreground",
           date && (isCompact ? "mr-1.5 h-4 w-4" : "text-primary"),
+          error && "text-destructive",
         )}
       />
       {date && (
         <>
-          <span className={cn("text-sm font-medium", isCompact ? "" : "ml-1")}>
+          <span
+            className={cn(
+              "text-sm font-medium",
+              isCompact ? "" : "ml-1",
+              error && "text-destructive",
+            )}
+          >
             {format(date, showTime ? "MMM d, h:mm a" : "MMMM d, yyyy")}
           </span>
 
@@ -79,6 +90,7 @@ export function TaskDatePicker({
               isCompact
                 ? "hover:bg-destructive/20"
                 : "rounded-full hover:bg-current/10",
+              error && "hover:bg-destructive/10",
             )}
             onClick={(e) => {
               e.preventDefault();
@@ -108,6 +120,8 @@ export function TaskDatePicker({
           }}
           className={cn(
             "h-10 transition-all shrink-0 group [&_svg]:!size-5 border border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-none",
+            error &&
+              "border-destructive/50 bg-destructive/5 text-destructive hover:bg-destructive/10 hover:text-destructive",
             isCompact
               ? cn(
                   "w-10 px-0 text-muted-foreground hover:text-foreground",
@@ -157,6 +171,8 @@ export function TaskDatePicker({
           size="sm"
           className={cn(
             "h-10 transition-all shrink-0 group [&_svg]:!size-5 border border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-none",
+            error &&
+              "border-destructive/50 bg-destructive/5 text-destructive hover:bg-destructive/10 hover:text-destructive",
             isCompact
               ? cn(
                   "w-10 px-0 text-muted-foreground hover:text-foreground",

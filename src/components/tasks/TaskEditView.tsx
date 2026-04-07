@@ -271,6 +271,7 @@ export function TaskEditView({
             open={datePickerOpen}
             onOpenChange={setDatePickerOpen}
             variant="icon"
+            error={!!errors?.due_date}
           />
 
           {/* Start Date (Do Date) */}
@@ -283,6 +284,7 @@ export function TaskEditView({
             variant="icon"
             title="Start Date"
             icon={CalendarClock}
+            error={!!errors?.do_date}
           />
 
           {/* This Evening Toggle */}
@@ -367,6 +369,11 @@ export function TaskEditView({
                 ))}
             </SelectContent>
           </Select>
+          {(errors?.due_date || errors?.do_date) && (
+            <div className="absolute top-[calc(100%+4px)] left-0 right-0 bg-destructive/10 text-destructive text-[10px] font-bold px-3 py-1 rounded-md animate-in slide-in-from-top-1 fade-in duration-200">
+              {errors?.due_date?.message || errors?.do_date?.message}
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-3 shrink-0">

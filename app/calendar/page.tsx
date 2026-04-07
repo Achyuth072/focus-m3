@@ -14,14 +14,8 @@ import { useTask } from "@/lib/hooks/useTasks";
 import TaskSheet from "@/components/tasks/TaskSheet";
 
 export default function CalendarPage() {
-  const {
-    currentDate,
-    view,
-    events,
-    setView,
-    setDate,
-    openCreateEvent,
-  } = useCalendarStore();
+  const { currentDate, view, events, setView, setDate, openCreateEvent } =
+    useCalendarStore();
   const [isMobile, setIsMobile] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const { data: fullTask } = useTask(selectedTaskId);
