@@ -27,7 +27,7 @@ export async function createBackupZip(data: BackupData): Promise<Blob> {
   }
 
   const zipData = zipSync(files, { level: 6 });
-  return new Blob([zipData], { type: "application/zip" });
+  return new Blob([zipData as BlobPart], { type: "application/zip" });
 }
 
 /**

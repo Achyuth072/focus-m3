@@ -378,7 +378,7 @@ export default function SettingsPage() {
             <div className="pt-16 pb-12 transition-all duration-300">
               <div className="border-t border-border/40 w-16 mx-auto mb-8 opacity-50" />
               <p className="type-micro text-muted-foreground/80 text-center selection:bg-brand/10">
-                Kanso • Version 1.16.0
+                Kanso • Version 1.16.1
               </p>
             </div>
           </main>
