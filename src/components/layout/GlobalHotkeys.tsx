@@ -3,7 +3,6 @@
 import { useHotkeys } from "react-hotkeys-hook";
 import { useRouter, usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
-import { useSidebar } from "@/components/ui/sidebar";
 import { useTaskActions } from "@/components/TaskActionsProvider";
 import { useCompletedTasks } from "@/components/CompletedTasksProvider";
 import { useHabitActions } from "@/components/habits/HabitActionsProvider";
@@ -24,7 +23,6 @@ export function GlobalHotkeys({
   const router = useRouter();
   const pathname = usePathname();
   const { setTheme, resolvedTheme } = useTheme();
-  const { toggleSidebar } = useSidebar();
   const { openAddTask } = useTaskActions();
   const { openSheet: openCompletedSheet } = useCompletedTasks();
   const { openAddHabit } = useHabitActions();

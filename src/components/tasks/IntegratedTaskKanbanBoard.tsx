@@ -26,6 +26,7 @@ import { useProject, useProjects } from "@/lib/hooks/useProjects";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import { useRouter } from "next/navigation";
 import { useTimer } from "@/components/TimerProvider";
+import { useUiStore } from "@/lib/store/uiStore";
 
 interface IntegratedTaskKanbanBoardProps {
   processedTasks: ProcessedTasks;
@@ -44,6 +45,7 @@ export function IntegratedTaskKanbanBoard({
   const { start: startTimer } = useTimer();
   const { data: projects } = useProjects();
   const reorderMutation = useReorderTasks();
+  const { sortBy, setSortBy } = useUiStore();
 
   const boardColumns = useMemo<TaskGroup[]>(() => {
     if (groups && groups.length > 0) return groups;
@@ -149,6 +151,9 @@ export function IntegratedTaskKanbanBoard({
       }
       tasks.splice(finalIndex, 0, { ...draggedTask, ...updates });
 
+      if (sortBy !== "custom") {
+        setSortBy("custom");
+      }
       reorderMutation.mutate(tasks.map((t) => t.id));
       trigger("HEAVY");
     },
@@ -158,6 +163,8 @@ export function IntegratedTaskKanbanBoard({
       updateTaskMutation,
       trigger,
       getTaskUpdatesForColumn,
+      sortBy,
+      setSortBy,
     ],
   );
 

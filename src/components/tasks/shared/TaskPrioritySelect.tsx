@@ -68,7 +68,8 @@ export function TaskPrioritySelect({
           // Base — exactly matches the Evening / Subtasks / DatePicker tags
           "h-10 transition-all shrink-0 [&>svg]:hidden shadow-none border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-lg outline-none focus:ring-0 focus:outline-none",
           // Unselected (P4 / Low): icon-only pill
-          !isSelected && "w-10 px-0 text-muted-foreground hover:text-foreground",
+          !isSelected &&
+            "w-10 px-0 text-muted-foreground hover:text-foreground",
           // Selected (P1-P3): labelled pill with brand outline active state
           isSelected &&
             "w-auto px-2.5 min-w-[68px] text-brand bg-brand/10 border-transparent hover:bg-brand/20 hover:text-brand",

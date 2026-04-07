@@ -19,7 +19,7 @@ interface ActivityHeatmapProps {
 export function ActivityHeatmap({ className }: ActivityHeatmapProps) {
   const { data, isLoading, maxValue, activeDays } = useHeatmapData();
   const { resolvedTheme } = useTheme();
-  
+
   const isMobile = useIsMobile();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const horizontalScrollRef = useHorizontalScroll();
@@ -44,12 +44,12 @@ export function ActivityHeatmap({ className }: ActivityHeatmapProps) {
     // Ensure at least today is represented to prevent "Activity data must not be empty" crash
     const today = new Date().toISOString().split("T")[0];
     const rawData = data || [];
-    
+
     // Map existing data points
     const heatmapMap = new Map<string, number>(
-      rawData.map((d) => [d.date, d.combined])
+      rawData.map((d) => [d.date, d.combined]),
     );
-    
+
     // Always anchor with today to ensure the chart has a latest date
     if (!heatmapMap.has(today)) {
       heatmapMap.set(today, 0);
@@ -75,11 +75,11 @@ export function ActivityHeatmap({ className }: ActivityHeatmapProps) {
   }, [data, maxValue?.combined]);
 
   // Auto-scroll to current date (right end) on mobile only
-  // Using calendarData.length as dependency to avoid "changed size" errors 
+  // Using calendarData.length as dependency to avoid "changed size" errors
   // with certain dev-tooling/HMR scenarios, and to ensure it scrolls when data arrives.
   useLayoutEffect(() => {
     if (!isMobile) return;
-    
+
     const frame = requestAnimationFrame(() => {
       if (scrollContainerRef.current) {
         scrollContainerRef.current.scrollLeft =
@@ -145,11 +145,11 @@ export function ActivityHeatmap({ className }: ActivityHeatmapProps) {
         </div>
 
         <div className="relative">
-          <div 
+          <div
             ref={setRefs}
-            className="w-full overflow-x-auto pb-4 custom-scrollbar"
+            className="w-full overflow-x-auto pb-4 custom-scrollbar min-w-0"
           >
-            <div className="mx-auto" style={{ width: "fit-content" }}>
+            <div className="w-max mx-auto">
               <ActivityCalendar
                 data={calendarData}
                 theme={theme}

@@ -127,7 +127,6 @@ const KanbanColumn = memo(function KanbanColumn({
       className="flex-shrink-0 w-[90vw] md:w-[320px] snap-center h-full flex flex-col"
     >
       <div className="flex flex-col max-h-full bg-secondary/10 rounded-2xl border border-border/60 overflow-hidden">
-
         <header className="flex items-center justify-between px-4 py-3.5 flex-shrink-0">
           <h3 className="type-h3 lowercase tracking-tight text-foreground/70">
             {group.title}

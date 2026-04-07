@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Settings } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -296,15 +296,33 @@ export function FocusSettingsDialog() {
   const {
     handleSubmit,
     reset,
+    watch,
     formState: { isValid },
   } = methods;
+
+  // D-08: Direct reactive persistence - save settings instantly
+  // This ensures changes are applied even if the dialog is open during a session
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/incompatible-library
+    const subscription = watch((value, { type }) => {
+      // Only save on actual value changes (not initial mount)
+      if (type === "change" && value) {
+        // Validate before saving
+        const parsed = FocusSettingsSchema.safeParse(value);
+        if (parsed.success) {
+          updateSettings(parsed.data);
+        }
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, updateSettings]);
 
   // Handle back navigation on mobile to close drawer instead of navigating away
   useBackNavigation(open && !isDesktop, () => setOpen(false));
 
-  const onFormSubmit = (data: TimerSettings) => {
+  const onFormSubmit = () => {
     trigger("HEAVY");
-    updateSettings(data);
+    // Settings already saved via watch() - just close
     setOpen(false);
   };
 

@@ -8,7 +8,6 @@ import { TimeGrid } from "@/components/calendar/TimeGrid";
 import { YearView } from "@/components/calendar/YearView";
 import { MonthView } from "@/components/calendar/MonthView";
 import { ScheduleView } from "@/components/calendar/ScheduleView";
-import { CreateEventDialog } from "@/components/calendar/CreateEventDialog";
 import { useCalendarEvents } from "@/lib/hooks/useCalendarEvents";
 import type { CalendarEventUI } from "@/lib/types/calendar-event";
 import { useTask } from "@/lib/hooks/useTasks";
@@ -21,11 +20,7 @@ export default function CalendarPage() {
     events,
     setView,
     setDate,
-    isCreateEventOpen,
     openCreateEvent,
-    closeCreateEvent,
-    selectedEvent: globalSelectedEvent,
-    defaultDate: globalDefaultDate,
   } = useCalendarStore();
   const [isMobile, setIsMobile] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);

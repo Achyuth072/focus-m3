@@ -28,7 +28,9 @@ export function ArchivedProjectsDialog({
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
       <ResponsiveDialogContent className="sm:max-w-md p-0 overflow-hidden">
         <ResponsiveDialogHeader className="px-4 pt-6 shrink-0">
-          <ResponsiveDialogTitle className="type-h2">Archived Projects</ResponsiveDialogTitle>
+          <ResponsiveDialogTitle className="type-h2">
+            Archived Projects
+          </ResponsiveDialogTitle>
           <ResponsiveDialogDescription className="sr-only">
             View and restore archived projects
           </ResponsiveDialogDescription>
@@ -76,4 +78,3 @@ export function ArchivedProjectsDialog({
     </ResponsiveDialog>
   );
 }
-

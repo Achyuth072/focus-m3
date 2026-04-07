@@ -86,7 +86,9 @@ export const EventOverflowPopover = memo(
                         <span
                           className={cn(
                             "text-[9px] truncate flex items-center gap-0.5",
-                            isTask ? "text-muted-foreground/60" : "text-white/70",
+                            isTask
+                              ? "text-muted-foreground/60"
+                              : "text-white/70",
                           )}
                         >
                           <span>📍</span>

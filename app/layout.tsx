@@ -69,22 +69,20 @@ export default function RootLayout({
           position="bottom-center"
           expand={true}
           duration={4000}
+          mobileOffset={{ left: 8, right: 8, bottom: 8 }}
           swipeDirections={["bottom"]}
           toastOptions={{
             unstyled: true,
             classNames: {
               toast:
-                "bg-card border border-border text-foreground rounded-lg p-4 shadow-none flex items-center justify-start gap-4 w-[90vw] sm:w-fit sm:max-w-[420px] mb-[calc(76px+env(safe-area-inset-bottom))] md:mb-0 text-left",
-              success: "",
-              content:
-                "flex min-w-0 flex-col items-start gap-0.5 text-left order-1",
-              icon: "shrink-0 order-2",
-              title: "font-medium text-sm leading-tight text-left",
-              description: "text-sm text-muted-foreground text-left",
-              actionButton:
-                "bg-primary text-primary-foreground px-3 py-1.5 rounded-md text-sm font-medium hover:opacity-90 shrink-0",
+                "bg-card/95 backdrop-blur-sm border border-border text-foreground rounded-lg sm:rounded-xl py-2 px-3 sm:py-3 sm:px-5 shadow-lg inline-flex flex-wrap sm:flex-nowrap items-center gap-x-2 gap-y-2 sm:gap-3 w-fit max-w-[calc(100vw-1rem)] sm:max-w-[calc(100vw-2rem)] mb-[calc(76px+env(safe-area-inset-bottom))] md:mb-5",
+              icon: "shrink-0 [&>svg]:w-5 [&>svg]:h-5",
+              content: "min-w-0 flex-1",
+              title: `${inter.className} font-semibold text-[13px] sm:text-sm tracking-tight leading-[1.15]`,
+              description: `${inter.className} text-[12px] sm:text-sm text-muted-foreground`,
+              actionButton: `bg-primary text-primary-foreground h-8 px-2.5 sm:px-3 rounded-md font-semibold text-[12px] sm:text-sm tracking-tight hover:opacity-90 active:scale-[0.98] transition-all shrink-0 shadow-sm ml-auto sm:ml-0 whitespace-nowrap ${inter.className}`,
               cancelButton:
-                "bg-transparent border border-border text-muted-foreground px-3 py-1.5 rounded-md text-sm hover:bg-accent shrink-0",
+                "bg-transparent border border-border text-muted-foreground h-8 px-2.5 sm:px-3 rounded-md text-[12px] sm:text-sm hover:bg-accent shrink-0 ml-auto sm:ml-0 whitespace-nowrap",
             },
           }}
         />

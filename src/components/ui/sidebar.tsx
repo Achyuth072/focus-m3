@@ -90,6 +90,10 @@ const SidebarProvider = React.forwardRef<
     const setOpen = React.useCallback(
       (value: boolean | ((value: boolean) => boolean)) => {
         const openState = typeof value === "function" ? value(open) : value;
+
+        // Dispatch transition start event before state change
+        window.dispatchEvent(new CustomEvent("sidebar-transition-start"));
+
         if (setOpenProp) {
           setOpenProp(openState);
         } else {
@@ -137,7 +141,15 @@ const SidebarProvider = React.forwardRef<
         setOpenMobile,
         toggleSidebar,
       }),
-      [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar],
+      [
+        state,
+        open,
+        setOpen,
+        isMobile,
+        openMobile,
+        setOpenMobile,
+        toggleSidebar,
+      ],
     );
 
     return (
@@ -248,6 +260,9 @@ const Sidebar = React.forwardRef<
               : "group-data-[collapsible=icon]:w-(--sidebar-width-icon)",
           )}
           style={{ transitionTimingFunction: "var(--ease-seijaku)" }}
+          onTransitionEnd={() => {
+            window.dispatchEvent(new CustomEvent("sidebar-transition-end"));
+          }}
         />
         <div
           className={cn(

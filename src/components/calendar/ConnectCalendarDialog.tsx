@@ -75,7 +75,7 @@ export function ConnectCalendarDialog({
             username: parsed.username || "",
             password: parsed.password || "",
           }));
-        } catch (e) {
+        } catch {
           console.error("Failed to parse stored CalDAV credentials");
         }
       }
@@ -336,7 +336,8 @@ export function ConnectCalendarDialog({
             {error && <p className="text-sm text-destructive">{error}</p>}
             {discoveredCount !== null && (
               <p className="text-sm text-green-600 dark:text-green-400">
-                ✓ Connected — {discoveredCount === 0
+                ✓ Connected —{" "}
+                {discoveredCount === 0
                   ? "no calendars found yet (server is reachable)"
                   : `${discoveredCount} calendar${discoveredCount === 1 ? "" : "s"} discovered`}
               </p>
@@ -370,7 +371,11 @@ export function ConnectCalendarDialog({
                 disabled={isConnecting || discoveredCount !== null}
                 className="bg-brand text-white shadow-brand/10 hover:bg-brand/90"
               >
-                {isConnecting ? "Connecting..." : discoveredCount !== null ? "Connected ✓" : "Connect Calendar"}
+                {isConnecting
+                  ? "Connecting..."
+                  : discoveredCount !== null
+                    ? "Connected ✓"
+                    : "Connect Calendar"}
               </Button>
             </div>
           </form>

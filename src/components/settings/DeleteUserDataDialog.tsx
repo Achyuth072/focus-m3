@@ -44,11 +44,19 @@ export function DeleteUserDataDialog({
   // Handle back navigation on mobile
   useBackNavigation(open && !isDesktop, () => onOpenChange(false));
 
+  // Reset state when dialog opens or closes
+  const [prevOpen, setPrevOpen] = useState(open);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
+    if (open) {
+      setConfirmText("");
+    }
+  }
+
   // Haptic on open
   useEffect(() => {
     if (open) {
       trigger("WARNING");
-      setConfirmText("");
     }
   }, [open, trigger]);
 

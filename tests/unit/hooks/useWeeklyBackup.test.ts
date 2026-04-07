@@ -44,13 +44,13 @@ describe("useWeeklyBackup", () => {
 
   it("does not show toast if backup is recent", async () => {
     localStorage.setItem(STORAGE_KEY, new Date().toISOString());
-    
+
     // Dynamic import to ensure mocks are applied
     const { useWeeklyBackup } = await import("@/lib/hooks/useWeeklyBackup");
     const { toast } = await import("sonner");
-    
+
     renderHook(() => useWeeklyBackup());
-    
+
     // Fast-forward to account for 3s delay in hook
     act(() => {
       vi.advanceTimersByTime(4000);
@@ -62,20 +62,24 @@ describe("useWeeklyBackup", () => {
   it("shows toast if backup is older than 7 days", async () => {
     const oldDate = new Date(Date.now() - SEVEN_DAYS_MS - 1000);
     localStorage.setItem(STORAGE_KEY, oldDate.toISOString());
-    
+
     const { useWeeklyBackup } = await import("@/lib/hooks/useWeeklyBackup");
     const { toast } = await import("sonner");
-    
+
     renderHook(() => useWeeklyBackup());
-    
+
     // Fast-forward to account for 3s delay in hook
     act(() => {
       vi.advanceTimersByTime(4000);
     });
 
     expect(toast).toHaveBeenCalledWith(
-      expect.stringContaining("It's been a while"),
-      expect.any(Object)
+      "Backup due",
+      expect.objectContaining({
+        action: expect.objectContaining({
+          label: "Backup",
+        }),
+      }),
     );
   });
 
@@ -83,12 +87,12 @@ describe("useWeeklyBackup", () => {
     const oldDate = new Date(Date.now() - SEVEN_DAYS_MS - 1000);
     localStorage.setItem(STORAGE_KEY, oldDate.toISOString());
     sessionStorage.setItem(SESSION_KEY, "true");
-    
+
     const { useWeeklyBackup } = await import("@/lib/hooks/useWeeklyBackup");
     const { toast } = await import("sonner");
-    
+
     renderHook(() => useWeeklyBackup());
-    
+
     act(() => {
       vi.advanceTimersByTime(4000);
     });

@@ -162,28 +162,28 @@ export function CalendarToolbar({
         {/* Action Buttons */}
         <div className="flex items-center gap-0.5 sm:gap-2">
           {/* Desktop-only Actions */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                trigger("LIGHT");
-                onCreateEvent();
-              }}
-              className="hidden md:flex h-9 items-center gap-2 bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none"
-            >
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              trigger("LIGHT");
+              onCreateEvent();
+            }}
+            className="hidden md:flex h-9 items-center gap-2 bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none"
+          >
             <Plus className="h-4 w-4" />
             <span>New Event</span>
           </Button>
 
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                trigger("MEDIUM");
-                // TODO: Trigger manual event refresh
-              }}
-              className="hidden md:flex h-9 w-9 p-0 items-center justify-center bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none"
-            >
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              trigger("MEDIUM");
+              // TODO: Trigger manual event refresh
+            }}
+            className="hidden md:flex h-9 w-9 p-0 items-center justify-center bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none"
+          >
             <RefreshCw className="h-4 w-4" />
           </Button>
 

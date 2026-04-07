@@ -451,7 +451,7 @@ export function AppSidebar() {
                   transition={{ duration: 0.15 }}
                   className="px-4 py-3 text-xs text-muted-foreground font-medium tracking-tight w-full"
                 >
-                  v1.15.2
+                  v1.16.0
                 </motion.div>
               ) : null}
             </AnimatePresence>

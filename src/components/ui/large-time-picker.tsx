@@ -82,7 +82,6 @@ export function LargeTimePicker({
           items={minutesList}
           value={minutes.toString().padStart(2, "0")}
           onChange={handleMinuteChange}
-          bufferCount={3} // Optimize: only render 3x buffer (180 items) instead of 5x
           className="w-20"
         />
       </div>

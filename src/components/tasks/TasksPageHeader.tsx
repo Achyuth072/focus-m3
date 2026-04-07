@@ -28,7 +28,6 @@ import {
 import { useHaptic } from "@/lib/hooks/useHaptic";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
-import { useHotkeys } from "react-hotkeys-hook";
 import { SyncIndicator } from "@/components/ui/SyncIndicator";
 
 interface TasksPageHeaderProps {

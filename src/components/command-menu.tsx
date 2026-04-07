@@ -6,17 +6,9 @@ import { useTheme } from "next-themes";
 import {
   CalendarIcon,
   HomeIcon,
-  LaptopIcon,
-  LayoutGrid,
-  Moon,
-  Plus,
-  Settings,
-  Sun,
-  Hash,
   CheckCircle2,
   Columns,
   LogOut,
-  Inbox,
   FolderPlus,
   Keyboard,
   Monitor,
@@ -25,26 +17,15 @@ import {
   ListFilter,
   Layers,
   Clock,
-  Filter,
   Command as CommandIcon,
   ArchiveRestore,
   RefreshCw,
-  FileDown,
-  FileUp,
   CalendarPlus,
   LayoutGridIcon,
   MoonIcon,
   PlusIcon,
   SettingsIcon,
   SunIcon,
-  HashIcon,
-  Kanban,
-  List as ListIcon,
-  Repeat,
-  BarChart3,
-  Layout as LayoutIcon,
-  PlayCircle,
-  CalendarDays,
 } from "lucide-react";
 
 import {
@@ -57,7 +38,6 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command";
-import { useProjects } from "@/lib/hooks/useProjects";
 import { useTaskActions } from "@/components/TaskActionsProvider";
 import { useProjectActions } from "@/components/ProjectActionsProvider";
 import { useHabitActions } from "@/components/habits/HabitActionsProvider";
@@ -69,7 +49,6 @@ import { useDocumentPiP } from "@/lib/hooks/useDocumentPiP";
 import { useUiStore } from "@/lib/store/uiStore";
 import { useBackNavigation } from "@/lib/hooks/useBackNavigation";
 import { useCalendarStore } from "@/lib/calendar/store";
-import { ArchivedProjectsDialog } from "@/components/projects/ArchivedProjectsDialog";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { getPlatformKey } from "@/lib/utils/platform";
@@ -83,9 +62,7 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [showSignOutConfirm, setShowSignOutConfirm] = React.useState(false);
-  const [showArchivedProjects, setShowArchivedProjects] = React.useState(false);
   const { setTheme, resolvedTheme } = useTheme();
-  const { data: projects } = useProjects();
   const { openAddTask } = useTaskActions();
   const { openCreateProject } = useProjectActions();
   const { openAddHabit } = useHabitActions();

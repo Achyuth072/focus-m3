@@ -31,7 +31,7 @@ import { toast } from "sonner";
 import { NotificationSettings } from "@/components/settings/NotificationSettings";
 import { DeleteUserDataDialog } from "@/components/settings/DeleteUserDataDialog";
 import { BackupSyncSettings } from "@/components/settings/BackupSyncSettings";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const SignOutConfirmation = dynamic(
   () =>
@@ -105,7 +105,7 @@ export default function SettingsPage() {
 
   return (
     <>
-      <div className="flex flex-col min-h-[calc(100svh-4rem)] md:min-h-full p-4 md:p-6 gap-6 md:gap-8 relative">
+      <div className="flex flex-col min-h-[calc(100svh-4rem)] p-4 md:p-6 gap-6 md:gap-8 relative overflow-hidden scrollbar-hide">
         {/* Mobile Header */}
         <div className="md:hidden">
           <div className="flex items-center gap-3 mb-2">
@@ -132,7 +132,7 @@ export default function SettingsPage() {
             value={activeTab}
             onValueChange={(v) => {
               trigger("MEDIUM");
-              setActiveTab(v as any);
+              setActiveTab(v as "appearance" | "preferences" | "account");
             }}
             className="w-full"
           >
@@ -181,7 +181,7 @@ export default function SettingsPage() {
           </aside>
 
           {/* Main Content */}
-          <main className="space-y-8 md:space-y-12 flex flex-col">
+          <main className="space-y-8 md:space-y-12 flex flex-col md:pt-[96px]">
             {/* Appearance Section */}
             {activeTab === "appearance" && (
               <section className="space-y-4">
@@ -374,14 +374,14 @@ export default function SettingsPage() {
               </section>
             )}
 
+            {/* Version Branding - Unified at the bottom of the content flow */}
+            <div className="pt-16 pb-12 transition-all duration-300">
+              <div className="border-t border-border/40 w-16 mx-auto mb-8 opacity-50" />
+              <p className="type-micro text-muted-foreground/80 text-center selection:bg-brand/10">
+                Kanso • Version 1.16.0
+              </p>
+            </div>
           </main>
-        </div>
-
-        {/* App Info Footer - Docked to bottom via mt-auto in flex context */}
-        <div className="mt-auto pt-8 border-t border-border/50">
-          <p className="text-xs text-muted-foreground text-center">
-            Kanso • Version 1.15.2
-          </p>
         </div>
       </div>
 

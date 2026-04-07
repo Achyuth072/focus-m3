@@ -5,7 +5,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   Download,
   Upload,
-  RefreshCw,
   Server,
   Check,
   X,
@@ -116,8 +115,8 @@ export function BackupSyncSettings() {
 
       toast.success("Backup downloaded successfully");
       trigger("SUCCESS");
-    } catch (error) {
-      console.error("Export failed:", error);
+    } catch (err) {
+      console.error("Export failed:", err);
       toast.error("Failed to create backup");
       trigger("WARNING");
     } finally {
@@ -156,8 +155,8 @@ export function BackupSyncSettings() {
         },
       );
       trigger("SUCCESS");
-    } catch (error) {
-      console.error("Import failed:", error);
+    } catch (err) {
+      console.error("Import failed:", err);
       toast.error("Failed to import backup", { id: loadingToastId });
       trigger("WARNING");
     } finally {
@@ -214,7 +213,7 @@ export function BackupSyncSettings() {
         toast.error(result.error || "Connection failed");
         trigger("WARNING");
       }
-    } catch (error) {
+    } catch {
       setConnectionStatus("error");
       toast.error("Connection test failed");
       trigger("WARNING");
@@ -263,7 +262,7 @@ export function BackupSyncSettings() {
         toast.error(result.error || "Sync failed");
         trigger("WARNING");
       }
-    } catch (error) {
+    } catch {
       toast.error("Sync failed");
       trigger("WARNING");
     } finally {
@@ -295,7 +294,7 @@ export function BackupSyncSettings() {
         toast.error(result.error || "Download failed");
         trigger("WARNING");
       }
-    } catch (error) {
+    } catch {
       toast.error("Download failed");
       trigger("WARNING");
     } finally {
@@ -355,7 +354,10 @@ export function BackupSyncSettings() {
                 className="flex-1 gap-2 h-10 border-border/60 hover:bg-secondary/40 transition-all font-medium"
               >
                 {isExporting ? (
-                  <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.25} />
+                  <Loader2
+                    className="h-4 w-4 animate-spin"
+                    strokeWidth={2.25}
+                  />
                 ) : (
                   <Download className="h-4 w-4" strokeWidth={2.25} />
                 )}
@@ -368,7 +370,10 @@ export function BackupSyncSettings() {
                 className="flex-1 gap-2 h-10 border-border/60 hover:bg-secondary/40 transition-all font-medium"
               >
                 {isImporting ? (
-                  <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.25} />
+                  <Loader2
+                    className="h-4 w-4 animate-spin"
+                    strokeWidth={2.25}
+                  />
                 ) : (
                   <Upload className="h-4 w-4" strokeWidth={2.25} />
                 )}
@@ -470,7 +475,10 @@ export function BackupSyncSettings() {
                       strokeWidth={2.25}
                     />
                   ) : connectionStatus === "success" ? (
-                    <Check className="h-3.5 w-3.5 text-green-500" strokeWidth={3} />
+                    <Check
+                      className="h-3.5 w-3.5 text-green-500"
+                      strokeWidth={3}
+                    />
                   ) : connectionStatus === "error" ? (
                     <X className="h-3.5 w-3.5 text-red-500" strokeWidth={3} />
                   ) : (
@@ -478,7 +486,8 @@ export function BackupSyncSettings() {
                   )}
                   Test Connection
                 </Button>
-                {(webdavCredentials.serverUrl || webdavCredentials.username) && (
+                {(webdavCredentials.serverUrl ||
+                  webdavCredentials.username) && (
                   <Button
                     variant="destructive"
                     size="icon"
@@ -501,7 +510,10 @@ export function BackupSyncSettings() {
                   className="flex-1 gap-2 h-10 bg-brand hover:bg-brand/90 text-white transition-all active:scale-[0.98] font-semibold"
                 >
                   {isSyncing ? (
-                    <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.25} />
+                    <Loader2
+                      className="h-4 w-4 animate-spin"
+                      strokeWidth={2.25}
+                    />
                   ) : (
                     <Upload className="h-4 w-4" strokeWidth={2.25} />
                   )}
@@ -514,7 +526,10 @@ export function BackupSyncSettings() {
                   className="flex-1 gap-2 h-10 border-border/60 hover:bg-secondary/40 transition-all font-medium"
                 >
                   {isSyncing ? (
-                    <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2.25} />
+                    <Loader2
+                      className="h-4 w-4 animate-spin"
+                      strokeWidth={2.25}
+                    />
                   ) : (
                     <Download className="h-4 w-4" strokeWidth={2.25} />
                   )}
@@ -524,8 +539,8 @@ export function BackupSyncSettings() {
 
               <p className="text-[10px] text-muted-foreground/50 text-center leading-relaxed">
                 Your credentials are stored locally via{" "}
-                <span className="font-mono">localStorage</span> and never sent to
-                Kanso servers.
+                <span className="font-mono">localStorage</span> and never sent
+                to Kanso servers.
               </p>
             </CardContent>
           </Card>

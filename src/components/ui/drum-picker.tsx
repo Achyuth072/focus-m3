@@ -34,6 +34,7 @@ export function DrumPicker({
 
   const y = useMotionValue(-initialIndex * itemHeight);
   const lastIndex = useRef(initialIndex);
+  const activeWheelAnimation = useRef<ReturnType<typeof animate> | null>(null);
 
   // Velocity tracking for haptics
   const lastHapticTime = useRef(0);
@@ -128,6 +129,30 @@ export function DrumPicker({
     }
   };
 
+  // Mouse wheel handler with lighter physics
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    if (isDragging.current) return;
+
+    // Stop any existing wheel animation
+    if (activeWheelAnimation.current) {
+      activeWheelAnimation.current.stop();
+    }
+
+    const direction = e.deltaY > 0 ? 1 : -1;
+    const targetY = y.get() - direction * itemHeight;
+
+    activeWheelAnimation.current = animate(y, targetY, {
+      type: "spring",
+      stiffness: 300,
+      damping: 20,
+      mass: 0.6,
+      onComplete: () => {
+        activeWheelAnimation.current = null;
+        handleSettled();
+      },
+    });
+  };
+
   return (
     <div
       ref={containerRef}
@@ -136,6 +161,7 @@ export function DrumPicker({
         className,
       )}
       style={{ height, perspective: 1000 }}
+      onWheel={handleWheel}
       onPointerDown={(e) => {
         e.stopPropagation();
         isDragging.current = true;

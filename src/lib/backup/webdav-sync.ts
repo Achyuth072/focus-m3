@@ -27,7 +27,9 @@ function buildProxyUrl(serverUrl: string, path: string = ""): string {
   return cleanPath ? `/api/webdav/${cleanPath}` : `/api/webdav/`;
 }
 
-function buildProxyHeaders(credentials: WebDAVCredentials): Record<string, string> {
+function buildProxyHeaders(
+  credentials: WebDAVCredentials,
+): Record<string, string> {
   return {
     "X-WebDAV-URL": credentials.serverUrl,
     Authorization: `Basic ${btoa(`${credentials.username}:${credentials.password}`)}`,
@@ -44,7 +46,7 @@ function buildProxyHeaders(credentials: WebDAVCredentials): Record<string, strin
  * because Next.js App Router only supports standard HTTP method exports.
  */
 export async function testWebDavConnection(
-  credentials: WebDAVCredentials
+  credentials: WebDAVCredentials,
 ): Promise<WebDAVResult> {
   try {
     const response = await fetch(buildProxyUrl(credentials.serverUrl), {
@@ -72,17 +74,20 @@ export async function testWebDavConnection(
 export async function uploadWebDavBackup(
   credentials: WebDAVCredentials,
   jsonData: string,
-  filename: string = BACKUP_FILENAME
+  filename: string = BACKUP_FILENAME,
 ): Promise<WebDAVResult> {
   try {
-    const response = await fetch(buildProxyUrl(credentials.serverUrl, filename), {
-      method: "PUT",
-      headers: {
-        ...buildProxyHeaders(credentials),
-        "Content-Type": "application/json",
+    const response = await fetch(
+      buildProxyUrl(credentials.serverUrl, filename),
+      {
+        method: "PUT",
+        headers: {
+          ...buildProxyHeaders(credentials),
+          "Content-Type": "application/json",
+        },
+        body: jsonData,
       },
-      body: jsonData,
-    });
+    );
 
     if (response.ok || response.status === 201 || response.status === 204) {
       return { success: true };
@@ -101,16 +106,24 @@ export async function uploadWebDavBackup(
  */
 export async function downloadWebDavBackup(
   credentials: WebDAVCredentials,
-  filename: string = BACKUP_FILENAME
-): Promise<{ success: boolean; data?: BackupData; error?: string; isCorsError?: boolean }> {
+  filename: string = BACKUP_FILENAME,
+): Promise<{
+  success: boolean;
+  data?: BackupData;
+  error?: string;
+  isCorsError?: boolean;
+}> {
   try {
-    const response = await fetch(buildProxyUrl(credentials.serverUrl, filename), {
-      method: "GET",
-      headers: {
-        ...buildProxyHeaders(credentials),
-        Accept: "application/json",
+    const response = await fetch(
+      buildProxyUrl(credentials.serverUrl, filename),
+      {
+        method: "GET",
+        headers: {
+          ...buildProxyHeaders(credentials),
+          Accept: "application/json",
+        },
       },
-    });
+    );
 
     if (!response.ok) {
       if (response.status === 404) {
@@ -142,9 +155,9 @@ export async function downloadWebDavBackup(
  */
 function handleWebDAVError(error: unknown): WebDAVResult {
   const message = error instanceof Error ? error.message : String(error);
-  
+
   // Detect CORS errors (browser-specific messages)
-  const isCorsError = 
+  const isCorsError =
     message.includes("CORS") ||
     message.includes("NetworkError") ||
     message.includes("Failed to fetch") ||
@@ -154,8 +167,9 @@ function handleWebDAVError(error: unknown): WebDAVResult {
     return {
       success: false,
       isCorsError: true,
-      error: "CORS blocked. Your WebDAV server needs to allow cross-origin requests. " +
-             "Check your server's CORS configuration (Nextcloud: enable the 'CORS' app).",
+      error:
+        "CORS blocked. Your WebDAV server needs to allow cross-origin requests. " +
+        "Check your server's CORS configuration (Nextcloud: enable the 'CORS' app).",
     };
   }
 

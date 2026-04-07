@@ -476,7 +476,17 @@ export function useFocusTimer() {
   }, [completeTimer]);
 
   const updateSettings = useCallback((newSettings: Partial<TimerSettings>) => {
-    setSettingsState((prev) => ({ ...prev, ...newSettings }));
+    setSettingsState((prev) => {
+      const merged = { ...prev, ...newSettings };
+      // If timer is idle (not running), sync the displayed time to new duration
+      if (!stateRef.current.isRunning) {
+        setState((prevState) => ({
+          ...prevState,
+          remainingSeconds: getDurationForMode(prevState.mode, merged),
+        }));
+      }
+      return merged;
+    });
   }, []);
 
   return {

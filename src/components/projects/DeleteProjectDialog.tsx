@@ -12,7 +12,6 @@ import { useHaptic } from "@/lib/hooks/useHaptic";
 import { useEffect } from "react";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -32,12 +31,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useBackNavigation } from "@/lib/hooks/useBackNavigation";
 import { useState } from "react";
-import {
-  Loader2,
-  Archive,
-  Inbox,
-  Trash2,
-} from "lucide-react";
+import { Loader2, Archive, Inbox, Trash2 } from "lucide-react";
 
 interface DeleteProjectDialogProps {
   project: Project | null;
@@ -74,13 +68,29 @@ export function DeleteProjectDialog({
     if (open) trigger("WARNING");
   }, [open, trigger]);
 
-  // Close on success
-  useEffect(() => {
-    if ((archiveProject.isSuccess || hardDeleteProject.isSuccess) && activeAction) {
-      onOpenChange(false);
+  // Reset activeAction when dialog closes or opens
+  const [prevOpen, setPrevOpen] = useState(open);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
+    if (!open) {
       setActiveAction(null);
     }
-  }, [archiveProject.isSuccess, hardDeleteProject.isSuccess, activeAction, onOpenChange]);
+  }
+
+  // Close on success
+  useEffect(() => {
+    if (
+      (archiveProject.isSuccess || hardDeleteProject.isSuccess) &&
+      activeAction
+    ) {
+      onOpenChange(false);
+    }
+  }, [
+    archiveProject.isSuccess,
+    hardDeleteProject.isSuccess,
+    activeAction,
+    onOpenChange,
+  ]);
 
   if (!project) return null;
 
@@ -134,7 +144,10 @@ export function DeleteProjectDialog({
               {activeAction === "keep" ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <Archive className="h-4 w-4 text-[#757575]" strokeWidth={2.25} />
+                <Archive
+                  className="h-4 w-4 text-[#757575]"
+                  strokeWidth={2.25}
+                />
               )}
               Keep Archived
             </Button>
@@ -231,4 +244,3 @@ export function DeleteProjectDialog({
     </Drawer>
   );
 }
-

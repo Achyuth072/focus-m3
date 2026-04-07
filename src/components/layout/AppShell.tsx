@@ -158,7 +158,7 @@ function AppShellContent({ children }: AppShellProps) {
                 pathname === "/" ||
                 pathname === "/habits"
                 ? "overflow-hidden"
-                : "overflow-y-auto overflow-x-hidden",
+                : "overflow-y-auto overflow-x-hidden scrollbar-hide",
               !hideMobileNav && "pt-[calc(4rem+env(safe-area-inset-top,0px))]",
             )}
           >

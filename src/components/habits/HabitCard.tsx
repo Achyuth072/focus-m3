@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useLayoutEffect, useRef } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { HabitHeatmap } from "./HabitHeatmap";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
@@ -35,29 +35,35 @@ export function HabitCard({
   const markComplete = useMarkHabitComplete();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const horizontalScrollRef = useHorizontalScroll();
+  const hasAutoScrolled = useRef(false);
 
-  // Combine refs for both manual scroll-to-end and useHorizontalScroll logic
-  const setRefs = useCallback(
-    (node: HTMLDivElement | null) => {
-      if (!isMobile) {
-        horizontalScrollRef(node);
-      } else {
-        // Ensure listeners are removed on mobile to allow native scrolling
-        horizontalScrollRef(null);
-      }
-      (
-        scrollContainerRef as React.MutableRefObject<HTMLDivElement | null>
-      ).current = node;
-    },
-    [horizontalScrollRef, isMobile],
-  );
+  // Stable ref setter — only sets the ref once on mount, never triggers detach/reattach
+  const setScrollRef = useCallback((node: HTMLDivElement | null) => {
+    (
+      scrollContainerRef as React.MutableRefObject<HTMLDivElement | null>
+    ).current = node;
+  }, []);
+
+  // Attach/detach horizontal scroll listener only when isMobile changes, not on every render
+  useEffect(() => {
+    const node = scrollContainerRef.current;
+    if (!node) return;
+    if (!isMobile) {
+      horizontalScrollRef(node);
+      return () => horizontalScrollRef(null);
+    }
+  }, [isMobile, horizontalScrollRef]);
 
   // Background scroll to end on mount
   useLayoutEffect(() => {
+    // Only auto-scroll once on initial mount / data load, not on every re-render
+    if (hasAutoScrolled.current) return;
+
     const frame = requestAnimationFrame(() => {
       if (scrollContainerRef.current) {
         scrollContainerRef.current.scrollLeft =
           scrollContainerRef.current.scrollWidth;
+        hasAutoScrolled.current = true;
       }
     });
     return () => cancelAnimationFrame(frame);
@@ -117,7 +123,7 @@ export function HabitCard({
   return (
     <Card
       onClick={onEdit}
-      className="bg-card border border-border dark:border-border/40 p-6 rounded-xl overflow-hidden shadow-none transition-seijaku-fast hover:border-border/60 hover:shadow-sm cursor-pointer active:scale-[0.995]"
+      className="bg-card border border-border dark:border-border/40 p-6 rounded-xl overflow-hidden shadow-none transition-seijaku-fast hover:border-border/60 hover:shadow-sm cursor-pointer active:scale-[0.995] min-w-0"
     >
       <div className="flex flex-col gap-6">
         {/* Header: Title, Description + Toggle */}
@@ -191,8 +197,8 @@ export function HabitCard({
 
         {/* Heatmap Area - Large Visual Centerpiece */}
         <div
-          ref={setRefs}
-          className="w-full overflow-x-auto pb-1 scrollbar-hide"
+          ref={setScrollRef}
+          className="w-full overflow-x-auto pb-1 scrollbar-hide min-w-0"
         >
           <HabitHeatmap
             entries={habit.entries}

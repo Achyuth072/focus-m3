@@ -87,7 +87,6 @@ interface HabitIconPickerProps {
 export function HabitIconPicker({
   value,
   onChange,
-  color,
   variant = "grid",
 }: HabitIconPickerProps) {
   const { trigger } = useHaptic();

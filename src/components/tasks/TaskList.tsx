@@ -77,8 +77,7 @@ export default function TaskList({
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 150,
-        tolerance: 5,
+        distance: 15,
       },
     }),
     useSensor(KeyboardSensor, {

@@ -473,3 +473,18 @@ select {
     @apply bg-background text-foreground;
   }
 }
+
+/* Sonner Toast Mobile Override
+ * Sonner's styles.css forces `width: calc(100% - var(--mobile-offset-left) * 2)` on mobile.
+ * We need `width: fit-content` for dynamic sizing. Use the individual `translate`
+ * property so Sonner can keep `transform` for its own stack and swipe motion.
+ */
+@media (max-width: 600px) {
+  [data-sonner-toaster][data-x-position="center"] [data-sonner-toast] {
+    width: fit-content !important;
+    max-width: calc(100vw - 2rem) !important;
+    left: 50% !important;
+    right: auto !important;
+    translate: -50% 0 !important;
+  }
+}
