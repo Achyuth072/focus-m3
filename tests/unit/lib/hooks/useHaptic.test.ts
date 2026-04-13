@@ -37,7 +37,7 @@ describe("useHaptic", () => {
     const { result } = renderHook(() => useHaptic());
 
     // When: trigger is called with a pattern
-    result.current.trigger("MEDIUM");
+    result.current.trigger("toggle");
 
     // Then: navigator.vibrate should be called with that pattern's value
     expect(window.navigator.vibrate).toHaveBeenCalledWith(15);
@@ -52,7 +52,7 @@ describe("useHaptic", () => {
     const { result } = renderHook(() => useHaptic());
 
     // When: trigger is called
-    result.current.trigger("HEAVY");
+    result.current.trigger("thud");
 
     // Then: navigator.vibrate should NOT be called
     expect(window.navigator.vibrate).not.toHaveBeenCalled();
@@ -67,22 +67,21 @@ describe("useHaptic", () => {
     const { result } = renderHook(() => useHaptic());
 
     // When: trigger is called
-    result.current.trigger("LIGHT");
+    result.current.trigger("tick");
 
     // Then: navigator.vibrate should NOT be called
     expect(window.navigator.vibrate).not.toHaveBeenCalled();
   });
 
-  it("should handle array patterns for signature haptics", () => {
+  it("should handle 'success' signature", () => {
     // Given: signatures enabled
     mockIsPhone.mockReturnValue(true);
     const { result } = renderHook(() => useHaptic());
 
-    // When: trigger is called with an array
-    const pattern = [10, 30, 10];
-    result.current.trigger(pattern);
+    // When: trigger is called with 'success'
+    result.current.trigger("success");
 
-    // Then: navigator.vibrate should be called with the array
-    expect(window.navigator.vibrate).toHaveBeenCalledWith(pattern);
+    // Then: navigator.vibrate should be called with the success pattern [10, 50]
+    expect(window.navigator.vibrate).toHaveBeenCalledWith([10, 50]);
   });
 });

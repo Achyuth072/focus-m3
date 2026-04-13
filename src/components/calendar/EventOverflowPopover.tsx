@@ -29,7 +29,7 @@ export const EventOverflowPopover = memo(
           <button
             onClick={(e) => {
               e.stopPropagation();
-              trigger("MEDIUM"); // Toggle haptic
+              trigger("toggle"); // Toggle haptic
             }}
             className="text-[10px] md:text-xs text-muted-foreground px-1 md:px-2 hover:text-foreground transition-colors text-left"
           >

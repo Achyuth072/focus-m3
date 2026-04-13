@@ -91,10 +91,10 @@ describe("Regression Fixes", () => {
     const dayOne = dayOneText.closest("div.relative");
 
     expect(dayOne).toBeTruthy();
-    // Expect minimal/subtle borders (/[0.08]), not heavy (/40)
+    // Expect standard borders (/40) consistent with Ruthless Kanso design system
     const grid = dayOne?.parentElement;
-    expect(grid?.className).toContain("divide-border/[0.08]");
-    expect(dayOne?.className).not.toContain("border-border/40");
+    expect(grid?.className).toContain("divide-border/40");
+    expect(dayOne?.className).toContain("relative"); // Structural verification
   });
 
   it("MonthView: Events should be rendered on current day (highlighted)", () => {

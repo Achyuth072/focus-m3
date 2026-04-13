@@ -10,7 +10,7 @@ import {
   startOfWeek,
   isAfter,
 } from "date-fns";
-import { CheckCircle2, Clock, Trash2, Search } from "lucide-react";
+import { CheckCircle2, Clock, Trash2, Search, X } from "lucide-react";
 
 import type { Task } from "@/lib/types/task";
 import {
@@ -22,8 +22,14 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogClose,
 } from "@/components/ui/dialog";
-import { Drawer, DrawerContent, DrawerTitle } from "@/components/ui/drawer";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerTitle,
+  DrawerClose,
+} from "@/components/ui/drawer";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import { Button } from "@/components/ui/button";
 import { DeleteConfirmationDialog } from "@/components/ui/DeleteConfirmationDialog";
@@ -41,7 +47,7 @@ function CompletedTaskItem({ task }: { task: Task }) {
   const { trigger } = useHaptic();
 
   const handleUncomplete = () => {
-    trigger("TAP");
+    trigger("toggle");
     updateMutation.mutate({ id: task.id, is_completed: false });
   };
 
@@ -50,20 +56,19 @@ function CompletedTaskItem({ task }: { task: Task }) {
 
   return (
     <div className="flex items-start gap-3 py-2 md:py-2 px-4 border-b border-border/40 hover:bg-secondary/30 transition-colors group min-h-[44px]">
-      <button
-        onClick={handleUncomplete}
-        className="pt-0.5 text-green-500 hover:text-green-600 transition-colors"
-        title="Mark as incomplete"
-      >
-        <CheckCircle2 className="h-5 w-5" />
+      <button onClick={handleUncomplete}>
+        <CheckCircle2
+          className="h-5 w-5 text-foreground/50 hover:text-foreground transition-colors"
+          strokeWidth={2.5}
+        />
       </button>
 
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium leading-tight line-through text-muted-foreground">
+        <p className="text-sm font-medium leading-tight line-through text-foreground/50">
           {task.content}
         </p>
         {completedDate && (
-          <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
+          <div className="flex items-center gap-1 mt-1 text-xs text-foreground/60 font-medium">
             <Clock className="h-3 w-3" />
             {formattedDate}
           </div>
@@ -195,34 +200,47 @@ export function CompletedTasksSheet({
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-lg max-h-[80vh] flex flex-col p-0 overflow-hidden border-border bg-background">
+        <DialogContent className="max-w-lg max-h-[80vh] flex flex-col p-0 overflow-hidden border-border bg-background [&>button:last-child]:hidden">
           <DialogHeader className="flex-row items-center justify-between space-y-0 px-6 py-4 border-b border-border/50">
             <DialogTitle className="flex items-center gap-2 cursor-default">
-              <CheckCircle2 className="h-4 w-4 text-green-500" />
+              <CheckCircle2
+                className="h-4 w-4 text-foreground/70"
+                strokeWidth={2.5}
+              />
               <span className="type-h2">Logbook</span>
             </DialogTitle>
-            <div className="flex items-center gap-2 pr-8">
+            <div className="flex items-center gap-3">
               {completedTasks.length > 0 && (
                 <Button
-                  variant="ghost"
+                  variant="destructive"
                   size="sm"
                   onClick={() => {
-                    trigger("HEAVY");
+                    trigger("thud");
                     setShowClearDialog(true);
                   }}
-                  className="h-8 gap-2 bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none text-muted-foreground hover:text-destructive transition-seijaku-fast rounded-sm"
+                  className="h-8 gap-2 rounded-sm shadow-none font-medium px-3"
                 >
-                  <Trash2 className="h-3.5 w-3.5" />
+                  <Trash2 className="h-3.5 w-3.5" strokeWidth={2.25} />
                   <span className="text-xs">Clear History</span>
                 </Button>
               )}
+              <DialogClose asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-10 w-10 text-muted-foreground hover:text-foreground transition-seijaku-fast rounded-sm"
+                  title="Close"
+                >
+                  <X className="h-4 w-4" strokeWidth={2.25} />
+                </Button>
+              </DialogClose>
             </div>
           </DialogHeader>
 
           {completedTasks.length > 0 && (
             <div className="px-6 py-3 border-b border-border/40 bg-secondary/5">
               <div className="relative group">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50 group-focus-within:text-primary transition-colors" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50 group-focus-within:text-brand transition-colors" />
                 <Input
                   className="pl-9 bg-secondary/20 border-border/40 focus:border-border/60 focus:bg-secondary/30 h-9 text-sm transition-all placeholder:text-muted-foreground/40"
                   placeholder="Search completed tasks..."
@@ -252,23 +270,35 @@ export function CompletedTasksSheet({
         <DrawerContent className="max-h-[92dvh] flex flex-col">
           <div className="flex flex-row items-center justify-between border-b border-border px-6 py-4">
             <DrawerTitle className="flex items-center gap-2">
-              <CheckCircle2 className="h-5 w-5 text-green-500" />
+              <CheckCircle2
+                className="h-5 w-5 text-foreground/70"
+                strokeWidth={2.5}
+              />
               <span className="type-h2">Logbook</span>
             </DrawerTitle>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               {completedTasks.length > 0 && (
                 <Button
-                  variant="ghost"
+                  variant="destructive"
                   size="icon"
-                  className="h-10 w-10 bg-secondary/40 active:bg-secondary/60 border border-border/50 shadow-none text-muted-foreground active:text-destructive active:scale-95 transition-seijaku-fast rounded-md"
+                  className="h-10 w-10 active:scale-95 transition-seijaku-fast rounded-md shadow-none"
                   onClick={() => {
-                    trigger("HEAVY");
+                    trigger("thud");
                     setShowClearDialog(true);
                   }}
                 >
-                  <Trash2 className="h-5 w-5" />
+                  <Trash2 className="h-5 w-5" strokeWidth={2.25} />
                 </Button>
               )}
+              <DrawerClose asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-10 w-10 text-muted-foreground active:scale-95 transition-seijaku-fast"
+                >
+                  <X className="h-6 w-6" strokeWidth={2} />
+                </Button>
+              </DrawerClose>
             </div>
           </div>
 

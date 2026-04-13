@@ -358,11 +358,11 @@ export function ConnectCalendarDialog({
                     type="button"
                     variant="destructive"
                     size="icon"
-                    className="h-9 w-9 bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-all active:scale-95 shadow-lg shadow-destructive/10"
+                    className="h-9 w-9"
                     onClick={clearStoredCredentials}
                     title="Forget stored credentials"
                   >
-                    <Trash2 className="h-4 w-4" strokeWidth={2.25} />
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 )}
               </div>
@@ -394,7 +394,7 @@ export function ConnectCalendarDialog({
               </p>
             </div>
             <div className="w-full space-y-2 pt-6">
-              <Button className="w-full bg-brand text-white shadow-brand/10 hover:bg-brand/90 h-11">
+              <Button className="w-full bg-brand text-white shadow-sm shadow-brand/10 hover:bg-brand/90 h-11">
                 Upgrade to Premium
               </Button>
               <Button

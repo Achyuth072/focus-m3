@@ -1,7 +1,15 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { CompletedTasksSheet } from "@/components/tasks/CompletedTasksSheet";
+import dynamic from "next/dynamic";
+
+const CompletedTasksSheet = dynamic(
+  () =>
+    import("@/components/tasks/CompletedTasksSheet").then(
+      (mod) => mod.CompletedTasksSheet,
+    ),
+  { ssr: false },
+);
 
 interface CompletedTasksContextValue {
   showCompleted: boolean;
@@ -18,6 +26,11 @@ const CompletedTasksContext = createContext<CompletedTasksContextValue | null>(
 export function CompletedTasksProvider({ children }: { children: ReactNode }) {
   const [showCompleted, setShowCompleted] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  // Background prefetch the sheet component to eliminate interaction latency
+  React.useEffect(() => {
+    import("@/components/tasks/CompletedTasksSheet");
+  }, []);
 
   const toggleShowCompleted = () => {
     setShowCompleted((prev) => !prev);

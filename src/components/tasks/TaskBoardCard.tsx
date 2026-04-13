@@ -1,20 +1,19 @@
 import React from "react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
 import { Moon, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/lib/types/task";
-import { priorityColors, formatDueDate } from "./task-utils";
+import { priorityCheckboxClasses, formatDueDate } from "./task-utils";
 import {
   DraggableAttributes,
   DraggableSyntheticListeners,
 } from "@dnd-kit/core";
 import { DragHandle } from "./DragHandle";
+import { KanbanBoardCardButton } from "@/components/kanban";
 
 interface TaskBoardCardProps {
   task: Task;
   project: { color: string; name: string } | undefined;
-  isOverdue: boolean;
   isDesktop: boolean;
   handleComplete: (checked: boolean) => void;
   handlePlayFocus: (e: React.MouseEvent) => void;
@@ -26,8 +25,7 @@ interface TaskBoardCardProps {
 export function TaskBoardCard({
   task,
   project,
-  isOverdue,
-  isDesktop,
+  isDesktop: _isDesktop,
   handleComplete,
   handlePlayFocus,
   dragListeners,
@@ -35,7 +33,7 @@ export function TaskBoardCard({
   dragActivatorRef,
 }: TaskBoardCardProps) {
   return (
-    <div className="flex flex-col gap-3 w-full" data-testid="task-board-card">
+    <div className="flex flex-col gap-2 w-full" data-testid="task-board-card">
       {/* Header: Grip, Checkbox, Content */}
       <div className="flex items-start gap-2">
         <DragHandle
@@ -49,7 +47,10 @@ export function TaskBoardCard({
           <Checkbox
             checked={task.is_completed}
             onCheckedChange={handleComplete}
-            className={cn(priorityColors[task.priority], "h-4 w-4 !rounded-sm")}
+            className={cn(
+              priorityCheckboxClasses[task.priority as 1 | 2 | 3 | 4],
+              "h-4 w-4 !rounded-sm",
+            )}
           />
         </div>
 
@@ -62,53 +63,31 @@ export function TaskBoardCard({
           {task.content}
         </p>
 
-        {/* Play Button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handlePlayFocus}
-          className={cn(
-            "shrink-0 text-muted-foreground hover:text-brand transition-colors",
-            isDesktop
-              ? "h-6 w-6 opacity-0 group-hover/item:opacity-100"
-              : "h-8 w-8",
-          )}
-          title="Start focus timer"
-        >
-          <Play className={cn(isDesktop ? "h-3.5 w-3.5" : "h-4 w-4")} />
-        </Button>
+        {/* Hover Actions: Play button hidden by default */}
+        {!task.is_completed && (
+          <div className="flex items-center h-7 gap-1.5 opacity-0 group-hover:opacity-100 transition-seijaku-fast">
+            {task.is_evening && (
+              <Moon className="h-3.5 w-3.5 text-muted-foreground/60 fill-current" />
+            )}
+            <KanbanBoardCardButton
+              onClick={handlePlayFocus}
+              className="h-7 w-7 text-muted-foreground/40 hover:text-brand-foreground hover:bg-brand hover:shadow-brand/10 border-none transition-seijaku"
+              tooltip="Start focus timer"
+            >
+              <Play className="h-3.5 w-3.5 fill-current" strokeWidth={2.25} />
+            </KanbanBoardCardButton>
+          </div>
+        )}
       </div>
 
-      {/* Footer: Project (Left) | Tags (Right) */}
-      <div className="flex items-center justify-between mt-auto">
-        <div className="flex items-center gap-2 pl-6">
-          {project && (
-            <div className="flex items-center gap-1.5 max-w-[120px]">
-              <div
-                className="h-1.5 w-1.5 rounded-full shrink-0"
-                style={{ backgroundColor: project.color }}
-              />
-              <span className="text-[10px] font-bold text-muted-foreground/80 uppercase tracking-wider truncate">
-                {project.name}
-              </span>
-            </div>
-          )}
-        </div>
-
-        <div className="flex items-center gap-2 text-[10px] font-medium text-muted-foreground/60">
-          {task.due_date && (
-            <span className={cn(isOverdue && "text-destructive")}>
-              {formatDueDate(task.due_date)}
-            </span>
-          )}
-          {task.priority < 4 && (
-            <span className={cn(priorityColors[task.priority])}>
-              P{task.priority}
-            </span>
-          )}
-          {task.is_evening && (
-            <Moon className="h-3 w-3 fill-current text-brand" />
-          )}
+      {/* Footer: Single Metadata Item (11px Micro) */}
+      <div className="mt-1 pl-6">
+        <div className="text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wider">
+          {task.due_date ? (
+            <span>{formatDueDate(task.due_date)}</span>
+          ) : project ? (
+            <span className="truncate">{project.name}</span>
+          ) : null}
         </div>
       </div>
     </div>

@@ -46,31 +46,6 @@ vi.mock("@/lib/hooks/useHaptic", () => ({
   }),
 }));
 
-// Mock resizable panels to avoid layout issues in JSDOM
-vi.mock("@/components/ui/resizable", () => ({
-  ResizablePanelGroup: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="resizable-group">{children}</div>
-  ),
-  ResizablePanel: ({
-    children,
-    collapsible,
-    collapsedSize,
-  }: {
-    children: React.ReactNode;
-    collapsible?: boolean;
-    collapsedSize?: number;
-  }) => (
-    <div
-      data-testid="resizable-panel"
-      data-collapsible={collapsible}
-      data-collapsed-size={collapsedSize}
-    >
-      {children}
-    </div>
-  ),
-  ResizableHandle: () => <div data-testid="resizable-handle" />,
-}));
-
 describe("SplitViewLayout", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -95,7 +70,7 @@ describe("SplitViewLayout", () => {
 
     // Then: Detail panel should show the selected task
     expect(screen.getByText("Selected Task")).toBeInTheDocument();
-    expect(mockHapticTrigger).toHaveBeenCalledWith("MEDIUM");
+    expect(mockHapticTrigger).toHaveBeenCalledWith("toggle");
   });
 
   it("SV-N-03: Returns to empty state when detail panel is closed", () => {
@@ -110,26 +85,20 @@ describe("SplitViewLayout", () => {
 
     // Then: Detail panel should show empty state again
     expect(screen.getByText("Empty State")).toBeInTheDocument();
-    expect(mockHapticTrigger).toHaveBeenCalledWith("LIGHT");
+    expect(mockHapticTrigger).toHaveBeenCalledWith("tick");
   });
 
-  it("SV-03: Detail panel is collapsible", () => {
+  it("SV-03: Has a fixed 60/40 layout split", () => {
     // When: Rendering the layout
     render(<SplitViewLayout />);
 
-    // Then: The second panel should be collapsible
-    const panels = screen.getAllByTestId("resizable-panel");
-    const detailPanel = panels[1];
-    expect(detailPanel).toHaveAttribute("data-collapsible", "true");
-  });
+    // Then: Should have fixed width classes
+    const listContainer = screen.getByTestId("task-list").parentElement;
+    const detailContainer =
+      screen.getByTestId("task-detail-panel").parentElement;
 
-  it("SV-04: Detail panel has collapsedSize of 0", () => {
-    // When: Rendering the layout
-    render(<SplitViewLayout />);
-
-    // Then: Collapsed size should be 0
-    const panels = screen.getAllByTestId("resizable-panel");
-    const detailPanel = panels[1];
-    expect(detailPanel).toHaveAttribute("data-collapsed-size", "0");
+    expect(listContainer).toHaveClass("w-[60%]");
+    expect(detailContainer).toHaveClass("w-[40%]");
+    expect(detailContainer).toHaveClass("border-l");
   });
 });

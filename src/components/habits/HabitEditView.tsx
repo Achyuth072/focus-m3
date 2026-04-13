@@ -13,8 +13,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Save, Trash2, CalendarIcon } from "lucide-react";
 import { useHaptic } from "@/lib/hooks/useHaptic";
-import { HabitColorPicker } from "./shared/HabitColorPicker";
 import { HabitIconPicker } from "./shared/HabitIconPicker";
+import { ColorPicker } from "@/components/shared/ColorPicker";
 import type { Habit } from "@/lib/types/habit";
 import { TaskDatePicker } from "../tasks/shared/TaskDatePicker";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
@@ -130,7 +130,12 @@ export function HabitEditView({
           </div>
 
           <div className="pt-0">
-            <HabitColorPicker value={color} onChange={setColor} />
+            <ColorPicker
+              value={color}
+              onChange={setColor}
+              label="Color"
+              ariaLabel="Habit color"
+            />
           </div>
         </div>
       </div>
@@ -138,20 +143,6 @@ export function HabitEditView({
       {/* Footer Actions */}
       <div className="shrink-0 grid grid-cols-[1fr_auto] gap-4 p-4 border-t border-border/40 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-background w-full max-w-full">
         <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide flex-nowrap min-w-0 pr-8 py-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-10 w-10 p-0 text-muted-foreground/60 hover:text-red-500 hover:bg-red-500/10 transition-seijaku-fast [&_svg]:!size-5 rounded-lg"
-            onClick={() => {
-              trigger("HEAVY");
-              onDelete();
-            }}
-            title="Delete habit"
-            disabled={isPending}
-          >
-            <Trash2 strokeWidth={2.25} />
-          </Button>
-
           <TaskDatePicker
             date={startDate}
             setDate={setStartDate}
@@ -169,19 +160,35 @@ export function HabitEditView({
           />
         </div>
 
-        <Button
-          size="sm"
-          className="h-10 w-10 p-0 rounded-lg bg-brand hover:bg-brand/90 text-brand-foreground shadow-lg shadow-brand/10 transition-seijaku flex items-center justify-center"
-          onClick={() => {
-            trigger("SUCCESS");
-            onSubmit();
-          }}
-          disabled={!hasContent || isPending}
-          title={isPending ? "Saving..." : "Save Changes"}
-          aria-label={isPending ? "Saving" : "Save changes"}
-        >
-          <Save className="h-5 w-5 stroke-[2.25px]" />
-        </Button>
+        <div className="flex items-center gap-3 shrink-0">
+          <Button
+            variant="destructive"
+            size="sm"
+            className="h-10 w-10 p-0 [&_svg]:!size-5 rounded-lg transition-seijaku-fast"
+            onClick={() => {
+              trigger("thud");
+              onDelete();
+            }}
+            title="Delete habit"
+            disabled={isPending}
+          >
+            <Trash2 strokeWidth={2.25} />
+          </Button>
+
+          <Button
+            size="sm"
+            className="h-10 w-10 p-0 rounded-lg bg-brand hover:bg-brand/90 text-brand-foreground shadow-sm shadow-brand/10 transition-seijaku flex items-center justify-center"
+            onClick={() => {
+              trigger("success");
+              onSubmit();
+            }}
+            disabled={!hasContent || isPending}
+            title={isPending ? "Saving..." : "Save Changes"}
+            aria-label={isPending ? "Saving" : "Save changes"}
+          >
+            <Save className="h-5 w-5 stroke-[2.25px]" />
+          </Button>
+        </div>
       </div>
     </div>
   );

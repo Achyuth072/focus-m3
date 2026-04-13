@@ -13,7 +13,7 @@ const Slider = React.forwardRef<
   const { trigger } = useHaptic();
 
   const handleValueChange = (value: number[]) => {
-    trigger("LIGHT");
+    trigger("tick");
     onValueChange?.(value);
   };
 

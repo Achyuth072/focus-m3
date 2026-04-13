@@ -3,6 +3,7 @@
 @plugin "tailwindcss-animate";
 @plugin "@tailwindcss/typography";
 
+/* eslint-disable tailwindcss/no-invalid-at-rules */
 @custom-variant dark (&:is(.dark *));
 
 /* Theme configuration for Tailwind v4 */
@@ -123,7 +124,7 @@
   --muted-foreground: 0 0% 46%; /* #757575 - Adjusted */
   --accent: 60 9% 96%;
   --accent-foreground: 0 0% 18%;
-  --destructive: 0 84.2% 60.2%;
+  --destructive: 12 38% 53%; /* #B56C5A - Terracotta */
   --destructive-foreground: 0 0% 98%;
   --border: 0 0% 80%; /* #CCCCCC - Significant increase for high visibility in Light Mode */
   --input: 0 0% 80%;
@@ -166,7 +167,7 @@
   --muted-foreground: 0 0% 63%; /* #A1A1A1 */
   --accent: 0 0% 13%;
   --accent-foreground: 0 0% 90%;
-  --destructive: 0 62.8% 30.6%;
+  --destructive: 12 30% 45%; /* Deep Terracotta */
   --destructive-foreground: 0 0% 98%;
   --border: 0 0% 26%; /* #424242 - Refined to 30% increase from original 20% */
   --input: 0 0% 26%;
@@ -220,11 +221,11 @@
 html,
 body {
   height: 100dvh;
-  overflow: hidden;
   overscroll-behavior: none;
 }
 
 * {
+  /* eslint-disable-next-line tailwindcss/no-invalid-properties, tailwindcss/use-baseline */
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -232,17 +233,18 @@ button,
 [role="button"],
 input[type="checkbox"],
 input[type="radio"] {
-  -webkit-user-select: none;
   user-select: none;
 }
 
 /* Vaul Drawer - Faster close animation for responsive back navigation */
+/* eslint-disable tailwindcss/no-important */
 [vaul-drawer] {
   transition: transform 120ms cubic-bezier(0.32, 0.72, 0, 1) !important;
 }
 [vaul-drawer][vaul-drawer-direction="bottom"] {
   transition: transform 120ms cubic-bezier(0.32, 0.72, 0, 1) !important;
 }
+/* eslint-enable tailwindcss/no-important */
 
 input,
 textarea,
@@ -320,6 +322,7 @@ select {
 
   /* Touch - Explicit 16px for inputs (mobile) */
   .type-touch {
+    /* eslint-disable-next-line tailwindcss/no-important */
     font-size: 16px !important;
   }
 
@@ -362,6 +365,20 @@ select {
     min-height: 44px;
     min-width: 44px;
   }
+
+  /* Sumi Red - Destructive Action Identity */
+  .sumi-red-action {
+    color: hsl(var(--destructive));
+  }
+
+  .sumi-red-action:hover,
+  .sumi-red-action[data-highlighted],
+  .sumi-red-action[data-state="active"] {
+    /* eslint-disable-next-line tailwindcss/no-important */
+    background-color: hsl(var(--destructive) / 0.1) !important;
+    /* eslint-disable-next-line tailwindcss/no-important */
+    color: hsl(var(--destructive)) !important;
+  }
 }
 
 @layer utilities {
@@ -369,19 +386,14 @@ select {
     display: none;
   }
   .scrollbar-hide {
-    -ms-overflow-style: none;
     scrollbar-width: none;
   }
   .no-select {
-    -webkit-user-select: none;
-    -moz-user-select: none;
     user-select: none;
   }
 }
 @layer utilities {
   .appearance-none {
-    -webkit-appearance: none;
-    -moz-appearance: none;
     appearance: none;
   }
 }
@@ -457,7 +469,6 @@ select {
 
   /* Scrollbar Management */
   .scrollbar-none {
-    -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
   }
   .scrollbar-none::-webkit-scrollbar {
@@ -479,12 +490,15 @@ select {
  * We need `width: fit-content` for dynamic sizing. Use the individual `translate`
  * property so Sonner can keep `transform` for its own stack and swipe motion.
  */
+/* eslint-disable tailwindcss/no-important */
 @media (max-width: 600px) {
   [data-sonner-toaster][data-x-position="center"] [data-sonner-toast] {
     width: fit-content !important;
     max-width: calc(100vw - 2rem) !important;
     left: 50% !important;
     right: auto !important;
+    /* eslint-disable-next-line tailwindcss/no-invalid-properties */
     translate: -50% 0 !important;
   }
 }
+/* eslint-enable tailwindcss/no-important */

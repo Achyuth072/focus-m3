@@ -65,7 +65,7 @@ export function DeleteProjectDialog({
 
   // Haptic on open
   useEffect(() => {
-    if (open) trigger("WARNING");
+    if (open) trigger("thud");
   }, [open, trigger]);
 
   // Reset activeAction when dialog closes or opens
@@ -97,21 +97,21 @@ export function DeleteProjectDialog({
   const handleKeepArchived = async () => {
     setActiveAction("keep");
     await archiveProject.mutateAsync(project.id);
-    trigger("SUCCESS");
+    trigger("success");
   };
 
   const handleInbox = async () => {
     setActiveAction("inbox");
     await moveTasksToInbox.mutateAsync(project.id);
     await archiveProject.mutateAsync(project.id);
-    trigger("SUCCESS");
+    trigger("success");
   };
 
   const handleDeleteAll = async () => {
     setActiveAction("delete");
     await deleteProjectTasks.mutateAsync(project.id);
     await hardDeleteProject.mutateAsync(project.id);
-    trigger("SUCCESS");
+    trigger("success");
   };
 
   const description = `Are you sure you want to delete "${project.name}"? Choose what happens to its tasks.`;
@@ -129,7 +129,7 @@ export function DeleteProjectDialog({
           <AlertDialogFooter>
             <AlertDialogCancel
               onClick={() => {
-                trigger("LIGHT");
+                trigger("tick");
                 onOpenChange(false);
               }}
             >
@@ -168,7 +168,7 @@ export function DeleteProjectDialog({
               variant="destructive"
               onClick={handleDeleteAll}
               disabled={isPending}
-              className="gap-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-all active:scale-95"
+              className="gap-2"
             >
               {activeAction === "delete" ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -194,7 +194,7 @@ export function DeleteProjectDialog({
           <Button
             onClick={handleDeleteAll}
             variant="destructive"
-            className="w-full gap-3 bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className="w-full gap-3"
             disabled={isPending}
           >
             {activeAction === "delete" ? (
@@ -234,7 +234,7 @@ export function DeleteProjectDialog({
             <Button
               variant="outline"
               className="w-full"
-              onClick={() => trigger("LIGHT")}
+              onClick={() => trigger("tick")}
             >
               Cancel
             </Button>

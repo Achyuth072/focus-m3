@@ -15,7 +15,7 @@ export default function AddEventFab({ onClick }: AddEventFabProps) {
 
   return (
     <motion.button
-      onTapStart={() => trigger("HEAVY")}
+      onTapStart={() => trigger("thud")}
       whileTap={isPhone ? { scale: 0.95 } : {}}
       onClick={onClick}
       className={cn(

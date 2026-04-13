@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -18,9 +19,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useCreateProject } from "@/lib/hooks/useProjectMutations";
 import { useHaptic } from "@/lib/hooks/useHaptic";
-import { useHorizontalScroll } from "@/lib/hooks/useHorizontalScroll";
+import { ColorPicker } from "@/components/shared/ColorPicker";
 import { cn } from "@/lib/utils";
-import { PROJECT_COLORS, DEFAULT_PROJECT_COLOR } from "@/lib/constants/colors";
+import { DEFAULT_PROJECT_COLOR } from "@/lib/constants/colors";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 
 interface CreateProjectDialogProps {
@@ -49,6 +50,13 @@ export function CreateProjectDialog({
     },
   });
 
+  // Reset form when dialog opens or closes
+  useEffect(() => {
+    if (!open) {
+      reset();
+    }
+  }, [open, reset]);
+
   const color = useWatch({
     control,
     name: "color",
@@ -56,11 +64,11 @@ export function CreateProjectDialog({
   });
   const createProject = useCreateProject();
   const { trigger } = useHaptic();
-  const scrollRef = useHorizontalScroll();
+  // const scrollRef = useHorizontalScroll();
   const isFinePointer = useMediaQuery("(pointer: fine)");
 
   const onFormSubmit = (data: CreateProjectInput) => {
-    trigger("HEAVY");
+    trigger("thud");
     createProject.mutate(data);
     reset();
     onOpenChange(false);
@@ -120,37 +128,14 @@ export function CreateProjectDialog({
               )}
             </div>
 
-            <div className="grid gap-2">
-              <Label>Color</Label>
-              <div
-                ref={scrollRef}
-                className="flex flex-nowrap gap-2 overflow-x-auto scrollbar-hide py-3 px-4"
-                role="radiogroup"
-                aria-label="Project color"
-              >
-                {PROJECT_COLORS.map((c) => (
-                  <button
-                    key={c.hex}
-                    type="button"
-                    title={c.name}
-                    aria-label={c.name}
-                    role="radio"
-                    aria-checked={color === c.hex}
-                    onClick={() => {
-                      trigger("MEDIUM");
-                      setValue("color", c.hex, { shouldValidate: true });
-                    }}
-                    className={cn(
-                      "h-9 w-9 rounded-xl transition-all shrink-0",
-                      color === c.hex
-                        ? "ring-2 ring-brand ring-offset-2 ring-offset-background scale-110 opacity-100"
-                        : "opacity-70 hover:opacity-90 hover:scale-105",
-                    )}
-                    style={{ backgroundColor: c.hex }}
-                  />
-                ))}
-              </div>
-            </div>
+            <ColorPicker
+              value={color}
+              onChange={(newColor) =>
+                setValue("color", newColor, { shouldValidate: true })
+              }
+              label="Color"
+              ariaLabel="Project color"
+            />
           </div>
 
           <div className="shrink-0 flex justify-end gap-3 p-4 border-t pb-[calc(1rem+env(safe-area-inset-bottom))] bg-background">
@@ -158,7 +143,7 @@ export function CreateProjectDialog({
               type="button"
               variant="ghost"
               onClick={() => {
-                trigger("LIGHT");
+                trigger("tick");
                 onOpenChange(false);
               }}
             >
@@ -167,7 +152,7 @@ export function CreateProjectDialog({
             <Button
               type="submit"
               disabled={!isValid || createProject.isPending}
-              className="bg-brand hover:bg-brand/90 text-brand-foreground shadow-lg shadow-brand/10 transition-seijaku h-10 px-6"
+              className="bg-brand hover:bg-brand/90 text-brand-foreground shadow-sm shadow-brand/10 transition-seijaku h-10 px-6"
             >
               {createProject.isPending ? "Creating..." : "Create"}
             </Button>

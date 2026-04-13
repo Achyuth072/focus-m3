@@ -10,8 +10,6 @@ Kanso is a **Zen-Modernist** task management and focus tool. It fuses the Japane
 - **Seijaku (Calm)**: All interactions feature physical, dampened weight for an energized sense of calm.
 - **Ink & Matte**: High-contrast typography ("Ink") on flat, soft-matte surfaces.
 
-[Live Demo](https://focus-m3.vercel.app/)
-
 ## Key Workflows
 
 ### 1. Capture & Organize
@@ -45,7 +43,7 @@ Kanso is a **Zen-Modernist** task management and focus tool. It fuses the Japane
 
 ## Get Started
 
-1. **Web App**: [focus-m3.vercel.app](https://focus-m3.vercel.app/)
+1. **Web App**: [usekanso.vercel.app](https://usekanso.vercel.app)
 2. **Guest Mode**: Try the full experience instantly, no account required.
 
 ## Built with

@@ -76,7 +76,7 @@ export function ShortcutsHelp({ open, onOpenChange }: ShortcutsHelpProps) {
 
   return (
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
-      <ResponsiveDialogContent className="sm:max-w-[550px] border-border/80 shadow-2xl p-0">
+      <ResponsiveDialogContent className="sm:max-w-[550px] border-border/80 shadow-none p-0">
         <ResponsiveDialogHeader className="p-6 pb-2 border-b border-border/80">
           <ResponsiveDialogTitle className="flex items-center gap-2.5 text-[24px] font-semibold tracking-[-0.02em] text-foreground">
             <Keyboard className="h-5 w-5 text-muted-foreground/70" />

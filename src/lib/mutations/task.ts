@@ -12,6 +12,7 @@ export const taskMutations = {
 
     if (isGuest) {
       return mockStore.addTask({
+        id: input._clientId,
         content: input.content,
         description: input.description || null,
         priority: input.priority || 4,

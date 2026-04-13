@@ -88,51 +88,79 @@ export function HabitIconPicker({
   value,
   onChange,
   variant = "grid",
+  color = "#4B6CB7",
 }: HabitIconPickerProps) {
   const { trigger } = useHaptic();
   const scrollRef = useHorizontalScroll();
 
   return (
-    <div className="grid gap-1.5 w-full overflow-hidden">
-      {variant !== "compact" && (
-        <Label className="px-1 text-xs text-muted-foreground/60">Icon</Label>
-      )}
-      <div
-        ref={scrollRef}
-        className="flex flex-nowrap gap-2.5 overflow-x-auto scrollbar-hide py-1 px-4"
-        role="radiogroup"
-        aria-label="Habit icon"
-      >
-        {HABIT_ICONS.map((item) => {
-          const Icon = item.icon;
-          const isSelected = value === item.name;
-          return (
-            <button
-              key={item.name}
-              type="button"
-              title={item.name}
-              aria-label={item.name}
-              role="radio"
-              aria-checked={isSelected}
-              onClick={() => {
-                trigger("MEDIUM");
-                onChange(item.name);
-              }}
-              className={cn(
-                "h-10 transition-all shrink-0 border rounded-lg shadow-none flex items-center justify-center",
-                isSelected
-                  ? "text-brand bg-brand/10 border-transparent hover:bg-brand/20 hover:text-brand"
-                  : "border-input bg-background hover:bg-accent text-muted-foreground hover:text-foreground",
-                variant === "compact" ? "w-10 px-0" : "px-3 min-w-[40px]",
-              )}
-            >
-              <Icon
-                strokeWidth={isSelected ? 2.5 : 2}
-                className={cn("h-5 w-5", isSelected ? "scale-110" : "")}
-              />
-            </button>
-          );
-        })}
+    <div className="grid gap-3 w-full overflow-hidden">
+      {/* Featured Icon Preview */}
+      <div className="px-4">
+        <div className="flex flex-col items-center justify-center py-8 rounded-2xl bg-secondary/20 border border-border/40 relative overflow-hidden group">
+          <div
+            className="w-16 h-16 rounded-2xl flex items-center justify-center transition-all bg-background border border-border shadow-none group-hover:scale-105"
+            style={{ color: color }}
+          >
+            {React.createElement(getHabitIcon(value), {
+              strokeWidth: 2.25,
+              className: "h-8 w-8",
+            })}
+          </div>
+          <div className="mt-3 flex flex-col items-center gap-1">
+            <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-[0.2em]">
+              Selected Icon
+            </span>
+            <span className="text-sm font-medium text-foreground capitalize tracking-tight">
+              {value || "Flame"}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-1.5 overflow-hidden">
+        {variant !== "compact" && (
+          <Label className="px-4 text-[10px] font-bold text-foreground/40 uppercase tracking-[0.2em]">
+            Choose Symbol
+          </Label>
+        )}
+        <div
+          ref={scrollRef}
+          className="flex flex-nowrap gap-2.5 overflow-x-auto scrollbar-hide py-1 px-4 -mx-4"
+          role="radiogroup"
+          aria-label="Habit icon selection"
+        >
+          {HABIT_ICONS.map((item) => {
+            const Icon = item.icon;
+            const isSelected = value === item.name;
+            return (
+              <button
+                key={item.name}
+                type="button"
+                title={item.name}
+                aria-label={item.name}
+                role="radio"
+                aria-checked={isSelected}
+                onClick={() => {
+                  trigger("toggle");
+                  onChange(item.name);
+                }}
+                className={cn(
+                  "h-10 transition-all shrink-0 border rounded-lg shadow-none flex items-center justify-center",
+                  isSelected
+                    ? "text-brand bg-brand/10 border-transparent font-semibold"
+                    : "border-border/50 bg-background hover:bg-secondary text-muted-foreground hover:text-foreground",
+                  variant === "compact" ? "w-10 px-0" : "px-3 min-w-[40px]",
+                )}
+              >
+                <Icon
+                  strokeWidth={isSelected ? 2.5 : 2}
+                  className={cn("h-5 w-5", isSelected ? "scale-110" : "")}
+                />
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

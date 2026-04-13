@@ -112,7 +112,7 @@ export function NotificationSettings() {
 
   const handleTogglePush = async (checked: boolean) => {
     if (isSyncing) return;
-    trigger("MEDIUM");
+    trigger("toggle");
 
     if (!isSupported) {
       toast.error("Push notifications are not supported in this browser");
@@ -133,7 +133,7 @@ export function NotificationSettings() {
   };
 
   const updateNotifySetting = async (key: string, checked: boolean) => {
-    trigger("LIGHT");
+    trigger("tick");
     try {
       await updateSettings.mutateAsync({
         notifications: {
@@ -147,7 +147,7 @@ export function NotificationSettings() {
   };
 
   const handleTestNotification = async () => {
-    trigger("MEDIUM");
+    trigger("toggle");
     if (permission !== "granted") {
       toast.error("Please enable notifications first");
       return;
@@ -238,7 +238,7 @@ export function NotificationSettings() {
             <Select
               value={profile?.timezone || "UTC"}
               onValueChange={(val) => {
-                trigger("MEDIUM");
+                trigger("toggle");
                 updateProfile.mutate({ timezone: val });
                 setTimezoneSearch(""); // Clear search on selection
               }}
@@ -338,7 +338,7 @@ export function NotificationSettings() {
       )}
 
       {isGuestMode && permission === "granted" && (
-        <p className="text-xs text-center text-muted-foreground italic px-2">
+        <p className="text-xs text-center text-muted-foreground px-2">
           Morning briefings and server-side alerts require a synced account.
         </p>
       )}

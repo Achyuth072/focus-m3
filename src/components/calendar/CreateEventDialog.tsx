@@ -6,7 +6,15 @@ import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { format, isValid } from "date-fns";
-import { Calendar, Clock, MapPin, Trash2, Check } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  Trash2,
+  Check,
+  Send,
+  Save,
+} from "lucide-react";
 import {
   Command,
   CommandInput,
@@ -217,7 +225,7 @@ export function CreateEventDialog({
   const onFormSubmit = (data: CreateEventFormData) => {
     if (!safeStartDate || !safeEndDate) return;
 
-    trigger("HEAVY"); // THUD haptic for save commitment
+    trigger("thud"); // THUD haptic for save commitment
 
     if (event) {
       updateEvent.mutate({
@@ -240,13 +248,13 @@ export function CreateEventDialog({
       });
     }
 
-    trigger("SUCCESS");
+    trigger("success");
     onOpenChange(false);
   };
 
   const handleDelete = () => {
     if (!event) return;
-    trigger("HEAVY");
+    trigger("thud");
     deleteEvent.mutate(event.id);
     onOpenChange(false);
   };
@@ -299,7 +307,7 @@ export function CreateEventDialog({
                 id="all-day"
                 checked={allDay}
                 onCheckedChange={(checked) => {
-                  trigger("MEDIUM"); // TOGGLE haptic
+                  trigger("toggle"); // TOGGLE haptic
                   setValue("all_day", checked);
                 }}
               />
@@ -313,7 +321,7 @@ export function CreateEventDialog({
                   <Button
                     variant="outline"
                     className="justify-start text-left font-normal shadow-none border-border/80"
-                    onClick={() => trigger("LIGHT")}
+                    onClick={() => trigger("tick")}
                     type="button"
                   >
                     <Calendar className="mr-2 h-4 w-4" />
@@ -343,7 +351,7 @@ export function CreateEventDialog({
                   <Button
                     variant="outline"
                     className="justify-start text-left font-normal shadow-none border-border/80"
-                    onClick={() => trigger("LIGHT")}
+                    onClick={() => trigger("tick")}
                     type="button"
                   >
                     <Clock className="mr-2 h-4 w-4" />
@@ -458,31 +466,23 @@ export function CreateEventDialog({
           </div>
 
           {/* Footer */}
-          <div className="shrink-0 flex justify-end gap-3 p-4 border-t pb-[calc(1rem+env(safe-area-inset-bottom))] bg-background">
+          <div className="shrink-0 flex justify-end items-center gap-3 p-4 border-t pb-[calc(1rem+env(safe-area-inset-bottom))] bg-background">
             {event && (
               <Button
                 type="button"
-                variant="ghost"
-                className="mr-auto text-destructive hover:text-destructive hover:bg-destructive/10"
+                variant="destructive"
+                size="sm"
+                className="h-10 w-10 p-0 [&_svg]:!size-5 rounded-lg transition-seijaku-fast"
                 onClick={handleDelete}
                 disabled={deleteEvent.isPending}
+                title="Delete event"
               >
-                <Trash2 className="h-4 w-4 mr-2" />
-                <span>Delete</span>
+                <Trash2 strokeWidth={2.25} />
               </Button>
             )}
             <Button
-              type="button"
-              variant="ghost"
-              onClick={() => {
-                trigger("LIGHT");
-                onOpenChange(false);
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
               type="submit"
+              size="sm"
               disabled={
                 !isFormValid ||
                 !safeStartDate ||
@@ -490,15 +490,15 @@ export function CreateEventDialog({
                 createEvent.isPending ||
                 updateEvent.isPending
               }
-              className="bg-brand hover:bg-brand/90 text-brand-foreground shadow-lg shadow-brand/10 transition-seijaku h-10 px-6"
+              className="h-10 w-10 p-0 rounded-lg bg-brand hover:bg-brand/90 text-brand-foreground shadow-sm shadow-brand/10 transition-seijaku flex items-center justify-center"
+              title={event ? "Save changes" : "Create event"}
+              aria-label={event ? "Save changes" : "Create event"}
             >
-              {createEvent.isPending || updateEvent.isPending
-                ? event
-                  ? "Updating..."
-                  : "Creating..."
-                : event
-                  ? "Save Changes"
-                  : "Create Event"}
+              {event ? (
+                <Save className="h-5 w-5 stroke-[2.25px]" />
+              ) : (
+                <Send className="h-5 w-5 stroke-[2.25px]" />
+              )}
             </Button>
           </div>
         </form>

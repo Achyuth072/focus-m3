@@ -59,7 +59,7 @@ export function DateTimeWizard({
   };
 
   const onSave = () => {
-    trigger("HEAVY");
+    trigger("thud");
     setDate(tempDate);
     onClose();
   };
@@ -71,7 +71,7 @@ export function DateTimeWizard({
         <Tabs
           value={step}
           onValueChange={(v) => {
-            trigger("MEDIUM");
+            trigger("toggle");
             setStep(v as "date" | "time");
           }}
           className="w-full"
@@ -139,7 +139,7 @@ export function DateTimeWizard({
                 size="sm"
                 className="h-8 text-[10px] sm:text-xs font-semibold hover:bg-background hover:shadow-sm"
                 onClick={() => {
-                  trigger("MEDIUM");
+                  trigger("toggle");
                   const today = new Date();
                   today.setHours(12, 0, 0, 0); // Default Noon
                   handleDateSelect(today);
@@ -152,7 +152,7 @@ export function DateTimeWizard({
                 size="sm"
                 className="h-8 text-[10px] sm:text-xs font-semibold hover:bg-background hover:shadow-sm"
                 onClick={() => {
-                  trigger("MEDIUM");
+                  trigger("toggle");
                   const tomorrow = new Date();
                   tomorrow.setDate(tomorrow.getDate() + 1);
                   tomorrow.setHours(12, 0, 0, 0); // Default Noon
@@ -166,7 +166,7 @@ export function DateTimeWizard({
                 size="sm"
                 className="h-8 text-[10px] sm:text-xs font-bold text-purple-600 dark:text-purple-400 hover:bg-purple-500/10 hover:text-purple-700 dark:hover:text-purple-300"
                 onClick={() => {
-                  trigger("MEDIUM");
+                  trigger("toggle");
                   const evening = new Date();
                   evening.setHours(18, 0, 0, 0); // 6 PM
                   setTempDate(evening);

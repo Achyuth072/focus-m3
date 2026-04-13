@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import {
   ResponsiveDialog,
   ResponsiveDialogContent,
+  ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
 import { DeleteConfirmationDialog } from "@/components/ui/DeleteConfirmationDialog";
 import {
@@ -97,7 +98,7 @@ export function HabitSheet({ open, onClose, initialHabit }: HabitSheetProps) {
   }, [open, initialHabit, reset, triggerValidation]);
 
   const onFormSubmit = (data: CreateHabitInput) => {
-    trigger("HEAVY"); // Haptic feedback on save
+    trigger("thud"); // Haptic feedback on save
 
     // Convert Date to string if necessary
     const formattedData = {
@@ -146,6 +147,9 @@ export function HabitSheet({ open, onClose, initialHabit }: HabitSheetProps) {
   return (
     <ResponsiveDialog open={open} onOpenChange={onClose}>
       <ResponsiveDialogContent className="w-full sm:max-w-lg gap-0 rounded-lg p-0 overflow-hidden">
+        <ResponsiveDialogTitle className="sr-only">
+          {initialHabit ? "Edit Habit" : "New Habit"}
+        </ResponsiveDialogTitle>
         <div className="flex flex-col max-h-[85vh]">
           {isCreationMode ? (
             <HabitCreateView

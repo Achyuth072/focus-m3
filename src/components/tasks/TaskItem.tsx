@@ -8,7 +8,6 @@ import {
   DraggableAttributes,
   DraggableSyntheticListeners,
 } from "@dnd-kit/core";
-import { isToday, isPast, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/lib/types/task";
 import dynamic from "next/dynamic";
@@ -68,13 +67,13 @@ function TaskItem({
 
   const handlePlayFocus = (e: React.MouseEvent) => {
     e.stopPropagation();
-    trigger("HEAVY");
+    trigger("thud");
     start(task.id);
     router.push("/focus");
   };
 
   const handleComplete = (checked: boolean) => {
-    trigger(checked ? "SUCCESS" : "MEDIUM");
+    trigger(checked ? "success" : "toggle");
     setIsChecking(true);
     toggleMutation.mutate(
       { id: task.id, is_completed: checked },
@@ -98,14 +97,9 @@ function TaskItem({
 
   const toggleExpand = (e: React.MouseEvent) => {
     e.stopPropagation();
-    trigger("MEDIUM");
+    trigger("toggle");
     setIsExpanded(!isExpanded);
   };
-
-  const isOverdue =
-    Boolean(task.due_date) &&
-    isPast(parseISO(task.due_date!)) &&
-    !isToday(parseISO(task.due_date!));
 
   const contentClassName = cn(
     "relative flex group items-center bg-background cursor-pointer",
@@ -134,12 +128,39 @@ function TaskItem({
             project={
               project ? { color: project.color, name: project.name } : undefined
             }
-            isOverdue={isOverdue}
             isDesktop={isDesktop}
             handleComplete={handleComplete}
             handlePlayFocus={handlePlayFocus}
             dragListeners={dragListeners}
             dragAttributes={dragAttributes}
+            dragActivatorRef={dragActivatorRef}
+          />
+        </div>
+      ) : isDesktop ? (
+        /* Fast path for Desktop List View: No Framer Motion wrappers (fixes sidebar layout thrashing) */
+        <div
+          className={cn("relative rounded-md", contentClassName)}
+          onClick={() => onSelect?.(task)}
+        >
+          <TaskListRow
+            task={task}
+            isDesktop={isDesktop}
+            isExpanded={isExpanded}
+            toggleExpand={toggleExpand}
+            handleComplete={handleComplete}
+            handlePlayFocus={handlePlayFocus}
+            onDeleteRequest={(e) => {
+              e.stopPropagation();
+              setPendingDelete(true);
+              setShowDeleteDialog(true);
+            }}
+            project={
+              project ? { color: project.color, name: project.name } : undefined
+            }
+            dragListeners={dragListeners}
+            dragAttributes={dragAttributes}
+            onHandlePointerDown={() => setIsHandleActive(true)}
+            onHandlePointerUp={() => setIsHandleActive(false)}
             dragActivatorRef={dragActivatorRef}
           />
         </div>
@@ -150,12 +171,12 @@ function TaskItem({
           viewMode={viewMode}
           isHandleActive={isHandleActive}
           onSwipeLeft={() => {
-            trigger("HEAVY");
+            trigger("thud");
             setPendingDelete(true);
             setShowDeleteDialog(true);
           }}
           onSwipeRight={() => {
-            trigger("HEAVY");
+            trigger("thud");
             onSelect?.(task);
           }}
           onSwipeStart={() => setIsSwipeDragging(true)}
@@ -182,7 +203,6 @@ function TaskItem({
             project={
               project ? { color: project.color, name: project.name } : undefined
             }
-            isOverdue={isOverdue}
             dragListeners={dragListeners}
             dragAttributes={dragAttributes}
             onHandlePointerDown={() => setIsHandleActive(true)}
@@ -190,9 +210,7 @@ function TaskItem({
             dragActivatorRef={dragActivatorRef}
           />
           {/* Indented Separator (Mobile only) */}
-          {!isDesktop && (
-            <div className="task-separator absolute bottom-0 left-[44px] right-0 h-[1px] bg-border/60" />
-          )}
+          <div className="task-separator absolute bottom-0 left-[44px] right-0 h-[1px] bg-border/60" />
         </SwipeableTaskContent>
       )}
 

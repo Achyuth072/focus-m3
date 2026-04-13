@@ -33,22 +33,17 @@ export function MobileNav() {
           return (
             <motion.button
               key={item.path}
-              onTapStart={() => trigger("MEDIUM")} // Subtle vibration for nav
+              onTapStart={() => trigger("toggle")} // Subtle vibration for nav
               whileTap={isPhone ? { scale: 0.95 } : {}}
               onClick={() => router.push(item.path)}
               className={cn(
                 "flex flex-col items-center justify-center flex-1 h-full gap-1 transition-all cursor-pointer outline-none",
                 isActive
-                  ? "text-primary"
+                  ? "text-brand"
                   : "text-muted-foreground hover:text-foreground",
               )}
             >
-              <div
-                className={cn(
-                  "p-1 rounded-full overflow-hidden transition-colors",
-                  isActive && "bg-secondary/50",
-                )}
-              >
+              <div className="p-1">
                 <Icon className="h-6 w-6" />
               </div>
               <span className="text-[13px] font-medium leading-none">

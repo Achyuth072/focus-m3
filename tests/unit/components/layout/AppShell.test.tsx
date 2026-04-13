@@ -58,6 +58,14 @@ vi.mock("@/lib/hooks/useRealtimeSync", () => ({
   useRealtimeSync: vi.fn(),
 }));
 
+vi.mock("@/lib/hooks/useTasks", () => ({
+  useTasks: () => ({ data: [], isLoading: false }),
+}));
+
+vi.mock("@/lib/hooks/useHabits", () => ({
+  useHabits: () => ({ data: [], isLoading: false }),
+}));
+
 vi.mock("@/lib/store/uiStore", () => ({
   useUiStore: () => ({
     isShortcutsHelpOpen: false,

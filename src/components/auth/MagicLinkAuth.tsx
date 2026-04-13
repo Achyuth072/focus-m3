@@ -56,7 +56,10 @@ export function MagicLinkAuth() {
                 Email address
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Mail
+                  className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
+                  strokeWidth={2.25}
+                />
                 <Input
                   id="email"
                   type="email"
@@ -97,7 +100,10 @@ export function MagicLinkAuth() {
             className="flex flex-col items-center justify-center p-6 text-center space-y-4 rounded-lg bg-primary/5 border border-primary/20"
           >
             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <CheckCircle2 className="h-6 w-6 text-primary" />
+              <CheckCircle2
+                className="h-6 w-6 text-primary"
+                strokeWidth={2.25}
+              />
             </div>
             <div className="space-y-1">
               <h3 className="font-semibold text-lg">Check your email</h3>

@@ -79,14 +79,10 @@ export function DrumPicker({
         lastIndex.current = index;
 
         // Haptics
-        const velocity = y.getVelocity();
+        const _velocity = y.getVelocity();
         const now = Date.now();
         if (now - lastHapticTime.current > 15) {
-          const intensity = Math.min(
-            10,
-            Math.max(1, Math.floor(Math.abs(velocity) / 100)),
-          );
-          trigger(intensity);
+          trigger("tick");
           lastHapticTime.current = now;
         }
       }

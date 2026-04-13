@@ -110,7 +110,7 @@ export function IntegratedTaskKanbanBoard({
 
       if (Object.keys(updates).length > 0) {
         updateTaskMutation.mutate({ id: task.id, ...updates });
-        trigger("HEAVY"); // Thud haptic for drop commitment
+        trigger("thud"); // Thud haptic for drop commitment
       }
     },
     [updateTaskMutation, trigger, getTaskUpdatesForColumn],
@@ -155,7 +155,7 @@ export function IntegratedTaskKanbanBoard({
         setSortBy("custom");
       }
       reorderMutation.mutate(tasks.map((t) => t.id));
-      trigger("HEAVY");
+      trigger("thud");
     },
     [
       boardColumns,
@@ -178,7 +178,7 @@ export function IntegratedTaskKanbanBoard({
             key={group.title}
             columnId={group.title}
             onDropOverColumn={(data) => handleDropOverColumn(data, group.title)}
-            className="w-[85vw] md:w-[320px] snap-center bg-secondary/10 border-border/60 rounded-2xl flex flex-col p-0.5 max-h-[calc(100vh-200px)] md:max-h-full"
+            className="w-[85vw] md:w-[320px] snap-center bg-sidebar border border-border rounded-2xl flex flex-col p-0.5 max-h-[calc(100vh-200px)] md:max-h-full"
           >
             <KanbanBoardColumnHeader className="px-3 py-2.5">
               <KanbanBoardColumnTitle
@@ -214,7 +214,7 @@ export function IntegratedTaskKanbanBoard({
                 </KanbanBoardColumnListItem>
               ))}
               {group.tasks.length === 0 && (
-                <div className="h-24 flex items-center justify-center border-2 border-dashed border-primary/5 rounded-2xl opacity-40 hover:opacity-100 transition-seijaku">
+                <div className="h-24 flex items-center justify-center border-2 border-dashed border-border/30 rounded-2xl opacity-40 hover:opacity-100 transition-seijaku">
                   <span className="text-[11px] font-bold text-muted-foreground/30 uppercase tracking-widest">
                     Ma (Void)
                   </span>
@@ -250,7 +250,7 @@ const TaskCardWrapper = React.memo(function TaskCardWrapper({
 
   const handleComplete = useCallback(
     (checked: boolean) => {
-      trigger(checked ? "SUCCESS" : "MEDIUM");
+      trigger(checked ? "success" : "toggle");
       toggleMutation.mutate({ id: task.id, is_completed: checked });
     },
     [task.id, toggleMutation, trigger],
@@ -259,20 +259,12 @@ const TaskCardWrapper = React.memo(function TaskCardWrapper({
   const handlePlayFocus = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
-      trigger("HEAVY");
+      trigger("thud");
       startTimer(task.id);
       router.push("/focus");
     },
     [task.id, trigger, startTimer, router],
   );
-
-  const isOverdue = useMemo(() => {
-    if (!task.due_date) return false;
-    const date = new Date(task.due_date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return date < today;
-  }, [task.due_date]);
 
   return (
     <IntegratedTaskCard
@@ -280,7 +272,6 @@ const TaskCardWrapper = React.memo(function TaskCardWrapper({
       project={
         project ? { color: project.color, name: project.name } : undefined
       }
-      isOverdue={isOverdue}
       isDesktop={isDesktop}
       handleComplete={handleComplete}
       handlePlayFocus={handlePlayFocus}

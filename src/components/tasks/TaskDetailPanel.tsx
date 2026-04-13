@@ -105,7 +105,7 @@ export function TaskDetailPanel({ task, onClose }: TaskDetailPanelProps) {
     (data: CreateTaskInput) => {
       if (!task) return;
 
-      trigger("SUCCESS"); // Success signature haptic
+      trigger("success"); // Success signature haptic
 
       updateMutation.mutate({
         ...data,
@@ -132,7 +132,7 @@ export function TaskDetailPanel({ task, onClose }: TaskDetailPanelProps) {
 
   const handleConfirmDelete = useCallback(() => {
     if (!task) return;
-    trigger("HEAVY"); // Thud haptic for delete
+    trigger("thud"); // Thud haptic for delete
     setShowDeleteDialog(false);
     onClose?.();
     deleteMutation.mutate(task.id);
@@ -168,10 +168,10 @@ export function TaskDetailPanel({ task, onClose }: TaskDetailPanelProps) {
         {onClose && (
           <button
             onClick={() => {
-              trigger("LIGHT");
+              trigger("tick");
               onClose();
             }}
-            className="absolute top-3 right-3 z-50 h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground bg-secondary/40 hover:bg-secondary/60 border border-border/50 transition-all duration-200"
+            className="absolute top-3 right-3 z-50 h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground bg-secondary hover:bg-secondary/80 border border-border transition-all duration-200"
             aria-label="Close task details"
           >
             <svg
@@ -181,10 +181,10 @@ export function TaskDetailPanel({ task, onClose }: TaskDetailPanelProps) {
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="2.25"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="drop-shadow-sm"
+              className="opacity-80"
             >
               <path d="M18 6 6 18" />
               <path d="m6 6 12 12" />

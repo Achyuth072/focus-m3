@@ -39,11 +39,11 @@ export function SwipeableTaskContent({
     x,
     [-SWIPE_THRESHOLD, -50, 0, 50, SCHEDULE_SWIPE_THRESHOLD],
     [
-      "hsl(0 84.2% 60.2%)",
-      "hsl(0 84.2% 60.2% / 0.3)",
+      "hsl(var(--destructive))",
+      "hsl(var(--destructive) / 0.3)",
       "transparent",
-      "hsl(220 44% 50% / 0.3)",
-      "hsl(220 44% 50%)",
+      "hsl(var(--brand) / 0.3)",
+      "hsl(var(--brand))",
     ],
   );
 

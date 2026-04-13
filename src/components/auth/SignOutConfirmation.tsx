@@ -59,17 +59,17 @@ export function SignOutConfirmation({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel
-              onClick={() => trigger("LIGHT")}
+              onClick={() => trigger("tick")}
               className="hover:bg-accent/60 transition-colors"
             >
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
+              variant="destructive"
               onClick={() => {
-                trigger("HEAVY");
+                trigger("thud");
                 onConfirm();
               }}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors"
             >
               Sign Out
             </AlertDialogAction>
@@ -95,7 +95,7 @@ export function SignOutConfirmation({
         <DrawerFooter className="pt-2">
           <Button
             onClick={() => {
-              trigger("HEAVY");
+              trigger("thud");
               onConfirm();
             }}
             variant="destructive"
@@ -107,7 +107,7 @@ export function SignOutConfirmation({
             <Button
               variant="outline"
               className="w-full"
-              onClick={() => trigger("LIGHT")}
+              onClick={() => trigger("tick")}
             >
               Cancel
             </Button>

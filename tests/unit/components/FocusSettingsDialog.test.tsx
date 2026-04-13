@@ -153,7 +153,7 @@ describe("FocusSettingsDialog", () => {
         }),
       );
       // Verify haptic feedback (TC-C-01: Major action thud)
-      expect(mockHapticTrigger).toHaveBeenCalledWith("HEAVY");
+      expect(mockHapticTrigger).toHaveBeenCalledWith("thud");
     });
   });
 });

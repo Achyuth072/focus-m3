@@ -64,7 +64,7 @@ export function TaskKanbanBoard({
     const task = allTasks.find((t) => t.id === active.id);
     if (task) {
       setActiveTask(task);
-      trigger("MEDIUM");
+      trigger("toggle");
     }
   };
 
@@ -73,7 +73,7 @@ export function TaskKanbanBoard({
     setActiveTask(null);
 
     if (!over) return;
-    trigger("HEAVY");
+    trigger("thud");
   };
 
   return (

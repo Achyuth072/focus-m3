@@ -141,7 +141,7 @@ export function HabitCard({
                 <span className="truncate">{habit.name}</span>
               </h3>
               {habit.description && (
-                <p className="text-[13px] text-muted-foreground mt-1 truncate leading-relaxed">
+                <p className="text-[13px] text-foreground/60 mt-1 truncate leading-relaxed font-medium">
                   {habit.description}
                 </p>
               )}
@@ -152,7 +152,7 @@ export function HabitCard({
             {/* Stats in Header */}
             <div className="flex items-center gap-4 sm:gap-6 mr-1 sm:mr-2">
               <div className="text-right">
-                <div className="text-[9px] uppercase text-muted-foreground/50 font-bold tracking-widest leading-none">
+                <div className="text-[9px] uppercase text-foreground/60 font-bold tracking-widest leading-none">
                   Streak
                 </div>
                 <div className="text-sm font-bold text-foreground mt-1">
@@ -160,7 +160,7 @@ export function HabitCard({
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-[9px] uppercase text-muted-foreground/50 font-bold tracking-widest leading-none">
+                <div className="text-[9px] uppercase text-foreground/60 font-bold tracking-widest leading-none">
                   Total
                 </div>
                 <div className="text-sm font-bold text-foreground mt-1">
@@ -177,7 +177,7 @@ export function HabitCard({
               className={`w-9 h-9 rounded-lg flex items-center justify-center transition-seijaku-fast shrink-0 ${
                 isCompletedToday
                   ? "bg-primary text-primary-foreground"
-                  : "bg-secondary/50 border border-border/50 hover:bg-secondary text-muted-foreground hover:text-foreground"
+                  : "bg-secondary border border-border hover:bg-secondary/80 text-muted-foreground hover:text-foreground"
               }`}
               style={
                 isCompletedToday ? { backgroundColor: habit.color } : undefined

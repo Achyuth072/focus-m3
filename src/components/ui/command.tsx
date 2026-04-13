@@ -28,7 +28,7 @@ type CommandDialogProps = DialogProps;
 const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
   return (
     <Dialog {...props}>
-      <DialogContent className="overflow-hidden p-0 shadow-2xl border-border/60 bg-background sm:max-w-[480px] sm:rounded-lg">
+      <DialogContent className="overflow-hidden p-0 shadow-none border-border/60 bg-background sm:max-w-[480px] sm:rounded-lg">
         <DialogTitle className="sr-only">Command Menu</DialogTitle>
         <Command
           loop
@@ -49,7 +49,10 @@ const CommandInput = React.forwardRef<
     className="flex items-center border-b border-border px-3"
     cmdk-input-wrapper=""
   >
-    <Search className="mr-2 h-4 w-4 shrink-0 text-foreground/70 opacity-100" />
+    <Search
+      className="mr-2 h-4 w-4 shrink-0 text-foreground/70 opacity-100"
+      strokeWidth={2.25}
+    />
     <CommandPrimitive.Input
       ref={ref}
       className={cn(
@@ -99,7 +102,7 @@ const CommandGroup = React.forwardRef<
   <CommandPrimitive.Group
     ref={ref}
     className={cn(
-      "overflow-hidden p-1.5 text-foreground [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2.5 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:text-foreground [&_[cmdk-group-heading]]:tracking-[0.05em] [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:opacity-90",
+      "overflow-hidden p-1.5 text-foreground [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2.5 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group-heading]]:tracking-[0.02em] [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:opacity-90",
       className,
     )}
     {...props}

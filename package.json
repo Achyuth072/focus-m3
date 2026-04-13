@@ -1,6 +1,6 @@
 {
   "name": "kanso",
-  "version": "1.16.2",
+  "version": "1.17.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbo",
@@ -17,7 +17,9 @@
     "e2e": "playwright test",
     "analyze": "npx cross-env ANALYZE=true npm run build",
     "dead-code": "npx knip",
-    "unused-deps": "npx depcheck"
+    "unused-deps": "npx depcheck",
+    "preview": "powershell ./.planning/preview.ps1",
+    "release": "powershell ./.planning/release.ps1"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -81,6 +83,7 @@
   "devDependencies": {
     "@next/bundle-analyzer": "^16.2.1",
     "@playwright/test": "^1.57.0",
+    "@poupe/eslint-plugin-tailwindcss": "^0.3.1",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",

@@ -61,7 +61,7 @@ function HomeContent() {
                 </span>
                 <button
                   onClick={() => {
-                    trigger("MEDIUM");
+                    trigger("toggle");
                     router.push("/");
                   }}
                   className="bg-secondary/40 hover:bg-secondary/60 border border-border/50 p-0.5 rounded-full transition-colors"
@@ -89,21 +89,24 @@ function HomeContent() {
       </div>
 
       <div className="flex-1 min-h-0">
-        {viewMode === "list" && !isMobile ? (
+        {/* Both branches stay mounted to preserve TaskEditView scroll + form state.
+            CSS visibility toggling avoids unmount/remount position reset. */}
+        <div className={viewMode === "list" && !isMobile ? "h-full" : "hidden"}>
           <SplitViewLayout
             sortBy={sortBy}
             groupBy={groupBy}
             projectId={currentProjectId}
             filter={filter}
           />
-        ) : (
+        </div>
+        <div className={viewMode !== "list" || isMobile ? "h-full" : "hidden"}>
           <TaskList
             sortBy={sortBy}
             groupBy={groupBy}
             projectId={currentProjectId}
             filter={filter}
           />
-        )}
+        </div>
       </div>
     </div>
   );

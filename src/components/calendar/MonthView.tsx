@@ -57,7 +57,9 @@ const MonthDayCell = memo(
           "relative p-1 pb-0.5 md:p-2 md:pb-1 flex flex-col h-full min-h-[85px] md:min-h-[120px]",
           "cursor-pointer transition-colors",
           !isCurrentMonth && "bg-muted/5 opacity-40",
-          isCurrentDay ? "bg-brand/15 hover:bg-brand/25" : "hover:bg-accent/30",
+          isCurrentDay
+            ? "bg-brand/5 ring-1 ring-brand/10"
+            : "hover:bg-accent/30",
         )}
       >
         {/* Date number */}

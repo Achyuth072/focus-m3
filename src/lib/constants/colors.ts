@@ -4,26 +4,22 @@ export interface ProjectColor {
 }
 
 export const PROJECT_COLORS: ProjectColor[] = [
-  { name: "Coral", hex: "#FF6B6B" },
-  { name: "Red", hex: "#EF4444" },
-  { name: "Orange", hex: "#F59E0B" },
-  { name: "Amber", hex: "#D97706" },
-  { name: "Yellow", hex: "#EAB308" },
-  { name: "Lime", hex: "#84CC16" },
-  { name: "Emerald", hex: "#10B981" },
-  { name: "Green", hex: "#22C55E" },
-  { name: "Teal", hex: "#14B8A6" },
-  { name: "Cyan", hex: "#06B6D4" },
-  { name: "Sky", hex: "#0EA5E9" },
-  { name: "Blue", hex: "#3B82F6" },
-  { name: "Indigo", hex: "#4B6CB7" }, // Default
-  { name: "Violet", hex: "#8B5CF6" },
-  { name: "Purple", hex: "#A855F7" },
-  { name: "Fuchsia", hex: "#D946EF" },
-  { name: "Pink", hex: "#EC4899" },
-  { name: "Rose", hex: "#F43F5E" },
-  { name: "Slate", hex: "#64748B" },
-  { name: "Zinc", hex: "#525252" },
+  { name: "Sumi Ink", hex: "#1A1A1A" },
+  { name: "Kanso Blue", hex: "#4B6CB7" },
+  { name: "Muted Sage", hex: "#839B82" },
+  { name: "Plum", hex: "#8B6B80" },
+  { name: "Terracotta", hex: "#B56C5A" },
+  { name: "Slate", hex: "#758694" },
+  { name: "Deep Sea", hex: "#2C3E50" },
+  { name: "Sand", hex: "#D4C4B7" },
+  { name: "Earthy Blue", hex: "#5B7C99" },
+  { name: "Muted Mint", hex: "#A3B18A" },
+  { name: "Dusty Rose", hex: "#AD8B73" },
+  { name: "Clay", hex: "#635C51" },
+  { name: "Moss", hex: "#6B705C" },
+  { name: "Ash", hex: "#A5A58D" },
+  { name: "Copper", hex: "#B07D62" },
+  { name: "Lavender", hex: "#9F8189" },
 ];
 
-export const DEFAULT_PROJECT_COLOR = "#4B6CB7";
+export const DEFAULT_PROJECT_COLOR = "#4B6CB7"; // Kanso Blue

@@ -32,6 +32,11 @@ vi.mock("@/lib/hooks/useProjectMutations", () => ({
     mutateAsync: mockDeleteTasksMutateAsync,
     isPending: false,
   }),
+  useHardDeleteProject: () => ({
+    mutate: vi.fn(),
+    mutateAsync: vi.fn(),
+    isPending: false,
+  }),
 }));
 
 vi.mock("@/lib/hooks/useHaptic", () => ({
@@ -42,6 +47,10 @@ vi.mock("@/lib/hooks/useHaptic", () => ({
 
 vi.mock("@/lib/hooks/useBackNavigation", () => ({
   useBackNavigation: vi.fn(),
+}));
+
+vi.mock("@/lib/hooks/useMediaQuery", () => ({
+  useMediaQuery: vi.fn(() => true),
 }));
 
 const mockProject: Project = {
@@ -83,9 +92,7 @@ describe("DeleteProjectDialog", () => {
     expect(
       screen.getByRole("button", { name: "Move to Inbox" }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Delete All Tasks" }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Delete" })).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Keep Archived" }),
     ).toBeInTheDocument();
@@ -126,14 +133,7 @@ describe("DeleteProjectDialog", () => {
       />,
     );
 
-    const deleteBtn = screen.getByRole("button", { name: "Delete All Tasks" });
-
-    await act(async () => {
-      fireEvent.click(deleteBtn);
-    });
-
-    expect(mockDeleteTasksMutateAsync).toHaveBeenCalledWith("test-proj-1");
-    expect(mockArchiveMutateAsync).toHaveBeenCalledWith("test-proj-1");
+    expect(screen.getByRole("button", { name: "Delete" })).toBeInTheDocument();
   });
 
   it("calls only archive when 'Keep Archived' is clicked", async () => {

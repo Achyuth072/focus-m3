@@ -1,40 +1,45 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   uploadWebDavBackup,
-  downloadWebDavBackup,
   testWebDavConnection,
 } from "@/lib/backup/webdav-sync";
 
-// Mock tsdav
-vi.mock("tsdav", () => ({
-  createDAVClient: vi.fn(),
-}));
-
 describe("webdav-sync", () => {
   const mockCredentials = {
-    serverUrl: "https://dav.example.com/remote.php/dav/files/user",
+    serverUrl: "https://dav.example.com",
     username: "testuser",
     password: "testpass",
   };
 
+  beforeEach(() => {
+    vi.stubGlobal("fetch", vi.fn());
+  });
+
   describe("testWebDavConnection", () => {
     it("returns success for valid credentials", async () => {
-      const { createDAVClient } = await import("tsdav");
-      (createDAVClient as any).mockResolvedValueOnce({
-        fetchPrincipalUrl: vi
-          .fn()
-          .mockResolvedValue("https://dav.example.com/principals/user"),
+      (global.fetch as any).mockResolvedValueOnce({
+        ok: true,
+        status: 200,
       });
 
       const result = await testWebDavConnection(mockCredentials);
       expect(result.success).toBe(true);
+      expect(global.fetch).toHaveBeenCalledWith(
+        "/api/webdav/",
+        expect.objectContaining({
+          method: "OPTIONS",
+          headers: expect.objectContaining({
+            "X-WebDAV-URL": mockCredentials.serverUrl,
+          }),
+        }),
+      );
     });
 
     it("returns error for invalid credentials", async () => {
-      const { createDAVClient } = await import("tsdav");
-      (createDAVClient as any).mockRejectedValueOnce(
-        new Error("401 Unauthorized"),
-      );
+      (global.fetch as any).mockResolvedValueOnce({
+        ok: false,
+        status: 401,
+      });
 
       const result = await testWebDavConnection(mockCredentials);
       expect(result.success).toBe(false);
@@ -44,19 +49,22 @@ describe("webdav-sync", () => {
 
   describe("uploadWebDavBackup", () => {
     it("uploads JSON to the correct path", async () => {
-      const mockCreateObject = vi.fn().mockResolvedValue({});
-      const { createDAVClient } = await import("tsdav");
-      (createDAVClient as any).mockResolvedValueOnce({
-        createObject: mockCreateObject,
+      (global.fetch as any).mockResolvedValueOnce({
+        ok: true,
+        status: 201,
       });
 
       await uploadWebDavBackup(mockCredentials, '{"test": true}');
 
-      expect(mockCreateObject).toHaveBeenCalledWith(
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining("/api/webdav/kanso-backup.json"),
         expect.objectContaining({
-          url: expect.stringContaining("kanso-backup.json"),
-          data: '{"test": true}',
-          contentType: "application/json",
+          method: "PUT",
+          body: '{"test": true}',
+          headers: expect.objectContaining({
+            "Content-Type": "application/json",
+            "X-WebDAV-URL": mockCredentials.serverUrl,
+          }),
         }),
       );
     });

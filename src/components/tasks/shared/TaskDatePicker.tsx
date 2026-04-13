@@ -95,7 +95,7 @@ export function TaskDatePicker({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              trigger("MEDIUM");
+              trigger("toggle");
               setDate(undefined);
             }}
           >
@@ -115,7 +115,7 @@ export function TaskDatePicker({
           variant="ghost"
           size="sm"
           onClick={() => {
-            trigger("MEDIUM");
+            trigger("toggle");
             onOpenChange(true);
           }}
           className={cn(

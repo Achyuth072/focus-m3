@@ -337,6 +337,7 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
             )}
             <CommandItem
               onSelect={() => runCommand(() => setShowSignOutConfirm(true))}
+              className="sumi-red-action"
             >
               <LogOut className="mr-2 h-5 w-5" />
               <span>Sign Out</span>

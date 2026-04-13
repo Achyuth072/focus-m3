@@ -4,7 +4,7 @@ import { HabitCard } from "@/components/habits/HabitCard";
 import { useHabits, type HabitWithEntries } from "@/lib/hooks/useHabits";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, Plus } from "lucide-react";
+import { AlertCircle, Plus, Layers } from "lucide-react";
 import { format } from "date-fns";
 import { useHaptic } from "@/lib/hooks/useHaptic";
 import { getHabitIcon } from "@/components/habits/shared/HabitIconPicker";
@@ -17,12 +17,12 @@ export default function HabitsPage() {
   const { trigger } = useHaptic();
 
   const handleOpenCreate = () => {
-    trigger("MEDIUM");
+    trigger("toggle");
     openAddHabit();
   };
 
   const handleEditHabit = (habit: HabitWithEntries) => {
-    trigger("MEDIUM");
+    trigger("toggle");
     openEditHabit(habit);
   };
 
@@ -54,7 +54,10 @@ export default function HabitsPage() {
   if (error) {
     return (
       <div className="container mx-auto py-32 flex flex-col items-center justify-center gap-4">
-        <AlertCircle className="w-12 h-12 text-destructive" />
+        <AlertCircle
+          className="w-12 h-12 text-destructive"
+          strokeWidth={2.25}
+        />
         <div className="text-center">
           <h2 className="type-h2">Failed to load habits</h2>
           <p className="text-sm text-muted-foreground mt-1">
@@ -68,6 +71,12 @@ export default function HabitsPage() {
   if (!habits || habits.length === 0) {
     return (
       <div className="container mx-auto py-32 flex flex-col items-center justify-center gap-6">
+        <div className="w-20 h-20 rounded-2xl bg-secondary/30 flex items-center justify-center mb-2">
+          <Layers
+            className="h-10 w-10 text-muted-foreground/60"
+            strokeWidth={2.25}
+          />
+        </div>
         <div className="text-center space-y-2">
           <h2 className="type-h2">No habits yet</h2>
           <p className="text-sm text-muted-foreground max-w-xs mx-auto">
@@ -76,12 +85,11 @@ export default function HabitsPage() {
           </p>
         </div>
         <Button
-          variant="ghost"
           onClick={handleOpenCreate}
-          className="h-10 px-6 rounded-lg bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none transition-seijaku gap-2"
+          className="h-10 px-6 rounded-lg bg-brand text-brand-foreground hover:bg-brand/90 shadow-sm shadow-brand/10 transition-seijaku gap-2"
         >
-          <Plus className="h-4 w-4" />
-          Create Habit
+          <Plus className="h-4 w-4" strokeWidth={2.25} />
+          <span>Create Habit</span>
         </Button>
       </div>
     );
@@ -100,12 +108,11 @@ export default function HabitsPage() {
         </div>
 
         <Button
-          variant="ghost"
           onClick={handleOpenCreate}
-          className="hidden md:flex h-9 items-center gap-2 rounded-lg bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none transition-seijaku"
+          className="hidden md:flex h-9 items-center gap-2 rounded-lg bg-brand text-brand-foreground hover:bg-brand/90 shadow-sm shadow-brand/10 transition-seijaku"
         >
-          <Plus className="h-4 w-4" />
-          New Habit
+          <Plus className="h-4 w-4" strokeWidth={2.25} />
+          <span>New Habit</span>
         </Button>
       </div>
 

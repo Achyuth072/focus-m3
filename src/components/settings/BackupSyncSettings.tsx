@@ -90,7 +90,7 @@ export function BackupSyncSettings() {
 
   const handleExport = async () => {
     setIsExporting(true);
-    trigger("MEDIUM");
+    trigger("toggle");
 
     try {
       const backupData: BackupData = {
@@ -114,18 +114,18 @@ export function BackupSyncSettings() {
       localStorage.setItem("kanso_last_backup_date", new Date().toISOString());
 
       toast.success("Backup downloaded successfully");
-      trigger("SUCCESS");
+      trigger("success");
     } catch (err) {
       console.error("Export failed:", err);
       toast.error("Failed to create backup");
-      trigger("WARNING");
+      trigger("thud");
     } finally {
       setIsExporting(false);
     }
   };
 
   const handleImportClick = () => {
-    trigger("MEDIUM");
+    trigger("toggle");
     fileInputRef.current?.click();
   };
 
@@ -134,7 +134,7 @@ export function BackupSyncSettings() {
     if (!file) return;
 
     setIsImporting(true);
-    trigger("MEDIUM");
+    trigger("toggle");
     const loadingToastId = toast.loading(`Importing ${file.name}...`);
 
     try {
@@ -154,11 +154,11 @@ export function BackupSyncSettings() {
           id: loadingToastId,
         },
       );
-      trigger("SUCCESS");
+      trigger("success");
     } catch (err) {
       console.error("Import failed:", err);
       toast.error("Failed to import backup", { id: loadingToastId });
-      trigger("WARNING");
+      trigger("thud");
     } finally {
       setIsImporting(false);
       if (fileInputRef.current) {
@@ -177,7 +177,7 @@ export function BackupSyncSettings() {
   };
 
   const clearCredentials = () => {
-    trigger("MEDIUM");
+    trigger("toggle");
     if (typeof window !== "undefined") {
       localStorage.removeItem(WEBDAV_STORAGE_KEY);
       setWebdavCredentials({ serverUrl: "", username: "", password: "" });
@@ -198,7 +198,7 @@ export function BackupSyncSettings() {
 
     setIsTestingConnection(true);
     setConnectionStatus("idle");
-    trigger("MEDIUM");
+    trigger("toggle");
 
     try {
       const result = await testWebDavConnection(webdavCredentials);
@@ -207,16 +207,16 @@ export function BackupSyncSettings() {
         setConnectionStatus("success");
         saveCredentials(webdavCredentials);
         toast.success("Connected successfully");
-        trigger("SUCCESS");
+        trigger("success");
       } else {
         setConnectionStatus("error");
         toast.error(result.error || "Connection failed");
-        trigger("WARNING");
+        trigger("thud");
       }
     } catch {
       setConnectionStatus("error");
       toast.error("Connection test failed");
-      trigger("WARNING");
+      trigger("thud");
     } finally {
       setIsTestingConnection(false);
     }
@@ -229,7 +229,7 @@ export function BackupSyncSettings() {
     }
 
     setIsSyncing(true);
-    trigger("MEDIUM");
+    trigger("toggle");
 
     try {
       const backupData: BackupData = {
@@ -257,14 +257,14 @@ export function BackupSyncSettings() {
           new Date().toISOString(),
         );
         toast.success("Data synced to server");
-        trigger("SUCCESS");
+        trigger("success");
       } else {
         toast.error(result.error || "Sync failed");
-        trigger("WARNING");
+        trigger("thud");
       }
     } catch {
       toast.error("Sync failed");
-      trigger("WARNING");
+      trigger("thud");
     } finally {
       setIsSyncing(false);
     }
@@ -277,7 +277,7 @@ export function BackupSyncSettings() {
     }
 
     setIsSyncing(true);
-    trigger("MEDIUM");
+    trigger("toggle");
 
     try {
       const result = await downloadWebDavBackup(webdavCredentials);
@@ -289,14 +289,14 @@ export function BackupSyncSettings() {
         await invalidateGuestDataQueries();
 
         toast.success("Data restored from server");
-        trigger("SUCCESS");
+        trigger("success");
       } else {
         toast.error(result.error || "Download failed");
-        trigger("WARNING");
+        trigger("thud");
       }
     } catch {
       toast.error("Download failed");
-      trigger("WARNING");
+      trigger("thud");
     } finally {
       setIsSyncing(false);
     }
@@ -318,7 +318,7 @@ export function BackupSyncSettings() {
         <TabsList className="grid grid-cols-2 bg-secondary/10 p-1 rounded-lg h-11 border border-border/40 shadow-none">
           <TabsTrigger
             value="local"
-            onClick={() => trigger("MEDIUM")}
+            onClick={() => trigger("toggle")}
             className="rounded-md gap-2 text-[13px] font-medium tracking-tight data-[state=active]:bg-brand data-[state=active]:text-brand-foreground data-[state=active]:shadow-none transition-all h-9 border border-transparent data-[state=active]:border-brand/20"
           >
             <HardDrive className="h-3.5 w-3.5" />
@@ -326,7 +326,7 @@ export function BackupSyncSettings() {
           </TabsTrigger>
           <TabsTrigger
             value="cloud"
-            onClick={() => trigger("MEDIUM")}
+            onClick={() => trigger("toggle")}
             className="rounded-md gap-2 text-[13px] font-medium tracking-tight data-[state=active]:bg-brand data-[state=active]:text-brand-foreground data-[state=active]:shadow-none transition-all h-9 border border-transparent data-[state=active]:border-brand/20"
           >
             <Cloud className="h-3.5 w-3.5" />
@@ -492,10 +492,10 @@ export function BackupSyncSettings() {
                     variant="destructive"
                     size="icon"
                     onClick={clearCredentials}
-                    className="h-9 w-9 bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-all active:scale-95 shadow-lg shadow-destructive/10"
+                    className="h-9 w-9"
                     title="Forget credentials"
                   >
-                    <Trash2 className="h-4 w-4" strokeWidth={2.25} />
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 )}
               </div>

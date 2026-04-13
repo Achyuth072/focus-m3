@@ -73,7 +73,7 @@ export default function RecurrencePicker({
                 : "text-muted-foreground hover:text-foreground hover:bg-accent",
             )}
             onClick={() => {
-              trigger("MEDIUM");
+              trigger("toggle");
             }}
             title={!isMobile ? formatRecurrenceRule(value) : undefined}
           >
@@ -106,7 +106,7 @@ export default function RecurrencePicker({
               }
               className="w-full justify-start"
               onClick={() => {
-                trigger("TAP");
+                trigger("toggle");
                 onChange(preset.value);
                 setOpen(false);
               }}

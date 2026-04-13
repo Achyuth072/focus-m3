@@ -1,10 +1,28 @@
-import { parseISO, isToday, isTomorrow, format } from "date-fns";
+import {
+  parseISO,
+  isToday,
+  isTomorrow,
+  format,
+  isBefore,
+  startOfDay,
+} from "date-fns";
 
-export const priorityColors: Record<1 | 2 | 3 | 4, string> = {
-  1: "text-red-500 border-red-500",
-  2: "text-orange-500 border-orange-500",
-  3: "text-blue-500 border-blue-500",
-  4: "text-muted-foreground border-muted-foreground/50",
+export const priorityTextClasses: Record<1 | 2 | 3 | 4, string> = {
+  1: "text-foreground font-bold",
+  2: "text-foreground font-semibold",
+  3: "text-foreground/90 font-medium",
+  4: "text-muted-foreground",
+};
+
+/**
+ * Universal High-Contrast Ink Checkbox Mapping
+ * All priorities use the same high-intensity tokens for component-level predictability.
+ */
+export const priorityCheckboxClasses: Record<1 | 2 | 3 | 4, string> = {
+  1: "border-foreground/80 data-[state=checked]:bg-foreground data-[state=checked]:border-foreground",
+  2: "border-foreground/80 data-[state=checked]:bg-foreground data-[state=checked]:border-foreground",
+  3: "border-foreground/80 data-[state=checked]:bg-foreground data-[state=checked]:border-foreground",
+  4: "border-foreground/80 data-[state=checked]:bg-foreground data-[state=checked]:border-foreground",
 };
 
 export function formatDueDate(dateString: string): string {
@@ -12,4 +30,10 @@ export function formatDueDate(dateString: string): string {
   if (isToday(date)) return "Today";
   if (isTomorrow(date)) return "Tomorrow";
   return format(date, "MMM d");
+}
+
+export function isOverdue(dateString: string | null | undefined): boolean {
+  if (!dateString) return false;
+  const date = parseISO(dateString);
+  return isBefore(date, startOfDay(new Date())) && !isToday(date);
 }

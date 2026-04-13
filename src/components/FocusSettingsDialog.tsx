@@ -321,13 +321,13 @@ export function FocusSettingsDialog() {
   useBackNavigation(open && !isDesktop, () => setOpen(false));
 
   const onFormSubmit = () => {
-    trigger("HEAVY");
+    trigger("thud");
     // Settings already saved via watch() - just close
     setOpen(false);
   };
 
   const handleCancel = () => {
-    trigger("LIGHT");
+    trigger("tick");
     reset();
     setOpen(false);
   };
@@ -338,7 +338,7 @@ export function FocusSettingsDialog() {
         buttonVariants({ variant: "ghost" }),
         "text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-all cursor-pointer",
       )}
-      onTapStart={() => trigger("HEAVY")}
+      onTapStart={() => trigger("thud")}
       whileTap={isPhone ? { scale: 0.95 } : {}}
     >
       <Settings className="h-4 w-4 mr-2" />

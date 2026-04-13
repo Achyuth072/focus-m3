@@ -2,11 +2,6 @@
 
 import { useState, useCallback } from "react";
 import { useHaptic } from "@/lib/hooks/useHaptic";
-import {
-  ResizablePanelGroup,
-  ResizablePanel,
-  ResizableHandle,
-} from "@/components/ui/resizable";
 import { TaskDetailPanel } from "./TaskDetailPanel";
 import TaskList from "./TaskList";
 import type { Task } from "@/lib/types/task";
@@ -30,24 +25,20 @@ export function SplitViewLayout({
 
   const handleTaskSelect = useCallback(
     (task: Task) => {
-      trigger("MEDIUM"); // Toggle haptic for selection
+      trigger("toggle"); // Toggle haptic for selection
       setSelectedTask(task);
     },
     [trigger],
   );
 
   const handleCloseDetail = useCallback(() => {
-    trigger("LIGHT"); // Tick haptic for close
+    trigger("tick"); // Tick haptic for close
     setSelectedTask(null);
   }, [trigger]);
 
   return (
-    <ResizablePanelGroup
-      direction="horizontal"
-      className="h-full w-full gap-0"
-      style={{ transitionTimingFunction: "var(--ease-seijaku)" }}
-    >
-      <ResizablePanel defaultSize="60%" minSize="40%">
+    <div className="flex h-full w-full overflow-hidden">
+      <div className="w-[60%] h-full overflow-hidden">
         <TaskList
           sortBy={sortBy}
           groupBy={groupBy}
@@ -55,25 +46,11 @@ export function SplitViewLayout({
           filter={filter}
           onTaskSelect={handleTaskSelect}
         />
-      </ResizablePanel>
+      </div>
 
-      <ResizableHandle className="relative w-0 after:!inset-y-auto after:!top-1/2 after:!-translate-y-1/2 after:!h-8 after:absolute after:left-0 after:-translate-x-1/2 after:w-1 after:rounded-full after:cursor-col-resize after:transition-all after:duration-300 after:bg-transparent hover:after:!bg-border/60 active:after:!bg-primary/40" />
-
-      <ResizablePanel
-        defaultSize="40%"
-        minSize="25%"
-        maxSize="50%"
-        collapsible
-        collapsedSize={0}
-        onResize={(size) => {
-          if ((size as unknown as number) === 0 && selectedTask) {
-            setSelectedTask(null);
-          }
-        }}
-        className="border-l border-border/80 transition-all duration-300"
-      >
+      <div className="w-[40%] h-full border-l border-border/80 overflow-hidden bg-background">
         <TaskDetailPanel task={selectedTask} onClose={handleCloseDetail} />
-      </ResizablePanel>
-    </ResizablePanelGroup>
+      </div>
+    </div>
   );
 }

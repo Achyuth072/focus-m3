@@ -53,12 +53,16 @@ describe("ActivityHeatmap", () => {
   });
 
   it("should render ActivityCalendar when data loaded", () => {
-    const mockData = Array.from({ length: 365 }, (_, i) => ({
-      date: `2026-01-${String((i % 28) + 1).padStart(2, "0")}`,
-      combined: Math.random() * 10,
-      focus: Math.random() * 5,
-      tasks: Math.floor(Math.random() * 5),
-    }));
+    const mockData = Array.from({ length: 365 }, (_, i) => {
+      const date = new Date(2026, 0, 1);
+      date.setDate(date.getDate() + i);
+      return {
+        date: date.toISOString().split("T")[0],
+        combined: Math.random() * 10,
+        focus: Math.random() * 5,
+        tasks: Math.floor(Math.random() * 5),
+      };
+    });
 
     vi.mocked(useHeatmapData).mockReturnValue({
       data: mockData,

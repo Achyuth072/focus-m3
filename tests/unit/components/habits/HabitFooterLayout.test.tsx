@@ -37,8 +37,8 @@ vi.mock("@/components/ui/responsive-dialog", () => ({
   }) => <div className={className}>{children}</div>,
 }));
 
-vi.mock("@/components/habits/shared/HabitColorPicker", () => ({
-  HabitColorPicker: () => <div data-testid="color-picker" />,
+vi.mock("@/components/shared/ColorPicker", () => ({
+  ColorPicker: () => <div data-testid="color-picker" />,
 }));
 
 vi.mock("@/components/habits/shared/HabitIconPicker", () => ({
@@ -92,23 +92,17 @@ describe("Habit Views Footer Layout", () => {
       />,
     );
 
-    const saveButton = screen.getByTitle(/save/i);
-    const footer = saveButton.closest("div")!;
-    const scrollContainer = footer.querySelector(".overflow-x-auto");
-
+    const footer = screen.getByTitle(/save/i).closest("div")!;
     const colorPicker = screen.getByTestId("color-picker");
-    expect(scrollContainer?.contains(colorPicker)).toBe(false);
+    expect(footer.contains(colorPicker)).toBe(false);
   });
 
   it("HabitCreateView footer should not contain color picker", () => {
     render(<HabitCreateView {...commonProps} />);
 
-    // The submit button is Send icon in a button
     const footer = screen.getByLabelText(/start habit/i).closest("div")!;
-    const scrollContainer = footer.querySelector(".overflow-x-auto");
-
     const colorPicker = screen.getByTestId("color-picker");
-    expect(scrollContainer?.contains(colorPicker)).toBe(false);
+    expect(footer.contains(colorPicker)).toBe(false);
   });
 
   it("Color picker should be in the view (structural verification)", () => {

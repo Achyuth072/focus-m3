@@ -58,23 +58,23 @@ export function TasksPageHeader({
   return (
     <div className="flex items-center gap-2">
       <SyncIndicator />
-      <div className="flex h-8 items-stretch overflow-hidden rounded-lg border border-border/50 bg-background/50 backdrop-blur-sm shadow-none">
+      <div className="flex h-8 items-stretch overflow-hidden rounded-lg border border-border bg-background shadow-none">
         <Button
           variant="ghost"
           size="sm"
           className={cn(
             "h-full w-8 p-0 rounded-none transition-all duration-200 border-r border-input/50 last:border-r-0",
-            viewMode === "grid"
-              ? "bg-brand text-white shadow-none"
-              : "bg-secondary/40 text-muted-foreground hover:text-foreground hover:bg-secondary/60",
+            viewMode === "list"
+              ? "bg-brand/10 text-brand shadow-none"
+              : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80",
           )}
           onClick={() => {
-            trigger("MEDIUM");
-            onViewModeChange("grid");
+            trigger("toggle");
+            onViewModeChange("list");
           }}
-          title="Grid View (Shift+1)"
+          title="List View (Shift+1)"
         >
-          <LayoutGrid className="h-4 w-4" />
+          <List className="h-4 w-4" strokeWidth={2.25} />
         </Button>
         {isDesktop && (
           <Button
@@ -83,16 +83,16 @@ export function TasksPageHeader({
             className={cn(
               "h-full w-8 p-0 rounded-none transition-all duration-200 border-r border-input/50 last:border-r-0",
               viewMode === "board"
-                ? "bg-brand text-white shadow-none"
-                : "bg-secondary/40 text-muted-foreground hover:text-foreground hover:bg-secondary/60",
+                ? "bg-brand/10 text-brand shadow-none"
+                : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80",
             )}
             onClick={() => {
-              trigger("MEDIUM");
+              trigger("toggle");
               onViewModeChange("board");
             }}
             title="Board View (Shift+2)"
           >
-            <KanbanSquare className="h-4 w-4" />
+            <KanbanSquare className="h-4 w-4" strokeWidth={2.25} />
           </Button>
         )}
         <Button
@@ -100,17 +100,17 @@ export function TasksPageHeader({
           size="sm"
           className={cn(
             "h-full w-8 p-0 rounded-none transition-all duration-200 border-r border-input/50 last:border-r-0",
-            viewMode === "list"
-              ? "bg-brand text-white shadow-none"
-              : "bg-secondary/40 text-muted-foreground hover:text-foreground hover:bg-secondary/60",
+            viewMode === "grid"
+              ? "bg-brand/10 text-brand shadow-none"
+              : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80",
           )}
           onClick={() => {
-            trigger("MEDIUM");
-            onViewModeChange("list");
+            trigger("toggle");
+            onViewModeChange("grid");
           }}
-          title="List View (Shift+3)"
+          title="Grid View (Shift+3)"
         >
-          <List className="h-4 w-4" />
+          <LayoutGrid className="h-4 w-4" strokeWidth={2.25} />
         </Button>
       </div>
 
@@ -120,13 +120,13 @@ export function TasksPageHeader({
             variant="ghost"
             size="sm"
             className={cn(
-              "h-8 w-8 p-0 relative bg-secondary/40 hover:bg-secondary/60 border border-border/50",
-              isFilterActive && "border-brand/50",
+              "h-8 w-8 p-0 relative bg-secondary hover:bg-secondary/80 border border-border",
             )}
-            onPointerDown={() => trigger("TAP")}
+            onPointerDown={() => trigger("toggle")}
           >
             <ListFilter
               className={cn("h-4 w-4", isFilterActive && "text-brand")}
+              strokeWidth={2.25}
             />
             {isFilterActive && (
               <div className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-brand" />
@@ -143,7 +143,7 @@ export function TasksPageHeader({
               <DropdownMenuRadioItem
                 key={value}
                 value={value}
-                onClick={() => trigger("MEDIUM")}
+                onClick={() => trigger("toggle")}
               >
                 {label}
               </DropdownMenuRadioItem>
@@ -159,7 +159,7 @@ export function TasksPageHeader({
               <DropdownMenuRadioItem
                 key={value}
                 value={value}
-                onClick={() => trigger("MEDIUM")}
+                onClick={() => trigger("toggle")}
               >
                 {label}
               </DropdownMenuRadioItem>
@@ -172,20 +172,22 @@ export function TasksPageHeader({
         variant="ghost"
         size="sm"
         onClick={openSheet}
-        className="hidden md:flex items-center gap-2 bg-secondary/40 hover:bg-secondary/60 border border-border/50"
+        className="hidden md:flex items-center gap-2 bg-secondary hover:bg-secondary/80 border border-border"
       >
-        <CheckCircle2 className="h-4 w-4" />
+        <CheckCircle2
+          className="h-4 w-4 text-foreground/70"
+          strokeWidth={2.25}
+        />
         Completed
       </Button>
 
       <Button
-        variant="ghost"
         size="sm"
         onClick={onNewTask}
-        className="hidden md:flex items-center gap-2 bg-secondary/40 hover:bg-secondary/60 border border-border/50"
+        className="hidden md:flex h-9 items-center gap-2 rounded-lg bg-brand text-brand-foreground hover:bg-brand/90 border-none shadow-sm shadow-brand/10 transition-seijaku shrink-0"
       >
-        <Plus className="h-4 w-4" />
-        New Task
+        <Plus className="h-4 w-4" strokeWidth={2.25} />
+        <span>New Task</span>
       </Button>
     </div>
   );

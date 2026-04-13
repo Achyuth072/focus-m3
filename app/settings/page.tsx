@@ -112,7 +112,7 @@ export default function SettingsPage() {
             <Button
               variant="ghost"
               size="icon"
-              onPointerDown={() => trigger("MEDIUM")}
+              onPointerDown={() => trigger("toggle")}
               onClick={() => router.back()}
               className="h-12 w-12"
             >
@@ -131,7 +131,7 @@ export default function SettingsPage() {
           <Tabs
             value={activeTab}
             onValueChange={(v) => {
-              trigger("MEDIUM");
+              trigger("toggle");
               setActiveTab(v as "appearance" | "preferences" | "account");
             }}
             className="w-full"
@@ -169,7 +169,7 @@ export default function SettingsPage() {
                     className={cn(
                       "block w-full rounded-md px-3 py-2 text-left text-sm transition-seijaku-fast",
                       activeTab === tab.value
-                        ? "bg-secondary font-medium text-foreground"
+                        ? "bg-brand text-brand-foreground font-medium"
                         : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground",
                     )}
                   >
@@ -202,13 +202,13 @@ export default function SettingsPage() {
                         <button
                           key={option.value}
                           onClick={() => {
-                            trigger("MEDIUM");
+                            trigger("toggle");
                             setTheme(option.value);
                           }}
                           className={cn(
                             "flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-seijaku-fast",
                             isActive
-                              ? "border-foreground bg-secondary/30"
+                              ? "border-brand bg-secondary/30"
                               : "border-border/50 hover:border-border bg-background",
                           )}
                         >
@@ -286,7 +286,7 @@ export default function SettingsPage() {
                       <Button
                         className="w-full bg-brand hover:bg-brand/90 text-brand-foreground transition-all font-semibold"
                         onClick={() => {
-                          trigger("MEDIUM");
+                          trigger("toggle");
                           router.push("/login");
                         }}
                       >
@@ -299,7 +299,7 @@ export default function SettingsPage() {
                           size="sm"
                           className="flex-1"
                           onClick={() => {
-                            trigger("HEAVY");
+                            trigger("thud");
                             handleResetDemo();
                           }}
                         >
@@ -309,14 +309,14 @@ export default function SettingsPage() {
                         <Button
                           variant="destructive"
                           size="sm"
-                          className="flex-1 gap-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-all active:scale-95 font-semibold"
+                          className="flex-1 gap-2"
                           onClick={() => {
-                            trigger("HEAVY");
+                            trigger("thud");
                             setIsDeleteDialogOpen(true);
                           }}
                         >
                           <Trash2 className="h-4 w-4" strokeWidth={2.25} />
-                          Clear Data
+                          <span>Clear Data</span>
                         </Button>
                       </div>
                     </div>
@@ -350,10 +350,10 @@ export default function SettingsPage() {
                   </div>
 
                   <Button
-                    variant="outline"
-                    className="w-full justify-start"
+                    variant="destructive"
+                    className="w-full justify-start shadow-none"
                     onClick={() => {
-                      trigger("HEAVY");
+                      trigger("thud");
                       setShowSignOutConfirm(true);
                     }}
                     disabled={isSigningOut}
@@ -378,7 +378,7 @@ export default function SettingsPage() {
             <div className="pt-16 pb-12 transition-all duration-300">
               <div className="border-t border-border/40 w-16 mx-auto mb-8 opacity-50" />
               <p className="type-micro text-muted-foreground/80 text-center selection:bg-brand/10">
-                Kanso • Version 1.16.2
+                Kanso • Version 1.17.0
               </p>
             </div>
           </main>

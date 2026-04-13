@@ -13,8 +13,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Send, CalendarIcon } from "lucide-react";
 import { useHaptic } from "@/lib/hooks/useHaptic";
-import { HabitColorPicker } from "./shared/HabitColorPicker";
 import { HabitIconPicker } from "./shared/HabitIconPicker";
+import { ColorPicker } from "@/components/shared/ColorPicker";
 import { TaskDatePicker } from "../tasks/shared/TaskDatePicker";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 
@@ -123,7 +123,12 @@ export function HabitCreateView({
           </div>
 
           <div className="pt-0">
-            <HabitColorPicker value={color} onChange={setColor} />
+            <ColorPicker
+              value={color}
+              onChange={setColor}
+              label="Color"
+              ariaLabel="Habit color"
+            />
           </div>
         </div>
       </div>
@@ -150,9 +155,9 @@ export function HabitCreateView({
 
         <Button
           size="sm"
-          className="h-10 w-10 p-0 rounded-lg bg-brand hover:bg-brand/90 text-brand-foreground shadow-lg shadow-brand/10 transition-seijaku flex items-center justify-center"
+          className="h-10 w-10 p-0 rounded-lg bg-brand hover:bg-brand/90 text-brand-foreground shadow-sm shadow-brand/10 transition-seijaku flex items-center justify-center"
           onClick={() => {
-            trigger([10, 50]);
+            trigger("success");
             onSubmit();
           }}
           disabled={!hasContent || isPending}

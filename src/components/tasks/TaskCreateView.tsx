@@ -182,7 +182,7 @@ export function TaskCreateView({
             )}
             onClick={() => {
               const nextValue = !isEvening;
-              trigger("MEDIUM");
+              trigger("toggle");
               setIsEvening(nextValue);
               if (nextValue && !doDate) {
                 setDoDate(new Date());
@@ -199,7 +199,7 @@ export function TaskCreateView({
             variant="ghost"
             size="sm"
             onClick={() => {
-              trigger("MEDIUM");
+              trigger("toggle");
               setShowSubtasks(!showSubtasks);
             }}
             className={cn(
@@ -255,12 +255,12 @@ export function TaskCreateView({
         <Select
           value={selectedProjectId || "inbox"}
           onValueChange={(v) => {
-            trigger("MEDIUM");
+            trigger("toggle");
             setSelectedProjectId(v === "inbox" ? null : v);
           }}
         >
           <SelectTrigger
-            onPointerDown={() => trigger("MEDIUM")}
+            onPointerDown={() => trigger("toggle")}
             className="h-10 w-[140px] type-ui border-border/50 bg-secondary/40 hover:bg-secondary/60 shadow-none focus:ring-0 transition-seijaku-fast rounded-lg text-foreground [&_svg]:opacity-100 [&_svg]:text-foreground"
           >
             <SelectValue placeholder="Inbox" />
@@ -296,9 +296,9 @@ export function TaskCreateView({
 
         <Button
           size="sm"
-          className="h-10 w-10 p-0 rounded-lg [&_svg]:size-5 bg-brand hover:bg-brand/90 text-brand-foreground shadow-lg shadow-brand/10 transition-seijaku"
+          className="h-10 w-10 p-0 rounded-lg [&_svg]:size-5 bg-brand hover:bg-brand/90 text-brand-foreground shadow-sm shadow-brand/10 transition-seijaku"
           onClick={() => {
-            trigger("SUCCESS");
+            trigger("success");
             onSubmit();
           }}
           disabled={!hasContent || isPending}

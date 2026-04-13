@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import {
   ResponsiveDialog,
   ResponsiveDialogContent,
+  ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog";
 import { DeleteConfirmationDialog } from "@/components/ui/DeleteConfirmationDialog";
 import {
@@ -40,10 +41,24 @@ export default function TaskSheet({
   initialDate,
   initialContent,
 }: TaskSheetProps) {
+  // State to defer heavy children mounting to prevent UI hitch on open
+  const [shouldRenderContent, setShouldRenderContent] = useState(false);
+
   // NOTE: uncertain intent — logic preserved to prevent flickering between Create/Edit modes during close animation.
   const [preservedTask, setPreservedTask] = useState<Task | null | undefined>(
     initialTask,
   );
+
+  // Optimized trigger - allow the shell to animate before mounting heavy form
+  useEffect(() => {
+    if (open) {
+      const timer = setTimeout(() => setShouldRenderContent(true), 16); // 1 frame delay
+      return () => clearTimeout(timer);
+    } else {
+      const timer = setTimeout(() => setShouldRenderContent(false), 0);
+      return () => clearTimeout(timer);
+    }
+  }, [open]);
 
   // Update preserved task only when dialog opens with a new task
   useEffect(() => {
@@ -164,7 +179,7 @@ export default function TaskSheet({
 
   // Handlers
   const onFormSubmit = (data: CreateTaskInput) => {
-    trigger("HEAVY"); // Haptic feedback on save
+    trigger("thud"); // Haptic feedback on save
 
     if (initialTask) {
       updateMutation.mutate({
@@ -250,8 +265,15 @@ export default function TaskSheet({
   return (
     <ResponsiveDialog open={open} onOpenChange={onClose}>
       <ResponsiveDialogContent className="w-full sm:max-w-lg gap-0 rounded-lg p-0 overflow-hidden">
+        <ResponsiveDialogTitle className="sr-only">
+          {initialTask ? "Edit Task" : "New Task"}
+        </ResponsiveDialogTitle>
         <div className="overflow-y-auto max-h-[85vh] scrollbar-thin">
-          {isCreationMode ? (
+          {!shouldRenderContent ? (
+            <div className="h-[400px] w-full flex items-center justify-center bg-background">
+              <div className="h-8 w-8 animate-pulse rounded-full bg-secondary/40" />
+            </div>
+          ) : isCreationMode ? (
             <TaskCreateView
               content={content}
               setContent={(v) =>

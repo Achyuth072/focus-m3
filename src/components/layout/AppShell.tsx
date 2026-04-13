@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useLayoutEffect } from "react";
+import React, { useState, useRef, useLayoutEffect } from "react";
 import { usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useAuth } from "@/components/AuthProvider";
@@ -16,9 +16,14 @@ import {
 import { useRealtimeSync } from "@/lib/hooks/useRealtimeSync";
 import { PiPProvider } from "@/components/providers/PiPProvider";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/layout/AppSidebar";
-import { MobileNav } from "@/components/layout/MobileNav";
-import { MobileHeader } from "@/components/layout/MobileHeader";
+import { AppSidebar as SidebarComponent } from "@/components/layout/AppSidebar";
+import { MobileNav as MobileNavComponent } from "@/components/layout/MobileNav";
+import { MobileHeader as MobileHeaderComponent } from "@/components/layout/MobileHeader";
+
+// Memoize core UI shells to prevent re-renders when global modal state changes (PERF-01)
+const AppSidebar = React.memo(SidebarComponent);
+const MobileNav = React.memo(MobileNavComponent);
+const MobileHeader = React.memo(MobileHeaderComponent);
 import AddTaskFab from "@/components/tasks/AddTaskFab";
 import AddHabitFab from "@/components/habits/AddHabitFab";
 import AddEventFab from "@/components/calendar/AddEventFab";
@@ -35,6 +40,8 @@ import { cn } from "@/lib/utils";
 import { useUiStore } from "@/lib/store/uiStore";
 import { useCalendarStore } from "@/lib/calendar/store";
 import { useWeeklyBackup } from "@/lib/hooks/useWeeklyBackup";
+import { useTasks } from "@/lib/hooks/useTasks";
+import { useHabits } from "@/lib/hooks/useHabits";
 
 // Global Overlays (Lazy Loaded)
 const TaskSheet = dynamic(() => import("@/components/tasks/TaskSheet"), {
@@ -120,6 +127,13 @@ function AppShellContent({ children }: AppShellProps) {
 
   const [commandOpen, setCommandOpen] = useState(false);
 
+  // Conditionally hide FABs on empty states
+  const { data: tasks } = useTasks({});
+  const { data: habits } = useHabits();
+  const hasActiveTasks =
+    (tasks?.filter((t) => !t.is_completed).length ?? 0) > 0;
+  const hasHabits = (habits?.length ?? 0) > 0;
+
   // Global realtime sync - stays alive during navigation
   useRealtimeSync();
 
@@ -176,8 +190,10 @@ function AppShellContent({ children }: AppShellProps) {
         {!hideMobileNav && <MobileNav />}
 
         {/* FABs - Rendered outside template animation to prevent shifts */}
-        {isTasksPage && <AddTaskFab onClick={openAddTask} />}
-        {isHabitsPage && <AddHabitFab onClick={openAddHabit} />}
+        {isTasksPage && hasActiveTasks && (
+          <AddTaskFab onPointerDown={openAddTask} />
+        )}
+        {isHabitsPage && hasHabits && <AddHabitFab onClick={openAddHabit} />}
         {isCalendarPage && <AddEventFab onClick={() => openCreateEvent()} />}
 
         {/* Global Task Sheet */}

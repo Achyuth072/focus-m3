@@ -100,7 +100,7 @@ export function TaskListView({
         groups.map((group) => (
           <section key={group.title} className="first:mt-2">
             <SectionHeader title={group.title} count={group.tasks.length} />
-            <div className="flex flex-col gap-0 md:gap-2 md:contents rounded-xl border border-border/40 md:border-0 overflow-hidden">
+            <div className="flex flex-col gap-0 md:gap-2 rounded-xl border border-border/40 md:border-0 overflow-hidden md:overflow-visible">
               {group.tasks.map((task) => (
                 <TaskItem
                   key={task.id}
@@ -122,7 +122,7 @@ export function TaskListView({
             strategy={verticalListSortingStrategy}
           >
             <DroppableContainer id="active-section" className="flex flex-col">
-              <div className="flex flex-col gap-0 md:gap-2 md:contents rounded-xl border border-border/40 md:border-0 overflow-hidden">
+              <div className="flex flex-col gap-0 md:gap-2 rounded-xl border border-border/40 md:border-0 overflow-hidden md:overflow-visible">
                 {active.map((task) => (
                   <SortableTaskItem
                     key={task.id}
@@ -156,7 +156,7 @@ export function TaskListView({
             strategy={verticalListSortingStrategy}
           >
             <DroppableContainer id="evening-section" className="flex flex-col">
-              <div className="flex flex-col gap-0 md:gap-2 md:contents rounded-xl border border-border/40 md:border-0 overflow-hidden">
+              <div className="flex flex-col gap-0 md:gap-2 rounded-xl border border-border/40 md:border-0 overflow-hidden md:overflow-visible">
                 {evening.map((task) => (
                   <SortableTaskItem
                     key={task.id}
@@ -186,7 +186,7 @@ export function TaskListView({
             count={completed.length}
             variant="muted"
           />
-          <div className="flex flex-col gap-0 md:gap-2 md:contents rounded-xl border border-border/40 md:border-0 overflow-hidden opacity-60">
+          <div className="flex flex-col gap-0 md:gap-2 rounded-xl border border-border/40 md:border-0 overflow-hidden md:overflow-visible opacity-60">
             {completed.map((task) => (
               <TaskItem
                 key={task.id}

@@ -47,13 +47,13 @@ export function DeleteConfirmationDialog({
   useBackNavigation(isOpen && !isDesktop, onClose);
 
   const handleConfirm = () => {
-    trigger("HEAVY");
+    trigger("thud");
     onConfirm();
     onClose();
   };
 
   const handleCancel = () => {
-    trigger("LIGHT");
+    trigger("tick");
     onClose();
   };
 
@@ -70,8 +70,9 @@ export function DeleteConfirmationDialog({
           <AlertDialogFooter>
             <AlertDialogCancel onClick={handleCancel}>Cancel</AlertDialogCancel>
             <AlertDialogAction
+              variant="destructive"
               onClick={handleConfirm}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="px-6"
             >
               Delete
             </AlertDialogAction>
@@ -92,7 +93,7 @@ export function DeleteConfirmationDialog({
           <Button
             onClick={handleConfirm}
             variant="destructive"
-            className="w-full bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className="w-full"
           >
             Delete
           </Button>

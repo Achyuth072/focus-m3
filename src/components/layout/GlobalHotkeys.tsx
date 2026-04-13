@@ -99,7 +99,7 @@ export function GlobalHotkeys({
   useHotkeys(
     "shift+1",
     () => {
-      setViewMode("grid");
+      setViewMode("list");
       if (pathname !== "/") router.push("/");
     },
     options,
@@ -119,7 +119,7 @@ export function GlobalHotkeys({
   useHotkeys(
     "shift+3",
     () => {
-      setViewMode("list");
+      setViewMode("grid");
       if (pathname !== "/") router.push("/");
     },
     options,

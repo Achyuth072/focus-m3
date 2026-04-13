@@ -15,13 +15,17 @@ export const priorities: {
   label: string;
   color: string;
 }[] = [
-  { value: 1, label: "P1", color: "bg-red-500 text-white hover:bg-red-600" },
+  {
+    value: 1,
+    label: "P1",
+    color: "bg-brand text-brand-foreground hover:bg-brand/90",
+  },
   {
     value: 2,
     label: "P2",
-    color: "bg-orange-500 text-white hover:bg-orange-600",
+    color: "bg-secondary/80 text-secondary-foreground",
   },
-  { value: 3, label: "P3", color: "bg-blue-500 text-white hover:bg-blue-600" },
+  { value: 3, label: "P3", color: "bg-secondary/40 text-secondary-foreground" },
   {
     value: 4,
     label: "P4",
@@ -31,9 +35,9 @@ export const priorities: {
 
 // Priority-specific icon colors for the trigger button
 const priorityIconColor: Record<number, string> = {
-  1: "text-red-500 fill-red-500",
-  2: "text-orange-500 fill-orange-500",
-  3: "text-blue-500 fill-blue-500",
+  1: "text-brand fill-brand/20",
+  2: "text-secondary-foreground/80",
+  3: "text-muted-foreground/60",
 };
 
 interface TaskPrioritySelectProps {
@@ -55,15 +59,15 @@ export function TaskPrioritySelect({
     <Select
       value={priority.toString()}
       onValueChange={(v) => {
-        trigger("LIGHT");
+        trigger("tick");
         setPriority(parseInt(v) as 1 | 2 | 3 | 4);
       }}
       onOpenChange={(open) => {
-        if (!open) trigger("LIGHT");
+        if (!open) trigger("tick");
       }}
     >
       <SelectTrigger
-        onPointerDown={() => trigger("MEDIUM")}
+        onPointerDown={() => trigger("toggle")}
         className={cn(
           // Base — exactly matches the Evening / Subtasks / DatePicker tags
           "h-10 transition-all shrink-0 [&>svg]:hidden shadow-none border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-lg outline-none focus:ring-0 focus:outline-none",

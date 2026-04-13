@@ -31,7 +31,7 @@ export function FloatingTimer() {
     !isPipActive;
 
   const handlePlayPause = () => {
-    trigger("MEDIUM");
+    trigger("toggle");
     if (state.isRunning) {
       pause();
     } else {
@@ -40,12 +40,12 @@ export function FloatingTimer() {
   };
 
   const handleMaximize = () => {
-    trigger("LIGHT");
+    trigger("tick");
     router.push("/focus");
   };
 
   const handleClose = () => {
-    trigger("HEAVY");
+    trigger("thud");
     pause();
   };
 
@@ -79,12 +79,15 @@ export function FloatingTimer() {
             <button
               onClick={handlePlayPause}
               aria-label={state.isRunning ? "Pause timer" : "Start timer"}
-              className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:opacity-90 active:scale-95 transition-all"
+              className="h-10 w-10 rounded-full bg-brand text-brand-foreground flex items-center justify-center hover:shadow-brand/20 active:scale-95 transition-all shadow-md"
             >
               {state.isRunning ? (
-                <Pause className="h-4 w-4" />
+                <Pause className="h-4 w-4 fill-current" strokeWidth={2.25} />
               ) : (
-                <Play className="h-4 w-4 ml-0.5" />
+                <Play
+                  className="h-4 w-4 ml-0.5 fill-current"
+                  strokeWidth={2.25}
+                />
               )}
             </button>
 

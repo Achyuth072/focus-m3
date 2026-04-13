@@ -1,7 +1,7 @@
 "use client";
 
+import { CheckSquare, Plus } from "lucide-react";
 import { useState, useMemo, useCallback } from "react";
-
 import {
   KeyboardSensor,
   MouseSensor,
@@ -15,6 +15,8 @@ import {
   closestCenter,
   DndContext,
 } from "@dnd-kit/core";
+import { Button } from "@/components/ui/button";
+import { useTaskActions } from "@/components/TaskActionsProvider";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { useTasks } from "@/lib/hooks/useTasks";
 import { useProjects } from "@/lib/hooks/useProjects";
@@ -65,6 +67,7 @@ export default function TaskList({
   const deleteMutation = useDeleteTask();
   const toggleMutation = useToggleTask();
   const { setSortBy, viewMode } = useUiStore();
+  const { openAddTask } = useTaskActions();
   const { trigger } = useHaptic();
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -77,7 +80,8 @@ export default function TaskList({
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        distance: 15,
+        delay: 250,
+        tolerance: 5,
       },
     }),
     useSensor(KeyboardSensor, {
@@ -109,7 +113,7 @@ export default function TaskList({
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
-    trigger("MEDIUM");
+    trigger("toggle");
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -137,7 +141,7 @@ export default function TaskList({
 
     // Handle cross-section movement
     if (activeTask.is_evening !== shouldBeInEvening) {
-      trigger("HEAVY");
+      trigger("thud");
       updateMutation.mutate({
         id: activeTask.id,
         is_evening: shouldBeInEvening,
@@ -153,7 +157,7 @@ export default function TaskList({
     const newIndex = currentList.findIndex((task) => task.id === over.id);
 
     if (oldIndex !== -1 && newIndex !== -1) {
-      trigger("HEAVY");
+      trigger("thud");
       const reordered = arrayMove(currentList, oldIndex, newIndex);
 
       // Mutation triggers onMutate which updates cache instantly
@@ -253,7 +257,7 @@ export default function TaskList({
     const project = projectsData?.find((p) => p.id === draggingTask.project_id);
 
     return (
-      <div className="opacity-90 shadow-2xl scale-[1.02] origin-left transition-transform duration-200 pointer-events-none will-change-transform">
+      <div className="opacity-90 shadow-none scale-[1.02] origin-left transition-transform duration-200 pointer-events-none will-change-transform">
         <TaskGhost
           task={draggingTask}
           isDesktop={isDesktop}
@@ -293,10 +297,29 @@ export default function TaskList({
     processedTasks.completed.length === 0
   ) {
     return (
-      <div className="px-4 md:px-6 py-12 text-center">
-        <p className="text-muted-foreground">
-          No tasks yet. Create one to get started!
-        </p>
+      <div className="px-4 md:px-6 py-32 flex flex-col items-center justify-center text-center gap-6">
+        <div className="w-20 h-20 rounded-2xl bg-secondary/30 flex items-center justify-center mb-2">
+          <CheckSquare
+            strokeWidth={2.25}
+            className="h-10 w-10 text-muted-foreground/60"
+          />
+        </div>
+        <div className="space-y-2">
+          <h2 className="type-h2">No tasks yet</h2>
+          <p className="type-ui text-muted-foreground max-w-xs mx-auto">
+            Focus on what matters. Create your first task to start your journey.
+          </p>
+        </div>
+        <Button
+          onClick={() => {
+            trigger("toggle");
+            openAddTask();
+          }}
+          className="h-10 px-6 rounded-lg bg-brand text-brand-foreground hover:bg-brand/90 shadow-none transition-seijaku gap-2"
+        >
+          <Plus className="h-4 w-4" strokeWidth={2.25} />
+          <span>Create Task</span>
+        </Button>
       </div>
     );
   }

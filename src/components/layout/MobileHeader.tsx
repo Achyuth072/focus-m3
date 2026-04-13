@@ -61,7 +61,7 @@ export function MobileHeader() {
       <div className="flex items-center gap-2">
         {/* Dynamic Focus Timer */}
         <button
-          onPointerDown={() => trigger("MEDIUM")}
+          onPointerDown={() => trigger("toggle")}
           onClick={() => {
             router.push("/focus");
           }}
@@ -96,7 +96,7 @@ export function MobileHeader() {
               variant="ghost"
               size="icon"
               className="h-11 w-11 bg-transparent hover:bg-accent/40 active:scale-95 transition-all"
-              onPointerDown={() => trigger("MEDIUM")}
+              onPointerDown={() => trigger("toggle")}
             >
               <MoreVertical className="h-5 w-5" />
               <span className="sr-only">More options</span>
@@ -107,11 +107,14 @@ export function MobileHeader() {
               <>
                 <DropdownMenuItem
                   onClick={() => {
-                    trigger("MEDIUM");
+                    trigger("toggle");
                     openSheet();
                   }}
                 >
-                  <CheckCircle2 className="h-4 w-4 mr-2" />
+                  <CheckCircle2
+                    className="h-4 w-4 mr-2 text-foreground/70"
+                    strokeWidth={2.5}
+                  />
                   Completed Tasks
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -119,7 +122,7 @@ export function MobileHeader() {
             )}
             <DropdownMenuItem
               onClick={() => {
-                trigger("MEDIUM");
+                trigger("toggle");
                 router.push("/settings");
               }}
             >

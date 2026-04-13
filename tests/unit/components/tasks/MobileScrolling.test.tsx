@@ -49,6 +49,14 @@ vi.mock("@dnd-kit/utilities", () => ({
   },
 }));
 
+// Mock useTaskMutations
+vi.mock("@/lib/hooks/useTaskMutations", () => ({
+  useToggleTask: vi.fn(() => ({
+    mutate: vi.fn(),
+    isPending: false,
+  })),
+}));
+
 // Mock next/navigation
 vi.mock("next/navigation", () => ({
   useRouter: () => ({

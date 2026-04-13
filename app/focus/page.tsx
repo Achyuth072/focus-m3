@@ -80,7 +80,7 @@ export default function FocusPage() {
   };
 
   const handlePiP = async () => {
-    trigger("MEDIUM");
+    trigger("toggle");
     if (isPiPActive) {
       closePiP();
     } else {
@@ -97,21 +97,21 @@ export default function FocusPage() {
       {/* Close Button */}
       <motion.button
         onClick={() => router.back()}
-        onTapStart={() => trigger("HEAVY")}
+        onTapStart={() => trigger("thud")}
         whileTap={isPhone ? { scale: 0.95 } : {}}
         className={cn(
           buttonVariants({ variant: "ghost", size: "icon" }),
           "absolute top-4 left-4 h-14 w-14 rounded-full active:scale-95 transition-seijaku cursor-pointer",
         )}
       >
-        <X className="h-6 w-6" />
+        <X className="h-6 w-6" strokeWidth={2.25} />
       </motion.button>
 
       {/* PiP Button - Only show if supported and NOT on phone */}
       {isPiPSupported && !isPhone && (
         <motion.button
           onClick={handlePiP}
-          onTapStart={() => trigger("HEAVY")}
+          onTapStart={() => trigger("thud")}
           whileTap={isPhone ? { scale: 0.95 } : {}}
           className={cn(
             buttonVariants({ variant: "ghost", size: "icon" }),
@@ -121,7 +121,7 @@ export default function FocusPage() {
             isPiPActive ? "Close Picture-in-Picture" : "Open Picture-in-Picture"
           }
         >
-          <Minimize2 className="h-6 w-6" />
+          <Minimize2 className="h-6 w-6" strokeWidth={2.25} />
         </motion.button>
       )}
 
@@ -170,7 +170,7 @@ export default function FocusPage() {
               </p>
 
               <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/30 border border-secondary/50">
-                <Target className="h-3 w-3 text-primary" />
+                <Target className="h-3 w-3 text-primary" strokeWidth={2.25} />
                 <span className="type-ui text-[10px] font-semibold text-primary/90">
                   {todaySessionsCount} TODAY
                 </span>
@@ -185,14 +185,14 @@ export default function FocusPage() {
                   buttonVariants({ variant: "ghost", size: "icon" }),
                   "h-14 w-14 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-seijaku cursor-pointer",
                 )}
-                onTapStart={() => trigger("HEAVY")}
+                onTapStart={() => trigger("thud")}
                 whileTap={isPhone ? { scale: 0.95 } : {}}
                 onClick={() => {
                   stop();
                   if (isPiPActive) closePiP();
                 }}
               >
-                <Square className="h-5 w-5" />
+                <Square className="h-5 w-5" strokeWidth={2.25} />
               </motion.button>
 
               {/* Play/Pause - Main action button */}
@@ -201,14 +201,14 @@ export default function FocusPage() {
                   buttonVariants({ variant: "default", size: "icon" }),
                   "h-20 w-20 rounded-full transition-seijaku hover:scale-105 active:scale-95 active:opacity-90 cursor-pointer",
                 )}
-                onTapStart={() => trigger("HEAVY")}
+                onTapStart={() => trigger("thud")}
                 whileTap={isPhone ? { scale: 0.95 } : {}}
                 onClick={handlePlayPause}
               >
                 {state.isRunning ? (
-                  <Pause className="h-8 w-8" />
+                  <Pause className="h-8 w-8" strokeWidth={2.25} />
                 ) : (
-                  <Play className="h-8 w-8 ml-0.5" />
+                  <Play className="h-8 w-8 ml-0.5" strokeWidth={2.25} />
                 )}
               </motion.button>
 
@@ -218,11 +218,11 @@ export default function FocusPage() {
                   buttonVariants({ variant: "ghost", size: "icon" }),
                   "h-14 w-14 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 active:bg-accent/50 transition-seijaku cursor-pointer",
                 )}
-                onTapStart={() => trigger("HEAVY")}
+                onTapStart={() => trigger("thud")}
                 whileTap={isPhone ? { scale: 0.95 } : {}}
                 onClick={skip}
               >
-                <SkipForward className="h-5 w-5" />
+                <SkipForward className="h-5 w-5" strokeWidth={2.25} />
               </motion.button>
             </div>
 

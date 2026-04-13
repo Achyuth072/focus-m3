@@ -94,7 +94,7 @@ describe("TaskSheet", () => {
     await act(async () => {
       renderWithQuery(<TaskSheet open={true} onClose={() => {}} />);
     });
-    expect(screen.getByText("New Task")).toBeInTheDocument();
+    expect(await screen.findByText("New Task")).toBeInTheDocument();
   });
 
   it('renders "Edit Task" header in edit mode', async () => {
@@ -109,14 +109,14 @@ describe("TaskSheet", () => {
         <TaskSheet open={true} onClose={() => {}} initialTask={mockTask} />,
       );
     });
-    expect(screen.getByText("Edit Task")).toBeInTheDocument();
+    expect(await screen.findByText("Edit Task")).toBeInTheDocument();
   });
 
   it("validates: shows error for content > 500 chars", async () => {
     await act(async () => {
       renderWithQuery(<TaskSheet open={true} onClose={() => {}} />);
     });
-    const input = screen.getByPlaceholderText("What needs to be done?");
+    const input = await screen.findByPlaceholderText("What needs to be done?");
 
     await act(async () => {
       fireEvent.change(input, { target: { value: "a".repeat(501) } });
@@ -142,10 +142,10 @@ describe("TaskSheet", () => {
     });
 
     // Verify we're in edit mode
-    expect(screen.getByText("Edit Task")).toBeInTheDocument();
+    expect(await screen.findByText("Edit Task")).toBeInTheDocument();
 
     // Change content
-    const input = screen.getByPlaceholderText("What needs to be done?");
+    const input = await screen.findByPlaceholderText("What needs to be done?");
     await act(async () => {
       fireEvent.change(input, { target: { value: "Updated Task Content" } });
     });
@@ -169,7 +169,7 @@ describe("TaskSheet", () => {
         }),
       );
       // Verify signature haptic for task update
-      expect(mockHapticTrigger).toHaveBeenCalledWith("HEAVY");
+      expect(mockHapticTrigger).toHaveBeenCalledWith("thud");
     });
   });
 });

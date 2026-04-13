@@ -12,6 +12,7 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
+  adjustFontFallback: true,
 });
 
 const jetbrains = JetBrains_Mono({

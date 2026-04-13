@@ -40,20 +40,20 @@ export function ImportExportMenu({ events }: ImportExportMenuProps) {
   const [isImporting, setIsImporting] = useState(false);
 
   const handleExport = () => {
-    trigger("HEAVY");
+    trigger("thud");
     try {
       downloadICS(events);
       toast.success("Calendar exported to .ics");
-      trigger("SUCCESS");
+      trigger("success");
     } catch (err) {
       console.error("Export failed:", err);
       toast.error("Failed to export calendar");
-      trigger("WARNING");
+      trigger("thud");
     }
   };
 
   const handleImportClick = () => {
-    trigger("MEDIUM");
+    trigger("toggle");
     fileInputRef.current?.click();
   };
 
@@ -62,7 +62,7 @@ export function ImportExportMenu({ events }: ImportExportMenuProps) {
     if (!file) return;
 
     setIsImporting(true);
-    trigger("MEDIUM");
+    trigger("toggle");
 
     const loadingToastId = toast.loading(`Importing ${file.name}...`);
 
@@ -71,13 +71,13 @@ export function ImportExportMenu({ events }: ImportExportMenuProps) {
 
       if (parsedEvents.length === 0 && errors.length > 0) {
         toast.error("Failed to parse ICS file", { id: loadingToastId });
-        trigger("WARNING");
+        trigger("thud");
         return;
       }
 
       if (parsedEvents.length === 0) {
         toast.error("No valid events found in file", { id: loadingToastId });
-        trigger("WARNING");
+        trigger("thud");
         return;
       }
 
@@ -95,7 +95,7 @@ export function ImportExportMenu({ events }: ImportExportMenuProps) {
       toast.success(`Successfully imported ${importedCount} events`, {
         id: loadingToastId,
       });
-      trigger("SUCCESS");
+      trigger("success");
 
       if (errors.length > 0) {
         toast.warning(`${errors.length} events had parsing warnings.`);
@@ -103,7 +103,7 @@ export function ImportExportMenu({ events }: ImportExportMenuProps) {
     } catch (err) {
       console.error("Failed to import ICS:", err);
       toast.error("Critical error during import", { id: loadingToastId });
-      trigger("WARNING");
+      trigger("thud");
     } finally {
       setIsImporting(false);
       // Reset file input
@@ -129,7 +129,7 @@ export function ImportExportMenu({ events }: ImportExportMenuProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none transition-seijaku-fast"
+            className="h-8 w-8 transition-seijaku-fast"
             disabled={isImporting}
           >
             {isImporting ? (
@@ -152,7 +152,7 @@ export function ImportExportMenu({ events }: ImportExportMenuProps) {
           <div className="md:hidden">
             <DropdownMenuItem
               onClick={() => {
-                trigger("MEDIUM");
+                trigger("toggle");
                 // TODO: Wire up sync logic
               }}
               className="cursor-pointer gap-2 py-2"

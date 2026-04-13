@@ -56,7 +56,7 @@ export function DeleteUserDataDialog({
   // Haptic on open
   useEffect(() => {
     if (open) {
-      trigger("WARNING");
+      trigger("thud");
     }
   }, [open, trigger]);
 
@@ -107,7 +107,7 @@ export function DeleteUserDataDialog({
               <Button
                 variant="outline"
                 onClick={() => {
-                  trigger("LIGHT");
+                  trigger("tick");
                   onOpenChange(false);
                 }}
               >
@@ -118,10 +118,10 @@ export function DeleteUserDataDialog({
               variant="destructive"
               onClick={handleConfirm}
               disabled={!isMatch}
-              className="gap-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-all active:scale-95 px-6 font-semibold shadow-lg shadow-destructive/10 disabled:opacity-50"
+              className="gap-2 px-6 font-semibold shadow-none disabled:opacity-50"
             >
               <Trash2 className="h-4 w-4" strokeWidth={2.25} />
-              Delete Everything
+              Delete Account Data
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -145,16 +145,16 @@ export function DeleteUserDataDialog({
               variant="destructive"
               onClick={handleConfirm}
               disabled={!isMatch}
-              className="w-full gap-3 bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-all active:scale-95 h-12 text-base font-semibold shadow-lg shadow-destructive/10 disabled:opacity-50"
+              className="w-full gap-3 active:scale-95 h-12 text-base font-semibold shadow-none disabled:opacity-50"
             >
               <Trash2 className="h-4 w-4" strokeWidth={2.25} />
-              Confirm Deletion
+              Permanently Delete Data
             </Button>
             <DrawerClose asChild>
               <Button
                 variant="outline"
                 className="w-full h-12 text-muted-foreground"
-                onClick={() => trigger("LIGHT")}
+                onClick={() => trigger("tick")}
               >
                 Cancel
               </Button>

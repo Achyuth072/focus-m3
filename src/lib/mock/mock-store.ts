@@ -54,7 +54,7 @@ class MockStore {
         id: pWork,
         user_id: "guest",
         name: "Work 💼",
-        color: "#3b82f6",
+        color: "#4B6CB7", // Kanso Blue
         view_style: "list",
         is_inbox: false,
         is_archived: false,
@@ -65,7 +65,7 @@ class MockStore {
         id: pPersonal,
         user_id: "guest",
         name: "Personal 🏠",
-        color: "#10b981",
+        color: "#839B82", // Muted Sage
         view_style: "list",
         is_inbox: false,
         is_archived: false,
@@ -76,7 +76,7 @@ class MockStore {
         id: pSide,
         user_id: "guest",
         name: "Side Hustle 🚀",
-        color: "#8b5cf6",
+        color: "#8B6B80", // Plum
         view_style: "board",
         is_inbox: false,
         is_archived: false,
@@ -166,16 +166,16 @@ class MockStore {
       const monthOffset = Math.abs(i) / 30;
 
       // Higher probability of activity overall to fill heatmap
-      let probability = 0.7;
-      if (monthOffset > 4) probability = 0.5;
-      if (monthOffset > 8) probability = 0.35;
+      let probability = 0.8; // Boosted for positive stats
+      if (monthOffset > 4) probability = 0.6;
+      if (monthOffset > 8) probability = 0.45;
 
-      // Special case: High density in the last 30 days
-      if (Math.abs(i) <= 30) probability = 0.85;
+      // Special case: Very High density in the last 30 days
+      if (Math.abs(i) <= 30) probability = 0.92;
 
       // Weekends still have less activity but not empty
       if (dayOfWeek === 0 || dayOfWeek === 6) {
-        probability *= 0.4;
+        probability *= 0.6; // More weekend work recorded
       }
 
       if (Math.random() > probability) continue;
@@ -246,8 +246,8 @@ class MockStore {
         user_id: "guest",
         name: "Drink Water 💧",
         description: "8 glasses a day",
-        color: "#3b82f6",
-        icon: "Droplets",
+        color: "#5B7C99", // Earthy Blue
+        icon: "Droplet",
         created_at: nowIso,
         updated_at: nowIso,
         archived_at: null,
@@ -258,8 +258,8 @@ class MockStore {
         user_id: "guest",
         name: "Morning Exercise 🏃‍♂️",
         description: "30 mins activity",
-        color: "#10b981",
-        icon: "Zap",
+        color: "#A3B18A", // Muted Mint
+        icon: "Dumbbell",
         created_at: nowIso,
         updated_at: nowIso,
         archived_at: null,
@@ -270,8 +270,8 @@ class MockStore {
         user_id: "guest",
         name: "Read 📚",
         description: "20 pages",
-        color: "#8b5cf6",
-        icon: "BookOpen",
+        color: "#9F8189", // Lavender
+        icon: "Book",
         created_at: nowIso,
         updated_at: nowIso,
         archived_at: null,
@@ -284,8 +284,8 @@ class MockStore {
       const date = new Date(now.getTime() + i * oneDay);
       const dateStr = date.toISOString().split("T")[0];
 
-      // Drink Water: 90% completion
-      if (Math.random() < 0.9) {
+      // Drink Water: 95% completion
+      if (Math.random() < 0.95) {
         entries.push({
           id: `entry-${generateId()}`,
           habit_id: hWater,
@@ -295,9 +295,9 @@ class MockStore {
         });
       }
 
-      // Exercise: 65% completion, higher on weekdays
+      // Exercise: 75% completion, higher on weekdays
       const dayOfWeek = date.getDay();
-      const exerciseProb = dayOfWeek === 0 || dayOfWeek === 6 ? 0.4 : 0.75;
+      const exerciseProb = dayOfWeek === 0 || dayOfWeek === 6 ? 0.5 : 0.85;
       if (Math.random() < exerciseProb) {
         entries.push({
           id: `entry-${generateId()}`,
@@ -308,8 +308,8 @@ class MockStore {
         });
       }
 
-      // Read: 50% completion
-      if (Math.random() < 0.5) {
+      // Read: 65% completion
+      if (Math.random() < 0.65) {
         entries.push({
           id: `entry-${generateId()}`,
           habit_id: hRead,
@@ -402,12 +402,12 @@ class MockStore {
   }
 
   addTask(
-    task: Omit<Task, "id" | "user_id" | "created_at" | "updated_at">,
+    task: Omit<Task, "id" | "user_id" | "created_at" | "updated_at"> & { id?: string },
   ): Task {
     const now = new Date().toISOString();
     const newTask: Task = {
       ...task,
-      id: `guest-task-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: task.id || `guest-task-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       user_id: "guest",
       created_at: now,
       updated_at: now,

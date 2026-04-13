@@ -82,7 +82,7 @@ describe("CreateProjectDialog", () => {
           color: DEFAULT_PROJECT_COLOR,
           view_style: "list",
         });
-        expect(mockTrigger).toHaveBeenCalledWith("HEAVY");
+        expect(mockTrigger).toHaveBeenCalledWith("thud");
         expect(onOpenChange).toHaveBeenCalledWith(false);
       },
       { timeout: 3000 },
@@ -92,13 +92,13 @@ describe("CreateProjectDialog", () => {
   it("changes color when a color button is clicked", async () => {
     render(<CreateProjectDialog open={true} onOpenChange={vi.fn()} />);
 
-    // PROJECT_COLORS[0] is "Coral" (#FF6B6B)
-    const coralColor = screen.getByLabelText("Coral");
+    // PROJECT_COLORS[0] is "Sumi Ink" (#1A1A1A)
+    const sumiInk = screen.getByLabelText("Sumi Ink");
     await act(async () => {
-      fireEvent.click(coralColor);
+      fireEvent.click(sumiInk);
     });
 
-    expect(coralColor).toHaveAttribute("aria-checked", "true");
-    expect(mockTrigger).toHaveBeenCalledWith("MEDIUM");
+    expect(sumiInk).toHaveAttribute("aria-checked", "true");
+    expect(mockTrigger).toHaveBeenCalledWith("toggle");
   });
 });

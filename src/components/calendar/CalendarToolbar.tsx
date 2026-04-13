@@ -86,7 +86,7 @@ export function CalendarToolbar({
   return (
     <div
       className={cn(
-        "flex flex-row items-center justify-between gap-1 px-2 py-2 sm:p-4 md:p-6 border-b bg-background/60 backdrop-blur-xl sticky top-0 z-20 shadow-sm overflow-hidden",
+        "flex flex-row items-center justify-between gap-1 px-4 md:px-6 py-2 md:py-4 border-b bg-background/60 backdrop-blur-xl sticky top-0 z-20 shadow-sm overflow-hidden",
         className,
       )}
     >
@@ -96,12 +96,12 @@ export function CalendarToolbar({
           variant="ghost"
           size={isMobile ? "icon" : "default"}
           onClick={() => {
-            trigger("LIGHT");
+            trigger("tick");
             goToToday();
           }}
           className="h-9 bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none transition-seijaku-fast"
         >
-          <CalendarIcon className="h-4 w-4 md:mr-2" />
+          <CalendarIcon className="h-4 w-4 md:mr-2" strokeWidth={2.25} />
           <span className="hidden md:inline">Today</span>
         </Button>
 
@@ -111,29 +111,29 @@ export function CalendarToolbar({
             size="icon"
             className="h-9 w-9 shadow-none transition-seijaku-fast rounded-full"
             onClick={() => {
-              trigger("LIGHT");
+              trigger("tick");
               prev();
             }}
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-4 w-4" strokeWidth={2.25} />
           </Button>
           <Button
             variant="ghost"
             size="icon"
             className="h-9 w-9 shadow-none transition-seijaku-fast rounded-full"
             onClick={() => {
-              trigger("LIGHT");
+              trigger("tick");
               next();
             }}
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-4 w-4" strokeWidth={2.25} />
           </Button>
         </div>
       </div>
 
       {/* Center: Flexible Date Label */}
       <div className="flex-1 flex justify-center min-w-0 px-1 sm:px-2 overflow-hidden">
-        <div className="text-base sm:text-xl md:text-2xl font-bold tracking-tight truncate max-w-full">
+        <div className="text-base sm:text-xl md:text-[32px] font-semibold tracking-[-0.03em] truncate max-w-full">
           {getDateLabel()}
         </div>
       </div>
@@ -143,7 +143,7 @@ export function CalendarToolbar({
         <Select
           value={view}
           onValueChange={(v) => {
-            trigger("MEDIUM");
+            trigger("toggle");
             setView(v as CalendarView);
           }}
         >
@@ -166,29 +166,28 @@ export function CalendarToolbar({
             variant="ghost"
             size="sm"
             onClick={() => {
-              trigger("LIGHT");
-              onCreateEvent();
-            }}
-            className="hidden md:flex h-9 items-center gap-2 bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none"
-          >
-            <Plus className="h-4 w-4" />
-            <span>New Event</span>
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              trigger("MEDIUM");
+              trigger("toggle");
               // TODO: Trigger manual event refresh
             }}
             className="hidden md:flex h-9 w-9 p-0 items-center justify-center bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none"
           >
-            <RefreshCw className="h-4 w-4" />
+            <RefreshCw className="h-4 w-4" strokeWidth={2.25} />
           </Button>
 
           {/* Import/Export Menu (The triple dot ⋮ on mobile) */}
           <ImportExportMenu events={events} />
+
+          <Button
+            size="sm"
+            onClick={() => {
+              trigger("tick");
+              onCreateEvent();
+            }}
+            className="hidden md:flex h-9 items-center gap-2 rounded-lg bg-brand text-brand-foreground hover:bg-brand/90 border-none shadow-sm shadow-brand/10 transition-seijaku shrink-0"
+          >
+            <Plus className="h-4 w-4" strokeWidth={2.25} />
+            <span>New Event</span>
+          </Button>
         </div>
       </div>
     </div>

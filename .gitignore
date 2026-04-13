@@ -68,3 +68,4 @@ tests/unit/*.txt
 # Docker data
 /docker_data/
 
+.vercel/

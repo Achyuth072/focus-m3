@@ -3,7 +3,15 @@
 import { useCallback } from "react";
 import { useUiStore } from "@/lib/store/uiStore";
 import { useMediaQuery } from "./useMediaQuery";
-import { HAPTIC_PATTERNS, HapticPattern } from "@/lib/constants/haptics";
+
+export type HapticSignature = "tick" | "toggle" | "thud" | "success";
+
+const SIGNATURES: Record<HapticSignature, number | number[]> = {
+  tick: 10,
+  toggle: 15,
+  thud: 50,
+  success: [10, 50],
+};
 
 export function useHaptic() {
   const { hapticsEnabled } = useUiStore();
@@ -12,18 +20,15 @@ export function useHaptic() {
   );
 
   const trigger = useCallback(
-    (pattern: HapticPattern | number | number[] = "HEAVY") => {
+    (signature: HapticSignature = "tick") => {
       if (
         hapticsEnabled &&
         isPhone &&
         typeof navigator !== "undefined" &&
         navigator.vibrate
       ) {
-        const vibrationPattern =
-          typeof pattern === "number" || Array.isArray(pattern)
-            ? pattern
-            : HAPTIC_PATTERNS[pattern as HapticPattern];
-        navigator.vibrate(vibrationPattern as number | number[]);
+        const vibrationPattern = SIGNATURES[signature];
+        navigator.vibrate(vibrationPattern);
       }
     },
     [hapticsEnabled, isPhone],
