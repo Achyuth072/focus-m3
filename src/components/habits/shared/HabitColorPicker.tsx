@@ -59,7 +59,7 @@ export function HabitColorPicker({
             role="radio"
             aria-checked={value === c.value}
             onClick={() => {
-              trigger("MEDIUM");
+              trigger("tick");
               onChange(c.value);
             }}
             className={cn(
@@ -95,7 +95,7 @@ export function HabitColorPicker({
             role="radio"
             aria-checked={value === c.value}
             onClick={() => {
-              trigger("MEDIUM");
+              trigger("tick");
               onChange(c.value);
             }}
             className={cn(
