@@ -55,7 +55,7 @@ export function MobileHeader() {
   return (
     <header className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between h-[calc(4rem+env(safe-area-inset-top,0px))] px-4 pt-[env(safe-area-inset-top,0px)] border-b bg-sidebar md:hidden">
       {/* Left: Hamburger Menu */}
-      <SidebarTrigger className="h-11 w-11 active:scale-95 transition-all" />
+      <SidebarTrigger className="h-9 w-9 active:scale-95 transition-all" />
 
       {/* Right: Focus Timer + More Menu */}
       <div className="flex items-center gap-2">
@@ -95,7 +95,7 @@ export function MobileHeader() {
             <Button
               variant="ghost"
               size="icon"
-              className="h-11 w-11 bg-transparent hover:bg-accent/40 active:scale-95 transition-all"
+              className="h-9 w-9 bg-transparent hover:bg-accent/40 active:scale-95 transition-all"
               onPointerDown={() => trigger("toggle")}
             >
               <MoreVertical className="h-5 w-5" />

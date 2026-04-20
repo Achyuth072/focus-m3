@@ -30,6 +30,8 @@ import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 import { SyncIndicator } from "@/components/ui/SyncIndicator";
 
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 interface TasksPageHeaderProps {
   currentSort: SortOption;
   currentGroup: GroupOption;
@@ -56,63 +58,46 @@ export function TasksPageHeader({
   const isFilterActive = currentSort !== "date" || currentGroup !== "none";
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-3">
       <SyncIndicator />
-      <div className="flex h-8 items-stretch overflow-hidden rounded-lg border border-border bg-background shadow-none">
-        <Button
-          variant="ghost"
-          size="sm"
-          className={cn(
-            "h-full w-8 p-0 rounded-none transition-all duration-200 border-r border-input/50 last:border-r-0",
-            viewMode === "list"
-              ? "bg-brand/10 text-brand shadow-none"
-              : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80",
-          )}
-          onClick={() => {
-            trigger("toggle");
-            onViewModeChange("list");
-          }}
-          title="List View (Shift+1)"
-        >
-          <List className="h-4 w-4" strokeWidth={2.25} />
-        </Button>
-        {isDesktop && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className={cn(
-              "h-full w-8 p-0 rounded-none transition-all duration-200 border-r border-input/50 last:border-r-0",
-              viewMode === "board"
-                ? "bg-brand/10 text-brand shadow-none"
-                : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80",
-            )}
-            onClick={() => {
-              trigger("toggle");
-              onViewModeChange("board");
-            }}
-            title="Board View (Shift+2)"
+
+      <Tabs
+        value={viewMode}
+        onValueChange={(v) => {
+          trigger("toggle");
+          onViewModeChange(v as "list" | "grid" | "board");
+        }}
+        className="h-10"
+      >
+        <TabsList className="bg-secondary/10 p-1 rounded-lg h-10 border border-border/40 shadow-none">
+          <TabsTrigger
+            value="list"
+            className="rounded-md gap-2 px-2.5 text-[13px] font-medium tracking-tight data-[state=active]:bg-brand data-[state=active]:text-brand-foreground data-[state=active]:shadow-none transition-all h-8 border border-transparent data-[state=active]:border-brand/20"
+            title="List View (Shift+1)"
           >
-            <KanbanSquare className="h-4 w-4" strokeWidth={2.25} />
-          </Button>
-        )}
-        <Button
-          variant="ghost"
-          size="sm"
-          className={cn(
-            "h-full w-8 p-0 rounded-none transition-all duration-200 border-r border-input/50 last:border-r-0",
-            viewMode === "grid"
-              ? "bg-brand/10 text-brand shadow-none"
-              : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80",
+            <List className="h-4 w-4" strokeWidth={2.25} />
+            <span className="hidden md:inline">List</span>
+          </TabsTrigger>
+          {isDesktop && (
+            <TabsTrigger
+              value="board"
+              className="rounded-md gap-2 px-2.5 text-[13px] font-medium tracking-tight data-[state=active]:bg-brand data-[state=active]:text-brand-foreground data-[state=active]:shadow-none transition-all h-8 border border-transparent data-[state=active]:border-brand/20"
+              title="Board View (Shift+2)"
+            >
+              <KanbanSquare className="h-4 w-4" strokeWidth={2.25} />
+              <span className="hidden md:inline">Board</span>
+            </TabsTrigger>
           )}
-          onClick={() => {
-            trigger("toggle");
-            onViewModeChange("grid");
-          }}
-          title="Grid View (Shift+3)"
-        >
-          <LayoutGrid className="h-4 w-4" strokeWidth={2.25} />
-        </Button>
-      </div>
+          <TabsTrigger
+            value="grid"
+            className="rounded-md gap-2 px-2.5 text-[13px] font-medium tracking-tight data-[state=active]:bg-brand data-[state=active]:text-brand-foreground data-[state=active]:shadow-none transition-all h-8 border border-transparent data-[state=active]:border-brand/20"
+            title="Grid View (Shift+3)"
+          >
+            <LayoutGrid className="h-4 w-4" strokeWidth={2.25} />
+            <span className="hidden md:inline">Grid</span>
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -120,7 +105,7 @@ export function TasksPageHeader({
             variant="ghost"
             size="sm"
             className={cn(
-              "h-8 w-8 p-0 relative bg-secondary hover:bg-secondary/80 border border-border",
+              "h-9 w-9 p-0 relative bg-secondary hover:bg-secondary/80 border border-border",
             )}
             onPointerDown={() => trigger("toggle")}
           >
@@ -172,21 +157,21 @@ export function TasksPageHeader({
         variant="ghost"
         size="sm"
         onClick={openSheet}
-        className="hidden md:flex items-center gap-2 bg-secondary hover:bg-secondary/80 border border-border"
+        className="hidden md:flex h-9 items-center gap-2 bg-secondary hover:bg-secondary/80 border border-border px-3 text-[13px] font-medium"
       >
         <CheckCircle2
           className="h-4 w-4 text-foreground/70"
           strokeWidth={2.25}
         />
-        Completed
+        <span>Completed</span>
       </Button>
 
       <Button
         size="sm"
         onClick={onNewTask}
-        className="hidden md:flex h-9 items-center gap-2 rounded-lg bg-brand text-brand-foreground hover:bg-brand/90 border-none shadow-sm shadow-brand/10 transition-seijaku shrink-0"
+        className="hidden md:flex h-9 items-center gap-2 rounded-lg bg-brand text-brand-foreground hover:bg-brand/90 border-none shadow-sm shadow-brand/10 transition-seijaku shrink-0 px-4 text-[13px] font-semibold"
       >
-        <Plus className="h-4 w-4" strokeWidth={2.25} />
+        <Plus className="h-4 w-4" strokeWidth={2.5} />
         <span>New Task</span>
       </Button>
     </div>

@@ -176,7 +176,7 @@ export function TaskCreateView({
             variant="ghost"
             size="sm"
             className={cn(
-              "h-10 px-4 transition-seijaku-fast text-muted-foreground hover:text-foreground bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none gap-2 shrink-0 rounded-lg",
+              "h-9 px-3 transition-all text-muted-foreground hover:text-foreground border border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-none gap-1.5 shrink-0 rounded-lg",
               isEvening &&
                 "text-brand bg-brand/10 border-transparent hover:bg-brand/20 hover:text-brand",
             )}
@@ -203,7 +203,7 @@ export function TaskCreateView({
               setShowSubtasks(!showSubtasks);
             }}
             className={cn(
-              "h-10 w-10 p-0 transition-seijaku-fast text-muted-foreground hover:text-foreground bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none group [&_svg]:!size-5 shrink-0 rounded-lg",
+              "h-9 w-9 p-0 transition-all text-muted-foreground hover:text-foreground border border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-none group [&_svg]:!size-4 shrink-0 rounded-lg",
               showSubtasks &&
                 "text-brand bg-brand/10 border-transparent hover:bg-brand/20 hover:text-brand",
             )}
@@ -261,7 +261,7 @@ export function TaskCreateView({
         >
           <SelectTrigger
             onPointerDown={() => trigger("toggle")}
-            className="h-10 w-[140px] type-ui border-border/50 bg-secondary/40 hover:bg-secondary/60 shadow-none focus:ring-0 transition-seijaku-fast rounded-lg text-foreground [&_svg]:opacity-100 [&_svg]:text-foreground"
+            className="h-9 w-auto min-w-[130px] max-w-[200px] type-ui border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-none focus:ring-0 transition-all rounded-lg text-foreground [&_svg]:opacity-100 [&_svg]:text-foreground px-3"
           >
             <SelectValue placeholder="Inbox" />
           </SelectTrigger>
@@ -296,7 +296,7 @@ export function TaskCreateView({
 
         <Button
           size="sm"
-          className="h-10 w-10 p-0 rounded-lg [&_svg]:size-5 bg-brand hover:bg-brand/90 text-brand-foreground shadow-sm shadow-brand/10 transition-seijaku"
+          className="h-9 w-9 p-0 rounded-lg [&_svg]:size-4 bg-brand hover:bg-brand/90 text-brand-foreground shadow-sm shadow-brand/10 transition-seijaku"
           onClick={() => {
             trigger("success");
             onSubmit();

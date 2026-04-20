@@ -117,13 +117,13 @@ export function TimeGrid({
               )}
             >
               {/* Header for the Day - z-40 to be above events (10) and indicator (30) */}
-              <div className="sticky top-0 z-40 bg-background border-b border-border/40 h-16 flex flex-col items-center justify-center">
+              <div className="sticky top-0 z-40 bg-background border-b border-border/40 h-20 flex flex-col items-center justify-center gap-1">
                 <div
                   className={cn(
-                    "text-[10px] md:text-xs",
+                    "text-[10px] md:text-xs uppercase tracking-wider",
                     isToday
-                      ? "text-brand font-semibold"
-                      : "text-muted-foreground",
+                      ? "text-brand font-bold"
+                      : "text-muted-foreground/70 font-medium",
                   )}
                 >
                   {format(column.date, "EEE")}
@@ -135,9 +135,9 @@ export function TimeGrid({
                   }}
                   className={cn(
                     "text-lg md:text-xl font-bold inline-flex items-center justify-center transition-all",
-                    "hover:bg-brand/10 rounded-lg p-1 -m-1",
+                    "hover:bg-brand/10 rounded-lg w-9 h-9 md:w-11 md:h-11",
                     isToday &&
-                      "w-7 h-7 md:w-8 md:h-8 bg-brand text-white shadow-sm hover:bg-brand/90",
+                      "bg-brand text-white shadow-sm hover:bg-brand/90",
                   )}
                 >
                   {format(column.date, "d")}
@@ -169,7 +169,7 @@ export function TimeGrid({
                       "absolute rounded-sm px-1 md:px-2 py-1 text-[10px] md:text-xs cursor-pointer overflow-hidden flex flex-col gap-0.5",
                       "z-10 hover:z-20 hover:brightness-95 active:scale-[0.98] transition-all",
                       isTask
-                        ? "bg-transparent border-[1.5px] border-brand text-foreground"
+                        ? "bg-brand/8 border-t border-t-border/40 border-r border-r-border/40 border-b border-b-border/40 text-foreground"
                         : "bg-brand/90 text-white border-l-2 border-brand",
                     )}
                     onClick={(e) => {
@@ -182,6 +182,10 @@ export function TimeGrid({
                       left: "1px",
                       right: "1px",
                       width: "calc(100% - 2px)",
+                      ...(isTask && {
+                        borderLeftColor: event.color || "#4B6CB7",
+                        borderLeftWidth: "4px",
+                      }),
                     }}
                   >
                     {/* Title */}

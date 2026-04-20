@@ -66,7 +66,7 @@ END:VCALENDAR`;
 
   test("returns no events for invalid content", () => {
     const ics = "This is not an ICS file";
-    const { events, errors } = parseICS(ics);
+    const { events } = parseICS(ics);
     expect(events).toHaveLength(0);
     // Note: node-ical doesn't always throw for random text, it just returns an empty object.
   });

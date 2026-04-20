@@ -1,8 +1,9 @@
 import type { NextConfig } from "next";
 import withSerwistInit from "@serwist/next";
 
-// @ts-ignore - factory exported via CommonJS require pattern
-const withBundleAnalyzer = require("@next/bundle-analyzer")({
+import bundleAnalyzer from "@next/bundle-analyzer";
+
+const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
   openAnalyzer: true,
 });

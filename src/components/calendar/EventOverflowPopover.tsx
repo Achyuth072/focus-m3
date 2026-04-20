@@ -61,9 +61,15 @@ export const EventOverflowPopover = memo(
                     className={cn(
                       "group flex flex-col gap-0.5 p-2 rounded-lg transition-all cursor-pointer",
                       isTask
-                        ? "bg-transparent border-[1.5px] border-brand hover:bg-brand/10"
+                        ? "bg-brand/8 border-t border-t-border/40 border-r border-r-border/40 border-b border-b-border/40 hover:bg-brand/12"
                         : "bg-brand text-white hover:brightness-110",
                     )}
+                    style={{
+                      ...(isTask && {
+                        borderLeftColor: event.color || "#4B6CB7",
+                        borderLeftWidth: "3px",
+                      }),
+                    }}
                   >
                     <span
                       className={cn(

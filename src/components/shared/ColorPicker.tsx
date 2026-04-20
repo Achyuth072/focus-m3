@@ -32,7 +32,7 @@ export function ColorPicker({
         ref={scrollRef}
         data-testid="color-picker"
         className={cn(
-          "flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-1 px-4 -mx-4 flex-nowrap",
+          "flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-1 px-2 -mx-2 flex-nowrap",
           className,
         )}
         role="radiogroup"
@@ -71,11 +71,11 @@ export function ColorPicker({
       className={cn("grid gap-1.5 w-full", className)}
     >
       {label && (
-        <Label className="px-1 text-xs text-muted-foreground/60">{label}</Label>
+        <Label className="text-xs text-muted-foreground/60">{label}</Label>
       )}
       <div
         ref={scrollRef}
-        className="flex flex-nowrap gap-2.5 overflow-x-auto scrollbar-hide py-3 px-4 -mx-4"
+        className="flex flex-nowrap gap-2.5 overflow-x-auto scrollbar-hide py-3 px-2 -mx-2"
         role="radiogroup"
         aria-label={ariaLabel}
       >

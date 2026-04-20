@@ -1,44 +1,52 @@
 import { renderHook, act } from "@testing-library/react";
 import { usePushNotifications } from "@/lib/hooks/usePushNotifications";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { removePushSubscription, syncPushSubscription } from "@/lib/push-api";
 
-// Mock store
 const mockSetNotificationsEnabled = vi.fn();
+let mockNotificationsEnabled = false;
+
 vi.mock("@/lib/store/uiStore", () => ({
   useUiStore: vi.fn(() => ({
-    notificationsEnabled: true, // Enable to trigger useEffect
+    notificationsEnabled: mockNotificationsEnabled,
     setNotificationsEnabled: mockSetNotificationsEnabled,
   })),
 }));
 
-// Mock API
 vi.mock("@/lib/push-api", () => ({
   syncPushSubscription: vi.fn(),
+  removePushSubscription: vi.fn(),
   sendPushNotification: vi.fn(),
 }));
 
 describe("usePushNotifications", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockNotificationsEnabled = false;
+
     Object.defineProperty(window, "Notification", {
       value: {
         permission: "granted",
-        requestPermission: vi.fn(),
+        requestPermission: vi.fn().mockResolvedValue("granted"),
       },
       writable: true,
     });
-    // Mock navigator
+
     Object.defineProperty(navigator, "serviceWorker", {
       value: {
         ready: Promise.resolve({
           pushManager: {
             getSubscription: vi.fn().mockResolvedValue(null),
-            subscribe: vi.fn().mockResolvedValue({ endpoint: "test" }),
+            subscribe: vi
+              .fn()
+              .mockResolvedValue({ endpoint: "https://new.test" }),
           },
+          showNotification: vi.fn(),
         }),
       },
       writable: true,
     });
+
     Object.defineProperty(window, "PushManager", {
       value: {},
       writable: true,
@@ -49,10 +57,7 @@ describe("usePushNotifications", () => {
     vi.restoreAllMocks();
   });
 
-  // Given: The hook is rendered
-  // When:  Dependencies are hoisted incorrectly
-  // Then:  It should throw a ReferenceError (which we catch here to verify failure)
-  it("TC-HOOK-01: should should not throw ReferenceError on mount", async () => {
+  it("TC-HOOK-01: should not throw on mount", async () => {
     await act(async () => {
       expect(() => {
         renderHook(() => usePushNotifications());
@@ -60,49 +65,39 @@ describe("usePushNotifications", () => {
     });
   });
 
-  // Given: VAPID public key is missing
-  // When:  subscribeToPush is called
-  // Then:  It should return null and log an error
   it("TC-HOOK-02: should handle missing VAPID key gracefully", async () => {
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY = ""; // Simulate missing key
+    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY = "";
 
-    // Re-render hook to pick up new env
     const { result } = renderHook(() => usePushNotifications());
 
-    // Trigger subscription (need permission granted in mock)
-    // We need to await the result
     const sub = await act(async () => {
       return await result.current.subscribeToPush();
     });
 
     expect(sub).toBeNull();
-    // Verify error logging
     expect(consoleSpy).toHaveBeenCalledWith("VAPID public key not configured");
 
     consoleSpy.mockRestore();
   });
 
-  // Given: Browser has existing subscription
-  // When:  Hook initializes
-  // Then:  It should sync subscription with backend
-  it("TC-HOOK-03: should sync existing subscription on mount", async () => {
-    // Mock existing subscription
-    const mockSub = {
-      endpoint: "https://existing.com",
+  it("TC-HOOK-03: should sync an existing subscription on mount when notifications are enabled", async () => {
+    mockNotificationsEnabled = true;
+
+    const existingSubscription = {
+      endpoint: "https://existing.test",
       unsubscribe: vi.fn(),
       toJSON: () => ({}),
     };
-
-    const getSubscriptionSpy = vi.fn().mockResolvedValue(mockSub);
 
     Object.defineProperty(navigator, "serviceWorker", {
       value: {
         ready: Promise.resolve({
           pushManager: {
-            getSubscription: getSubscriptionSpy,
+            getSubscription: vi.fn().mockResolvedValue(existingSubscription),
             subscribe: vi.fn(),
           },
+          showNotification: vi.fn(),
         }),
       },
       writable: true,
@@ -110,77 +105,107 @@ describe("usePushNotifications", () => {
 
     await act(async () => {
       renderHook(() => usePushNotifications());
-      // Wait for effects
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 50));
     });
 
-    // Verify sync was called
-    const { syncPushSubscription } = await import("@/lib/push-api");
-    expect(syncPushSubscription).toHaveBeenCalledWith(mockSub);
+    expect(syncPushSubscription).toHaveBeenCalledWith(existingSubscription);
   });
 
-  // Given: Permission is granted (passed as override)
-  // When:  subscribeToPush is called with the permission
-  // Then:  It should create subscription and sync
-  it("TC-HOOK-04: should subscribe when permission is passed directly", async () => {
-    // Reset mocks
-    vi.clearAllMocks();
-
-    const mockSub = {
-      endpoint: "https://new.com",
+  it("TC-HOOK-04: should force refresh an existing subscription when requested", async () => {
+    const oldSubscription = {
+      endpoint: "https://old.test",
+      unsubscribe: vi.fn().mockResolvedValue(true),
+      toJSON: () => ({}),
+    };
+    const newSubscription = {
+      endpoint: "https://new.test",
       unsubscribe: vi.fn(),
       toJSON: () => ({}),
     };
-    const subscribeSpy = vi.fn().mockResolvedValue(mockSub);
+
+    const subscribeSpy = vi.fn().mockResolvedValue(newSubscription);
 
     Object.defineProperty(navigator, "serviceWorker", {
       value: {
         ready: Promise.resolve({
           pushManager: {
-            getSubscription: vi.fn().mockResolvedValue(null),
+            getSubscription: vi.fn().mockResolvedValue(oldSubscription),
             subscribe: subscribeSpy,
           },
+          showNotification: vi.fn(),
         }),
       },
       writable: true,
     });
 
-    // Set valid VAPID key (valid base64 string)
     process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY =
       "BNPSNsXhfz1CMwPylzXlvTqv0XQlVLBR7xlNpLprGhVyjO30MTn0v0hwQ1x--Y0_nq42RG-FMqxGHKbsHxr0K20";
 
     const { result } = renderHook(() => usePushNotifications());
 
-    // Directly call subscribeToPush with permission override
     const sub = await act(async () => {
-      const res = await result.current.subscribeToPush("granted");
-      // Wait for async operations
-      await new Promise((resolve) => setTimeout(resolve, 50));
-      return res;
+      return await result.current.subscribeToPush("granted", {
+        forceRefresh: true,
+      });
     });
 
-    // Verify push subscription was created
+    expect(oldSubscription.unsubscribe).toHaveBeenCalled();
+    expect(removePushSubscription).toHaveBeenCalledWith("https://old.test");
     expect(subscribeSpy).toHaveBeenCalled();
-    expect(sub).not.toBeNull();
-    // Verify sync was called
-    const { syncPushSubscription } = await import("@/lib/push-api");
-    expect(syncPushSubscription).toHaveBeenCalledWith(mockSub);
+    expect(syncPushSubscription).toHaveBeenCalledWith(newSubscription);
+    expect(sub).toBe(newSubscription);
   });
 
-  // Given: notificationsEnabled is true, but no active subscription exists (e.g. cleared manually)
-  // When:  unsubscribe is called
-  // Then:  It should still set notificationsEnabled to false (fixing stuck toggle)
-  it("TC-HOOK-05: should disable notifications even if subscription is null", async () => {
-    // Reset mocks - standard setup where getSubscription returns null
-    vi.clearAllMocks();
+  it("TC-HOOK-05: should return permission and subscription from requestPermission", async () => {
+    const freshSubscription = {
+      endpoint: "https://fresh.test",
+      unsubscribe: vi.fn(),
+      toJSON: () => ({}),
+    };
 
     Object.defineProperty(navigator, "serviceWorker", {
       value: {
         ready: Promise.resolve({
           pushManager: {
             getSubscription: vi.fn().mockResolvedValue(null),
+            subscribe: vi.fn().mockResolvedValue(freshSubscription),
+          },
+          showNotification: vi.fn(),
+        }),
+      },
+      writable: true,
+    });
+
+    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY =
+      "BNPSNsXhfz1CMwPylzXlvTqv0XQlVLBR7xlNpLprGhVyjO30MTn0v0hwQ1x--Y0_nq42RG-FMqxGHKbsHxr0K20";
+
+    const { result } = renderHook(() => usePushNotifications());
+
+    const permissionResult = await act(async () => {
+      return await result.current.requestPermission({ forceRefresh: true });
+    });
+
+    expect(permissionResult).toEqual({
+      permission: "granted",
+      subscription: freshSubscription,
+    });
+  });
+
+  it("TC-HOOK-06: should disable notifications even if state subscription is null", async () => {
+    const existingSubscription = {
+      endpoint: "https://existing.test",
+      unsubscribe: vi.fn().mockResolvedValue(true),
+      toJSON: () => ({}),
+    };
+
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: {
+        ready: Promise.resolve({
+          pushManager: {
+            getSubscription: vi.fn().mockResolvedValue(existingSubscription),
             subscribe: vi.fn(),
           },
+          showNotification: vi.fn(),
         }),
       },
       writable: true,
@@ -188,12 +213,14 @@ describe("usePushNotifications", () => {
 
     const { result } = renderHook(() => usePushNotifications());
 
-    // Act
     await act(async () => {
       await result.current.unsubscribe();
     });
 
-    // Assert
+    expect(existingSubscription.unsubscribe).toHaveBeenCalled();
+    expect(removePushSubscription).toHaveBeenCalledWith(
+      "https://existing.test",
+    );
     expect(mockSetNotificationsEnabled).toHaveBeenCalledWith(false);
   });
 });

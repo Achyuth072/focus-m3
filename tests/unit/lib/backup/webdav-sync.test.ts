@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import {
   uploadWebDavBackup,
   testWebDavConnection,
@@ -17,7 +17,7 @@ describe("webdav-sync", () => {
 
   describe("testWebDavConnection", () => {
     it("returns success for valid credentials", async () => {
-      (global.fetch as any).mockResolvedValueOnce({
+      (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         status: 200,
       });
@@ -36,7 +36,7 @@ describe("webdav-sync", () => {
     });
 
     it("returns error for invalid credentials", async () => {
-      (global.fetch as any).mockResolvedValueOnce({
+      (global.fetch as Mock).mockResolvedValueOnce({
         ok: false,
         status: 401,
       });
@@ -49,7 +49,7 @@ describe("webdav-sync", () => {
 
   describe("uploadWebDavBackup", () => {
     it("uploads JSON to the correct path", async () => {
-      (global.fetch as any).mockResolvedValueOnce({
+      (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         status: 201,
       });

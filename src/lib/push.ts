@@ -6,6 +6,8 @@ const vapidSubject = process.env.VAPID_SUBJECT;
 
 if (publicVapidKey && privateVapidKey && vapidSubject) {
   webpush.setVapidDetails(vapidSubject, publicVapidKey, privateVapidKey);
+} else {
+  console.warn("[Push Init] VAPID configuration missing or incomplete");
 }
 
 export { webpush };

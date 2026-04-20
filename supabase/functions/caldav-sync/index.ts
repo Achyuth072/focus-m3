@@ -38,7 +38,7 @@ serve(async (req) => {
       throw new Error("Unauthorized");
     }
 
-    const { action, calendarId, password } = await req.json();
+    const { action, calendarId } = await req.json();
 
     if (action === "sync") {
       console.log(`Starting sync for calendar ${calendarId}...`);
@@ -64,7 +64,8 @@ serve(async (req) => {
       status: 400,
     });
   } catch (error: any) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    const err = error as Error;
+    return new Response(JSON.stringify({ error: err.message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 400,
     });

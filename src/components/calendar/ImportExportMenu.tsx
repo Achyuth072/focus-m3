@@ -129,7 +129,7 @@ export function ImportExportMenu({ events }: ImportExportMenuProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 transition-seijaku-fast"
+            className="h-9 w-9 bg-transparent hover:bg-transparent border-none shadow-none transition-seijaku-fast"
             disabled={isImporting}
           >
             {isImporting ? (
@@ -142,7 +142,7 @@ export function ImportExportMenu({ events }: ImportExportMenuProps) {
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"
-          className="w-56 shadow-lg border-border/40"
+          className="w-48 shadow-lg border-border/40"
         >
           {/* Calendar Management & Sync */}
           <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">

@@ -63,8 +63,10 @@ describe("MonthView Mobile Layout Resolution", () => {
     const monthView = screen.getByTestId("month-view");
     const grid = monthView.querySelector(".grid.grid-cols-7.border-b.border-r");
 
-    // Then: It should have the grid-rows-6 class
-    expect(grid?.className).toContain("grid-rows-6");
+    // Then: It should have the repeat(6, 1fr) style
+    expect((grid as HTMLElement)?.style.gridTemplateRows).toBe(
+      "repeat(6, 1fr)",
+    );
 
     // And all days (35 or 42 depending on how many leading/trailing are shown)
     // eachDayOfInterval will generate exactly the interval from startOfWeek to endOfWeek

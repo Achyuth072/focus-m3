@@ -16,6 +16,7 @@ import {
 } from "@/lib/hooks/useTaskMutations";
 import { useInboxProject } from "@/lib/hooks/useTasks";
 import { useProjects } from "@/lib/hooks/useProjects";
+import { useAuth } from "@/components/AuthProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient({
@@ -45,6 +46,14 @@ vi.mock("@/lib/hooks/useTasks", () => ({
 
 vi.mock("@/lib/hooks/useProjects", () => ({
   useProjects: vi.fn(),
+}));
+
+vi.mock("@/components/AuthProvider", () => ({
+  useAuth: vi.fn(() => ({ isGuestMode: true, user: { id: "user-123" } })),
+}));
+
+vi.mock("@/lib/hooks/useSubtasks", () => ({
+  useSubtasks: vi.fn(() => ({ data: [], isLoading: false })),
 }));
 
 const mockHapticTrigger = vi.fn();
@@ -109,7 +118,7 @@ describe("TaskSheet", () => {
         <TaskSheet open={true} onClose={() => {}} initialTask={mockTask} />,
       );
     });
-    expect(await screen.findByText("Edit Task")).toBeInTheDocument();
+    expect((await screen.findAllByText("Edit Task"))[0]).toBeInTheDocument();
   });
 
   it("validates: shows error for content > 500 chars", async () => {
@@ -142,7 +151,7 @@ describe("TaskSheet", () => {
     });
 
     // Verify we're in edit mode
-    expect(await screen.findByText("Edit Task")).toBeInTheDocument();
+    expect((await screen.findAllByText("Edit Task"))[0]).toBeInTheDocument();
 
     // Change content
     const input = await screen.findByPlaceholderText("What needs to be done?");

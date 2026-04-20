@@ -1,26 +1,38 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { POST as subscribePOST } from "@/../app/api/push/subscribe/route";
+import {
+  DELETE as unsubscribeDELETE,
+  POST as subscribePOST,
+} from "@/../app/api/push/subscribe/route";
 import { POST as sendPOST } from "@/../app/api/push/send/route";
 import { webpush } from "@/lib/push";
 
-// Mock Supabase Server Client
+const mockAuthGetUser = vi.fn();
+const mockFrom = vi.fn();
+const mockUpsert = vi.fn();
+
 const mockSupabase = {
   auth: {
-    getUser: vi.fn(),
+    getUser: mockAuthGetUser,
   },
-  from: vi.fn().mockReturnThis(),
-  upsert: vi.fn(),
-  select: vi.fn().mockReturnThis(),
-  eq: vi.fn().mockReturnThis(),
-  single: vi.fn(),
-  delete: vi.fn().mockReturnThis(),
+  from: mockFrom,
 };
+
+function createThenableBuilder<T>(result: T) {
+  const builder = {
+    eq: vi.fn(() => builder),
+    then: (
+      onFulfilled?: ((value: T) => unknown) | null,
+      onRejected?: ((reason: unknown) => unknown) | null,
+    ) => Promise.resolve(result).then(onFulfilled, onRejected),
+  };
+
+  return builder;
+}
 
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(() => Promise.resolve(mockSupabase)),
 }));
 
-// Mock web-push
 vi.mock("@/lib/push", () => ({
   webpush: {
     sendNotification: vi.fn(),
@@ -35,19 +47,19 @@ describe("Push Notification API Routes", () => {
   });
 
   describe("POST /api/push/subscribe", () => {
-    // Given: An authenticated user and a valid subscription
-    // When:  The subscribe endpoint is called
-    // Then:  It should save the subscription to the database
     it("TC-SUB-01: should save subscription for authenticated user", async () => {
-      mockSupabase.auth.getUser.mockResolvedValue({
+      mockAuthGetUser.mockResolvedValue({
         data: { user: { id: "user-123" } },
       });
-      mockSupabase.upsert.mockResolvedValue({ error: null });
+      mockFrom.mockReturnValue({
+        upsert: mockUpsert,
+      });
+      mockUpsert.mockResolvedValue({ error: null });
 
       const request = new Request("http://localhost/api/push/subscribe", {
         method: "POST",
         body: JSON.stringify({
-          subscription: { endpoint: "https://test.com" },
+          subscription: { endpoint: "https://test.com", keys: {} },
         }),
       });
 
@@ -56,17 +68,18 @@ describe("Push Notification API Routes", () => {
 
       expect(response.status).toBe(200);
       expect(body.success).toBe(true);
-      expect(mockSupabase.upsert).toHaveBeenCalledWith(
-        expect.objectContaining({ user_id: "user-123" }),
-        { onConflict: "user_id" },
+      expect(mockUpsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          user_id: "user-123",
+          endpoint: "https://test.com",
+          subscription: { endpoint: "https://test.com", keys: {} },
+        }),
+        { onConflict: "user_id,endpoint" },
       );
     });
 
-    // Given: A request without authentication
-    // When:  The subscribe endpoint is called
-    // Then:  It should return 401 Unauthorized
     it("TC-SUB-02: should return 401 for unauthenticated users", async () => {
-      mockSupabase.auth.getUser.mockResolvedValue({ data: { user: null } });
+      mockAuthGetUser.mockResolvedValue({ data: { user: null } });
 
       const request = new Request("http://localhost/api/push/subscribe", {
         method: "POST",
@@ -77,11 +90,8 @@ describe("Push Notification API Routes", () => {
       expect(response.status).toBe(401);
     });
 
-    // Given: A request with missing subscription data
-    // When:  The subscribe endpoint is called
-    // Then:  It should return 400 Bad Request
     it("TC-SUB-03: should return 400 when subscription is missing", async () => {
-      mockSupabase.auth.getUser.mockResolvedValue({
+      mockAuthGetUser.mockResolvedValue({
         data: { user: { id: "user-123" } },
       });
 
@@ -94,18 +104,20 @@ describe("Push Notification API Routes", () => {
       expect(response.status).toBe(400);
     });
 
-    // Given: A database error occurs
-    // When:  The subscribe endpoint is called
-    // Then:  It should return 500 Internal Server Error
     it("TC-SUB-04: should return 500 on database error", async () => {
-      mockSupabase.auth.getUser.mockResolvedValue({
+      mockAuthGetUser.mockResolvedValue({
         data: { user: { id: "user-123" } },
       });
-      mockSupabase.upsert.mockResolvedValue({ error: { message: "DB Error" } });
+      mockFrom.mockReturnValue({
+        upsert: mockUpsert,
+      });
+      mockUpsert.mockResolvedValue({ error: { message: "DB Error" } });
 
       const request = new Request("http://localhost/api/push/subscribe", {
         method: "POST",
-        body: JSON.stringify({ subscription: { endpoint: "..." } }),
+        body: JSON.stringify({
+          subscription: { endpoint: "https://test.com", keys: {} },
+        }),
       });
 
       const response = await subscribePOST(request);
@@ -113,20 +125,59 @@ describe("Push Notification API Routes", () => {
     });
   });
 
+  describe("DELETE /api/push/subscribe", () => {
+    it("TC-UNSUB-01: should delete a subscription by endpoint for the current user", async () => {
+      mockAuthGetUser.mockResolvedValue({
+        data: { user: { id: "user-123" } },
+      });
+
+      const deleteBuilder = createThenableBuilder({ error: null });
+      const deleteMock = vi.fn(() => deleteBuilder);
+      mockFrom.mockReturnValue({
+        delete: deleteMock,
+      });
+
+      const request = new Request(
+        "http://localhost/api/push/subscribe?endpoint=https%3A%2F%2Ftest.com",
+        {
+          method: "DELETE",
+        },
+      );
+
+      const response = await unsubscribeDELETE(request);
+      const body = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(body.success).toBe(true);
+      expect(deleteBuilder.eq).toHaveBeenNthCalledWith(
+        1,
+        "user_id",
+        "user-123",
+      );
+      expect(deleteBuilder.eq).toHaveBeenNthCalledWith(
+        2,
+        "endpoint",
+        "https://test.com",
+      );
+    });
+  });
+
   describe("POST /api/push/send", () => {
-    // Given: An authenticated user and a valid target user with a subscription
-    // When:  The send endpoint is called
-    // Then:  It should trigger a push notification via web-push
-    it("TC-SND-01: should send notification to target user", async () => {
-      mockSupabase.auth.getUser.mockResolvedValue({
+    it("TC-SND-01: should send notification to the requested endpoint", async () => {
+      mockAuthGetUser.mockResolvedValue({
         data: { user: { id: "sender-123" } },
       });
-      mockSupabase.single.mockResolvedValue({
-        data: { subscription: { endpoint: "https://test.com" } },
+
+      const selectBuilder = createThenableBuilder({
+        data: [{ id: "sub-1", subscription: { endpoint: "https://test.com" } }],
         error: null,
       });
+      mockFrom.mockReturnValue({
+        select: vi.fn(() => selectBuilder),
+      });
+
       vi.mocked(webpush.sendNotification).mockResolvedValue({
-        statusCode: 200,
+        statusCode: 201,
         headers: {},
         body: "",
       });
@@ -135,6 +186,7 @@ describe("Push Notification API Routes", () => {
         method: "POST",
         body: JSON.stringify({
           userId: "target-456",
+          endpoint: "https://test.com",
           title: "Hello",
           body: "World",
         }),
@@ -144,20 +196,44 @@ describe("Push Notification API Routes", () => {
       const body = await response.json();
 
       expect(response.status).toBe(200);
-      expect(body.success).toBe(true);
-      expect(webpush.sendNotification).toHaveBeenCalled();
+      expect(body).toEqual({
+        success: true,
+        sentCount: 1,
+        failedCount: 0,
+        endpointMatched: true,
+      });
+      expect(selectBuilder.eq).toHaveBeenNthCalledWith(
+        1,
+        "user_id",
+        "target-456",
+      );
+      expect(selectBuilder.eq).toHaveBeenNthCalledWith(
+        2,
+        "endpoint",
+        "https://test.com",
+      );
+      expect(webpush.sendNotification).toHaveBeenCalledWith(
+        { endpoint: "https://test.com" },
+        expect.any(String),
+        {
+          TTL: 60,
+          urgency: "high",
+          topic: "test-notification",
+        },
+      );
     });
 
-    // Given: A target user who is not subscribed
-    // When:  The send endpoint is called
-    // Then:  It should return 404 Not Found
     it("TC-SND-02: should return 404 if subscriber not found", async () => {
-      mockSupabase.auth.getUser.mockResolvedValue({
+      mockAuthGetUser.mockResolvedValue({
         data: { user: { id: "sender-123" } },
       });
-      mockSupabase.single.mockResolvedValue({
-        data: null,
-        error: { message: "Not found" },
+
+      const selectBuilder = createThenableBuilder({
+        data: [],
+        error: null,
+      });
+      mockFrom.mockReturnValue({
+        select: vi.fn(() => selectBuilder),
       });
 
       const request = new Request("http://localhost/api/push/send", {
@@ -169,44 +245,52 @@ describe("Push Notification API Routes", () => {
       expect(response.status).toBe(404);
     });
 
-    // Given: A expired subscription (Web Push returns 410)
-    // When:  The send endpoint is called
-    // Then:  It should delete the subscription from DB and return 410
-    it("TC-SND-03: should delete subscription if web-push returns 410", async () => {
-      mockSupabase.auth.getUser.mockResolvedValue({
+    it("TC-SND-03: should delete expired subscription and return 410 when the targeted endpoint is gone", async () => {
+      mockAuthGetUser.mockResolvedValue({
         data: { user: { id: "sender-123" } },
       });
-      mockSupabase.single.mockResolvedValue({
-        data: { subscription: { endpoint: "https://old.com" } },
+
+      const selectBuilder = createThenableBuilder({
+        data: [{ id: "sub-1", subscription: { endpoint: "https://old.com" } }],
         error: null,
       });
+      const deleteBuilder = createThenableBuilder({ error: null });
+      const deleteMock = vi.fn(() => deleteBuilder);
 
-      const error410 = { statusCode: 410 };
-      vi.mocked(webpush.sendNotification).mockRejectedValue(error410);
+      mockFrom
+        .mockReturnValueOnce({
+          select: vi.fn(() => selectBuilder),
+        })
+        .mockReturnValueOnce({
+          delete: deleteMock,
+        });
+
+      vi.mocked(webpush.sendNotification).mockRejectedValue({
+        statusCode: 410,
+      });
 
       const request = new Request("http://localhost/api/push/send", {
         method: "POST",
-        body: JSON.stringify({ userId: "expired-user" }),
+        body: JSON.stringify({
+          userId: "expired-user",
+          endpoint: "https://old.com",
+        }),
       });
 
       const response = await sendPOST(request);
+      const body = await response.json();
+
       expect(response.status).toBe(410);
-      expect(mockSupabase.delete).toHaveBeenCalled();
+      expect(body.error).toContain("Re-enable notifications");
+      expect(deleteMock).toHaveBeenCalled();
+      expect(deleteBuilder.eq).toHaveBeenCalledWith("id", "sub-1");
     });
 
-    // Given: VAPID private key is missing server-side
-    // When:  The send endpoint is called
-    // Then:  It should return 500 with a specific error message
     it("TC-SND-04: should return 500 if VAPID private key is missing", async () => {
-      mockSupabase.auth.getUser.mockResolvedValue({
+      mockAuthGetUser.mockResolvedValue({
         data: { user: { id: "sender-123" } },
       });
-      mockSupabase.single.mockResolvedValue({
-        data: { subscription: { endpoint: "https://test.com" } },
-        error: null,
-      });
 
-      // Mock missing env var
       const originalEnv = process.env;
       process.env = { ...originalEnv, VAPID_PRIVATE_KEY: "" };
 

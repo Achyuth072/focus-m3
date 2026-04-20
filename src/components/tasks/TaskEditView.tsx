@@ -189,7 +189,7 @@ export function TaskEditView({
             <Button
               variant="outline"
               size="sm"
-              className="h-7 px-3 text-[10px] uppercase tracking-wider font-bold text-muted-foreground hover:text-foreground bg-secondary hover:bg-secondary/80 border border-border shadow-none transition-seijaku-fast rounded-lg"
+              className="h-7 px-3 text-[10px] uppercase tracking-wider font-bold text-muted-foreground hover:text-foreground bg-background hover:bg-accent hover:text-accent-foreground border border-input shadow-none transition-all rounded-lg"
               onClick={() => {
                 trigger("toggle");
                 setIsPreviewMode(!isPreviewMode);
@@ -229,7 +229,7 @@ export function TaskEditView({
                 setShowSubtasks(!showSubtasks);
               }}
               className={cn(
-                "h-8 w-8 p-0 text-muted-foreground hover:text-foreground bg-secondary hover:bg-secondary/80 border border-border shadow-none transition-seijaku-fast [&_svg]:!size-4 rounded-lg",
+                "h-9 w-9 p-0 text-muted-foreground hover:text-foreground bg-background hover:bg-accent hover:text-accent-foreground border border-input shadow-none transition-all [&_svg]:!size-4 rounded-lg",
                 showSubtasks &&
                   "text-brand bg-brand/10 border-transparent hover:bg-brand/20 hover:text-brand",
               )}
@@ -292,7 +292,7 @@ export function TaskEditView({
             variant="ghost"
             size="sm"
             className={cn(
-              "h-10 px-4 text-xs bg-secondary hover:bg-secondary/80 border border-border shadow-none hover:text-foreground shrink-0 gap-2 rounded-lg transition-seijaku-fast",
+              "h-9 px-3 text-[13px] bg-background hover:bg-accent border border-input shadow-none hover:text-foreground shrink-0 gap-1.5 rounded-lg transition-all",
               isEvening &&
                 "text-brand bg-brand/10 border-transparent hover:bg-brand/20 hover:text-brand",
             )}
@@ -306,7 +306,7 @@ export function TaskEditView({
             }}
             title="This Evening"
           >
-            <Moon className="h-3.5 w-3.5" strokeWidth={2.25} />
+            <Moon className="h-4 w-4" strokeWidth={2.25} />
             {!isMobile && <span className="font-medium">Evening</span>}
           </Button>
 
@@ -338,10 +338,7 @@ export function TaskEditView({
           >
             <SelectTrigger
               onPointerDown={() => trigger("toggle")}
-              className={cn(
-                "h-10 w-[120px] md:w-[140px] type-ui border-border bg-secondary hover:bg-secondary/80 shadow-none focus:ring-0 transition-seijaku-fast rounded-lg text-foreground [&_svg]:opacity-100 [&_svg]:text-foreground",
-                selectedProjectId ? "min-w-20" : "min-w-12",
-              )}
+              className="h-9 w-auto min-w-[130px] max-w-[200px] type-ui border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-none focus:ring-0 transition-all rounded-lg text-foreground [&_svg]:opacity-100 [&_svg]:text-foreground px-3"
             >
               <SelectValue placeholder="Inbox" />
             </SelectTrigger>
@@ -381,7 +378,7 @@ export function TaskEditView({
           <Button
             variant="destructive"
             size="sm"
-            className="h-10 w-10 p-0 [&_svg]:!size-5 rounded-lg"
+            className="h-9 w-9 p-0 [&_svg]:!size-4 rounded-lg"
             onClick={() => {
               trigger("thud");
               onDelete();
@@ -396,7 +393,7 @@ export function TaskEditView({
             size="sm"
             variant={isPending ? "ghost" : "default"}
             className={cn(
-              "h-10 w-10 p-0 rounded-lg [&_svg]:!size-5 transition-seijaku",
+              "h-9 w-9 p-0 rounded-lg [&_svg]:!size-4 transition-seijaku",
               !isPending &&
                 "bg-brand hover:bg-brand/90 text-brand-foreground shadow-none",
             )}

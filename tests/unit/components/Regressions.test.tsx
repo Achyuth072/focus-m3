@@ -25,7 +25,7 @@ describe("Regression Fixes", () => {
     );
 
     expect(dayHeader).toBeTruthy();
-    expect(dayHeader?.className).toContain("h-16");
+    expect(dayHeader?.className).toContain("h-20");
     expect(dayHeader?.className).not.toContain("h-24");
   });
 

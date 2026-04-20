@@ -109,9 +109,9 @@ export default function HabitsPage() {
 
         <Button
           onClick={handleOpenCreate}
-          className="hidden md:flex h-9 items-center gap-2 rounded-lg bg-brand text-brand-foreground hover:bg-brand/90 shadow-sm shadow-brand/10 transition-seijaku"
+          className="hidden md:flex h-9 items-center gap-2 px-4 rounded-lg bg-brand text-brand-foreground hover:bg-brand/90 border-none shadow-sm shadow-brand/10 transition-seijaku text-[13px] font-semibold"
         >
-          <Plus className="h-4 w-4" strokeWidth={2.25} />
+          <Plus className="h-4 w-4" strokeWidth={2.5} />
           <span>New Habit</span>
         </Button>
       </div>

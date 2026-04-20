@@ -14,6 +14,7 @@ import { useMemo, memo } from "react";
 import { cn } from "@/lib/utils";
 import type { CalendarEvent } from "@/lib/calendar/types";
 import { EventOverflowPopover } from "./EventOverflowPopover";
+import { useIsMobile } from "@/lib/hooks/useIsMobile";
 
 interface MonthViewProps {
   currentDate: Date;
@@ -30,6 +31,7 @@ interface MonthDayCellProps {
   dayEvents: CalendarEvent[];
   isCurrentMonth: boolean;
   isCurrentDay: boolean;
+  isCompact?: boolean;
   onDateClick?: (date: Date) => void;
   onDateNumberClick?: (date: Date) => void;
   onEventClick?: (event: CalendarEvent) => void;
@@ -41,12 +43,15 @@ const MonthDayCell = memo(
     dayEvents,
     isCurrentMonth,
     isCurrentDay,
+    isCompact,
     onDateClick,
     onDateNumberClick,
     onEventClick,
   }: MonthDayCellProps) => {
-    // Show only 2 events if there are more than 3, to prevent partial visibility of 3rd event
-    const maxVisible = dayEvents.length > 3 ? 2 : 3;
+    const isMobile = useIsMobile();
+    // Dynamic limit based on available vertical space
+    const maxLimit = isMobile ? (isCompact ? 2 : 3) : isCompact ? 3 : 4;
+    const maxVisible = dayEvents.length > maxLimit ? maxLimit - 1 : maxLimit;
     const visibleEvents = dayEvents.slice(0, maxVisible);
     const remainingCount = dayEvents.length - maxVisible;
 
@@ -54,25 +59,25 @@ const MonthDayCell = memo(
       <div
         onClick={() => onDateClick?.(day)}
         className={cn(
-          "relative p-1 pb-0.5 md:p-2 md:pb-1 flex flex-col h-full min-h-[85px] md:min-h-[120px]",
-          "cursor-pointer transition-colors",
+          "relative p-0.5 pb-0.5 md:p-2 md:pb-1 flex flex-col h-full min-h-16 md:min-h-21",
+          "cursor-pointer transition-colors overflow-hidden",
+          isCompact && "p-0.5 md:p-1 md:pb-0.5",
           !isCurrentMonth && "bg-muted/5 opacity-40",
-          isCurrentDay
-            ? "bg-brand/5 ring-1 ring-brand/10"
-            : "hover:bg-accent/30",
+          isCurrentDay ? "bg-brand/10" : "hover:bg-accent/30",
         )}
       >
         {/* Date number */}
-        <div className="flex items-center justify-between mb-0.5 md:mb-0.5 shrink-0">
+        <div className="flex items-center justify-between mb-1 md:mb-1.5 shrink-0">
           <button
             onClick={(e) => {
               e.stopPropagation();
               onDateNumberClick?.(day);
             }}
             className={cn(
-              "text-xs md:text-sm font-medium transition-all hover:opacity-70",
-              "min-w-6 min-h-6 flex items-center justify-center rounded-lg",
-              isCurrentDay && "bg-brand text-white shadow-sm hover:opacity-100",
+              "text-xs md:text-sm font-bold transition-all hover:bg-brand/10",
+              "w-6 h-6 md:w-8 md:h-8 flex items-center justify-center rounded-lg",
+              isCompact && "w-5 h-5 md:w-6 md:h-6 text-[10px] md:text-xs",
+              isCurrentDay && "bg-brand text-white shadow-sm hover:bg-brand/90",
               !isCurrentMonth && "text-muted-foreground/50",
             )}
           >
@@ -80,9 +85,8 @@ const MonthDayCell = memo(
           </button>
         </div>
 
-        {/* Events */}
         <div className="flex-1 min-h-0 relative z-10 flex flex-col">
-          <div className="space-y-0.5 md:space-y-1 overflow-hidden flex-1">
+          <div className="space-y-0.5 md:space-y-1 overflow-hidden shrink min-h-0">
             {visibleEvents.map((event) => {
               const isTask = event.category === "task";
               return (
@@ -93,11 +97,17 @@ const MonthDayCell = memo(
                     onEventClick?.(event);
                   }}
                   className={cn(
-                    "text-[10px] md:text-[11px] px-1.5 md:px-2 py-0.5 rounded-sm truncate font-semibold leading-tight hover:brightness-95 transition-all cursor-pointer",
+                    "text-[10px] md:text-[11px] px-1 md:px-2 py-0.5 mx-[1px] md:mx-0 rounded-sm truncate font-semibold leading-tight hover:brightness-95 transition-all cursor-pointer",
                     isTask
-                      ? "bg-transparent border-[1.5px] border-brand text-foreground"
+                      ? "bg-brand/8 border-t border-t-border/40 border-r border-r-border/40 border-b border-b-border/40 text-foreground"
                       : "bg-brand text-white",
                   )}
+                  style={{
+                    ...(isTask && {
+                      borderLeftColor: event.color || "#4B6CB7",
+                      borderLeftWidth: "3px",
+                    }),
+                  }}
                   title={event.title}
                 >
                   <span className="hidden md:inline">
@@ -109,11 +119,13 @@ const MonthDayCell = memo(
             })}
           </div>
           {remainingCount > 0 && (
-            <EventOverflowPopover
-              remainingEvents={dayEvents.slice(maxVisible)}
-              day={day}
-              onEventClick={onEventClick}
-            />
+            <div className="mt-1 shrink-0">
+              <EventOverflowPopover
+                remainingEvents={dayEvents.slice(maxVisible)}
+                day={day}
+                onEventClick={onEventClick}
+              />
+            </div>
           )}
         </div>
       </div>
@@ -181,11 +193,8 @@ const MonthView = memo(
         <div
           className={cn(
             "flex-1 min-h-0 grid grid-cols-7 overflow-y-auto md:overflow-hidden divide-x divide-border/40 divide-y divide-border/40 border-b border-r border-border/40",
-            numWeeks === 4 && "grid-rows-4",
-            numWeeks === 5 && "grid-rows-5",
-            numWeeks === 6 && "grid-rows-6",
           )}
-          style={{ gridTemplateRows: `repeat(${numWeeks}, minmax(0, 1fr))` }}
+          style={{ gridTemplateRows: `repeat(${numWeeks}, 1fr)` }}
         >
           {days.map((day) => (
             <MonthDayCell
@@ -194,6 +203,7 @@ const MonthView = memo(
               dayEvents={eventsByDay.get(format(day, "yyyy-MM-dd")) || []}
               isCurrentMonth={isSameMonth(day, currentDate)}
               isCurrentDay={isToday(day)}
+              isCompact={numWeeks === 6}
               onDateClick={onDateClick}
               onDateNumberClick={onDateNumberClick}
               onEventClick={onEventClick}

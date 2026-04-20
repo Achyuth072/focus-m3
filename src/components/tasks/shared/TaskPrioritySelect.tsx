@@ -70,13 +70,12 @@ export function TaskPrioritySelect({
         onPointerDown={() => trigger("toggle")}
         className={cn(
           // Base — exactly matches the Evening / Subtasks / DatePicker tags
-          "h-10 transition-all shrink-0 [&>svg]:hidden shadow-none border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-lg outline-none focus:ring-0 focus:outline-none",
+          "h-9 transition-all shrink-0 [&>svg]:hidden shadow-none border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-lg outline-none focus:ring-0 focus:outline-none",
           // Unselected (P4 / Low): icon-only pill
-          !isSelected &&
-            "w-10 px-0 text-muted-foreground hover:text-foreground",
+          !isSelected && "w-9 px-0 text-muted-foreground hover:text-foreground",
           // Selected (P1-P3): labelled pill with brand outline active state
           isSelected &&
-            "w-auto px-2.5 min-w-[68px] text-brand bg-brand/10 border-transparent hover:bg-brand/20 hover:text-brand",
+            "w-auto px-2.5 min-w-[68px] text-[13px] text-brand bg-brand/10 border-transparent hover:bg-brand/20 hover:text-brand",
         )}
         title={!isMobile ? "Set priority" : undefined}
       >
@@ -84,14 +83,14 @@ export function TaskPrioritySelect({
           <Flag
             strokeWidth={2.25}
             className={cn(
-              "h-5 w-5 transition-all shrink-0",
+              "h-4 w-4 transition-all shrink-0",
               isSelected
                 ? priorityIconColor[priority]
                 : "text-muted-foreground",
             )}
           />
           {isSelected && (
-            <span className="text-sm font-medium">
+            <span className="text-[13px] font-medium">
               {priorities.find((p) => p.value === priority)?.label}
             </span>
           )}

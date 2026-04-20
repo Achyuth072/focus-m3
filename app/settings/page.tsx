@@ -114,9 +114,9 @@ export default function SettingsPage() {
               size="icon"
               onPointerDown={() => trigger("toggle")}
               onClick={() => router.back()}
-              className="h-12 w-12"
+              className="h-9 w-9 bg-secondary/40 hover:bg-secondary/60 border border-border/50 shadow-none transition-seijaku-fast"
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className="h-4 w-4" />
               <span className="sr-only">Back</span>
             </Button>
             <h1 className="type-h1">Settings</h1>
@@ -378,7 +378,7 @@ export default function SettingsPage() {
             <div className="pt-16 pb-12 transition-all duration-300">
               <div className="border-t border-border/40 w-16 mx-auto mb-8 opacity-50" />
               <p className="type-micro text-muted-foreground/80 text-center selection:bg-brand/10">
-                Kanso • Version 1.17.0
+                Kanso • Version 1.18.0
               </p>
             </div>
           </main>

@@ -97,7 +97,8 @@ CREATE TABLE IF NOT EXISTS focus_logs (
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS public.push_subscriptions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE UNIQUE,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  endpoint TEXT NOT NULL,
   subscription JSONB NOT NULL,
   created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT now() NOT NULL
@@ -105,6 +106,7 @@ CREATE TABLE IF NOT EXISTS public.push_subscriptions (
 
 -- Index for faster lookups by user_id
 CREATE INDEX IF NOT EXISTS push_subscriptions_user_id_idx ON public.push_subscriptions (user_id);
+CREATE UNIQUE INDEX IF NOT EXISTS push_subscriptions_user_endpoint_key ON public.push_subscriptions (user_id, endpoint);
 
 -- =============================================================================
 -- 7.5. NOTIFICATION_QUEUE TABLE (Scheduled Alerts)

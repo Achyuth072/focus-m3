@@ -156,7 +156,7 @@ export default function CalendarPage() {
           openCreateEvent();
         }}
       />
-      <div className="flex-1 min-h-0">{renderView()}</div>
+      <div className="flex-1 min-h-0 relative">{renderView()}</div>
 
       <TaskSheet
         open={!!selectedTaskId && !!fullTask}

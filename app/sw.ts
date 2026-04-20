@@ -100,6 +100,8 @@ interface ExtendedNotificationOptions extends NotificationOptions {
 }
 
 self.addEventListener("push", (event) => {
+  console.log("[SW] Push event received", event);
+
   const options: ExtendedNotificationOptions = {
     icon: "/icons/icon-192.png",
     badge: "/icons/icon-192.png",
@@ -113,6 +115,7 @@ self.addEventListener("push", (event) => {
   if (event.data) {
     try {
       const data = event.data.json();
+      console.log("[SW] Push data parsed:", data);
       title = data.title || title;
       body = data.body || body;
 
@@ -121,16 +124,29 @@ self.addEventListener("push", (event) => {
       if (data.tag) options.tag = data.tag;
       if (data.data) options.data = data.data;
       if (data.actions) options.actions = data.actions;
-    } catch {
+    } catch (err) {
+      console.warn(
+        "[SW] Push data failed to parse as JSON, falling back to text",
+        err,
+      );
       body = event.data.text();
     }
+  } else {
+    console.log("[SW] Push event has no data");
   }
 
   event.waitUntil(
-    self.registration.showNotification(title, {
-      body,
-      ...options,
-    }),
+    self.registration
+      .showNotification(title, {
+        body,
+        ...options,
+      })
+      .then(() => {
+        console.log("[SW] Notification shown successfully:", title);
+      })
+      .catch((err) => {
+        console.error("[SW] Failed to show notification:", err);
+      }),
   );
 });
 

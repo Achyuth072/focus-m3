@@ -119,17 +119,17 @@ export function TaskDatePicker({
             onOpenChange(true);
           }}
           className={cn(
-            "h-10 transition-all shrink-0 group [&_svg]:!size-5 border border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-none",
+            "h-9 transition-all shrink-0 group [&_svg]:!size-4 border border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-none",
             error &&
               "border-destructive/50 bg-destructive/5 text-destructive hover:bg-destructive/10 hover:text-destructive",
             isCompact
               ? cn(
-                  "w-10 px-0 text-muted-foreground hover:text-foreground",
+                  "w-9 px-0 text-muted-foreground hover:text-foreground",
                   date &&
                     cn("w-auto px-2.5 border-transparent", activeClassName),
                 )
               : cn(
-                  "min-w-10 px-0 text-muted-foreground hover:text-foreground hover:bg-accent",
+                  "min-w-9 px-0 text-muted-foreground hover:text-foreground hover:bg-accent",
                   date &&
                     cn(
                       "px-3 w-auto hover:bg-transparent border-transparent",
@@ -170,17 +170,17 @@ export function TaskDatePicker({
           variant="ghost"
           size="sm"
           className={cn(
-            "h-10 transition-all shrink-0 group [&_svg]:!size-5 border border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-none",
+            "h-9 transition-all shrink-0 group [&_svg]:!size-4 border border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-none",
             error &&
               "border-destructive/50 bg-destructive/5 text-destructive hover:bg-destructive/10 hover:text-destructive",
             isCompact
               ? cn(
-                  "w-10 px-0 text-muted-foreground hover:text-foreground",
+                  "w-9 px-0 text-muted-foreground hover:text-foreground",
                   date &&
                     cn("w-auto px-2.5 border-transparent", activeClassName),
                 )
               : cn(
-                  "min-w-10 px-0 text-muted-foreground hover:text-foreground hover:bg-accent",
+                  "min-w-9 px-0 text-muted-foreground hover:text-foreground hover:bg-accent",
                   date &&
                     cn(
                       "px-3 w-auto hover:bg-transparent border-transparent",

@@ -25,6 +25,13 @@ export function useBackNavigation(isOpen: boolean, onClose: () => void) {
 
   const handlePopState = useCallback(() => {
     const myId = modalIdRef.current;
+
+    // If we just landed ON this modal's history entry, don't close it.
+    // This happens when a child modal closes programmatically and calls history.back()
+    if (window.history.state?.modalId === myId) {
+      return;
+    }
+
     const topModalId = modalStack[modalStack.length - 1];
 
     // Only handle if this is the topmost modal

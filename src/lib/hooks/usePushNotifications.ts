@@ -2,9 +2,18 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useUiStore } from "@/lib/store/uiStore";
-import { syncPushSubscription } from "@/lib/push-api";
+import { removePushSubscription, syncPushSubscription } from "@/lib/push-api";
 
 export type NotificationPermission = "default" | "granted" | "denied";
+
+interface SubscribeOptions {
+  forceRefresh?: boolean;
+}
+
+export interface PushPermissionResult {
+  permission: NotificationPermission;
+  subscription: PushSubscription | null;
+}
 
 export function usePushNotifications() {
   const { notificationsEnabled, setNotificationsEnabled } = useUiStore();
@@ -39,18 +48,39 @@ export function usePushNotifications() {
 
   const sendSubscriptionToBackend = useCallback(
     async (sub: PushSubscription) => {
+      await syncPushSubscription(sub);
+    },
+    [],
+  );
+
+  const removeSubscriptionFromBackend = useCallback(
+    async (endpoint: string) => {
       try {
-        await syncPushSubscription(sub);
+        await removePushSubscription(endpoint);
       } catch (error) {
-        console.error("Error sending subscription to backend:", error);
+        console.error("Error removing subscription from backend:", error);
       }
     },
     [],
   );
 
+  const clearExistingSubscription = useCallback(
+    async (sub: PushSubscription) => {
+      try {
+        await sub.unsubscribe();
+      } catch (error) {
+        console.error("Error unsubscribing from push service:", error);
+      }
+
+      await removeSubscriptionFromBackend(sub.endpoint);
+    },
+    [removeSubscriptionFromBackend],
+  );
+
   const subscribeToPush = useCallback(
     async (
       permissionOverride?: NotificationPermission,
+      options?: SubscribeOptions,
     ): Promise<PushSubscription | null> => {
       const effectivePermission = permissionOverride || permission;
       if (!isSupported || effectivePermission !== "granted") {
@@ -62,6 +92,11 @@ export function usePushNotifications() {
         const registration = await getServiceWorkerRegistration();
 
         let sub = await registration.pushManager.getSubscription();
+
+        if (sub && options?.forceRefresh) {
+          await clearExistingSubscription(sub);
+          sub = null;
+        }
 
         if (!sub) {
           const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "";
@@ -96,42 +131,58 @@ export function usePushNotifications() {
     [
       isSupported,
       permission,
+      clearExistingSubscription,
       sendSubscriptionToBackend,
       getServiceWorkerRegistration,
       setNotificationsEnabled,
     ],
   );
 
-  const requestPermission =
-    useCallback(async (): Promise<NotificationPermission> => {
+  const requestPermission = useCallback(
+    async (options?: SubscribeOptions): Promise<PushPermissionResult> => {
       if (!isSupported) {
-        return "denied";
+        return { permission: "denied", subscription: null };
       }
 
       try {
         const result = await Notification.requestPermission();
         setPermission(result as NotificationPermission);
 
+        let sub: PushSubscription | null = null;
+
         if (result === "granted") {
           // Note: subscribeToPush now handles setNotificationsEnabled(true) on success
-          await subscribeToPush(result as NotificationPermission);
+          sub = await subscribeToPush(
+            result as NotificationPermission,
+            options,
+          );
         }
 
-        return result as NotificationPermission;
+        return {
+          permission: result as NotificationPermission,
+          subscription: sub,
+        };
       } catch (error) {
         console.error("Error requesting notification permission:", error);
-        return "denied";
+        return { permission: "denied", subscription: null };
       }
-    }, [isSupported, subscribeToPush]);
+    },
+    [isSupported, subscribeToPush],
+  );
 
   const unsubscribe = useCallback(async (): Promise<boolean> => {
-    if (!subscription) {
-      setNotificationsEnabled(false);
-      return true;
-    }
-
     try {
-      await subscription.unsubscribe();
+      let sub = subscription;
+
+      if (!sub) {
+        const registration = await getServiceWorkerRegistration();
+        sub = await registration.pushManager.getSubscription();
+      }
+
+      if (sub) {
+        await clearExistingSubscription(sub);
+      }
+
       setSubscription(null);
       setNotificationsEnabled(false);
       return true;
@@ -139,7 +190,12 @@ export function usePushNotifications() {
       console.error("Error unsubscribing from push notifications:", error);
       return false;
     }
-  }, [subscription, setNotificationsEnabled]);
+  }, [
+    subscription,
+    clearExistingSubscription,
+    getServiceWorkerRegistration,
+    setNotificationsEnabled,
+  ]);
 
   const showNotification = useCallback(
     async (title: string, options?: NotificationOptions): Promise<void> => {

@@ -46,6 +46,7 @@ export function NotificationSettings() {
     notificationsEnabled,
     isSyncing,
     requestPermission,
+    subscribeToPush,
     unsubscribe,
   } = usePushNotifications();
   const { isGuestMode } = useAuth();
@@ -120,11 +121,13 @@ export function NotificationSettings() {
     }
 
     if (checked) {
-      const result = await requestPermission();
-      if (result === "granted") {
+      const result = await requestPermission({ forceRefresh: true });
+      if (result.permission === "granted" && result.subscription) {
         toast.success("Notifications enabled");
-      } else if (result === "denied") {
+      } else if (result.permission === "denied") {
         toast.error("Permission denied. Enable in browser settings.");
+      } else {
+        toast.error("Failed to activate notifications on this device.");
       }
     } else {
       await unsubscribe();
@@ -152,15 +155,47 @@ export function NotificationSettings() {
       toast.error("Please enable notifications first");
       return;
     }
+
     try {
+      const activeSubscription = await subscribeToPush("granted", {
+        forceRefresh: true,
+      });
+
+      if (!activeSubscription) {
+        toast.error("Failed to refresh notifications on this device");
+        return;
+      }
+
       await sendPushNotification({
+        endpoint: activeSubscription.endpoint,
         title: "Test Notification",
         body: "This is a server-sent test notification from Kanso",
         data: { type: "test" },
       });
-      toast.success("Test notification sent");
+      toast.success("Test notification sent to this device");
     } catch {
       toast.error("Failed to send test notification");
+    }
+  };
+
+  const handleLocalTestNotification = () => {
+    trigger("toggle");
+    if (permission !== "granted") {
+      toast.error("Please enable notifications first");
+      return;
+    }
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.showNotification("Local Test Notification", {
+          body: "This notification was triggered locally from the browser.",
+          icon: "/icons/icon-192.png",
+          tag: "kanso-local-test",
+        });
+        toast.success("Local notification triggered");
+      });
+    } else {
+      toast.error("Service worker not supported");
     }
   };
 
@@ -209,15 +244,25 @@ export function NotificationSettings() {
         </div>
 
         {permission === "granted" && notificationsEnabled && !isSyncing && (
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full"
-            onClick={handleTestNotification}
-          >
-            <Bell className="h-4 w-4 mr-2" />
-            Send Test Notification
-          </Button>
+          <div className="flex flex-col gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full"
+              onClick={handleTestNotification}
+            >
+              <Bell className="h-4 w-4 mr-2" />
+              Send Test Notification (Server)
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full text-[10px] text-muted-foreground hover:text-foreground h-7"
+              onClick={handleLocalTestNotification}
+            >
+              Trigger Local Notification (Sanity Check)
+            </Button>
+          </div>
         )}
       </div>
 

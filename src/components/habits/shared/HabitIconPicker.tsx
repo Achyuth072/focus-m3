@@ -96,7 +96,7 @@ export function HabitIconPicker({
   return (
     <div className="grid gap-3 w-full overflow-hidden">
       {/* Featured Icon Preview */}
-      <div className="px-4">
+      <div>
         <div className="flex flex-col items-center justify-center py-8 rounded-2xl bg-secondary/20 border border-border/40 relative overflow-hidden group">
           <div
             className="w-16 h-16 rounded-2xl flex items-center justify-center transition-all bg-background border border-border shadow-none group-hover:scale-105"
@@ -120,7 +120,7 @@ export function HabitIconPicker({
 
       <div className="space-y-1.5 overflow-hidden">
         {variant !== "compact" && (
-          <Label className="px-4 text-[10px] font-bold text-foreground/40 uppercase tracking-[0.2em]">
+          <Label className="text-[10px] font-bold text-foreground/40 uppercase tracking-[0.2em]">
             Choose Symbol
           </Label>
         )}

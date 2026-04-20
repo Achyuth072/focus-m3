@@ -74,10 +74,11 @@ describe("useWeeklyBackup", () => {
     });
 
     expect(toast).toHaveBeenCalledWith(
-      "Backup due",
+      "It's been a while since your last backup",
       expect.objectContaining({
+        description: "Back up your data to prevent loss",
         action: expect.objectContaining({
-          label: "Backup",
+          label: "Back Up Now",
         }),
       }),
     );

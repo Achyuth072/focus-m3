@@ -171,13 +171,13 @@ export function TaskDetailPanel({ task, onClose }: TaskDetailPanelProps) {
               trigger("tick");
               onClose();
             }}
-            className="absolute top-3 right-3 z-50 h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground bg-secondary hover:bg-secondary/80 border border-border transition-all duration-200"
+            className="absolute top-3 right-3 z-50 h-9 w-9 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground bg-secondary hover:bg-secondary/80 border border-border transition-all duration-200"
             aria-label="Close task details"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
+              width="20"
+              height="20"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"

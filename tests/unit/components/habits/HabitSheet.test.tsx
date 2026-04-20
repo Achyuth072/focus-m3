@@ -59,7 +59,7 @@ describe("HabitSheet", () => {
   // Then: "New Habit" should be displayed
   it('renders "New Habit" header in creation mode', () => {
     render(<HabitSheet open={true} onClose={() => {}} />);
-    expect(screen.getByText("New Habit")).toBeInTheDocument();
+    expect(screen.getAllByText("New Habit")[0]).toBeInTheDocument();
   });
 
   // Given: An initial habit is provided
@@ -80,7 +80,7 @@ describe("HabitSheet", () => {
       );
     });
 
-    expect(screen.getByText("Edit Habit")).toBeInTheDocument();
+    expect(screen.getAllByText("Edit Habit")[0]).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Habit name")).toHaveValue("Exercise");
   });
 

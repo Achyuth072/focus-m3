@@ -24,10 +24,10 @@ const YearDayButton = ({
     <button
       {...props}
       className={cn(
-        "h-7 w-7 p-0 font-medium rounded-lg transition-all flex items-center justify-center relative select-none",
-        "hover:bg-accent/40 hover:text-foreground text-muted-foreground/80",
+        "h-8 w-8 p-0 font-bold rounded-lg transition-all flex items-center justify-center relative select-none",
+        "hover:bg-brand/10 hover:text-foreground text-muted-foreground/80",
         isToday &&
-          "bg-brand text-white font-bold !opacity-100 shadow-sm scale-110 hover:!bg-brand/90 hover:!text-white",
+          "bg-brand text-white !opacity-100 shadow-sm hover:!bg-brand/90 hover:!text-white",
         className,
       )}
     >
@@ -52,16 +52,16 @@ const YearMonth = memo(
           selected={undefined}
           onSelect={(date) => date && onDateClick?.(date)}
           showOutsideDays={false}
-          className="p-0 select-none [--cell-size:28px]"
+          className="p-0 select-none [--cell-size:32px]"
           classNames={{
             months: "flex flex-col",
             month: "space-y-3",
             nav: "hidden",
             caption:
-              "flex justify-center pt-2 relative items-center text-sm font-bold tracking-tight text-foreground",
+              "flex justify-center pt-2 relative items-center text-sm font-bold tracking-tight text-foreground mb-1",
             head_row: "flex gap-1 mb-1",
             head_cell:
-              "text-muted-foreground/40 w-7 font-bold text-[0.65rem] uppercase tracking-tighter",
+              "text-muted-foreground/40 w-8 font-bold text-[0.65rem] uppercase tracking-tighter",
             row: "flex w-full gap-1",
             cell: "relative p-0 text-center text-xs focus-within:relative focus-within:z-20",
             outside: "invisible",

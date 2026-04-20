@@ -51,14 +51,13 @@ serve(async (req) => {
         // 2. Process each notification
         for (const item of queue) {
           try {
-            // Get user's subscription
+            // Get all subscriptions for the user (multi-device/domain support)
             const { data: subData, error: subError } = await supabaseAdmin
               .from("push_subscriptions")
-              .select("subscription")
-              .eq("user_id", item.user_id)
-              .single();
+              .select("id, subscription")
+              .eq("user_id", item.user_id);
 
-            if (subError || !subData) {
+            if (subError || !subData || subData.length === 0) {
               await supabaseAdmin
                 .from("notification_queue")
                 .update({
@@ -76,7 +75,44 @@ serve(async (req) => {
               data: item.payload?.data || {},
             });
 
-            await webpush.sendNotification(subData.subscription, payload);
+            let sent = 0;
+            let failed = 0;
+
+            for (const sub of subData) {
+              try {
+                await webpush.sendNotification(sub.subscription, payload);
+                sent++;
+              } catch (error) {
+                failed++;
+                const statusCode = error.statusCode;
+                if (statusCode === 410 || statusCode === 404) {
+                  await supabaseAdmin
+                    .from("push_subscriptions")
+                    .delete()
+                    .eq("id", sub.id);
+                }
+                console.error(
+                  `Error sending notification ${item.id} to subscription ${sub.id}:`,
+                  error,
+                );
+              }
+            }
+
+            if (sent === 0) {
+              await supabaseAdmin
+                .from("notification_queue")
+                .update({
+                  status: "failed",
+                  error_message:
+                    failed > 0
+                      ? "Failed to deliver to all subscriptions"
+                      : "User subscription not found",
+                })
+                .eq("id", item.id);
+
+              results.failed++;
+              continue;
+            }
 
             await supabaseAdmin
               .from("notification_queue")
@@ -87,26 +123,10 @@ serve(async (req) => {
           } catch (error) {
             console.error(`Error sending notification ${item.id}:`, error);
 
-            const statusCode = error.statusCode;
-            if (statusCode === 410 || statusCode === 404) {
-              await supabaseAdmin
-                .from("push_subscriptions")
-                .delete()
-                .eq("user_id", item.user_id);
-
-              await supabaseAdmin
-                .from("notification_queue")
-                .update({
-                  status: "failed",
-                  error_message: "Subscription expired",
-                })
-                .eq("id", item.id);
-            } else {
-              await supabaseAdmin
-                .from("notification_queue")
-                .update({ status: "failed", error_message: error.message })
-                .eq("id", item.id);
-            }
+            await supabaseAdmin
+              .from("notification_queue")
+              .update({ status: "failed", error_message: error.message })
+              .eq("id", item.id);
             results.failed++;
           }
         }

@@ -106,13 +106,9 @@ export function AppSidebar() {
 
   return (
     <>
-      <Sidebar
-        variant="sidebar"
-        collapsible="icon"
-        className="h-screen border-r"
-      >
-        <SidebarHeader className="border-b border-border">
-          <div className="flex items-center py-2 h-[60px]">
+      <Sidebar variant="sidebar" collapsible="icon" className="h-screen">
+        <SidebarHeader>
+          <div className="flex items-center py-2 h-14">
             {/* K logo — always in-flow, centers naturally in 48px icon-width sidebar when collapsed */}
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-semibold shrink-0">
               K
@@ -123,7 +119,7 @@ export function AppSidebar() {
               style={{ minWidth: 0 }}
             >
               <span className="type-h2 whitespace-nowrap">Kanso</span>
-              <SidebarTrigger className="h-8 w-8 shrink-0 active:scale-95 transition-all" />
+              <SidebarTrigger className="h-9 w-9 shrink-0 active:scale-95 transition-all [&_svg]:stroke-[2.25px]" />
             </div>
           </div>
         </SidebarHeader>
@@ -377,7 +373,7 @@ export function AppSidebar() {
                               trigger("toggle");
                             }}
                           >
-                            <Icon className="h-5 w-5" />
+                            <Icon className="h-5 w-5" strokeWidth={2.25} />
                             <span>{item.label}</span>
                           </Link>
                         </SidebarMenuButton>
@@ -415,10 +411,10 @@ export function AppSidebar() {
 
           <div className="h-[48px] relative flex flex-col justify-center hidden md:flex">
             <div className="absolute inset-x-0 flex justify-center w-full transition-opacity duration-200 ease-seijaku group-data-[state=expanded]:opacity-0 group-data-[state=expanded]:pointer-events-none">
-              <SidebarTrigger className="h-8 w-8 active:scale-95 transition-all" />
+              <SidebarTrigger className="h-9 w-9 active:scale-95 transition-all" />
             </div>
             <div className="px-4 py-3 text-xs text-muted-foreground font-medium tracking-tight w-full transition-opacity duration-200 ease-seijaku group-data-[state=collapsed]:opacity-0 group-data-[state=collapsed]:pointer-events-none">
-              v1.17.0
+              v1.18.0
             </div>
           </div>
         </SidebarFooter>

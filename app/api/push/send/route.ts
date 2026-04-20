@@ -17,18 +17,27 @@ export async function POST(request: Request) {
       throw new Error("VAPID configuration missing");
     }
 
-    const { userId, title, body, data } = await request.json();
+    const { userId, endpoint, title, body, data } = await request.json();
     const targetUserId = userId || currentUser.id;
 
-    const { data: subData, error: subError } = await supabase
+    let subscriptionsQuery = supabase
       .from("push_subscriptions")
-      .select("subscription")
-      .eq("user_id", targetUserId)
-      .single();
+      .select("id, subscription")
+      .eq("user_id", targetUserId);
 
-    if (subError || !subData) {
+    if (endpoint) {
+      subscriptionsQuery = subscriptionsQuery.eq("endpoint", endpoint);
+    }
+
+    const { data: subscriptions, error: subError } = await subscriptionsQuery;
+
+    if (subError || !subscriptions || subscriptions.length === 0) {
       return NextResponse.json(
-        { error: "User not subscribed or subscription not found" },
+        {
+          error: endpoint
+            ? "Requested subscription not found"
+            : "User not subscribed or subscription not found",
+        },
         { status: 404 },
       );
     }
@@ -39,34 +48,85 @@ export async function POST(request: Request) {
       data: data || {},
     });
 
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await webpush.sendNotification(subData.subscription as any, payload);
-    } catch (error: unknown) {
-      console.error("Web Push Error:", error);
+    console.log(
+      `[Push Send] Attempting to send to ${subscriptions.length} subscriptions for user ${targetUserId}`,
+    );
+    console.log(`[Push Send] Payload:`, payload);
 
-      const pushError = error as { statusCode?: number };
+    let sentCount = 0;
+    let failedCount = 0;
+    let failedStatusCode: number | null = null;
 
-      // If the subscription is no longer valid, remove it from the database
-      if (pushError.statusCode === 410 || pushError.statusCode === 404) {
-        await supabase
-          .from("push_subscriptions")
-          .delete()
-          .eq("user_id", targetUserId);
-
-        return NextResponse.json(
-          { error: "Subscription expired and has been removed" },
-          { status: 410 },
+    for (const sub of subscriptions) {
+      try {
+        console.log(
+          `[Push Send] Sending to endpoint: ${sub.subscription.endpoint}`,
         );
+        const result = await webpush.sendNotification(
+          sub.subscription as unknown as webpush.PushSubscription,
+          payload,
+          {
+            TTL: 60,
+            urgency: "high",
+            topic: "test-notification",
+          },
+        );
+        console.log(
+          `[Push Send] Success for endpoint: ${sub.subscription.endpoint}`,
+          result.statusCode,
+        );
+        sentCount++;
+      } catch (error: unknown) {
+        failedCount++;
+        console.error("[Push Send] Web Push Error:", error);
+
+        const pushError = error as { statusCode?: number };
+        if (
+          pushError.statusCode === 410 ||
+          pushError.statusCode === 404 ||
+          failedStatusCode === null
+        ) {
+          failedStatusCode = pushError.statusCode ?? 500;
+        }
+
+        if (pushError.statusCode === 410 || pushError.statusCode === 404) {
+          const { error: deleteError } = await supabase
+            .from("push_subscriptions")
+            .delete()
+            .eq("id", sub.id);
+
+          if (deleteError) {
+            console.error("Error deleting expired subscription:", deleteError);
+          }
+        }
       }
+    }
+
+    if (sentCount === 0) {
+      const status =
+        failedStatusCode === 404 || failedStatusCode === 410
+          ? failedStatusCode
+          : failedCount > 0
+            ? 500
+            : 404;
 
       return NextResponse.json(
-        { error: "Failed to send push notification" },
-        { status: 500 },
+        {
+          error:
+            status === 404 || status === 410
+              ? "Subscription expired or not found. Re-enable notifications on this device."
+              : "Failed to send push notification",
+        },
+        { status },
       );
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({
+      success: true,
+      sentCount,
+      failedCount,
+      endpointMatched: Boolean(endpoint),
+    });
   } catch (error: unknown) {
     console.error("Internal Server Error:", error);
 

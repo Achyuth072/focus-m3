@@ -402,12 +402,16 @@ class MockStore {
   }
 
   addTask(
-    task: Omit<Task, "id" | "user_id" | "created_at" | "updated_at"> & { id?: string },
+    task: Omit<Task, "id" | "user_id" | "created_at" | "updated_at"> & {
+      id?: string;
+    },
   ): Task {
     const now = new Date().toISOString();
     const newTask: Task = {
       ...task,
-      id: task.id || `guest-task-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id:
+        task.id ||
+        `guest-task-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       user_id: "guest",
       created_at: now,
       updated_at: now,

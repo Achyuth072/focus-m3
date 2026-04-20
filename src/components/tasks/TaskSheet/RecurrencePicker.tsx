@@ -67,7 +67,7 @@ export default function RecurrencePicker({
             variant="ghost"
             size="sm"
             className={cn(
-              "h-10 w-10 p-0 transition-all group relative border border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-none",
+              "h-9 w-9 p-0 transition-all group relative border border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-none",
               hasRecurrence
                 ? "text-brand bg-brand/10 hover:bg-brand/20 hover:text-brand border-transparent"
                 : "text-muted-foreground hover:text-foreground hover:bg-accent",
@@ -77,7 +77,7 @@ export default function RecurrencePicker({
             }}
             title={!isMobile ? formatRecurrenceRule(value) : undefined}
           >
-            <Repeat className="h-5 w-5 transition-all" strokeWidth={2} />
+            <Repeat className="h-4 w-4 transition-all" strokeWidth={2} />
             {hasRecurrence && badgeLetter && (
               <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 text-[10px] font-bold bg-brand text-brand-foreground rounded-full flex items-center justify-center">
                 {badgeLetter}
@@ -87,7 +87,7 @@ export default function RecurrencePicker({
         ) : (
           <Button
             variant="outline"
-            className="w-full justify-start text-left font-normal h-10"
+            className="w-full justify-start text-left font-normal h-9 text-[13px]"
           >
             <Repeat className="mr-2 h-4 w-4" />
             {formatRecurrenceRule(value)}

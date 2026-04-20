@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { createBackupZip, parseBackupZip } from "@/lib/backup/export-import";
 import type { BackupData } from "@/lib/backup/types";
 
